@@ -1,6 +1,18 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import { appConfig } from './app/app.config';
-import { App } from './app/app';
+import { App } from './app/components/app/app';
+import { runsInOffice } from './app/services/office.service';
 
-bootstrapApplication(App, appConfig)
-  .catch((err) => console.error(err));
+const bootstrap = (): void => {
+  bootstrapApplication(App, appConfig).catch((err: unknown) => {
+    console.error(err);
+  });
+};
+
+if (runsInOffice) {
+  Office.initialize = (): void => {
+    bootstrap();
+  };
+} else {
+  bootstrap();
+}

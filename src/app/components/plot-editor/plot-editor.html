@@ -1,0 +1,194 @@
+@let activePlot = existingPlot.value();
+@let isEditMode = !!activePlot;
+
+<app-header
+  [backLink]="['/']"
+  [subtitle]="'Plot: ' + editorModel().name"
+  title="Plot Editor"
+/>
+
+<app-content-container>
+  <form
+    class="space-y-4"
+    (ngSubmit)="sendToWord()"
+  >
+    <div class="group">
+      <label
+        class="text-heading mb-2.5 block text-sm font-medium"
+        for="name"
+        >Name</label
+      >
+      <input
+        class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
+        id="name"
+        [field]="editorForm.name"
+        type="text"
+      />
+    </div>
+
+    <div class="grid grid-cols-2 gap-6">
+      <div class="group">
+        <label
+          class="text-heading mb-2.5 block text-sm font-medium"
+          for="min-x"
+          >Min X</label
+        >
+        <input
+          class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
+          id="min-x"
+          [field]="editorForm.range.x.min"
+          type="number"
+        />
+      </div>
+      <div class="group">
+        <label
+          class="text-heading mb-2.5 block text-sm font-medium"
+          for="max-x"
+          >Max X</label
+        >
+        <input
+          class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
+          id="max-x"
+          [field]="editorForm.range.x.max"
+          type="number"
+        />
+      </div>
+    </div>
+    <div class="grid grid-cols-2 gap-6">
+      <div class="group">
+        <label
+          class="text-heading mb-2.5 block text-sm font-medium"
+          for="min-y"
+          >Min Y</label
+        >
+        <input
+          class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
+          id="min-y"
+          [field]="editorForm.range.y.min"
+          type="number"
+        />
+      </div>
+      <div class="group">
+        <label
+          class="text-heading mb-2.5 block text-sm font-medium"
+          for="max-y"
+          >Max Y</label
+        >
+        <input
+          class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
+          id="max-y"
+          [field]="editorForm.range.y.max"
+          type="number"
+        />
+      </div>
+    </div>
+    <div>
+      <div class="mb-1 flex items-center">
+        <input
+          class="border-default-medium bg-neutral-secondary-medium focus:ring-brand-soft h-4 w-4 rounded-xs border focus:ring-2"
+          id="show-axis-labels"
+          [field]="editorForm.showAxisLabels"
+          type="checkbox"
+        />
+        <label
+          class="text-heading ms-2 text-sm font-medium select-none"
+          for="show-axis-labels"
+          >Achsenbeschriftung</label
+        >
+      </div>
+      @if (editorModel().showAxisLabels) {
+        <div class="mb-4 ml-4 flex items-center">
+          <input
+            class="border-default-medium bg-neutral-secondary-medium focus:ring-brand-soft h-4 w-4 rounded-xs border focus:ring-2"
+            id="place-axis-labels-inside"
+            [field]="editorForm.placeAxisLabelsInside"
+            type="checkbox"
+          />
+          <label
+            class="text-heading ms-2 text-sm font-medium select-none"
+            for="place-axis-labels-inside"
+            >An 0-Linie anzeigen</label
+          >
+        </div>
+      }
+    </div>
+
+    <label
+      class="text-heading mb-2.5 block text-sm font-medium"
+      for="fnx"
+      >Funktionen f(x)=</label
+    >
+    @for (
+      control of editorForm.fnx;
+      let index = $index;
+      let count = $count;
+      track control
+    ) {
+      <div>
+        <div class="flex items-center space-x-2">
+          <input
+            class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
+            id="fnx"
+            [field]="control.fnx"
+            type="text"
+            spellcheck="false"
+            autocorrect="off"
+            autocomplete="off"
+            autocapitalize="off"
+          />
+
+          <input
+            class="h-8 w-8 shrink-0 border-none"
+            [field]="control.color"
+            type="color"
+          />
+
+          @if (count > 1) {
+            <button
+              (click)="removeFx(index)"
+              type="button"
+            >
+              <fa-icon [icon]="faTrashCan" />
+            </button>
+          }
+        </div>
+        <app-math-display [math]="control.fnx().value()" />
+      </div>
+    }
+    <div class="flex justify-end">
+      <button
+        (click)="addFx()"
+        type="button"
+      >
+        <fa-icon [icon]="faPlusCircle" />
+      </button>
+    </div>
+
+    <button
+      class="app-button"
+      type="submit"
+    >
+      @if (isEditMode) {
+        Aktualisieren
+      } @else {
+        In Word einbinden
+      }
+    </button>
+  </form>
+</app-content-container>
+
+@let fnx = editorForm().value().fnx;
+@if (fnx) {
+  <h3 class="bg-brand p-1 text-white">
+    Vorschau<br />
+    <span class="text-xs"
+      >Die Vorschau ist kleiner als das in Word eingefügte Bild.</span
+    >
+  </h3>
+  <app-plot-preview
+    [fnx]="fnx"
+    [range]="editorModel().range"
+    [showAxisLabels]="editorModel().showAxisLabels"
+    [placeAxisLabelsInside]="editorModel().placeAxisLabelsInside"
+  />
+}

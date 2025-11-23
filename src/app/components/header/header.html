@@ -1,0 +1,18 @@
+<header class="bg-brand relative flex p-2 text-white">
+  @if (backLink(); as backLink) {
+    <div class="flex items-center">
+      <a
+        class="absolute"
+        [routerLink]="backLink"
+        ><fa-icon [icon]="faArrowCircleLeft"
+      /></a>
+    </div>
+  }
+
+  <div class="flex flex-1 flex-col">
+    <h1 class="flex-1 text-center text-2xl">LehrGrapht - {{ title() }}</h1>
+    @if (subtitle(); as subtitle) {
+      <h2 class="text-center text-sm">{{ subtitle }}</h2>
+    }
+  </div>
+</header>

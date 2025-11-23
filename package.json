@@ -1,24 +1,19 @@
 {
-  "name": "bfs-fn-plot",
+  "name": "@boundfoxstudios/lehrgrapht",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "start:office": "office-addin-debugging start manifest.xml",
+    "stop:office": "office-addin-debugging stop manifest.xml",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "lint": "ng lint"
   },
-  "prettier": {
-    "printWidth": 100,
-    "singleQuote": true,
-    "overrides": [
-      {
-        "files": "*.html",
-        "options": {
-          "parser": "angular"
-        }
-      }
-    ]
+  "config": {
+    "app_to_debug": "word",
+    "app_type_to_debug": "desktop"
   },
   "private": true,
   "packageManager": "npm@10.9.2",
@@ -29,18 +24,44 @@
     "@angular/forms": "^21.0.0",
     "@angular/platform-browser": "^21.0.0",
     "@angular/router": "^21.0.0",
+    "@fortawesome/angular-fontawesome": "~4.0.0",
+    "@fortawesome/free-regular-svg-icons": "^7.1.0",
+    "@fortawesome/free-solid-svg-icons": "^7.1.0",
+    "flowbite": "~4.0.1",
+    "mathjs": "~15.1.0",
+    "office-addin-cli": "~2.0.6",
+    "office-addin-debugging": "~6.0.6",
+    "office-addin-manifest": "~2.1.2",
+    "plotly.js-dist-min": "~3.3.0",
     "rxjs": "~7.8.0",
-    "tslib": "^2.3.0"
+    "tslib": "^2.3.0",
+    "uuid": "~13.0.0"
   },
   "devDependencies": {
     "@angular/build": "^21.0.0",
     "@angular/cli": "^21.0.0",
     "@angular/compiler-cli": "^21.0.0",
     "@tailwindcss/postcss": "^4.1.12",
+    "@types/office-js": "~1.0.560",
+    "@types/plotly.js-dist-min": "~2.3.4",
+    "angular-eslint": "21.0.0",
+    "eslint": "^9.39.1",
+    "eslint-config-prettier": "~10.1.8",
+    "husky": "~9.1.7",
     "jsdom": "^27.1.0",
+    "lint-staged": "~16.2.7",
     "postcss": "^8.5.3",
+    "prettier": "~3.6.2",
+    "prettier-plugin-css-order": "~2.1.2",
+    "prettier-plugin-organize-attributes": "~1.0.0",
+    "prettier-plugin-tailwindcss": "~0.7.1",
     "tailwindcss": "^4.1.12",
     "typescript": "~5.9.2",
+    "typescript-eslint": "8.46.4",
     "vitest": "^4.0.8"
+  },
+  "lint-staged": {
+    "*.ts": "eslint --fix",
+    "*.*": "prettier --write --ignore-unknown"
   }
 }

@@ -1,0 +1,23 @@
+{
+  "trailingComma": "all",
+  "arrowParens": "avoid",
+  "bracketSameLine": false,
+  "semi": true,
+  "singleQuote": true,
+  "singleAttributePerLine": true,
+  "quoteProps": "as-needed",
+  "overrides": [
+    {
+      "files": "*.html",
+      "options": {
+        "parser": "angular"
+      }
+    }
+  ],
+  "plugins": [
+    "prettier-plugin-organize-attributes",
+    "prettier-plugin-css-order",
+    "prettier-plugin-organize-attributes",
+    "prettier-plugin-tailwindcss"
+  ]
+}

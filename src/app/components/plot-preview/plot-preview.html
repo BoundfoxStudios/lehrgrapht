@@ -1,0 +1,9 @@
+@let preview = preview$ | async;
+
+@if (!preview){
+  Keine Vorschau verfügbar, da Fehler in der Formel.
+}
+
+@if (preview) {
+  <img [src]="preview.base64" alt="Preview" width="300" height="300" />
+}

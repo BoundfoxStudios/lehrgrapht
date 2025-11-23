@@ -1,0 +1,56 @@
+<app-header title="Plots" />
+
+<app-content-container class="flex-col space-y-4">
+  <div class="flex flex-1 justify-between">
+    <a
+      class="app-button"
+      [routerLink]="'/plot/editor'"
+    >
+      Neuer Plot
+    </a>
+    <button
+      class="app-button"
+      (click)="plots.reload()"
+    >
+      <fa-icon [icon]="faRefresh" />
+    </button>
+  </div>
+
+  <h2>
+    @let plotList = plots.value(); Liste erkannter Plots im Dokument:
+    @if (plots.status() === 'loading') {
+      <fa-icon
+        [icon]="faRefresh"
+        [animation]="'spin'"
+      />
+    } @else {
+      {{ plotList.length }}
+    }
+  </h2>
+
+  <div class="flex flex-col space-y-2">
+    @for (plot of plotList; track plot.officeId; let index = $index) {
+      <div class="rounded-sm p-2 odd:bg-gray-200">
+        <div class="flex items-center space-x-1">
+          <button
+            class="flex-1 text-left font-bold"
+            (click)="select(plot.officeId)"
+          >
+            <h3>{{ plot.model?.name ?? 'Plot ' + index }}</h3>
+          </button>
+          <a
+            class="app-button small"
+            [routerLink]="['/plot/editor', plot.officeId]"
+            ><fa-icon [icon]="faPen"
+          /></a>
+          <button
+            class="app-button small"
+            (click)="deletePlot(plot.officeId)"
+          >
+            <fa-icon [icon]="faTrashCan" />
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+</app-content-container>

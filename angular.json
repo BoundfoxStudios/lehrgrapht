@@ -2,11 +2,17 @@
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "cli": {
-    "packageManager": "npm"
+    "packageManager": "npm",
+    "schematicCollections": ["angular-eslint"]
   },
   "newProjectRoot": "projects",
+  "schematics": {
+    "@schematics/angular:component": {
+      "skipTests": true
+    }
+  },
   "projects": {
-    "bfs-fn-plot": {
+    "lehrgrapht": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -24,9 +30,7 @@
                 "input": "public"
               }
             ],
-            "styles": [
-              "src/styles.css"
-            ]
+            "styles": ["src/styles.css"]
           },
           "configurations": {
             "production": {
@@ -56,16 +60,25 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "bfs-fn-plot:build:production"
+              "buildTarget": "lehrgrapht:build:production"
             },
             "development": {
-              "buildTarget": "bfs-fn-plot:build:development"
+              "buildTarget": "lehrgrapht:build:development",
+              "ssl": true,
+              "sslCert": "/Users/manuelrauber/.office-addin-dev-certs/localhost.crt",
+              "sslKey": "/Users/manuelrauber/.office-addin-dev-certs/localhost.key"
             }
           },
           "defaultConfiguration": "development"
         },
         "test": {
           "builder": "@angular/build:unit-test"
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
+          }
         }
       }
     }
