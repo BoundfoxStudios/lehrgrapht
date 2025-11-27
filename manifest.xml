@@ -24,12 +24,12 @@
   <HighResolutionIconUrl DefaultValue="https://localhost:4200/icon-80.png"/>
 
   <!--If you plan to submit this add-in to the Office Store, uncomment the SupportUrl element below-->
-  <!--<SupportUrl DefaultValue="[Insert the URL of a page that provides support information for the app]" />-->
+  <SupportUrl DefaultValue="https://lehrgrapht.de" />
 
   <!-- Domains that will be allowed when navigating. For example, if you use ShowTaskpane and then have an href link, navigation will only be allowed if the domain is on this list. -->
-  <AppDomains>
+<!--  <AppDomains>-->
 
-  </AppDomains>
+<!--  </AppDomains>-->
   <!--End Basic Settings. -->
 
   <!--Begin TaskPane Mode integration. This section is used if there are no VersionOverrides or if the Office client version does not support add-in commands. -->

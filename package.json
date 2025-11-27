@@ -8,6 +8,7 @@
     "stop:office": "office-addin-debugging stop manifest.xml",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
+    "validate": "office-addin-manifest validate manifest.xml",
     "test": "ng test",
     "lint": "ng lint"
   },
