@@ -8,12 +8,20 @@
     >
       Neuer Plot
     </a>
-    <button
-      class="app-button"
-      (click)="plots.reload()"
-    >
-      <fa-icon [icon]="faRefresh" />
-    </button>
+    <div class="flex space-x-2">
+      <button
+        class="app-button"
+        (click)="plots.reload()"
+      >
+        <fa-icon [icon]="faRefresh" />
+      </button>
+      <a
+        class="app-button"
+        [routerLink]="['/plot/info']"
+      >
+        <fa-icon [icon]="faInfoCircle" />
+      </a>
+    </div>
   </div>
 
   <h2>

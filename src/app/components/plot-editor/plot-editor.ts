@@ -32,6 +32,9 @@ const colors = ['#3737d0', '#af2c2c', '#2a8c1a', '#f18238'];
   styleUrl: './plot-editor.css',
 })
 export class PlotEditor {
+  protected readonly faPlusCircle = faPlusCircle;
+  protected readonly faTrashCan = faTrashCan;
+
   private readonly plotService = inject(PlotService);
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly wordService = inject(WordService);
@@ -109,9 +112,6 @@ export class PlotEditor {
 
     void this.router.navigate(['/plot/editor', newId]);
   }
-
-  protected readonly faPlusCircle = faPlusCircle;
-  protected readonly faTrashCan = faTrashCan;
 
   protected removeFx(index: number): void {
     this.editorModel.update(model => {

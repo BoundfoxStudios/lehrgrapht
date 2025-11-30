@@ -81,8 +81,8 @@ export class PlotService {
     const yValueFlatMax = Math.max(...yValueFlat);
     const yValueRange = yValueFlatMax - yValueFlatMin;
 
-    const dtick = 0.5; // tick interval in data units
-    const mmPerTick = 5; // each tick interval should be 5 mm physical size
+    const dtick = 0.5;
+    const mmPerTick = 5;
     const mmMargin = {
       t: 7.5,
       b: 7.5,
@@ -96,7 +96,6 @@ export class PlotService {
       (mmMargin.t + mmMargin.b + mmMargin.l + mmMargin.r) / 2;
     const plotSizePx = plotSizeMm * mmToInches * ppiBase;
 
-    // Convert plot size from mm to points for Word insertion
     const plotSizePoints = plotSizeMm * mmToPoints;
 
     const xAnnotationRange = mathjs
@@ -142,8 +141,8 @@ export class PlotService {
 
     const arrows = [
       {
-        x: 0.495,
-        y: 1,
+        x: 0.535,
+        y: 0.94,
         text: 'y',
         showarrow: false,
         yanchor: 'bottom',
@@ -152,11 +151,11 @@ export class PlotService {
         yref: 'paper',
       },
       {
-        x: 1,
-        y: 0.5,
+        x: 0.96,
+        y: 0.49,
         text: 'x',
         showarrow: false,
-        yanchor: 'center',
+        yanchor: 'top',
         xanchor: 'left',
         xref: 'paper',
         yref: 'paper',

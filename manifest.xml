@@ -67,7 +67,7 @@
           </GetStarted>
           <!-- Function file is a HTML page that includes the JavaScript where functions for ExecuteAction will be called.
             Think of the FunctionFile as the code behind ExecuteFunction. -->
-<!--          <FunctionFile resid="Commands.Url" />-->
+          <FunctionFile resid="Commands.Url" />
 
           <!-- PrimaryCommandSurface is the main Office Ribbon. -->
           <ExtensionPoint xsi:type="PrimaryCommandSurface">
@@ -123,11 +123,13 @@
       </bt:Images>
       <bt:Urls>
         <bt:Url id="GetStarted.LearnMoreUrl" DefaultValue="https://lehrgrapht.de" />
+        <bt:Url id="Commands.Url" DefaultValue="https://localhost:4200" />
         <bt:Url id="Taskpane.Url" DefaultValue="https://localhost:4200" />
       </bt:Urls>
       <!-- ShortStrings max characters==125. -->
       <bt:ShortStrings>
         <bt:String id="GetStarted.Title" DefaultValue="Get started with LehrGrapht!" />
+        <bt:String id="CommandsGroup.Label" DefaultValue="Commands Group" />
         <bt:String id="TaskpaneButton.Label" DefaultValue="LehrGrapht" />
       </bt:ShortStrings>
       <!-- LongStrings max characters==250. -->

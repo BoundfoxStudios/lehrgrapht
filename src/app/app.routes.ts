@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { PlotList } from './components/plot-list/plot-list';
 import { PlotEditor } from './components/plot-editor/plot-editor';
+import { Info } from './components/info/info';
 
 export const routes: Routes = [
   {
@@ -27,6 +28,10 @@ export const routes: Routes = [
       {
         path: 'editor',
         component: PlotEditor,
+      },
+      {
+        path: 'info',
+        component: Info,
       },
     ],
   },

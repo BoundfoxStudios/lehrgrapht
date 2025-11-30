@@ -3,6 +3,7 @@ import { RouterLink } from '@angular/router';
 import { Header } from '../header/header';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import {
+  faInfoCircle,
   faPen,
   faRefresh,
   faTrashCan,
@@ -36,4 +37,6 @@ export class PlotList {
   protected select(officeId: number): Promise<void> {
     return this.wordService.select(officeId);
   }
+
+  protected readonly faInfoCircle = faInfoCircle;
 }
