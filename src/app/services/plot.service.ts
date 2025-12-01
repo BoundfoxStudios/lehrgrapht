@@ -1,6 +1,6 @@
 import { PlotRange } from '../models/plot-range';
 import * as mathjs from 'mathjs';
-import { EvalFunction } from 'mathjs';
+import { EvalFunction, Matrix } from 'mathjs';
 import { Injectable } from '@angular/core';
 import Plotly, { Annotations } from 'plotly.js-dist-min';
 
@@ -47,9 +47,15 @@ export class PlotService {
     }
 
     const xValues = mathjs.range(range.x.min, range.x.max, 0.1, true);
-    const yValues = expressions.map(expression =>
-      xValues.map((x: number): number => expression.evaluate({ x })),
-    );
+    let yValues: Matrix[] | undefined;
+
+    try {
+      yValues = expressions.map(expression =>
+        xValues.map((x: number): number => expression.evaluate({ x })),
+      );
+    } catch {
+      return;
+    }
 
     const mmToInches = 1 / 25.4;
     const mmToPoints = 72 / 25.4; // points per mm (1 point = 1/72 inch)
@@ -72,8 +78,6 @@ export class PlotService {
         }
       }
     }
-
-    console.log({ cleanXValues, cleanYValues });
 
     const valueRange = Math.max(...cleanXValues) - Math.min(...cleanXValues);
     const yValueFlat = cleanYValues.flatMap(y => y);
@@ -141,30 +145,30 @@ export class PlotService {
 
     const arrows = [
       {
-        x: 0.535,
-        y: 0.94,
+        x: 0.25,
+        y: 1.01,
         text: 'y',
         showarrow: false,
-        yanchor: 'bottom',
+        yanchor: 'top',
         xanchor: 'center',
-        xref: 'paper',
+        xref: 'x',
         yref: 'paper',
       },
       {
-        x: 0.96,
-        y: 0.49,
+        x: 1,
+        y: 0.55,
         text: 'x',
         showarrow: false,
         yanchor: 'top',
-        xanchor: 'left',
+        xanchor: 'right',
         xref: 'paper',
-        yref: 'paper',
+        yref: 'y',
       },
       {
-        x: Math.max(...cleanXValues),
+        x: 1,
         y: 0,
         showarrow: true,
-        xref: 'x',
+        xref: 'paper',
         yref: 'y',
         ax: -20,
         ay: 0,
@@ -174,10 +178,10 @@ export class PlotService {
       },
       {
         x: 0,
-        y: yValueFlatMax,
+        y: 1,
         showarrow: true,
         xref: 'x',
-        yref: 'y',
+        yref: 'paper',
         ax: 0,
         ay: 20,
         arrowwidth: 1,

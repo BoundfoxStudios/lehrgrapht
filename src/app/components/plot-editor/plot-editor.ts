@@ -64,7 +64,7 @@ export class PlotEditor {
     },
     fnx: [
       {
-        fnx: 'x',
+        fnx: 'x^2',
         color: colors[0],
       },
     ],

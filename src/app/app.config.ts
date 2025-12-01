@@ -5,7 +5,11 @@ import {
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
-import { NoOpWordService, WordService } from './services/word.service';
+import {
+  NoOpWordService,
+  WordService,
+  WordServiceImpl,
+} from './services/word.service';
 import { runsInOffice } from './services/office.service';
 
 export const appConfig: ApplicationConfig = {
@@ -15,7 +19,7 @@ export const appConfig: ApplicationConfig = {
     {
       provide: WordService,
       useFactory: () =>
-        runsInOffice ? new WordService() : new NoOpWordService(),
+        runsInOffice ? new WordServiceImpl() : new NoOpWordService(),
     },
   ],
 };

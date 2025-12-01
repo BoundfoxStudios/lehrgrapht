@@ -37,14 +37,23 @@
   </h2>
 
   <div class="flex flex-col space-y-2">
+    @let selectedPlot = wordService.selection();
+
     @for (plot of plotList; track plot.officeId; let index = $index) {
-      <div class="rounded-sm p-2 odd:bg-gray-200">
+      @let isSelected = selectedPlot?.officeId === plot.officeId;
+      <div
+        class="rounded-sm p-2"
+        [class.bg-brand-light]="isSelected"
+        [class.odd:bg-gray-200]="!isSelected"
+      >
         <div class="flex items-center space-x-1">
           <button
             class="flex-1 text-left font-bold"
             (click)="select(plot.officeId)"
           >
-            <h3>{{ plot.model?.name ?? 'Plot ' + index }}</h3>
+            <h3 [class.text-white]="isSelected">
+              {{ plot.model?.name ?? 'Plot ' + index }}
+            </h3>
           </button>
           <a
             class="app-button small"

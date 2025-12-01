@@ -16,10 +16,14 @@ export class MathDisplay {
     effect(() => {
       const math = this.math();
 
-      const tex = mathjs.parse(math).toTex({ parenthesis: 'keep' });
+      try {
+        const tex = mathjs.parse(math).toTex({ parenthesis: 'keep' });
 
-      this.elementRef.nativeElement.innerHTML = '';
-      this.elementRef.nativeElement.appendChild(MathJax.tex2svg(tex));
+        this.elementRef.nativeElement.innerHTML = '';
+        this.elementRef.nativeElement.appendChild(MathJax.tex2svg(tex));
+      } catch {
+        // Noop, just don't do anything.
+      }
     });
   }
 }

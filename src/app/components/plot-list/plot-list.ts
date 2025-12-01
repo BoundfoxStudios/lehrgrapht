@@ -21,8 +21,9 @@ export class PlotList {
   protected readonly faRefresh = faRefresh;
   protected readonly faTrashCan = faTrashCan;
   protected readonly faPen = faPen;
+  protected readonly faInfoCircle = faInfoCircle;
 
-  private readonly wordService = inject(WordService);
+  readonly wordService = inject(WordService);
 
   protected plots = resource<WordPlot[], undefined>({
     loader: () => this.wordService.list(),
@@ -37,6 +38,4 @@ export class PlotList {
   protected select(officeId: number): Promise<void> {
     return this.wordService.select(officeId);
   }
-
-  protected readonly faInfoCircle = faInfoCircle;
 }

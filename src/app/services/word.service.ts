@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Signal, signal } from '@angular/core';
 import { Plot } from '../models/plot';
 
 export interface WordPlot {
@@ -9,8 +9,59 @@ export interface WordPlot {
 
 export const modelIdPrefix = 'plot-';
 
+export abstract class WordService {
+  abstract selection: Signal<WordPlot | undefined>;
+
+  abstract list(): Promise<WordPlot[]>;
+
+  abstract delete(officeId: number): Promise<void>;
+
+  abstract select(officeId: number): Promise<void>;
+
+  abstract get(officeId: number): Promise<Required<WordPlot> | undefined>;
+
+  abstract upsertPicture(options: {
+    base64Picture: string;
+    height: number;
+    width: number;
+    id: string;
+    model: Plot;
+    existingShapeOfficeId?: number;
+  }): Promise<number>;
+}
+
 @Injectable()
-export class WordService {
+export class WordServiceImpl extends WordService {
+  readonly selection = signal<WordPlot | undefined>(undefined, {
+    equal: (a, b) => a?.id === b?.id,
+  });
+
+  // constructor() {
+  //   super();
+
+  // This will currently make some issues with the plot editor....
+  // timer(1000, 1000)
+  //   .pipe(
+  //     takeUntilDestroyed(),
+  //     exhaustMap(async () =>
+  //       Word.run(async context => {
+  //         const range = context.document.getSelection();
+  //         const shapes = range.shapes.load('items');
+  //         await context.sync();
+  //
+  //         if (!shapes.items.length) {
+  //           return;
+  //         }
+  //
+  //         return await this.get(shapes.items[0].id);
+  //       }),
+  //     ),
+  //   )
+  //   .subscribe(plot => {
+  //     this.selection.set(plot);
+  //   });
+  // }
+
   async list(): Promise<WordPlot[]> {
     return Word.run(async context => {
       const images = context.document.body.shapes.load('items');
@@ -129,23 +180,25 @@ export class WordService {
 
 @Injectable()
 export class NoOpWordService extends WordService {
-  override async list(): Promise<WordPlot[]> {
+  readonly selection: Signal<WordPlot | undefined> = signal(undefined);
+
+  async list(): Promise<WordPlot[]> {
     return Promise.resolve([]);
   }
 
-  override async select(_officeId: number): Promise<void> {
+  async select(_officeId: number): Promise<void> {
     // noop.
   }
 
-  override get(_officeId: number): Promise<Required<WordPlot> | undefined> {
+  get(_officeId: number): Promise<Required<WordPlot> | undefined> {
     return Promise.resolve(undefined);
   }
 
-  override async delete(_officeId: number): Promise<void> {
+  async delete(_officeId: number): Promise<void> {
     // noop.
   }
 
-  override async upsertPicture(_options: {
+  async upsertPicture(_options: {
     base64Picture: string;
     height: number;
     width: number;
