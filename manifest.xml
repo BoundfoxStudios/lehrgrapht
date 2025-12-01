@@ -36,6 +36,11 @@
   <Hosts>
     <Host Name="Document" />
   </Hosts>
+  <Requirements>
+    <Sets DefaultMinVersion="1.9">
+      <Set Name="WordApi" MinVersion="1.9"/>
+    </Sets>
+  </Requirements>
   <DefaultSettings>
     <SourceLocation DefaultValue="https://localhost:4200/index.html" />
   </DefaultSettings>
