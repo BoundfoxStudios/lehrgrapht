@@ -21,7 +21,7 @@
 
   <!-- Icon for your add-in. Used on installation screens and the add-ins dialog. -->
   <IconUrl DefaultValue="https://localhost:4200/icon-32.png" />
-  <HighResolutionIconUrl DefaultValue="https://localhost:4200/icon-80.png"/>
+  <HighResolutionIconUrl DefaultValue="https://localhost:4200/icon-64.png"/>
 
   <!--If you plan to submit this add-in to the Office Store, uncomment the SupportUrl element below-->
   <SupportUrl DefaultValue="https://lehrgrapht.de" />
