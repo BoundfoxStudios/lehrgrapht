@@ -1,27 +1,12 @@
-import { PlotRange } from '../models/plot-range';
 import * as mathjs from 'mathjs';
 import { EvalFunction, Matrix } from 'mathjs';
 import { Injectable } from '@angular/core';
-import Plotly, { Annotations } from 'plotly.js-dist-min';
-
-export interface MathFunction {
-  fnx: string;
-  color: string;
-}
+import Plotly, { Annotations, PlotData } from 'plotly.js-dist-min';
+import { Plot } from '../models/plot';
 
 @Injectable({ providedIn: 'root' })
 export class PlotService {
-  async generate({
-    fnx,
-    range,
-    showAxisLabels,
-    placeAxisLabelsInside,
-  }: {
-    fnx: MathFunction[];
-    range: PlotRange;
-    showAxisLabels: boolean;
-    placeAxisLabelsInside: boolean;
-  }): Promise<
+  async generate(plot: Plot): Promise<
     | {
         base64: string;
         widthInPx: number;
@@ -34,7 +19,7 @@ export class PlotService {
     const expressions: EvalFunction[] = [];
 
     try {
-      for (const f of fnx) {
+      for (const f of plot.fnx) {
         const expression = mathjs.compile(f.fnx);
         expressions.push(expression);
       }
@@ -42,41 +27,50 @@ export class PlotService {
       return;
     }
 
-    if (expressions.length !== fnx.length) {
+    if (expressions.length !== plot.fnx.length) {
       return;
     }
 
-    const xValues = mathjs.range(range.x.min, range.x.max, 0.1, true);
+    const xValues = mathjs.range(plot.range.x.min, plot.range.x.max, 0.1, true);
     let yValues: Matrix[] | undefined;
 
     try {
-      yValues = expressions.map(expression =>
-        xValues.map((x: number): number => expression.evaluate({ x })),
-      );
+      if (plot.fnx.length) {
+        yValues = expressions.map(expression =>
+          xValues.map((x: number): number => expression.evaluate({ x })),
+        );
+      } else {
+        yValues = [mathjs.range(plot.range.y.min, plot.range.y.max, 0.1, true)];
+      }
     } catch {
       return;
     }
 
     const mmToInches = 1 / 25.4;
-    const mmToPoints = 72 / 25.4; // points per mm (1 point = 1/72 inch)
+    const mmToPoints = 72 / 25.4;
     const dpr = window.devicePixelRatio || 1;
-    const ppiBase = 96; // logical PPI for layout sizing in Plotly
-    const effectiveDpi = 254 * dpr;
+    const ppiBase = 96;
+    const effectiveDpi = 254 * dpr; // 254 is MBP dpi
     const scaleFactor = effectiveDpi / 96;
 
-    const cleanXValues: number[] = [];
-    const cleanYValues: number[][] = yValues.map(() => []);
+    let cleanXValues: number[] = [];
+    let cleanYValues: number[][] = yValues.map(() => []);
     const xValuesArray = xValues.toArray() as number[];
     const yValuesArray = yValues.map(y => y.toArray() as number[]);
 
-    for (let i = 0; i < yValuesArray.length; i++) {
-      for (let ii = 0; ii < yValuesArray[i].length; ii++) {
-        const y = yValuesArray[i][ii];
-        if (y >= range.y.min && y <= range.y.max) {
-          cleanXValues.push(xValuesArray[ii]);
-          cleanYValues[i].push(yValuesArray[i][ii]);
+    if (plot.fnx.length) {
+      for (let i = 0; i < yValuesArray.length; i++) {
+        for (let ii = 0; ii < yValuesArray[i].length; ii++) {
+          const y = yValuesArray[i][ii];
+          if (y >= plot.range.y.min && y <= plot.range.y.max) {
+            cleanXValues.push(xValuesArray[ii]);
+            cleanYValues[i].push(yValuesArray[i][ii]);
+          }
         }
       }
+    } else {
+      cleanXValues = xValues.toArray() as number[];
+      cleanYValues = [yValues[0].toArray() as number[]];
     }
 
     const valueRange = Math.max(...cleanXValues) - Math.min(...cleanXValues);
@@ -103,11 +97,11 @@ export class PlotService {
     const plotSizePoints = plotSizeMm * mmToPoints;
 
     const xAnnotationRange = mathjs
-      .range(range.x.min, range.x.max, 1, true)
+      .range(plot.range.x.min, plot.range.x.max, 1, true)
       .toArray() as number[];
 
     let yAnnotationRange = mathjs
-      .range(range.y.min, range.y.max, 1, true)
+      .range(plot.range.y.min, plot.range.y.max, 1, true)
       .toArray() as number[];
 
     if (xAnnotationRange.includes(0) && yAnnotationRange.includes(0)) {
@@ -190,6 +184,43 @@ export class PlotService {
       },
     ] as Partial<Annotations>[];
 
+    const data: Partial<PlotData>[] = [];
+
+    if (plot.fnx.length) {
+      data.push(
+        ...(yValuesArray.map((y, i) => ({
+          type: 'scatter',
+          x: xValuesArray,
+          y,
+          line: {
+            color: plot.fnx[i].color,
+          },
+        })) as Partial<PlotData>[]),
+      );
+    }
+
+    if (plot.markers.length) {
+      data.push({
+        type: 'scatter',
+        mode: 'text+markers',
+        x: plot.markers.map(marker => marker.x),
+        y: plot.markers.map(marker => marker.y),
+        text: plot.markers.map(marker => marker.text),
+        marker: {
+          symbol: 'x-thin',
+          color: '#000000',
+          size: 10,
+          line: {
+            width: 1.5,
+          },
+        },
+        textfont: {
+          size: 12,
+        },
+        textposition: 'bottom left',
+      });
+    }
+
     const image = await Plotly.toImage(
       {
         layout: {
@@ -198,7 +229,7 @@ export class PlotService {
           width: plotSizePx,
           height: plotSizePx,
           annotations:
-            showAxisLabels && placeAxisLabelsInside
+            plot.showAxisLabels && plot.placeAxisLabelsInside
               ? [...annotations, ...arrows]
               : arrows,
           margin: {
@@ -210,7 +241,7 @@ export class PlotService {
           xaxis: {
             range: [Math.min(...cleanXValues), Math.max(...cleanXValues)],
             autorange: false,
-            showticklabels: showAxisLabels && !placeAxisLabelsInside,
+            showticklabels: plot.showAxisLabels && !plot.placeAxisLabelsInside,
             tickmode: 'linear',
             dtick: 0.5,
             scaleanchor: 'y',
@@ -224,7 +255,7 @@ export class PlotService {
             range: [yValueFlatMin, yValueFlatMax],
             autorange: false,
             tickmode: 'linear',
-            showticklabels: showAxisLabels && !placeAxisLabelsInside,
+            showticklabels: plot.showAxisLabels && !plot.placeAxisLabelsInside,
             dtick: 0.5,
             ticklabelstep: 2,
             gridcolor: '#a6a6a6',
@@ -236,14 +267,7 @@ export class PlotService {
         config: {
           staticPlot: true,
         },
-        data: yValuesArray.map((y, i) => ({
-          type: 'scatter',
-          x: xValuesArray,
-          y,
-          line: {
-            color: fnx[i].color,
-          },
-        })),
+        data,
       },
       {
         format: 'png',

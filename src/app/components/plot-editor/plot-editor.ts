@@ -64,8 +64,15 @@ export class PlotEditor {
     },
     fnx: [
       {
-        fnx: 'x^2',
+        fnx: 'x',
         color: colors[0],
+      },
+    ],
+    markers: [
+      {
+        x: 1,
+        y: -1,
+        text: 'P',
       },
     ],
     showAxisLabels: true,
@@ -88,12 +95,7 @@ export class PlotEditor {
     const existingPlot = this.existingPlot.value();
 
     const model = this.editorModel();
-    const plot = await this.plotService.generate({
-      fnx: model.fnx,
-      range: model.range,
-      showAxisLabels: model.showAxisLabels,
-      placeAxisLabelsInside: model.placeAxisLabelsInside,
-    });
+    const plot = await this.plotService.generate(model);
 
     if (!plot) {
       return;
@@ -129,5 +131,20 @@ export class PlotEditor {
         { fnx: 'x', color: colors[model.fnx.length % colors.length] },
       ],
     }));
+  }
+
+  protected addMarker(): void {
+    this.editorModel.update(model => ({
+      ...model,
+      markers: [...model.markers, { x: 0, y: 0, text: 'P' }],
+    }));
+  }
+
+  protected removeMarker(index: number): void {
+    this.editorModel.update(model => {
+      const markers = [...model.markers];
+      markers.splice(index, 1);
+      return { ...model, markers };
+    });
   }
 }

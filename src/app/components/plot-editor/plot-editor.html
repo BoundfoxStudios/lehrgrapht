@@ -113,22 +113,21 @@
       }
     </div>
 
-    <label
-      class="text-heading mb-2.5 block text-sm font-medium"
-      for="fnx"
-      >Funktionen f(x)=</label
-    >
-    @for (
-      control of editorForm.fnx;
-      let index = $index;
-      let count = $count;
-      track index
-    ) {
+    <div class="text-heading mb-2.5 flex justify-between text-sm font-medium">
+      Funktionen f(x)=
+      <span class="inline-block"
+        ><button
+          (click)="addFx()"
+          type="button"
+        >
+          <fa-icon [icon]="faPlusCircle" /></button
+      ></span>
+    </div>
+    @for (control of editorForm.fnx; let index = $index; track index) {
       <div>
         <div class="flex items-center space-x-2">
           <input
             class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
-            id="fnx"
             [field]="control.fnx"
             type="text"
             spellcheck="false"
@@ -143,26 +142,60 @@
             type="color"
           />
 
-          @if (count > 1) {
-            <button
-              (click)="removeFx(index)"
-              type="button"
-            >
-              <fa-icon [icon]="faTrashCan" />
-            </button>
-          }
+          <button
+            (click)="removeFx(index)"
+            type="button"
+          >
+            <fa-icon [icon]="faTrashCan" />
+          </button>
         </div>
         <app-math-display [math]="control.fnx().value()" />
       </div>
     }
-    <div class="flex justify-end">
-      <button
-        (click)="addFx()"
-        type="button"
-      >
-        <fa-icon [icon]="faPlusCircle" />
-      </button>
+
+    <div class="text-heading mb-2.5 flex justify-between text-sm font-medium">
+      Punkte (x/y)
+      <span class="inline-block"
+        ><button
+          (click)="addMarker()"
+          type="button"
+        >
+          <fa-icon [icon]="faPlusCircle" /></button
+      ></span>
     </div>
+    @for (control of editorForm.markers; let index = $index; track index) {
+      <div>
+        <div class="flex items-center space-x-2">
+          <input
+            class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
+            [field]="control.text"
+            type="text"
+            spellcheck="false"
+            autocorrect="off"
+            autocomplete="off"
+            autocapitalize="off"
+          />
+
+          <input
+            class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
+            [field]="control.x"
+            type="number"
+          />
+          <input
+            class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
+            [field]="control.y"
+            type="number"
+          />
+
+          <button
+            (click)="removeMarker(index)"
+            type="button"
+          >
+            <fa-icon [icon]="faTrashCan" />
+          </button>
+        </div>
+      </div>
+    }
 
     <button
       class="app-button"
@@ -186,10 +219,5 @@
       wird.</span
     >
   </h3>
-  <app-plot-preview
-    [fnx]="fnx"
-    [range]="editorModel().range"
-    [showAxisLabels]="editorModel().showAxisLabels"
-    [placeAxisLabelsInside]="editorModel().placeAxisLabelsInside"
-  />
+  <app-plot-preview [plot]="editorModel()" />
 }
