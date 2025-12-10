@@ -1,0 +1,36 @@
+<app-header title="Willkommen!" />
+
+<app-content-container class="flex-col space-y-4">
+  <p>Willkommen zu LehrGrapht!</p>
+
+  <p>
+    LehrGrapht hilft Dir Plots für Arbeitsblätter, Klassenarbeiten, etc. zu
+    erstellen.
+  </p>
+
+  <img
+    class="w-80"
+    src="example-plot.png"
+    alt="Beispiel"
+  />
+
+  <ul class="ml-4">
+    <li>
+      <fa-icon [icon]="faTableCells" /> Maßstabsgetreu für 5x5 mm Karopapier.
+    </li>
+    <li><fa-icon [icon]="faImages" /> Beliebig viele Schaubilder.</li>
+    <li>
+      <fa-icon [icon]="faChartLine" /> Beliebig viele Graphen pro Schaubild.
+    </li>
+    <li><fa-icon [icon]="faMapPin" /> Einzeichnen von Punkten.</li>
+  </ul>
+
+  <div class="mt-4">
+    <button
+      class="app-button"
+      (click)="proceed()"
+    >
+      Weiter
+    </button>
+  </div>
+</app-content-container>

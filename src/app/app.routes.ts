@@ -2,12 +2,14 @@ import { Routes } from '@angular/router';
 import { PlotList } from './components/plot-list/plot-list';
 import { PlotEditor } from './components/plot-editor/plot-editor';
 import { Info } from './components/info/info';
+import { FirstRunExperience } from './components/first-run-experience/first-run-experience';
+import { redirectToFirstRunExperience } from './components/first-run-experience/redirect-to-first-run-experience';
 
 export const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: '/plot',
+    redirectTo: redirectToFirstRunExperience,
   },
   {
     path: 'plot',
@@ -34,5 +36,9 @@ export const routes: Routes = [
         component: Info,
       },
     ],
+  },
+  {
+    path: 'first-run-experience',
+    component: FirstRunExperience,
   },
 ];
