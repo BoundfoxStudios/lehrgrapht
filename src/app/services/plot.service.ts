@@ -221,68 +221,74 @@ export class PlotService {
       });
     }
 
-    const image = await Plotly.toImage(
-      {
-        layout: {
-          autosize: false,
-          showlegend: false,
+    try {
+      const image = await Plotly.toImage(
+        {
+          layout: {
+            autosize: false,
+            showlegend: false,
+            width: plotSizePx,
+            height: plotSizePx,
+            annotations:
+              plot.showAxisLabels && plot.placeAxisLabelsInside
+                ? [...annotations, ...arrows]
+                : arrows,
+            margin: {
+              t: mmMargin.t * mmToInches * ppiBase,
+              b: mmMargin.b * mmToInches * ppiBase,
+              l: mmMargin.l * mmToInches * ppiBase,
+              r: mmMargin.r * mmToInches * ppiBase,
+            },
+            xaxis: {
+              range: [Math.min(...cleanXValues), Math.max(...cleanXValues)],
+              autorange: false,
+              showticklabels:
+                plot.showAxisLabels && !plot.placeAxisLabelsInside,
+              tickmode: 'linear',
+              dtick: 0.5,
+              scaleanchor: 'y',
+              ticklabelstep: 2,
+              gridcolor: '#a6a6a6',
+              tickfont: {
+                size: 10,
+              },
+            },
+            yaxis: {
+              range: [yValueFlatMin, yValueFlatMax],
+              autorange: false,
+              tickmode: 'linear',
+              showticklabels:
+                plot.showAxisLabels && !plot.placeAxisLabelsInside,
+              dtick: 0.5,
+              ticklabelstep: 2,
+              gridcolor: '#a6a6a6',
+              tickfont: {
+                size: 10,
+              },
+            },
+          },
+          config: {
+            staticPlot: true,
+          },
+          data,
+        },
+        {
+          format: 'png',
           width: plotSizePx,
           height: plotSizePx,
-          annotations:
-            plot.showAxisLabels && plot.placeAxisLabelsInside
-              ? [...annotations, ...arrows]
-              : arrows,
-          margin: {
-            t: mmMargin.t * mmToInches * ppiBase,
-            b: mmMargin.b * mmToInches * ppiBase,
-            l: mmMargin.l * mmToInches * ppiBase,
-            r: mmMargin.r * mmToInches * ppiBase,
-          },
-          xaxis: {
-            range: [Math.min(...cleanXValues), Math.max(...cleanXValues)],
-            autorange: false,
-            showticklabels: plot.showAxisLabels && !plot.placeAxisLabelsInside,
-            tickmode: 'linear',
-            dtick: 0.5,
-            scaleanchor: 'y',
-            ticklabelstep: 2,
-            gridcolor: '#a6a6a6',
-            tickfont: {
-              size: 10,
-            },
-          },
-          yaxis: {
-            range: [yValueFlatMin, yValueFlatMax],
-            autorange: false,
-            tickmode: 'linear',
-            showticklabels: plot.showAxisLabels && !plot.placeAxisLabelsInside,
-            dtick: 0.5,
-            ticklabelstep: 2,
-            gridcolor: '#a6a6a6',
-            tickfont: {
-              size: 10,
-            },
-          },
+          scale: scaleFactor,
         },
-        config: {
-          staticPlot: true,
-        },
-        data,
-      },
-      {
-        format: 'png',
-        width: plotSizePx,
-        height: plotSizePx,
-        scale: scaleFactor,
-      },
-    );
+      );
 
-    return {
-      base64: image,
-      widthInPx: plotSizePx,
-      heightInPx: plotSizePx,
-      widthInPoints: plotSizePoints,
-      heightInPoints: plotSizePoints,
-    };
+      return {
+        base64: image,
+        widthInPx: plotSizePx,
+        heightInPx: plotSizePx,
+        widthInPoints: plotSizePoints,
+        heightInPoints: plotSizePoints,
+      };
+    } catch {
+      return;
+    }
   }
 }

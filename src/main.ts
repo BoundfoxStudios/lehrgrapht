@@ -1,18 +1,15 @@
 import { bootstrapApplication } from '@angular/platform-browser';
-import { appConfig } from './app/app.config';
 import { App } from './app/components/app/app';
-import { runsInOffice } from './app/services/office.service';
+import { createAppConfig } from './app/app.config';
 
-const bootstrap = (): void => {
-  bootstrapApplication(App, appConfig).catch((err: unknown) => {
+const bootstrap = (options: { runsInOffice: boolean }): void => {
+  bootstrapApplication(App, createAppConfig(options)).catch((err: unknown) => {
     console.error(err);
   });
 };
 
-if (runsInOffice) {
-  Office.initialize = (): void => {
-    bootstrap();
-  };
-} else {
-  bootstrap();
-}
+void Office.onReady(info => {
+  bootstrap({
+    runsInOffice: info.host === Office.HostType.Word,
+  });
+});

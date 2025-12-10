@@ -1,9 +1,19 @@
-@let preview = preview$ | async;
+<app-content-container>
+  @let preview = preview$ | async;
 
-@if (!preview){
-  Keine Vorschau verfügbar, da Fehler in der Formel.
-}
+  @if (!preview) {
+    <p>
+      Keine Vorschau verfügbar.<br />
+      Prüfe bitte, ob Du sinnvolle Grenzen hast oder Fehler in den Formeln sind.
+    </p>
+  }
 
-@if (preview) {
-  <img [src]="preview.base64" alt="Preview" width="300" height="300" />
-}
+  @if (preview) {
+    <img
+      [src]="preview.base64"
+      alt="Preview"
+      width="300"
+      height="300"
+    />
+  }
+</app-content-container>

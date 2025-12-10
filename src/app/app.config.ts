@@ -10,16 +10,19 @@ import {
   WordService,
   WordServiceImpl,
 } from './services/word.service';
-import { runsInOffice } from './services/office.service';
 
-export const appConfig: ApplicationConfig = {
-  providers: [
-    provideBrowserGlobalErrorListeners(),
-    provideRouter(routes),
-    {
-      provide: WordService,
-      useFactory: () =>
-        runsInOffice ? new WordServiceImpl() : new NoOpWordService(),
-    },
-  ],
+export const createAppConfig = (options: {
+  runsInOffice: boolean;
+}): ApplicationConfig => {
+  return {
+    providers: [
+      provideBrowserGlobalErrorListeners(),
+      provideRouter(routes),
+      {
+        provide: WordService,
+        useFactory: () =>
+          options.runsInOffice ? new WordServiceImpl() : new NoOpWordService(),
+      },
+    ],
+  };
 };

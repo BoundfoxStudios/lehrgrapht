@@ -1,6 +1,6 @@
 import { Component, effect, inject, resource, signal } from '@angular/core';
 import { Header } from '../header/header';
-import { Field, form } from '@angular/forms/signals';
+import { Field, form, SchemaPath, validate } from '@angular/forms/signals';
 import { PlotPreview } from '../plot-preview/plot-preview';
 import { PlotService } from '../../services/plot.service';
 import { FormsModule } from '@angular/forms';
@@ -16,6 +16,30 @@ import { map } from 'rxjs';
 import { modelIdPrefix, WordService } from '../../services/word.service';
 
 const colors = ['#3737d0', '#af2c2c', '#2a8c1a', '#f18238'];
+
+const lessThanValidator = (
+  fieldA: SchemaPath<number>,
+  fieldB: SchemaPath<number>,
+  message: string,
+): void => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
+  // eslint-disable-next-line @typescript-eslint/unbound-method
+  validate(fieldA, ({ value, valueOf }) => {
+    const fieldAValue = value();
+    const fieldBValue = valueOf(fieldB);
+
+    if (fieldAValue >= fieldBValue) {
+      return {
+        field: fieldA,
+        message,
+        kind: 'lessThan',
+      };
+    }
+
+    return null;
+  });
+};
 
 @Component({
   selector: 'app-plot-editor',
@@ -68,18 +92,23 @@ export class PlotEditor {
         color: colors[0],
       },
     ],
-    markers: [
-      {
-        x: 1,
-        y: -1,
-        text: 'P',
-      },
-    ],
+    markers: [],
     showAxisLabels: true,
     placeAxisLabelsInside: false,
   });
 
-  protected editorForm = form(this.editorModel);
+  protected editorForm = form(this.editorModel, schema => {
+    lessThanValidator(
+      schema.range.x.min,
+      schema.range.x.max,
+      'X Min muss kleiner sein als X Max',
+    );
+    lessThanValidator(
+      schema.range.y.min,
+      schema.range.y.max,
+      'Y Min muss kleiner sein als Y Max',
+    );
+  });
 
   constructor() {
     effect(() => {

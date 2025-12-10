@@ -4,10 +4,11 @@ import { PlotService } from '../../services/plot.service';
 import { switchMap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { Plot } from '../../models/plot';
+import { ContentContainer } from '../content-container/content-container';
 
 @Component({
   selector: 'app-plot-preview',
-  imports: [AsyncPipe],
+  imports: [AsyncPipe, ContentContainer],
   templateUrl: './plot-preview.html',
   styleUrl: './plot-preview.css',
 })
