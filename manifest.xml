@@ -37,8 +37,8 @@
     <Host Name="Document" />
   </Hosts>
   <Requirements>
-    <Sets DefaultMinVersion="1.9">
-      <Set Name="WordApi" MinVersion="1.9"/>
+    <Sets DefaultMinVersion="1.2">
+      <Set Name="WordApiDesktop" MinVersion="1.2"/>
     </Sets>
   </Requirements>
   <DefaultSettings>
