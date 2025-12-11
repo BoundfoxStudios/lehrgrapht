@@ -37,8 +37,8 @@
     <Host Name="Document" />
   </Hosts>
   <Requirements>
-    <Sets DefaultMinVersion="1.2">
-      <Set Name="WordApiDesktop" MinVersion="1.2"/>
+    <Sets>
+      <Set Name="WordApi" MinVersion="1.9"/>
     </Sets>
   </Requirements>
   <DefaultSettings>
@@ -133,14 +133,14 @@
       </bt:Urls>
       <!-- ShortStrings max characters==125. -->
       <bt:ShortStrings>
-        <bt:String id="GetStarted.Title" DefaultValue="Get started with LehrGrapht!" />
-        <bt:String id="CommandsGroup.Label" DefaultValue="Commands Group" />
+        <bt:String id="GetStarted.Title" DefaultValue="Los geht's mit LehrGrapht!" />
+        <bt:String id="CommandsGroup.Label" DefaultValue="LehrGrapht" />
         <bt:String id="TaskpaneButton.Label" DefaultValue="LehrGrapht" />
       </bt:ShortStrings>
       <!-- LongStrings max characters==250. -->
       <bt:LongStrings>
-        <bt:String id="GetStarted.Description" DefaultValue="Your LehrGrapht add-in loaded successfully. Go to the HOME tab and click the 'LehrGrapht' button to get started." />
-        <bt:String id="TaskpaneButton.Tooltip" DefaultValue="Click to open LehrGrapht" />
+        <bt:String id="GetStarted.Description" DefaultValue="Das LehrGrapht AddIn wurde erfolgreich geladen. Gehe zum HOME Tab und clicke auf den LehrGrapht-Button um anzufangen." />
+        <bt:String id="TaskpaneButton.Tooltip" DefaultValue="Klicken, um LehrGrapht zu öffnen" />
       </bt:LongStrings>
     </Resources>
   </VersionOverrides>

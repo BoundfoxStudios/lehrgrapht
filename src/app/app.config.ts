@@ -3,25 +3,31 @@ import {
   provideBrowserGlobalErrorListeners,
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
-
 import { routes } from './app.routes';
 import {
   NoOpWordService,
   WordService,
   WordServiceImpl,
 } from './services/word.service';
+import {
+  RUN_CONFIGURATION,
+  RunConfiguration,
+} from './models/run-configuration';
 
-export const createAppConfig = (options: {
-  runsInOffice: boolean;
-}): ApplicationConfig => {
+export const createAppConfig = (
+  runConfiguration: RunConfiguration,
+): ApplicationConfig => {
   return {
     providers: [
       provideBrowserGlobalErrorListeners(),
       provideRouter(routes),
+      { provide: RUN_CONFIGURATION, useValue: runConfiguration },
       {
         provide: WordService,
         useFactory: () =>
-          options.runsInOffice ? new WordServiceImpl() : new NoOpWordService(),
+          runConfiguration.runsInOffice
+            ? new WordServiceImpl()
+            : new NoOpWordService(),
       },
     ],
   };

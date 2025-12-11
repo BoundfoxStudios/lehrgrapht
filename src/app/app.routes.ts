@@ -4,6 +4,8 @@ import { PlotEditor } from './components/plot-editor/plot-editor';
 import { Info } from './components/info/info';
 import { FirstRunExperience } from './components/first-run-experience/first-run-experience';
 import { redirectToFirstRunExperience } from './components/first-run-experience/redirect-to-first-run-experience';
+import { cannotRunOnlineGuard } from './components/cannot-run-online/cannot-run-online.guard';
+import { CannotRunOnline } from './components/cannot-run-online/cannot-run-online';
 
 export const routes: Routes = [
   {
@@ -13,6 +15,7 @@ export const routes: Routes = [
   },
   {
     path: 'plot',
+    canActivate: [cannotRunOnlineGuard],
     children: [
       {
         path: '',
@@ -40,5 +43,10 @@ export const routes: Routes = [
   {
     path: 'first-run-experience',
     component: FirstRunExperience,
+    canActivate: [cannotRunOnlineGuard],
+  },
+  {
+    path: 'cannot-run-online',
+    component: CannotRunOnline,
   },
 ];
