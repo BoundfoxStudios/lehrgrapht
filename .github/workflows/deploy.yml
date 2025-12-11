@@ -30,7 +30,7 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: dist/lehrgrapht/browser/
-          server-dir: addin/${{steps.version.outputs.value}}
+          server-dir: addin/${{steps.version.outputs.value}}/
           protocol: ftp
 
       - uses: actions/upload-artifact@v4
