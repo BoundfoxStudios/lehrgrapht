@@ -12,25 +12,101 @@
     }
   },
   "projects": {
-    "lehrgrapht": {
+    "website": {
       "projectType": "application",
       "schematics": {},
-      "root": "",
-      "sourceRoot": "src",
+      "root": "projects/website",
+      "sourceRoot": "projects/website/src",
       "prefix": "app",
       "architect": {
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "browser": "src/main.ts",
-            "tsConfig": "tsconfig.app.json",
+            "browser": "projects/website/src/main.ts",
+            "tsConfig": "projects/website/tsconfig.app.json",
             "assets": [
               {
                 "glob": "**/*",
-                "input": "public"
+                "input": "projects/website/public"
               }
             ],
-            "styles": ["src/styles.css"],
+            "styles": ["projects/website/src/styles.css"],
+            "server": "projects/website/src/main.server.ts",
+            "outputMode": "server",
+            "ssr": {
+              "entry": "projects/website/src/server.ts"
+            }
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "website:build:production"
+            },
+            "development": {
+              "buildTarget": "website:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test"
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "projects/website/**/*.ts",
+              "projects/website/**/*.html"
+            ],
+            "eslintConfig": "projects/website/eslint.config.js"
+          }
+        }
+      }
+    },
+    "addin": {
+      "projectType": "application",
+      "schematics": {},
+      "root": "projects/addin",
+      "sourceRoot": "projects/addin/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "browser": "projects/addin/src/main.ts",
+            "tsConfig": "projects/addin/tsconfig.app.json",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "projects/addin/public"
+              }
+            ],
+            "styles": ["projects/addin/src/styles.css"],
             "allowedCommonJsDependencies": [
               "seedrandom",
               "escape-latex",
@@ -45,7 +121,7 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "8MB",
+                  "maximumWarning": "7MB",
                   "maximumError": "10MB"
                 },
                 {
@@ -68,10 +144,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "lehrgrapht:build:production"
+              "buildTarget": "addin:build:production"
             },
             "development": {
-              "buildTarget": "lehrgrapht:build:development",
+              "buildTarget": "addin:build:development",
               "ssl": true,
               "sslCert": "/Users/manuelrauber/.office-addin-dev-certs/localhost.crt",
               "sslKey": "/Users/manuelrauber/.office-addin-dev-certs/localhost.key"
@@ -85,7 +161,11 @@
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
+            "lintFilePatterns": [
+              "projects/addin/**/*.ts",
+              "projects/addin/**/*.html"
+            ],
+            "eslintConfig": "projects/addin/eslint.config.js"
           }
         }
       }

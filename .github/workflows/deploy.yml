@@ -5,16 +5,14 @@ on:
       - main
 
 jobs:
-  build-and-deploy:
+  build-and-deploy-addin:
     name: Build & Deploy
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
-
       - name: Read version
         id: version
         uses: ActionsTools/read-json-action@main
@@ -31,12 +29,11 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: dist/lehrgrapht/browser/
+          local-dir: dist/addin/browser/
           server-dir: addin/${{steps.version.outputs.value}}/
           protocol: ftp
-
       - uses: actions/upload-artifact@v4
         with:
           name: manifest
-          path: dist/lehrgrapht/browser/manifest.xml
+          path: dist/addin/browser/manifest.xml
           if-no-files-found: error

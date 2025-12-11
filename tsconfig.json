@@ -28,6 +28,18 @@
     },
     {
       "path": "./tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/website/tsconfig.app.json"
+    },
+    {
+      "path": "./projects/website/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/addin/tsconfig.app.json"
+    },
+    {
+      "path": "./projects/addin/tsconfig.spec.json"
     }
   ]
 }
