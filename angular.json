@@ -42,7 +42,6 @@
           },
           "configurations": {
             "production": {
-              "baseHref": "/addin/",
               "budgets": [
                 {
                   "type": "initial",

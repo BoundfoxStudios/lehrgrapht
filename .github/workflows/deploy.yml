@@ -15,15 +15,17 @@ jobs:
         with:
           node-version-file: .nvmrc
 
-      - run: npm ci
-      - run: npm run build
-      - run: npm run prepare-deployment
       - name: Read version
         id: version
         uses: ActionsTools/read-json-action@main
         with:
           file_path: package.json
           prop_path: version
+      - run: npm ci
+      - run: npm run build
+        env:
+          BASE_HREF: /addin/${{steps.version.outputs.value}}/
+      - run: npm run prepare-deployment
       - uses: SamKirkland/FTP-Deploy-Action@v4.3.6
         with:
           server: ${{ secrets.FTP_SERVER }}

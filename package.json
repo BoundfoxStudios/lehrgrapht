@@ -6,7 +6,7 @@
     "start": "ng serve",
     "start:office": "office-addin-debugging start manifest.xml",
     "stop:office": "office-addin-debugging stop manifest.xml",
-    "build": "ng build",
+    "build": "ng build --base-href=\"${BASE_HREF}\"",
     "prepare-deployment": "gulp prepareDeployment",
     "watch": "ng build --watch --configuration development",
     "validate": "office-addin-manifest validate manifest.xml",
