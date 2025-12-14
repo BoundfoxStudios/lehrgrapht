@@ -8,6 +8,7 @@
     "start:office": "office-addin-debugging start manifest.xml",
     "stop:office": "office-addin-debugging stop manifest.xml",
     "build": "ng build addin --base-href=\"${BASE_HREF}\"",
+    "build:website": "ng build website",
     "prepare-deployment": "gulp prepareDeployment",
     "watch": "ng build addin --watch --configuration development",
     "validate": "office-addin-manifest validate manifest.xml",
@@ -21,6 +22,7 @@
   "private": true,
   "packageManager": "npm@10.9.2",
   "dependencies": {
+    "@angular/aria": "~21.0.3",
     "@angular/common": "^21.0.0",
     "@angular/compiler": "^21.0.0",
     "@angular/core": "^21.0.0",

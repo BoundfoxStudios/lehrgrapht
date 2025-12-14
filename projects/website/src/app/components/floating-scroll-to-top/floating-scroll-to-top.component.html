@@ -1,0 +1,11 @@
+<button
+  class="bg-dark ml-auto h-8 w-8 rounded-sm border border-white transition-all duration-150"
+  [class.opacity-0]="!show()"
+  (click)="scrollToTop()"
+  title="Zurück zum Anfang"
+>
+  <fa-icon
+    class="text-white"
+    [icon]="faAngleUp"
+  />
+</button>

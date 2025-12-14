@@ -6,7 +6,7 @@ on:
 
 jobs:
   build-and-deploy-addin:
-    name: Build & Deploy
+    name: Build & Deploy AddIn
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -37,3 +37,25 @@ jobs:
           name: manifest
           path: dist/addin/browser/manifest.xml
           if-no-files-found: error
+
+  build-and-deploy-website:
+    name: Build & Deploy Website
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+      - run: npm ci
+      - run: npm run build:website
+      - run: npm run prepare-deployment
+      - uses: SamKirkland/FTP-Deploy-Action@v4.3.6
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: dist/website/browser/
+          server-dir: /
+          protocol: ftp
+          exclude: |
+            addin/**

@@ -1,0 +1,162 @@
+<app-hero>
+  <h1>Willkommen bei LehrGrapht.</h1>
+  <p>Ein Word AddIn zum Erstellen von maßstabsgetreuen Plots für Lehrkräfte.</p>
+</app-hero>
+
+<app-content-container class="mt-12 block">
+  <div class="flex flex-col space-y-12 sm:space-y-0 md:flex-row md:space-x-12">
+    <div class="flex flex-1 flex-col items-center">
+      <fa-icon
+        [icon]="faGear"
+        size="6x"
+      />
+      <h2 class="text-brand mt-12 mb-4 text-2xl font-bold">Plattformen</h2>
+      <p>Verfügbar für Microsoft Word auf Windows, macOS und iPad.</p>
+    </div>
+    <div class="flex flex-1 flex-col text-center">
+      <fa-icon
+        [icon]="faBoltLightning"
+        size="6x"
+      />
+      <h2 class="text-brand mt-12 mb-4 text-2xl font-bold">
+        Maßstabsgetreue Plots
+      </h2>
+      <p>
+        Die vom Plotter erzeugten Graphen sind maßstabsgetreu auf 5x5 mm
+        Karopapier.
+      </p>
+    </div>
+    <div class="flex flex-1 flex-col text-center">
+      <fa-icon
+        [icon]="faStar"
+        size="6x"
+      />
+      <h2 class="text-brand mt-12 mb-4 text-2xl font-bold">Funktionen</h2>
+      <p>
+        Beliebig viele Schaubilder pro Word-Dokument. Beliebig viele Graphen und
+        Punkte pro Schaubild in unterschiedlichen Farben.
+      </p>
+    </div>
+  </div>
+
+  <img
+    class="mt-12 drop-shadow-xl"
+    src="images/word-beispiel.png"
+    alt="LehrGrapht in Word"
+  />
+
+  <div class="mt-12 flex flex-col space-y-12">
+    <div
+      class="grid grid-cols-1 gap-y-12 drop-shadow-xl sm:grid-cols-3 sm:gap-x-12"
+    >
+      <img
+        class="mx-auto h-auto"
+        src="images/plot-liste.png"
+        alt="Plot Liste"
+      />
+      <div class="col-span-2 flex flex-col space-y-4">
+        <h3 class="text-2xl font-bold">Plot Liste</h3>
+        <p>
+          LehrGrapht zeigt Dir eine Liste aller im Dokument erkannter Plots an,
+          sodass Du diese editieren und anpassen kannst.
+        </p>
+      </div>
+    </div>
+
+    <div
+      class="grid grid-cols-1 gap-y-12 drop-shadow-xl sm:grid-cols-3 sm:gap-x-12"
+    >
+      <img
+        class="mx-auto h-auto sm:order-2"
+        src="images/plot-editor.png"
+        alt="Plot Editor"
+      />
+      <div class="col-span-2 flex flex-col space-y-4 sm:order-1">
+        <h3 class="text-2xl font-bold">Plot-Editor</h3>
+        <p>
+          Der Plot-Editor erlaubt Dir, einen neuen Plot im Word-Dokument
+          einzufügen. Du kannst hierbei beliebig viele Graphen pro Schaubild
+          erzeugen oder auch Punkte einzeichnen lassen. Der Wertebereich gibt
+          an, in welchen Grenzen die Graphen/Punkte angezeigt werden.
+        </p>
+      </div>
+    </div>
+
+    <div
+      class="grid grid-cols-1 gap-y-12 drop-shadow-xl sm:grid-cols-3 sm:gap-x-12"
+    >
+      <img
+        class="mx-auto h-auto"
+        src="images/vorschau.png"
+        alt="Graphen und Punkte"
+      />
+      <div class="col-span-2 flex flex-col space-y-4">
+        <h3 class="text-2xl font-bold">
+          Mehrere Graphen und Punkte pro Schaubild
+        </h3>
+        <p>
+          LehrGrapht kann pro Schaubild mehrere Graphen anzeigen und Punkte
+          einzeichnen. Es obliegt Dir, ob Du nur Graphen, nur Punkte oder beides
+          gemischt anzeigen möchtest.
+        </p>
+      </div>
+    </div>
+
+    <div>
+      <h2 class="text-2xl font-bold">Häufig gestellte Fragen</h2>
+      <dl class="mt-4">
+        <dt class="font-bold">
+          Welche Word-Versionen werden von LehrGrapht unterstützt?
+        </dt>
+        <dd>
+          LehrGrapht funktioniert auf allen Desktop-Varianten von Word (macOS,
+          Windows) und iPad. LehrGrapht funktioniert <strong>nicht</strong> in
+          der Web-Version von Word.
+        </dd>
+
+        <dt class="mt-4 font-bold">
+          Was unterscheidet LehrGraph von anderen Plottern, bspw. GeoGebra?
+        </dt>
+        <dd>
+          LehrGrapht ist maßstabsgetreu und generiert Plots für 5x5 mm
+          Karopapier, dass von den Schüler:innen nachgemessen werden kann.
+        </dd>
+
+        <dt class="mt-4 font-bold">Was kostet LehrGrapht?</dt>
+        <dd>
+          LehrGrapht ist kostenfrei und sogar Open Source auf
+          <a href="https://github.com/boundfoxstudios/lehrgrapht">
+            <fa-icon [icon]="faGithub" />
+            <span class="pl-1 underline">GitHub</span></a
+          >! Der Entwickler freut sich jedoch über eine nette E-Mail (<a
+            class="underline"
+            href="mailto:support@lehrgrapht.de"
+            >support&#64;lehrgrapht.de</a
+          >), eine kleine Spende via
+          <a href="https://ko-fi.com/BoundfoxStudios"
+            ><fa-icon [icon]="faCoffee" />
+            <span class="pl-1 underline">Ko-Fi</span></a
+          >
+          oder einfach über das Weitererzählen an Deine Kolleg:innen!
+        </dd>
+
+        <dt class="mt-4 font-bold">
+          Ich hab ein Problem, wohin kann ich mich wenden?
+        </dt>
+        <dd>
+          Du kannst bei Problemen entweder direkt einen Fehler bei
+          <a href="https://github.com/boundfoxstudios/lehrgrapht/issues">
+            <fa-icon [icon]="faGithub" />
+            <span class="pl-1 underline">GitHub</span></a
+          >
+          melden oder Du schreibst dem Entwickler eine E-Mail:
+          <a
+            class="underline"
+            href="mailto:support@lehrgrapht.de"
+            >support&#64;lehrgrapht.de</a
+          >
+        </dd>
+      </dl>
+    </div>
+  </div>
+</app-content-container>
