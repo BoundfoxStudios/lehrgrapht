@@ -7,9 +7,9 @@
   title="Plot Editor"
 />
 
-<lg-content-container>
+<lg-content-container class="flex">
   <form
-    class="space-y-4"
+    class="flex-1 space-y-4"
     (ngSubmit)="sendToWord()"
   >
     <div class="group">
@@ -234,7 +234,7 @@
 @if (fnx) {
   <lg-section
     title="Vorschau"
-    subtitle="Die Vorschau entspricht nicht der Größe des Bildes, die in Word eingefügt
+    subtitle="Die Vorschau entspricht nicht der Größe des Bildes, das in Word eingefügt
       wird."
   />
   <lg-plot-preview [plot]="editorModel()" />
