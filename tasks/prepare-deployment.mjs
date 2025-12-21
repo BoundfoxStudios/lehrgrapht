@@ -2,8 +2,9 @@ import gulp from 'gulp';
 import replace from 'gulp-replace';
 import packageJson from '../package.json' with { type: 'json' };
 
+const version = process.env.APP_VERSION || packageJson.version;
 const localUrl = 'https://localhost:4200';
-const productionUrl = `https://lehrgrapht.de/addin/${packageJson.version}`;
+const productionUrl = `https://lehrgrapht.de/addin/${version}`;
 
 const copyManifestFile = () =>
   function copyManifestFile() {

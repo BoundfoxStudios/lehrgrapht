@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - develop
 
 jobs:
   build-and-deploy-addin:
@@ -13,17 +14,23 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
-      - name: Read version
-        id: version
+      - name: Read version from package.json
+        id: read_version
+        if: github.ref == 'refs/heads/main'
         uses: ActionsTools/read-json-action@main
         with:
           file_path: package.json
           prop_path: version
+      - name: Set version
+        id: version
+        run: echo "value=${{ steps.read_version.outputs.value || 'develop' }}" >> $GITHUB_OUTPUT
       - run: npm ci
       - run: npm run build
         env:
           BASE_HREF: /addin/${{steps.version.outputs.value}}/
       - run: npm run prepare-deployment
+        env:
+          APP_VERSION: ${{ steps.version.outputs.value }}
       - uses: SamKirkland/FTP-Deploy-Action@v4.3.6
         with:
           server: ${{ secrets.FTP_SERVER }}
