@@ -4,15 +4,12 @@ import {
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
-import {
-  NoOpWordService,
-  WordService,
-  WordServiceImpl,
-} from './services/word.service';
+import { WordService } from './services/word/word.service';
 import {
   RUN_CONFIGURATION,
   RunConfiguration,
 } from './models/run-configuration';
+import { wordServiceFactory } from './services/word/word-service.factory';
 
 export const createAppConfig = (
   runConfiguration: RunConfiguration,
@@ -24,10 +21,7 @@ export const createAppConfig = (
       { provide: RUN_CONFIGURATION, useValue: runConfiguration },
       {
         provide: WordService,
-        useFactory: () =>
-          runConfiguration.runsInOffice
-            ? new WordServiceImpl()
-            : new NoOpWordService(),
+        useFactory: () => wordServiceFactory(runConfiguration),
       },
     ],
   };

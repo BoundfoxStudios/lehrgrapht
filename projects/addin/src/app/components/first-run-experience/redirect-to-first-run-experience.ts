@@ -1,12 +1,12 @@
 import { MaybeAsync, Router, UrlTree } from '@angular/router';
 import { inject } from '@angular/core';
-import { FirstRunExperienceService } from '../../services/first-run-experience.service';
+import { UserExperienceService } from '../../services/user-experience.service';
 
 export const redirectToFirstRunExperience = (): MaybeAsync<UrlTree> => {
-  const firstRunExperienceService = inject(FirstRunExperienceService);
+  const userExperienceService = inject(UserExperienceService);
   const router = inject(Router);
 
-  if (firstRunExperienceService.needsFirstRunExperience()) {
+  if (userExperienceService.needsFirstRunExperience()) {
     return router.createUrlTree(['/first-run-experience']);
   }
 

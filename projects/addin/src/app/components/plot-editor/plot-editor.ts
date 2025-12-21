@@ -13,7 +13,8 @@ import { Plot } from '../../models/plot';
 import { ActivatedRoute, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
-import { modelIdPrefix, WordService } from '../../services/word.service';
+import { modelIdPrefix, WordService } from '../../services/word/word.service';
+import { Section } from '../section/section';
 
 const colors = ['#3737d0', '#af2c2c', '#2a8c1a', '#f18238'];
 
@@ -51,6 +52,7 @@ const lessThanValidator = (
     ContentContainer,
     FaIconComponent,
     MathDisplay,
+    Section,
   ],
   templateUrl: './plot-editor.html',
   styleUrl: './plot-editor.css',
@@ -65,13 +67,13 @@ export class PlotEditor {
   private readonly router = inject(Router);
 
   protected readonly activeId = toSignal(
-    this.activatedRoute.paramMap.pipe(map(params => params.get('officeId'))),
+    this.activatedRoute.paramMap.pipe(map(params => params.get('id'))),
   );
 
   protected readonly existingPlot = resource({
     params: () => this.activeId(),
     loader: ({ params }) =>
-      params ? this.wordService.get(+params) : Promise.resolve(undefined),
+      params ? this.wordService.get(params) : Promise.resolve(undefined),
   });
 
   protected editorModel = signal<Plot>({
@@ -124,7 +126,10 @@ export class PlotEditor {
     const existingPlot = this.existingPlot.value();
 
     const model = this.editorModel();
-    const plot = await this.plotService.generate(model);
+    const plot = await this.plotService.generate(model, {
+      applyScaleFactor:
+        this.wordService.plotGenerationSettings.applyScaleFactor,
+    });
 
     if (!plot) {
       return;
@@ -132,16 +137,17 @@ export class PlotEditor {
 
     const wordImage = plot.base64.substring('data:image/png;base64,'.length);
 
-    const newId = await this.wordService.upsertPicture({
+    const id = existingPlot ? existingPlot.id : `${modelIdPrefix}${v7()}`;
+    await this.wordService.upsertPicture({
       model,
-      id: existingPlot ? existingPlot.id : `${modelIdPrefix}${v7()}`,
+      id,
       base64Picture: wordImage,
-      existingShapeOfficeId: existingPlot?.officeId,
+      existingId: existingPlot?.id,
       height: plot.heightInPoints,
       width: plot.widthInPoints,
     });
 
-    void this.router.navigate(['/plot/editor', newId]);
+    void this.router.navigate(['/plot/editor', id]);
   }
 
   protected removeFx(index: number): void {

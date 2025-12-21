@@ -1,0 +1,32 @@
+<app-header title="Word for Web" />
+
+<app-content-container class="flex-col space-y-2">
+  <p>
+    Vielen Dank für Dein Interesse an LehrGrapht! LehrGrapht ist für die
+    Desktop-Version von Word entwickelt. Es funktioniert auch hier in Word for
+    Web (oder Office for Web), allerdings nur mit einem eingeschränkten
+    Funktionsumfang.
+  </p>
+  <p>
+    <strong
+      >In Word for Web solltest Du die erzeugten Plots nicht mit der
+      Textumbruch-Option "Vor dem Text" oder "Hinter dem Text" benutzen. In
+      diesem Fall kann LehrGrapht die Plots leider nicht mehr erkennen. Dies
+      funktioniert ausschließlich nur in der Desktop-Variante von Word!</strong
+    >
+  </p>
+  <p>
+    Der Entwickler empfiehlt Dir, dass Du LehrGrapht in der Desktop-Version von
+    Word verwendest, um alle Funktionen nutzen zu können. Die Web-Variante ist
+    praktisch, um kurz zu schauen, ob LehrGrapht Dir für Deine Arbeit helfen
+    kann.
+  </p>
+  <div class="mt-4">
+    <button
+      class="app-button"
+      (click)="proceed()"
+    >
+      Weiter
+    </button>
+  </div>
+</app-content-container>

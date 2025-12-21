@@ -3,13 +3,14 @@ import { RouterLink } from '@angular/router';
 import { Header } from '../header/header';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import {
+  faBug,
   faInfoCircle,
   faPen,
   faRefresh,
   faTrashCan,
 } from '@fortawesome/free-solid-svg-icons';
 import { ContentContainer } from '../content-container/content-container';
-import { WordPlot, WordService } from '../../services/word.service';
+import { WordPlot, WordService } from '../../services/word/word.service';
 
 @Component({
   selector: 'app-plot-list',
@@ -22,6 +23,7 @@ export class PlotList {
   protected readonly faTrashCan = faTrashCan;
   protected readonly faPen = faPen;
   protected readonly faInfoCircle = faInfoCircle;
+  protected readonly faBug = faBug;
 
   readonly wordService = inject(WordService);
 
@@ -30,12 +32,12 @@ export class PlotList {
     defaultValue: [],
   });
 
-  protected async deletePlot(officeId: number): Promise<void> {
-    await this.wordService.delete(officeId);
+  protected async deletePlot(id: string): Promise<void> {
+    await this.wordService.delete(id);
     this.plots.reload();
   }
 
-  protected select(officeId: number): Promise<void> {
-    return this.wordService.select(officeId);
+  protected select(id: string): Promise<void> {
+    return this.wordService.select(id);
   }
 }

@@ -18,6 +18,10 @@ export class PlotPreview {
   readonly plot = input.required<Plot>();
 
   preview$ = toObservable(this.plot).pipe(
-    switchMap(plot => this.plotService.generate(plot)),
+    switchMap(plot =>
+      this.plotService.generate(plot, {
+        applyScaleFactor: true,
+      }),
+    ),
   );
 }

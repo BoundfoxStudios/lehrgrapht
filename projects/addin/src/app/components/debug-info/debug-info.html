@@ -1,0 +1,88 @@
+<app-header
+  [backLink]="['/']"
+  title="Debug"
+/>
+
+<app-content-container class="flex flex-col space-y-4">
+  <div class="flex flex-1 justify-end">
+    <button
+      class="app-button"
+      (click)="plots.reload(); models.reload()"
+    >
+      <fa-icon [icon]="faRefresh" />
+    </button>
+  </div>
+
+  <p>
+    <strong>Achtung!</strong> Diese Ansicht ist für den Entwickler gedacht, um
+    schneller Fehler zu finden. Du kannst Dir die Informationen gerne ansehen
+    oder im Fehlerfall dem Entwickler weiterleiten, aber Du solltest nichts
+    daran ändern.
+  </p>
+  <p>
+    <strong
+      >Es gibt keinen Bestätigungsdialog, wenn Du auf einen Button
+      drückst.</strong
+    >
+  </p>
+</app-content-container>
+
+<app-section
+  title="Erkannte Plots"
+  subtitle="Alle Plots, auch deren Modelle nicht mehr im Dokument sind."
+/>
+
+@let allPlots = plots.value();
+
+<app-content-container class="flex flex-col space-y-2">
+  @if (plots.isLoading()) {
+    <fa-icon
+      [icon]="faRefresh"
+      [animation]="'spin'"
+    />
+  } @else {
+    @for (plot of allPlots; track plot.id) {
+      <ul class="flex flex-col rounded-sm p-2 odd:bg-gray-200">
+        <li>
+          Id: {{ plot.id }}
+          @if (!isPlot(plot)) {
+            <fa-icon [icon]="faWarning" />
+          }
+        </li>
+        @if (isPlot(plot)) {
+          <li>
+            <code class="text-2xs">{{ plot.model | json }}</code>
+          </li>
+        }
+      </ul>
+    }
+  }
+</app-content-container>
+
+<app-section
+  title="Erkannte Modelle"
+  subtitle="Alle Modelle, auch deren Plots nicht mehr im Dokument sind."
+/>
+
+<app-content-container class="flex flex-col space-y-2">
+  @if (models.isLoading() || !allPlots) {
+    <fa-icon
+      [icon]="faRefresh"
+      [animation]="'spin'"
+    />
+  } @else {
+    @for (model of models.value(); track model.key) {
+      <ul class="flex flex-col rounded-sm p-2 odd:bg-gray-200">
+        <li>
+          Key: {{ model.key }}
+          @if (allPlots && !modelHasPlot(allPlots, model.key)) {
+            <fa-icon [icon]="faWarning" />
+          }
+        </li>
+        <li>
+          <code class="text-2xs">{{ model.value | json }}</code>
+        </li>
+      </ul>
+    }
+  }
+</app-content-container>

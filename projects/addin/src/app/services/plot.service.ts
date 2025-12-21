@@ -6,7 +6,12 @@ import { Plot } from '../models/plot';
 
 @Injectable({ providedIn: 'root' })
 export class PlotService {
-  async generate(plot: Plot): Promise<
+  async generate(
+    plot: Plot,
+    options: {
+      applyScaleFactor: boolean;
+    },
+  ): Promise<
     | {
         base64: string;
         widthInPx: number;
@@ -276,7 +281,7 @@ export class PlotService {
           format: 'png',
           width: plotSizePx,
           height: plotSizePx,
-          scale: scaleFactor,
+          scale: options.applyScaleFactor ? scaleFactor : undefined,
         },
       );
 

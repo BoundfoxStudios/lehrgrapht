@@ -9,7 +9,7 @@ import {
   faTableCells,
 } from '@fortawesome/free-solid-svg-icons';
 import { Router } from '@angular/router';
-import { FirstRunExperienceService } from '../../services/first-run-experience.service';
+import { UserExperienceService } from '../../services/user-experience.service';
 
 @Component({
   selector: 'app-first-run-experience',
@@ -24,9 +24,7 @@ export class FirstRunExperience {
   protected readonly faMapPin = faMapPin;
 
   private readonly router = inject(Router);
-  private readonly firstRunExperienceService = inject(
-    FirstRunExperienceService,
-  );
+  private readonly firstRunExperienceService = inject(UserExperienceService);
 
   protected proceed(): void {
     this.firstRunExperienceService.hadFirstRunExperience();

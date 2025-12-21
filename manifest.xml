@@ -139,7 +139,7 @@
       </bt:ShortStrings>
       <!-- LongStrings max characters==250. -->
       <bt:LongStrings>
-        <bt:String id="GetStarted.Description" DefaultValue="Das LehrGrapht AddIn wurde erfolgreich geladen. Gehe zum HOME Tab und clicke auf den LehrGrapht-Button um anzufangen." />
+        <bt:String id="GetStarted.Description" DefaultValue="Das LehrGrapht AddIn wurde erfolgreich geladen. Gehe zum HOME Tab und klicke auf den LehrGrapht-Button um anzufangen." />
         <bt:String id="TaskpaneButton.Tooltip" DefaultValue="Klicken, um LehrGrapht zu öffnen" />
       </bt:LongStrings>
     </Resources>

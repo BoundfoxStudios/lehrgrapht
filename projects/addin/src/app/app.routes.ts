@@ -4,8 +4,9 @@ import { PlotEditor } from './components/plot-editor/plot-editor';
 import { Info } from './components/info/info';
 import { FirstRunExperience } from './components/first-run-experience/first-run-experience';
 import { redirectToFirstRunExperience } from './components/first-run-experience/redirect-to-first-run-experience';
-import { cannotRunOnlineGuard } from './components/cannot-run-online/cannot-run-online.guard';
-import { CannotRunOnline } from './components/cannot-run-online/cannot-run-online';
+import { wordForWebNoticeGuard } from './components/word-for-web-notice/word-for-web-notice.guard';
+import { WordForWebNotice } from './components/word-for-web-notice/word-for-web-notice.component';
+import { DebugInfo } from './components/debug-info/debug-info';
 
 export const routes: Routes = [
   {
@@ -15,7 +16,7 @@ export const routes: Routes = [
   },
   {
     path: 'plot',
-    canActivate: [cannotRunOnlineGuard],
+    canActivate: [wordForWebNoticeGuard],
     children: [
       {
         path: '',
@@ -27,7 +28,7 @@ export const routes: Routes = [
         component: PlotList,
       },
       {
-        path: 'editor/:officeId',
+        path: 'editor/:id',
         component: PlotEditor,
       },
       {
@@ -38,15 +39,19 @@ export const routes: Routes = [
         path: 'info',
         component: Info,
       },
+      {
+        path: 'debug',
+        component: DebugInfo,
+      },
     ],
   },
   {
     path: 'first-run-experience',
     component: FirstRunExperience,
-    canActivate: [cannotRunOnlineGuard],
+    canActivate: [wordForWebNoticeGuard],
   },
   {
-    path: 'cannot-run-online',
-    component: CannotRunOnline,
+    path: 'word-for-web-notice',
+    component: WordForWebNotice,
   },
 ];

@@ -21,12 +21,18 @@
       >
         <fa-icon [icon]="faInfoCircle" />
       </a>
+      <a
+        class="app-button"
+        [routerLink]="['/plot/debug']"
+      >
+        <fa-icon [icon]="faBug" />
+      </a>
     </div>
   </div>
 
   <h2>
     @let plotList = plots.value(); Liste erkannter Plots im Dokument:
-    @if (plots.status() === 'loading') {
+    @if (plots.isLoading()) {
       <fa-icon
         [icon]="faRefresh"
         [animation]="'spin'"
@@ -39,8 +45,8 @@
   <div class="flex flex-col space-y-2">
     @let selectedPlot = wordService.selection();
 
-    @for (plot of plotList; track plot.officeId; let index = $index) {
-      @let isSelected = selectedPlot?.officeId === plot.officeId;
+    @for (plot of plotList; track plot.id; let index = $index) {
+      @let isSelected = selectedPlot?.id === plot.id;
       <div
         class="rounded-sm p-2"
         [class.bg-brand-light]="isSelected"
@@ -49,7 +55,7 @@
         <div class="flex items-center space-x-1">
           <button
             class="flex-1 text-left font-bold"
-            (click)="select(plot.officeId)"
+            (click)="select(plot.id)"
           >
             <h3 [class.text-white]="isSelected">
               {{ plot.model?.name ?? 'Plot ' + index }}
@@ -57,12 +63,12 @@
           </button>
           <a
             class="app-button small"
-            [routerLink]="['/plot/editor', plot.officeId]"
+            [routerLink]="['/plot/editor', plot.id]"
             ><fa-icon [icon]="faPen"
           /></a>
           <button
             class="app-button small"
-            (click)="deletePlot(plot.officeId)"
+            (click)="deletePlot(plot.id)"
           >
             <fa-icon [icon]="faTrashCan" />
           </button>
