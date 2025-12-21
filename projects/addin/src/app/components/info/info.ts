@@ -5,7 +5,7 @@ import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 
 @Component({
-  selector: 'app-info',
+  selector: 'lg-info',
   imports: [Header, ContentContainer, FaIconComponent],
   templateUrl: './info.html',
   styleUrl: './info.css',

@@ -12,7 +12,7 @@ import { Router } from '@angular/router';
 import { UserExperienceService } from '../../services/user-experience.service';
 
 @Component({
-  selector: 'app-first-run-experience',
+  selector: 'lg-first-run-experience',
   imports: [Header, ContentContainer, FaIconComponent],
   templateUrl: './first-run-experience.html',
   styleUrl: './first-run-experience.css',

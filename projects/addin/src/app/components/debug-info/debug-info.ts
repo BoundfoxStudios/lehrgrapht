@@ -13,7 +13,7 @@ import { JsonPipe } from '@angular/common';
 import { DocumentStorageService } from '../../services/document-storage.service';
 
 @Component({
-  selector: 'app-debug-info',
+  selector: 'lg-debug-info',
   imports: [Header, ContentContainer, Section, FaIconComponent, JsonPipe],
   templateUrl: './debug-info.html',
   styleUrl: './debug-info.css',

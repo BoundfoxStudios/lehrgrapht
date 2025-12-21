@@ -1,7 +1,7 @@
 import { Component, input } from '@angular/core';
 
 @Component({
-  selector: 'app-section',
+  selector: 'lg-section',
   imports: [],
   templateUrl: './section.html',
   styleUrl: './section.css',

@@ -4,7 +4,7 @@ import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faArrowCircleLeft } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
-  selector: 'app-header',
+  selector: 'lg-header',
   imports: [RouterLink, FaIconComponent],
   templateUrl: './header.html',
   styleUrl: './header.css',

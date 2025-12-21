@@ -43,7 +43,7 @@ const lessThanValidator = (
 };
 
 @Component({
-  selector: 'app-plot-editor',
+  selector: 'lg-plot-editor',
   imports: [
     Header,
     Field,

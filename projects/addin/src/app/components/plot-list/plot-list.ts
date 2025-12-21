@@ -13,7 +13,7 @@ import { ContentContainer } from '../content-container/content-container';
 import { WordPlot, WordService } from '../../services/word/word.service';
 
 @Component({
-  selector: 'app-plot-list',
+  selector: 'lg-plot-list',
   imports: [RouterLink, Header, FaIconComponent, ContentContainer],
   templateUrl: './plot-list.html',
   styleUrl: './plot-list.css',

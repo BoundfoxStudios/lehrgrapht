@@ -7,7 +7,7 @@ import { Plot } from '../../models/plot';
 import { ContentContainer } from '../content-container/content-container';
 
 @Component({
-  selector: 'app-plot-preview',
+  selector: 'lg-plot-preview',
   imports: [AsyncPipe, ContentContainer],
   templateUrl: './plot-preview.html',
   styleUrl: './plot-preview.css',

@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { UserExperienceService } from '../../services/user-experience.service';
 
 @Component({
-  selector: 'app-word-for-web-notice',
+  selector: 'lg-word-for-web-notice',
   imports: [Header, ContentContainer],
   templateUrl: './word-for-web-notice.component.html',
   styleUrl: './word-for-web-notice.component.css',

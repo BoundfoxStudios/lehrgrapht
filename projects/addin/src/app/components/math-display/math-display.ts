@@ -2,7 +2,7 @@ import { Component, effect, ElementRef, inject, input } from '@angular/core';
 import * as mathjs from 'mathjs';
 
 @Component({
-  selector: 'app-math-display',
+  selector: 'lg-math-display',
   imports: [],
   templateUrl: './math-display.html',
   styleUrl: './math-display.css',

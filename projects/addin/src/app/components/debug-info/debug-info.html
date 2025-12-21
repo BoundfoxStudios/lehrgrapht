@@ -1,9 +1,9 @@
-<app-header
+<lg-header
   [backLink]="['/']"
   title="Debug"
 />
 
-<app-content-container class="flex flex-col space-y-4">
+<lg-content-container class="flex flex-col space-y-4">
   <div class="flex flex-1 justify-end">
     <button
       class="app-button"
@@ -25,16 +25,16 @@
       drückst.</strong
     >
   </p>
-</app-content-container>
+</lg-content-container>
 
-<app-section
+<lg-section
   title="Erkannte Plots"
   subtitle="Alle Plots, auch deren Modelle nicht mehr im Dokument sind."
 />
 
 @let allPlots = plots.value();
 
-<app-content-container class="flex flex-col space-y-2">
+<lg-content-container class="flex flex-col space-y-2">
   @if (plots.isLoading()) {
     <fa-icon
       [icon]="faRefresh"
@@ -57,14 +57,14 @@
       </ul>
     }
   }
-</app-content-container>
+</lg-content-container>
 
-<app-section
+<lg-section
   title="Erkannte Modelle"
   subtitle="Alle Modelle, auch deren Plots nicht mehr im Dokument sind."
 />
 
-<app-content-container class="flex flex-col space-y-2">
+<lg-content-container class="flex flex-col space-y-2">
   @if (models.isLoading() || !allPlots) {
     <fa-icon
       [icon]="faRefresh"
@@ -85,4 +85,4 @@
       </ul>
     }
   }
-</app-content-container>
+</lg-content-container>

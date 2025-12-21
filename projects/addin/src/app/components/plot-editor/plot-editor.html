@@ -1,13 +1,13 @@
 @let activePlot = existingPlot.value();
 @let isEditMode = !!activePlot;
 
-<app-header
+<lg-header
   [backLink]="['/']"
   [subtitle]="'Plot: ' + editorModel().name"
   title="Plot Editor"
 />
 
-<app-content-container>
+<lg-content-container>
   <form
     class="space-y-4"
     (ngSubmit)="sendToWord()"
@@ -169,7 +169,7 @@
             <fa-icon [icon]="faTrashCan" />
           </button>
         </div>
-        <app-math-display [math]="control.fnx().value()" />
+        <lg-math-display [math]="control.fnx().value()" />
       </div>
     }
 
@@ -228,14 +228,14 @@
       }
     </button>
   </form>
-</app-content-container>
+</lg-content-container>
 
 @let fnx = editorForm().value().fnx;
 @if (fnx) {
-  <app-section
+  <lg-section
     title="Vorschau"
     subtitle="Die Vorschau entspricht nicht der Größe des Bildes, die in Word eingefügt
       wird."
   />
-  <app-plot-preview [plot]="editorModel()" />
+  <lg-plot-preview [plot]="editorModel()" />
 }
