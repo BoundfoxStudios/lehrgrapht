@@ -3,7 +3,8 @@
   "version": "1.1.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve addin",
+    "start": "dotenvx run --ignore=MISSING_ENV_FILE -f .env.local -f .env -- npm run start:addin",
+    "start:addin": "npx ng serve addin --ssl=\"${LEHRGRAPHT_SSL}\" --ssl-key=\"${LEHRGRAPHT_SSL_KEY}\" --ssl-cert=\"${LEHRGRAPHT_SSL_CERT}\"",
     "start:website": "ng serve website",
     "start:office": "office-addin-debugging start manifest.xml",
     "stop:office": "office-addin-debugging stop manifest.xml",
@@ -50,6 +51,7 @@
     "@angular/build": "^21.0.0",
     "@angular/cli": "^21.0.0",
     "@angular/compiler-cli": "^21.0.0",
+    "@dotenvx/dotenvx": "~1.51.2",
     "@tailwindcss/postcss": "^4.1.12",
     "@types/express": "^5.0.1",
     "@types/gulp": "~4.0.18",

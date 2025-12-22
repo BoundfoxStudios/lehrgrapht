@@ -147,10 +147,7 @@
               "buildTarget": "addin:build:production"
             },
             "development": {
-              "buildTarget": "addin:build:development",
-              "ssl": true,
-              "sslCert": "/Users/manuelrauber/.office-addin-dev-certs/localhost.crt",
-              "sslKey": "/Users/manuelrauber/.office-addin-dev-certs/localhost.key"
+              "buildTarget": "addin:build:development"
             }
           },
           "defaultConfiguration": "development"
