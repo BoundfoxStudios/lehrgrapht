@@ -4,7 +4,7 @@ import { ContentContainer } from '../content-container/content-container';
 import { FloatingScrollToTopComponent } from '../floating-scroll-to-top/floating-scroll-to-top.component';
 
 @Component({
-  selector: 'app-root',
+  selector: 'lgw-root',
   imports: [
     RouterLink,
     RouterLinkActive,

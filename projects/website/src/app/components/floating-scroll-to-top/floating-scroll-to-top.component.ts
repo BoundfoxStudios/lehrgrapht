@@ -12,7 +12,7 @@ import { fromEvent, map, throttleTime } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'app-floating-scroll-to-top',
+  selector: 'lgw-floating-scroll-to-top',
   imports: [FaIconComponent],
   templateUrl: './floating-scroll-to-top.component.html',
   styleUrl: './floating-scroll-to-top.component.css',

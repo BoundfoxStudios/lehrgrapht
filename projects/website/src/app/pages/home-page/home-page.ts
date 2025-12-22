@@ -11,7 +11,7 @@ import {
 import { faGithub, faMicrosoft } from '@fortawesome/free-brands-svg-icons';
 
 @Component({
-  selector: 'app-home-page',
+  selector: 'lgw-home-page',
   imports: [Hero, ContentContainer, FaIconComponent],
   templateUrl: './home-page.html',
   styleUrl: './home-page.css',
