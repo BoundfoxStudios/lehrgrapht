@@ -1,7 +1,21 @@
 <app-hero>
   <h1>Willkommen bei LehrGrapht.</h1>
-  <p>Ein Word AddIn zum Erstellen von maßstabsgetreuen Plots für Lehrkräfte.</p>
+  <p>
+    Ein kostenfreies Word AddIn zum Erstellen von maßstabsgetreuen Plots für
+    Lehrkräfte.
+  </p>
 </app-hero>
+
+<app-content-container>
+  <div class="my-16 flex justify-center">
+    <a
+      class="rounded-sm bg-pink-600 px-8 py-4 text-white"
+      href="https://marketplace.microsoft.com/en-us/product/office/WA200009741"
+      target="_blank"
+      >Download (Microsoft Marketplace)</a
+    >
+  </div>
+</app-content-container>
 
 <app-content-container class="mt-12 block">
   <div class="flex flex-col space-y-12 sm:space-y-0 md:flex-row md:space-x-12">
@@ -102,6 +116,28 @@
       </div>
     </div>
 
+    <div class="space-y-4">
+      <h2 class="text-2xl font-bold">Word for Web</h2>
+      <p>
+        LehrGrapht wurde für die Desktop-Versionen von Word entwickelt, die auf
+        Windows, macOS oder iPad laufen. Du kannst LehrGrapht auch in Word for
+        Web benutzen, allerdings mit einer Einschränkung: Wenn Du die
+        Textumbruch-Option veränderst und "Hinter dem Text" oder "Vor dem Text"
+        nutzt, dann wird LehrGrapht den Plot nicht mehr zum Editieren erkennen
+        können. Du siehst den Plot dann auch nicht mehr in der Liste aller Plots
+        im Dokument.
+      </p>
+      <p>
+        Wenn Du allerdings die Option wieder umstellst, kann LehrGrapht den Plot
+        erkennen und editieren. Alternativ kannst Du natürlich den Plot mit
+        einer anderen Layout-Option setzen, bspw. mit einer Tabelle.
+      </p>
+      <p>
+        Das ist leider eine technische Einschränkung seitens Microsoft. Sobald
+        es sich ändert, wird LehrGrapht dahingehend verbessert.
+      </p>
+    </div>
+
     <div>
       <h2 class="text-2xl font-bold">Häufig gestellte Fragen</h2>
       <dl class="mt-4">
@@ -110,8 +146,8 @@
         </dt>
         <dd>
           LehrGrapht funktioniert auf allen Desktop-Varianten von Word (macOS,
-          Windows) und iPad. LehrGrapht funktioniert <strong>nicht</strong> in
-          der Web-Version von Word.
+          Windows) und iPad. LehrGrapht funktioniert
+          <strong>eingeschränkt</strong> in der Web-Version von Word.
         </dd>
 
         <dt class="mt-4 font-bold">
@@ -141,7 +177,7 @@
         </dd>
 
         <dt class="mt-4 font-bold">
-          Was ist das für ein kryptisches Text im Feld "Alternativtext"?
+          Was ist das für ein kryptischer Text im Feld "Alternativtext"?
         </dt>
         <dd>
           Im Feld "Alternativtext" der Plots siehst einen für Dich kryptischen
@@ -150,6 +186,18 @@
           für den Plot wieder zu finden, sodass Du ihn editieren kannst. Du
           solltest dieses Feld am besten nicht verändern, sonst kann LehrGrapht
           die Einstellungen zum Plot nicht mehr finden.
+        </dd>
+
+        <dt class="mt-4 font-bold">
+          Warum kann ich den Plot nicht anklicken und ihn dann direkt editieren?
+        </dt>
+        <dd>
+          Das ist leider eine technische Einschränkung seitens Microsoft. Ein
+          Add-In kann nicht erkennen, ob Du einen Plot selektiert hast. Daher
+          kann Dir LehrGrapht den Plot nicht direkt zum Editieren anbieten. Du
+          kannst aber jederzeit die Liste der Plots benutzen, um den Plot zu
+          editieren. Sobald es sich ändert, wird LehrGrapht dahingehend
+          verbessert.
         </dd>
 
         <dt class="mt-4 font-bold">Sammelt LehrGrapht Daten?</dt>

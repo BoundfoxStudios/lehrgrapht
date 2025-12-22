@@ -4,18 +4,22 @@
 
 <nav class="flex justify-center">
   <ul class="flex space-x-8">
-    <li
-      class="rounded-sm px-8 py-4"
-      [routerLinkActive]="['bg-brand', 'text-white']"
-      [routerLinkActiveOptions]="{ exact: true }"
-    >
-      <a [routerLink]="['/']">Start</a>
+    <li>
+      <a
+        class="rounded-sm px-8 py-4"
+        [routerLinkActive]="['bg-brand', 'text-white']"
+        [routerLinkActiveOptions]="{ exact: true }"
+        [routerLink]="['/']"
+        >Start</a
+      >
     </li>
-    <li
-      class="rounded-sm px-8 py-4"
-      [routerLinkActive]="['bg-brand', 'text-white']"
-    >
-      <a [routerLink]="['/privacy-policy']">Datenschutzerklärung</a>
+    <li>
+      <a
+        class="rounded-sm px-8 py-4"
+        [routerLinkActive]="['bg-brand', 'text-white']"
+        [routerLink]="['/privacy-policy']"
+        >Datenschutzerklärung</a
+      >
     </li>
   </ul>
 </nav>
