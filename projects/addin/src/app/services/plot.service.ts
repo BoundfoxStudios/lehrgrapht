@@ -93,13 +93,33 @@ export class PlotService {
       r: 7.5,
     };
 
-    const numTickSquares = Math.max(valueRange, yValueRange) / dtick;
-    const plotSizeMm =
-      numTickSquares * mmPerTick +
-      (mmMargin.t + mmMargin.b + mmMargin.l + mmMargin.r) / 2;
-    const plotSizePx = plotSizeMm * mmToInches * ppiBase;
+    const tickSquares = {
+      x: plot.squarePlots
+        ? Math.max(valueRange, yValueRange) / dtick
+        : valueRange / dtick,
+      y: plot.squarePlots
+        ? Math.max(valueRange, yValueRange) / dtick
+        : yValueRange / dtick,
+    };
 
-    const plotSizePoints = plotSizeMm * mmToPoints;
+    const plotSizeMm = {
+      width:
+        tickSquares.x * mmPerTick +
+        (mmMargin.l + mmMargin.r + mmMargin.t + mmMargin.b) / 2,
+      height:
+        tickSquares.y * mmPerTick +
+        (mmMargin.l + mmMargin.r + mmMargin.t + mmMargin.b) / 2,
+    };
+
+    const plotSizePx = {
+      width: plotSizeMm.width * mmToInches * ppiBase,
+      height: plotSizeMm.height * mmToInches * ppiBase,
+    };
+
+    const plotSizePoints = {
+      width: plotSizeMm.width * mmToPoints,
+      height: plotSizeMm.height * mmToPoints,
+    };
 
     const xAnnotationRange = mathjs
       .range(plot.range.x.min, plot.range.x.max, 1, true)
@@ -144,26 +164,6 @@ export class PlotService {
 
     const arrows = [
       {
-        x: 0.25,
-        y: 1.01,
-        text: 'y',
-        showarrow: false,
-        yanchor: 'top',
-        xanchor: 'center',
-        xref: 'x',
-        yref: 'paper',
-      },
-      {
-        x: 1,
-        y: 0.55,
-        text: 'x',
-        showarrow: false,
-        yanchor: 'top',
-        xanchor: 'right',
-        xref: 'paper',
-        yref: 'y',
-      },
-      {
         x: 1,
         y: 0,
         showarrow: true,
@@ -188,6 +188,31 @@ export class PlotService {
         arrowhead: 5,
       },
     ] as Partial<Annotations>[];
+
+    if (plot.showAxisLabels) {
+      arrows.push(
+        {
+          x: 0.25,
+          y: 1.01,
+          text: 'y',
+          showarrow: false,
+          yanchor: 'top',
+          xanchor: 'center',
+          xref: 'x',
+          yref: 'paper',
+        },
+        {
+          x: 1,
+          y: 0.55,
+          text: 'x',
+          showarrow: false,
+          yanchor: 'top',
+          xanchor: 'right',
+          xref: 'paper',
+          yref: 'y',
+        },
+      );
+    }
 
     const data: Partial<PlotData>[] = [];
 
@@ -232,8 +257,8 @@ export class PlotService {
           layout: {
             autosize: false,
             showlegend: false,
-            width: plotSizePx,
-            height: plotSizePx,
+            width: plotSizePx.width,
+            height: plotSizePx.height,
             annotations:
               plot.showAxisLabels && plot.placeAxisLabelsInside
                 ? [...annotations, ...arrows]
@@ -279,18 +304,18 @@ export class PlotService {
         },
         {
           format: 'png',
-          width: plotSizePx,
-          height: plotSizePx,
+          width: plotSizePx.width,
+          height: plotSizePx.height,
           scale: options.applyScaleFactor ? scaleFactor : undefined,
         },
       );
 
       return {
         base64: image,
-        widthInPx: plotSizePx,
-        heightInPx: plotSizePx,
-        widthInPoints: plotSizePoints,
-        heightInPoints: plotSizePoints,
+        widthInPx: plotSizePx.width,
+        heightInPx: plotSizePx.height,
+        widthInPoints: plotSizePoints.width,
+        heightInPoints: plotSizePoints.height,
       };
     } catch {
       return;
