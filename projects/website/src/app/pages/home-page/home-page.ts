@@ -8,7 +8,7 @@ import {
   faGear,
   faStar,
 } from '@fortawesome/free-solid-svg-icons';
-import { faGithub } from '@fortawesome/free-brands-svg-icons';
+import { faGithub, faMicrosoft } from '@fortawesome/free-brands-svg-icons';
 
 @Component({
   selector: 'app-home-page',
@@ -22,4 +22,5 @@ export class HomePage {
   protected readonly faGear = faGear;
   protected readonly faBoltLightning = faBoltLightning;
   protected readonly faStar = faStar;
+  protected readonly faMicrosoft = faMicrosoft;
 }

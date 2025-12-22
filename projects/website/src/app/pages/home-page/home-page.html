@@ -7,12 +7,16 @@
 </app-hero>
 
 <app-content-container>
-  <div class="my-16 flex justify-center">
+  <div class="my-16 flex flex-col items-center space-y-2">
     <a
       class="rounded-sm bg-pink-600 px-8 py-4 text-white"
       href="https://marketplace.microsoft.com/en-us/product/office/WA200009741"
       target="_blank"
-      >Download (Microsoft Marketplace)</a
+      ><fa-icon [icon]="faMicrosoft" /> Download (Microsoft Marketplace)</a
+    >
+    <a href="https://github.com/boundfoxstudios/lehrgrapht">
+      <fa-icon [icon]="faGithub" />
+      <span class="pl-1 underline">GitHub (Source Code)</span></a
     >
   </div>
 </app-content-container>

@@ -19,23 +19,6 @@ export default tseslint.config(
     processor: angular.processInlineTemplates,
     rules: {
       'prefer-arrow-callback': 'error',
-
-      '@angular-eslint/directive-selector': [
-        'error',
-        {
-          type: 'attribute',
-          prefix: 'lg',
-          style: 'camelCase',
-        },
-      ],
-      '@angular-eslint/component-selector': [
-        'error',
-        {
-          type: 'element',
-          prefix: 'lg',
-          style: 'kebab-case',
-        },
-      ],
       '@typescript-eslint/prefer-readonly': 'error',
       '@typescript-eslint/no-empty-object-type': 'error',
       '@typescript-eslint/no-unsafe-function-type': 'error',
