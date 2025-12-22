@@ -97,6 +97,7 @@ export class PlotEditor {
     markers: [],
     showAxisLabels: true,
     placeAxisLabelsInside: false,
+    squarePlots: false,
   });
 
   protected editorForm = form(this.editorModel, schema => {
