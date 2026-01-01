@@ -15,7 +15,8 @@
     "watch": "ng build addin --watch --configuration development",
     "validate": "office-addin-manifest validate manifest.xml",
     "test": "ng test",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "prepare": "husky"
   },
   "config": {
     "app_to_debug": "word",
