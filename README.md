@@ -23,14 +23,14 @@ There's nothing special you need to do, just run `npm start` and you're good to 
 If you're developing on the Word integration, you need to run the add-in in Word.
 Word requires SSL to load the add-in.
 
-Microsoft provides a way to generate a certificate using `office-add-in-dev-certs`.
-Run `npx office-add-in-dev-certs install --machine` to install the office add-in dev certificates.
+Microsoft provides a way to generate a certificate using `office-addin-dev-certs`.
+Run `npx office-addin-dev-certs install --machine` to install the office add-in dev certificates.
 
 Then, create a file `.env.local` (you can just copy `.env` and rename it) and change the following variables:
 
 - `LEHRGRAPHT_SSL`: Set to `true` to enable SSL.
-- `LEHRGRAPHT_SSL_KEY`: Set to the path of your SSL key file provided by `office-add-in-dev-certs`.
-- `LEHRGRAPHT_SSL_CERT`: Set to the path of your SSL certificate file provided by `office-add-in-dev-certs`.
+- `LEHRGRAPHT_SSL_KEY`: Set to the path of your SSL key file provided by `office-addin-dev-certs`.
+- `LEHRGRAPHT_SSL_CERT`: Set to the path of your SSL certificate file provided by `office-addin-dev-certs`.
 
 Now, you run `npm start` to start the development server.
 Make sure, it binds to `https` on port `4200`.
