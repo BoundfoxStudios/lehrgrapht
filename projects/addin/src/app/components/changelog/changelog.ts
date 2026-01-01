@@ -1,10 +1,15 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { Header } from '../header/header';
 import { ContentContainer } from '../content-container/content-container';
 import { lehrgraphtVersion } from '../../../version';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserExperienceService } from '../../services/user-experience.service';
-import { AccordionContent, AccordionGroup, AccordionPanel, AccordionTrigger } from '@angular/aria/accordion';
+import {
+  AccordionContent,
+  AccordionGroup,
+  AccordionPanel,
+  AccordionTrigger,
+} from '@angular/aria/accordion';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -33,7 +38,9 @@ export class Changelog {
   private readonly userExperienceService = inject(UserExperienceService);
 
   private readonly queryParams = toSignal(this.activatedRoute.queryParamMap);
-  protected readonly showUpdateNotice = computed(() => !!this.queryParams()?.has('showUpdateNotice'));
+  protected readonly showUpdateNotice = computed(
+    () => !!this.queryParams()?.has('showUpdateNotice'),
+  );
 
   protected proceed(): void {
     this.userExperienceService.hasSeenCurrentChangelog(lehrgraphtVersion);
