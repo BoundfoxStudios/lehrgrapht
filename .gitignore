@@ -42,3 +42,4 @@ __screenshots__/
 .DS_Store
 Thumbs.db
 /.env.local
+/projects/addin/src/version.g.ts
