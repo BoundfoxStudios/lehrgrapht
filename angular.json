@@ -17,7 +17,7 @@
       "schematics": {},
       "root": "projects/website",
       "sourceRoot": "projects/website/src",
-      "prefix": "app",
+      "prefix": "lgw",
       "architect": {
         "build": {
           "builder": "@angular/build:application",
@@ -93,7 +93,7 @@
       "schematics": {},
       "root": "projects/addin",
       "sourceRoot": "projects/addin/src",
-      "prefix": "app",
+      "prefix": "lg",
       "architect": {
         "build": {
           "builder": "@angular/build:application",
@@ -118,6 +118,12 @@
           },
           "configurations": {
             "production": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/addin/src/version.ts",
+                  "with": "projects/addin/src/version.g.ts"
+                }
+              ],
               "budgets": [
                 {
                   "type": "initial",

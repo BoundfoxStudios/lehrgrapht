@@ -11,6 +11,7 @@
     "build": "ng build addin --base-href=\"${BASE_HREF}\"",
     "build:website": "ng build website",
     "prepare-deployment": "gulp prepareDeployment",
+    "write-version-file": "gulp writeVersionFile",
     "watch": "ng build addin --watch --configuration development",
     "validate": "office-addin-manifest validate manifest.xml",
     "test": "ng test",

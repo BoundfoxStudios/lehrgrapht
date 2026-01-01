@@ -35,6 +35,9 @@ jobs:
         id: version
         run: echo "value=${{ steps.read_version.outputs.value || 'develop' }}" >> $GITHUB_OUTPUT
       - run: npm ci
+      - run: npm run write-version-file
+        env:
+          APP_VERSION: ${{ steps.version.outputs.value }}
       - run: npm run build
         env:
           BASE_HREF: /addin/${{steps.version.outputs.value}}/

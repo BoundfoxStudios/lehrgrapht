@@ -24,10 +24,10 @@ export class FirstRunExperience {
   protected readonly faMapPin = faMapPin;
 
   private readonly router = inject(Router);
-  private readonly firstRunExperienceService = inject(UserExperienceService);
+  private readonly userExperienceService = inject(UserExperienceService);
 
   protected proceed(): void {
-    this.firstRunExperienceService.hadFirstRunExperience();
+    this.userExperienceService.hadFirstRunExperience();
 
     void this.router.navigate(['/plot/list']);
   }

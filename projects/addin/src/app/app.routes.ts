@@ -7,6 +7,8 @@ import { redirectToFirstRunExperience } from './components/first-run-experience/
 import { wordForWebNoticeGuard } from './components/word-for-web-notice/word-for-web-notice.guard';
 import { WordForWebNotice } from './components/word-for-web-notice/word-for-web-notice.component';
 import { DebugInfo } from './components/debug-info/debug-info';
+import { Changelog } from './components/changelog/changelog';
+import { changelogGuard } from './components/changelog/changelog.guard';
 
 export const routes: Routes = [
   {
@@ -16,7 +18,7 @@ export const routes: Routes = [
   },
   {
     path: 'plot',
-    canActivate: [wordForWebNoticeGuard],
+    canActivate: [wordForWebNoticeGuard, changelogGuard],
     children: [
       {
         path: '',
@@ -44,6 +46,10 @@ export const routes: Routes = [
         component: DebugInfo,
       },
     ],
+  },
+  {
+    path: 'changelog',
+    component: Changelog,
   },
   {
     path: 'first-run-experience',
