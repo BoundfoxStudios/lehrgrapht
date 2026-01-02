@@ -89,6 +89,7 @@ query {
       labels: ["enhancement", "bug"]
       first: 10
       orderBy: { direction: DESC, field: UPDATED_AT }
+      states: [OPEN]
     ) {
       totalCount
       edges {
