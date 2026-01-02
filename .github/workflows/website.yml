@@ -5,6 +5,8 @@ on:
       - main
     paths:
       - 'projects/website/**'
+  issues:
+  issue_comment:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

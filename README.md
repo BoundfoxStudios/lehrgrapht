@@ -2,7 +2,7 @@
 
 LehrGrapht is a simple math plotter Word add-in targeting teachers using the FunkFix macro, that is not available with macOS anymore.
 
-## Development
+## Development - AddIn
 
 ### Environment setup
 
@@ -39,3 +39,11 @@ Finally, you can run `npm run start:office`.
 This will open Word and load the add-in.
 
 When you're done, run `npm run stop:office`.
+
+## Development - Website
+
+You can start the development server for the website with `npm run start:website`.
+
+There's an environment variable `LEHRGRAPHT_WEBSITE_GITHUB_TOKEN`.
+You don't need to provide a value for it.
+If it's set with the correct permissions it will grab a list of issues from GitHub and displays it as a roadmap.

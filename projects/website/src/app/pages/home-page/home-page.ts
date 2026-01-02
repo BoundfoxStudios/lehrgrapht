@@ -9,10 +9,11 @@ import {
   faStar,
 } from '@fortawesome/free-solid-svg-icons';
 import { faGithub, faMicrosoft } from '@fortawesome/free-brands-svg-icons';
+import { KnownIssues } from '../../components/known-issues/known-issues';
 
 @Component({
   selector: 'lgw-home-page',
-  imports: [Hero, ContentContainer, FaIconComponent],
+  imports: [Hero, ContentContainer, FaIconComponent, KnownIssues],
   templateUrl: './home-page.html',
   styleUrl: './home-page.css',
 })

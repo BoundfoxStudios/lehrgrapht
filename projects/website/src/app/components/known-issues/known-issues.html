@@ -1,0 +1,80 @@
+<h2 class="mb-4 text-2xl font-bold">Bekannte Fehler / geplante Features</h2>
+
+@let data = issues.value();
+
+<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+  @for (issue of data?.issues; track issue.id) {
+    <div
+      class="bg-neutral-primary-soft border-default rounded-base block flex flex-col border p-6 shadow-xs"
+    >
+      <div class="flex justify-between space-x-4">
+        <div>
+          <a [href]="issue.url">
+            <h5 class="text-heading text-2xl font-semibold tracking-tight">
+              {{ issue.title }}
+            </h5>
+          </a>
+        </div>
+        <div>
+          @if (issue.isBug) {
+            <span
+              class="bg-danger-soft text-fg-danger-strong border-danger-subtle rounded border px-1.5 py-0.5 text-xs font-medium whitespace-nowrap"
+              ><fa-icon [icon]="faBug" /> Bug</span
+            >
+          } @else if (issue.isFeature) {
+            <span
+              class="bg-success-soft text-fg-success-strong border-success-subtle rounded border px-1.5 py-0.5 text-xs font-medium whitespace-nowrap"
+              ><fa-icon [icon]="faMagicWandSparkles" /> Feature</span
+            >
+          }
+        </div>
+      </div>
+      <p class="text-body-subtle mb-2 text-sm">{{ issue.createdAt | date }}</p>
+      <div class="text-body mb-3">
+        {{ issue.body | truncate }}
+      </div>
+      <div class="mt-auto flex justify-between">
+        <a
+          class="text-fg-brand inline-flex items-center font-medium hover:underline"
+          [href]="issue.url"
+        >
+          Mehr anzeigen
+          <fa-icon
+            class="pl-1"
+            [icon]="faExternalLink"
+            size="sm"
+          />
+        </a>
+        <div class="text-gray-500">
+          {{ issue.comments }} <fa-icon [icon]="faComment" />
+          {{ issue.reactions }} <fa-icon [icon]="faHeart" />
+        </div>
+      </div>
+    </div>
+  } @empty {
+    Aktuell gibt es keine bekannten Fehler oder geplante Features. Falls Du
+    einen Fehler melden oder Feature vorschlagen möchtest, dann schau entweder
+    direkt auf
+    <a href="https://github.com/boundfoxstudios/lehrgrapht/issues">
+      <fa-icon [icon]="faGithub" />
+      <span class="pl-1 underline">GitHub</span></a
+    >
+    oder schreib eine E-Mail an den Entwickler:
+    <a
+      class="underline"
+      href="mailto:support@lehrgrapht.de"
+      >support&#64;lehrgrapht.de</a
+    >
+  }
+</div>
+
+@if ((data?.totalCount ?? 0) > 10) {
+  <p class="mt-4">
+    Zeige 10 von {{ data?.totalCount }} Items. Alle auf
+    <a href="https://github.com/boundfoxstudios/lehrgrapht/issues">
+      <fa-icon [icon]="faGithub" />
+      <span class="pl-1 underline">GitHub</span></a
+    >
+    anzeigen.
+  </p>
+}
