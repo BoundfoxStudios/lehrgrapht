@@ -86,7 +86,7 @@ export class GitHubService {
 query {
   repository(owner: "BoundfoxStudios", name: "lehrgrapht") {
     issues(
-      labels: ["show-on-website"]
+      labels: ["enhancement", "bug"]
       first: 10
       orderBy: { direction: DESC, field: UPDATED_AT }
     ) {
