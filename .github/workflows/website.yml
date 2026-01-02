@@ -25,6 +25,8 @@ jobs:
           node-version-file: .nvmrc
       - run: npm ci
       - run: npm run build:website
+        env:
+          LEHRGRAPHT_WEBSITE_GITHUB_TOKEN: ${{ secrets.LEHRGRAPHT_WEBSITE_GITHUB_TOKEN }}
       - run: npm run prepare-deployment
       - uses: SamKirkland/FTP-Deploy-Action@v4.3.6
         with:
