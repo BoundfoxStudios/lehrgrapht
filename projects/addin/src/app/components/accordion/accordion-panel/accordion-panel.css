@@ -1,0 +1,9 @@
+@reference 'tailwindcss';
+
+:host {
+  @apply flex flex-col;
+
+  &.is-collapsed {
+    @apply border-b border-b-white;
+  }
+}

@@ -4,34 +4,18 @@ import { ContentContainer } from '../content-container/content-container';
 import { lehrgraphtVersion } from '../../../version';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserExperienceService } from '../../services/user-experience.service';
-import {
-  AccordionContent,
-  AccordionGroup,
-  AccordionPanel,
-  AccordionTrigger,
-} from '@angular/aria/accordion';
-import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { Accordion } from '../accordion/accordion';
+import { AccordionPanel } from '../accordion/accordion-panel/accordion-panel';
 
 @Component({
   selector: 'lg-changelog',
-  imports: [
-    Header,
-    ContentContainer,
-    AccordionGroup,
-    AccordionTrigger,
-    AccordionPanel,
-    AccordionContent,
-    FaIconComponent,
-  ],
+  imports: [Header, ContentContainer, Accordion, AccordionPanel],
   templateUrl: './changelog.html',
   styleUrl: './changelog.css',
 })
 export class Changelog {
   protected readonly lehrgraphtVersion = lehrgraphtVersion;
-  protected readonly faMinus = faMinus;
-  protected readonly faPlus = faPlus;
 
   private readonly router = inject(Router);
   private readonly activatedRoute = inject(ActivatedRoute);

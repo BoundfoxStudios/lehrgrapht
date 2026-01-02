@@ -1,65 +1,39 @@
 <lg-header title="Update-Notizen" />
 
-<lg-content-container class="flex-col space-y-4">
-  @if (showUpdateNotice()) {
+@if (showUpdateNotice()) {
+  <lg-content-container>
     <p class="font-bold">
       LehrGrapht wurde auf die Version {{ lehrgraphtVersion }} aktualisiert.
     </p>
-  }
+  </lg-content-container>
+}
 
-  <div
-    class="flex flex-col"
-    ngAccordionGroup
+<lg-accordion class="mt-4 block">
+  <lg-accordion-panel
+    [isExpanded]="true"
+    title="Version 1.1.0"
   >
-    <h2
-      class="flex cursor-pointer justify-between text-2xl font-bold outline-0"
-      #v110Trigger="ngAccordionTrigger"
-      [expanded]="true"
-      ngAccordionTrigger
-      panelId="1.1.0"
+    <lg-content-container>
+      <ul class="ml-4 list-disc">
+        <li>
+          Verbesserte Anzeige, wenn das Task Panel in Word vergrößert wird.
+        </li>
+        <li>
+          Anzeige der Update-Notizen, wenn ein neues Update installiert wurde.
+        </li>
+      </ul></lg-content-container
     >
-      Version 1.1.0
+  </lg-accordion-panel>
+  <lg-accordion-panel title="Version 1.0.0">
+    <lg-content-container>
+      <ul class="ml-4 list-disc">
+        <li>Erstes Release von LehrGrapht.</li>
+      </ul>
+    </lg-content-container>
+  </lg-accordion-panel>
+</lg-accordion>
 
-      <fa-icon [icon]="v110Trigger.expanded() ? faMinus : faPlus" />
-    </h2>
-    <div
-      ngAccordionPanel
-      panelId="1.1.0"
-    >
-      <ng-template ngAccordionContent>
-        <ul class="mb-4 ml-8 list-disc">
-          <li>
-            Verbesserte Anzeige, wenn das Task Panel in Word vergrößert wird.
-          </li>
-          <li>
-            Anzeige der Update-Notizen, wenn ein neues Update installiert wurde.
-          </li>
-        </ul>
-      </ng-template>
-    </div>
-
-    <h2
-      class="flex cursor-pointer justify-between text-2xl font-bold outline-0"
-      #v100Trigger="ngAccordionTrigger"
-      ngAccordionTrigger
-      panelId="1.0.0"
-    >
-      Version 1.0.0
-
-      <fa-icon [icon]="v100Trigger.expanded() ? faMinus : faPlus" />
-    </h2>
-    <div
-      ngAccordionPanel
-      panelId="1.0.0"
-    >
-      <ng-template ngAccordionContent>
-        <ul class="ml-8 list-disc">
-          <li>Erstes Release von LehrGrapht.</li>
-        </ul>
-      </ng-template>
-    </div>
-  </div>
-
+<lg-content-container class="flex-col space-y-4">
   <div class="mt-4">
     <button
       class="app-button"

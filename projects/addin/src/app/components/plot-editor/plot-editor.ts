@@ -1,4 +1,11 @@
-import { Component, effect, inject, resource, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  inject,
+  resource,
+  signal,
+} from '@angular/core';
 import { Header } from '../header/header';
 import { Field, form, SchemaPath, validate } from '@angular/forms/signals';
 import { PlotPreview } from '../plot-preview/plot-preview';
@@ -15,6 +22,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { modelIdPrefix, WordService } from '../../services/word/word.service';
 import { Section } from '../section/section';
+import { Accordion } from '../accordion/accordion';
+import { AccordionPanel } from '../accordion/accordion-panel/accordion-panel';
 
 const colors = ['#3737d0', '#af2c2c', '#2a8c1a', '#f18238'];
 
@@ -53,6 +62,8 @@ const lessThanValidator = (
     FaIconComponent,
     MathDisplay,
     Section,
+    Accordion,
+    AccordionPanel,
   ],
   templateUrl: './plot-editor.html',
   styleUrl: './plot-editor.css',
@@ -98,6 +109,12 @@ export class PlotEditor {
     showAxisLabels: true,
     placeAxisLabelsInside: false,
     squarePlots: false,
+  });
+
+  protected rangeTitle = computed(() => {
+    const range = this.editorModel().range;
+
+    return `Grenzen (x: ${range.x.min}/${range.x.max}, y: ${range.y.min}/${range.y.max})`;
   });
 
   protected editorForm = form(this.editorModel, schema => {

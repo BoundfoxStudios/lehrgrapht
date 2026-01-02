@@ -1,0 +1,14 @@
+<button
+  class="bg-brand flex flex-1 cursor-pointer justify-between px-2 py-1 text-white outline-0"
+  (click)="toggle()"
+  type="button"
+>
+  {{ title() }}
+
+  <fa-icon [icon]="isExpanded() ? faChevronUp : faChevronDown" />
+</button>
+@if (isExpanded()) {
+  <div>
+    <ng-content />
+  </div>
+}

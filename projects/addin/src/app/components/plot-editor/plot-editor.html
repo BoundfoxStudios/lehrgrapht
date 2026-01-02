@@ -7,12 +7,12 @@
   title="Plot Editor"
 />
 
-<lg-content-container class="flex">
-  <form
-    class="flex-1 space-y-4"
-    (ngSubmit)="sendToWord()"
-  >
-    <div class="group">
+<form
+  class="flex-1 space-y-4"
+  (ngSubmit)="sendToWord()"
+>
+  <lg-content-container class="flex flex-1">
+    <div class="group flex-1">
       <label
         class="text-heading mb-2.5 block text-sm font-medium"
         for="name"
@@ -25,211 +25,239 @@
         type="text"
       />
     </div>
+  </lg-content-container>
 
-    <div class="space-y-2">
-      <div class="grid grid-cols-2 gap-6">
-        <div class="group">
-          <label
-            class="text-heading mb-2.5 block text-sm font-medium"
-            for="min-x"
-            >Min X</label
-          >
-          <input
-            class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
-            id="min-x"
-            [field]="editorForm.range.x.min"
-            type="number"
-          />
-        </div>
-        <div class="group">
-          <label
-            class="text-heading mb-2.5 block text-sm font-medium"
-            for="max-x"
-            >Max X</label
-          >
-          <input
-            class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
-            id="max-x"
-            [field]="editorForm.range.x.max"
-            type="number"
-          />
-        </div>
-      </div>
+  <lg-accordion>
+    <lg-accordion-panel
+      [title]="rangeTitle()"
+      persistenceId="range"
+    >
+      <lg-content-container class="flex flex-col space-y-2">
+        <div class="space-y-2">
+          <div class="grid grid-cols-2 gap-6">
+            <div class="group">
+              <label
+                class="text-heading mb-2.5 block text-sm font-medium"
+                for="min-x"
+                >Min X</label
+              >
+              <input
+                class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
+                id="min-x"
+                [field]="editorForm.range.x.min"
+                type="number"
+              />
+            </div>
+            <div class="group">
+              <label
+                class="text-heading mb-2.5 block text-sm font-medium"
+                for="max-x"
+                >Max X</label
+              >
+              <input
+                class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
+                id="max-x"
+                [field]="editorForm.range.x.max"
+                type="number"
+              />
+            </div>
+          </div>
 
-      @if (editorForm.range.x.min().errors().length) {
-        <ul>
-          @for (error of editorForm.range.x.min().errors(); track error) {
-            <li>{{ error.message }}</li>
+          @if (editorForm.range.x.min().errors().length) {
+            <ul>
+              @for (error of editorForm.range.x.min().errors(); track error) {
+                <li>{{ error.message }}</li>
+              }
+            </ul>
           }
-        </ul>
-      }
-    </div>
-    <div class="space-y-2">
-      <div class="grid grid-cols-2 gap-6">
-        <div class="group">
-          <label
-            class="text-heading mb-2.5 block text-sm font-medium"
-            for="min-y"
-            >Min Y</label
-          >
-          <input
-            class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
-            id="min-y"
-            [field]="editorForm.range.y.min"
-            type="number"
-          />
         </div>
-        <div class="group">
-          <label
-            class="text-heading mb-2.5 block text-sm font-medium"
-            for="max-y"
-            >Max Y</label
-          >
-          <input
-            class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
-            id="max-y"
-            [field]="editorForm.range.y.max"
-            type="number"
-          />
-        </div>
-      </div>
+        <div class="space-y-2">
+          <div class="grid grid-cols-2 gap-6">
+            <div class="group">
+              <label
+                class="text-heading mb-2.5 block text-sm font-medium"
+                for="min-y"
+                >Min Y</label
+              >
+              <input
+                class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
+                id="min-y"
+                [field]="editorForm.range.y.min"
+                type="number"
+              />
+            </div>
+            <div class="group">
+              <label
+                class="text-heading mb-2.5 block text-sm font-medium"
+                for="max-y"
+                >Max Y</label
+              >
+              <input
+                class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
+                id="max-y"
+                [field]="editorForm.range.y.max"
+                type="number"
+              />
+            </div>
+          </div>
 
-      @if (editorForm.range.y.min().errors().length) {
-        <ul>
-          @for (error of editorForm.range.y.min().errors(); track error) {
-            <li>{{ error.message }}</li>
+          @if (editorForm.range.y.min().errors().length) {
+            <ul>
+              @for (error of editorForm.range.y.min().errors(); track error) {
+                <li>{{ error.message }}</li>
+              }
+            </ul>
           }
-        </ul>
-      }
-    </div>
-    <div>
-      <div class="mb-1 flex items-center">
-        <input
-          class="border-default-medium bg-neutral-secondary-medium focus:ring-brand-soft h-4 w-4 rounded-xs border focus:ring-2"
-          id="show-axis-labels"
-          [field]="editorForm.showAxisLabels"
-          type="checkbox"
-        />
-        <label
-          class="text-heading ms-2 text-sm font-medium select-none"
-          for="show-axis-labels"
-          >Achsenbeschriftung</label
-        >
-      </div>
-      @if (editorModel().showAxisLabels) {
-        <div class="mb-4 ml-4 flex items-center">
+        </div>
+      </lg-content-container>
+    </lg-accordion-panel>
+    <lg-accordion-panel
+      title="Einstellungen"
+      persistenceId="settings"
+    >
+      <lg-content-container class="flex flex-col">
+        <div class="mb-1 flex items-center">
           <input
             class="border-default-medium bg-neutral-secondary-medium focus:ring-brand-soft h-4 w-4 rounded-xs border focus:ring-2"
-            id="place-axis-labels-inside"
-            [field]="editorForm.placeAxisLabelsInside"
+            id="show-axis-labels"
+            [field]="editorForm.showAxisLabels"
             type="checkbox"
           />
           <label
             class="text-heading ms-2 text-sm font-medium select-none"
-            for="place-axis-labels-inside"
-            >An 0-Linie anzeigen</label
+            for="show-axis-labels"
+            >Achsenbeschriftung</label
           >
         </div>
-      }
-      <div class="mb-1 flex items-center">
-        <input
-          class="border-default-medium bg-neutral-secondary-medium focus:ring-brand-soft h-4 w-4 rounded-xs border focus:ring-2"
-          id="square-plots"
-          [field]="editorForm.squarePlots"
-          type="checkbox"
-        />
-        <label
-          class="text-heading ms-2 text-sm font-medium select-none"
-          for="square-plots"
-          >Plot quadratisch generieren</label
-        >
-      </div>
-    </div>
-
-    <div class="text-heading mb-2.5 flex justify-between text-sm font-medium">
-      Funktionen f(x)=
-      <span class="inline-block"
-        ><button
-          (click)="addFx()"
-          type="button"
-        >
-          <fa-icon [icon]="faPlusCircle" /></button
-      ></span>
-    </div>
-    @for (control of editorForm.fnx; let index = $index; track index) {
-      <div>
-        <div class="flex items-center space-x-2">
+        @if (editorModel().showAxisLabels) {
+          <div class="mb-4 ml-4 flex items-center">
+            <input
+              class="border-default-medium bg-neutral-secondary-medium focus:ring-brand-soft h-4 w-4 rounded-xs border focus:ring-2"
+              id="place-axis-labels-inside"
+              [field]="editorForm.placeAxisLabelsInside"
+              type="checkbox"
+            />
+            <label
+              class="text-heading ms-2 text-sm font-medium select-none"
+              for="place-axis-labels-inside"
+              >An 0-Linie anzeigen</label
+            >
+          </div>
+        }
+        <div class="mb-1 flex items-center">
           <input
-            class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
-            [field]="control.fnx"
-            type="text"
-            spellcheck="false"
-            autocorrect="off"
-            autocomplete="off"
-            autocapitalize="off"
+            class="border-default-medium bg-neutral-secondary-medium focus:ring-brand-soft h-4 w-4 rounded-xs border focus:ring-2"
+            id="square-plots"
+            [field]="editorForm.squarePlots"
+            type="checkbox"
           />
-
-          <input
-            class="h-8 w-8 shrink-0 border-none"
-            [field]="control.color"
-            type="color"
-          />
-
-          <button
-            (click)="removeFx(index)"
-            type="button"
+          <label
+            class="text-heading ms-2 text-sm font-medium select-none"
+            for="square-plots"
+            >Plot quadratisch generieren</label
           >
-            <fa-icon [icon]="faTrashCan" />
-          </button>
         </div>
-        <lg-math-display [math]="control.fnx().value()" />
-      </div>
-    }
-
-    <div class="text-heading mb-2.5 flex justify-between text-sm font-medium">
-      Punkte (x/y)
-      <span class="inline-block"
-        ><button
-          (click)="addMarker()"
-          type="button"
-        >
-          <fa-icon [icon]="faPlusCircle" /></button
-      ></span>
-    </div>
-    @for (control of editorForm.markers; let index = $index; track index) {
-      <div>
-        <div class="flex items-center space-x-2">
-          <input
-            class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
-            [field]="control.text"
-            type="text"
-            spellcheck="false"
-            autocorrect="off"
-            autocomplete="off"
-            autocapitalize="off"
-          />
-
-          <input
-            class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
-            [field]="control.x"
-            type="number"
-          />
-          <input
-            class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
-            [field]="control.y"
-            type="number"
-          />
-
-          <button
-            (click)="removeMarker(index)"
-            type="button"
+      </lg-content-container>
+    </lg-accordion-panel>
+    <lg-accordion-panel
+      title="Funktionen f(x)"
+      persistenceId="functions"
+    >
+      <lg-content-container class="flex flex-col space-y-2">
+        <div class="text-heading mb-2.5 flex justify-end text-sm font-medium">
+          <span class="inline-block"
+            ><button
+              (click)="addFx()"
+              type="button"
+            >
+              <fa-icon [icon]="faPlusCircle" /> Funktion hinzufügen
+            </button></span
           >
-            <fa-icon [icon]="faTrashCan" />
-          </button>
         </div>
-      </div>
-    }
+        @for (control of editorForm.fnx; let index = $index; track index) {
+          <div>
+            <div class="flex items-center space-x-2">
+              <input
+                class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
+                [field]="control.fnx"
+                type="text"
+                spellcheck="false"
+                autocorrect="off"
+                autocomplete="off"
+                autocapitalize="off"
+              />
 
+              <input
+                class="h-8 w-8 shrink-0 border-none"
+                [field]="control.color"
+                type="color"
+              />
+
+              <button
+                (click)="removeFx(index)"
+                type="button"
+              >
+                <fa-icon [icon]="faTrashCan" />
+              </button>
+            </div>
+            <lg-math-display [math]="control.fnx().value()" />
+          </div>
+        }
+      </lg-content-container>
+    </lg-accordion-panel>
+    <lg-accordion-panel
+      title="Punkte (x/y)"
+      persistenceId="markers"
+    >
+      <lg-content-container class="flex flex-col space-y-2">
+        <div class="text-heading mb-2.5 flex justify-end text-sm font-medium">
+          <span class="inline-block"
+            ><button
+              (click)="addMarker()"
+              type="button"
+            >
+              <fa-icon [icon]="faPlusCircle" /> Punkt hinzufügen
+            </button></span
+          >
+        </div>
+        @for (control of editorForm.markers; let index = $index; track index) {
+          <div>
+            <div class="flex items-center space-x-2">
+              <input
+                class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
+                [field]="control.text"
+                type="text"
+                spellcheck="false"
+                autocorrect="off"
+                autocomplete="off"
+                autocapitalize="off"
+              />
+
+              <input
+                class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
+                [field]="control.x"
+                type="number"
+              />
+              <input
+                class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
+                [field]="control.y"
+                type="number"
+              />
+
+              <button
+                (click)="removeMarker(index)"
+                type="button"
+              >
+                <fa-icon [icon]="faTrashCan" />
+              </button>
+            </div>
+          </div>
+        }
+      </lg-content-container>
+    </lg-accordion-panel>
+  </lg-accordion>
+
+  <lg-content-container>
     <button
       class="app-button"
       type="submit"
@@ -240,8 +268,8 @@
         In Word einbinden
       }
     </button>
-  </form>
-</lg-content-container>
+  </lg-content-container>
+</form>
 
 @let fnx = editorForm().value().fnx;
 @if (fnx) {
