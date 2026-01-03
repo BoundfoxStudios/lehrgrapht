@@ -3,6 +3,7 @@ import { Header } from '../header/header';
 import { ContentContainer } from '../content-container/content-container';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
+import { lehrgraphtVersion } from '../../../version';
 
 @Component({
   selector: 'lg-info',
@@ -12,4 +13,5 @@ import { faGithub } from '@fortawesome/free-brands-svg-icons';
 })
 export class Info {
   protected readonly faGithub = faGithub;
+  protected readonly lehrgraphtVersion = lehrgraphtVersion;
 }
