@@ -91,8 +91,8 @@ export class PlotEditor {
     name: 'Neuer Plot',
     range: {
       x: {
-        min: -6,
-        max: 6,
+        min: -3,
+        max: 3,
       },
       y: {
         min: -3,
@@ -109,6 +109,7 @@ export class PlotEditor {
     showAxisLabels: true,
     placeAxisLabelsInside: false,
     squarePlots: false,
+    automaticallyAdjustLimitsToValueRange: false,
   });
 
   protected rangeTitle = computed(() => {
