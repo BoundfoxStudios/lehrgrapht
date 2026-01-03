@@ -11,7 +11,6 @@ import { Field, form, SchemaPath, validate } from '@angular/forms/signals';
 import { PlotPreview } from '../plot-preview/plot-preview';
 import { PlotService } from '../../services/plot.service';
 import { FormsModule } from '@angular/forms';
-import { v7 } from 'uuid';
 import { ContentContainer } from '../content-container/content-container';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faPlusCircle, faTrashCan } from '@fortawesome/free-solid-svg-icons';
@@ -20,7 +19,7 @@ import { Plot } from '../../models/plot';
 import { ActivatedRoute, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
-import { modelIdPrefix, WordService } from '../../services/word/word.service';
+import { WordService } from '../../services/word/word.service';
 import { Section } from '../section/section';
 import { Accordion } from '../accordion/accordion';
 import { AccordionPanel } from '../accordion/accordion-panel/accordion-panel';
@@ -154,13 +153,11 @@ export class PlotEditor {
       return;
     }
 
-    const wordImage = plot.base64.substring('data:image/png;base64,'.length);
-
-    const id = existingPlot ? existingPlot.id : `${modelIdPrefix}${v7()}`;
+    const id = existingPlot ? existingPlot.id : this.plotService.generateId();
     await this.wordService.upsertPicture({
       model,
       id,
-      base64Picture: wordImage,
+      base64Picture: plot.base64,
       existingId: existingPlot?.id,
       height: plot.heightInPoints,
       width: plot.widthInPoints,

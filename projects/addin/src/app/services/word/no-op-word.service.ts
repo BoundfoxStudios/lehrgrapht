@@ -28,6 +28,10 @@ export class NoOpWordService extends WordService {
     // noop.
   }
 
+  override clone(_id: string): Promise<string | undefined> {
+    return Promise.resolve(undefined);
+  }
+
   override async upsertPicture(_options: {
     base64Picture: string;
     height: number;

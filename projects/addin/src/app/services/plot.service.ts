@@ -3,6 +3,8 @@ import { EvalFunction, Matrix } from 'mathjs';
 import { Injectable } from '@angular/core';
 import Plotly, { Annotations, PlotData } from 'plotly.js-dist-min';
 import { Plot } from '../models/plot';
+import { modelIdPrefix } from './word/word.service';
+import { v7 } from 'uuid';
 
 @Injectable({ providedIn: 'root' })
 export class PlotService {
@@ -328,6 +330,14 @@ export class PlotService {
     } catch {
       return;
     }
+  }
+
+  generateId(): string {
+    return `${modelIdPrefix}${v7()}`;
+  }
+
+  extractRawPictureDataFromBase64Picture(base64Picture: string): string {
+    return base64Picture.substring('data:image/png;base64,'.length);
   }
 
   private createRanges(plot: Plot): {

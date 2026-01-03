@@ -39,6 +39,13 @@ export abstract class WordService {
   abstract delete(id: string): Promise<void>;
 
   /**
+   * Clones a plot.
+   * @param id
+   * @returns A new ID when successful.
+   */
+  abstract clone(id: string): Promise<string | undefined>;
+
+  /**
    * Selects a plot in the document.
    * Word might scroll to it, but it's not guaranteed.
    * @param id

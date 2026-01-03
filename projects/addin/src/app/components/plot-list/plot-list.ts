@@ -1,9 +1,10 @@
 import { Component, inject, resource } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { Header } from '../header/header';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import {
   faBug,
+  faCopy,
   faInfoCircle,
   faPen,
   faRefresh,
@@ -25,7 +26,8 @@ export class PlotList {
   protected readonly faInfoCircle = faInfoCircle;
   protected readonly faBug = faBug;
 
-  readonly wordService = inject(WordService);
+  protected readonly wordService = inject(WordService);
+  private readonly router = inject(Router);
 
   protected plots = resource<WordPlot[], undefined>({
     loader: () => this.wordService.list(),
@@ -37,7 +39,17 @@ export class PlotList {
     this.plots.reload();
   }
 
+  protected async clonePlot(id: string): Promise<void> {
+    const newId = await this.wordService.clone(id);
+
+    if (newId) {
+      await this.router.navigate(['/plot/editor', newId]);
+    }
+  }
+
   protected select(id: string): Promise<void> {
     return this.wordService.select(id);
   }
+
+  protected readonly faCopy = faCopy;
 }

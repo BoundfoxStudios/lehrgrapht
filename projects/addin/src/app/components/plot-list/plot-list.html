@@ -64,11 +64,20 @@
           <a
             class="app-button small"
             [routerLink]="['/plot/editor', plot.id]"
+            title="Plot editieren"
             ><fa-icon [icon]="faPen"
           /></a>
           <button
             class="app-button small"
+            (click)="clonePlot(plot.id)"
+            title="Plot klonen"
+          >
+            <fa-icon [icon]="faCopy" />
+          </button>
+          <button
+            class="app-button small"
             (click)="deletePlot(plot.id)"
+            title="Plot löschen"
           >
             <fa-icon [icon]="faTrashCan" />
           </button>

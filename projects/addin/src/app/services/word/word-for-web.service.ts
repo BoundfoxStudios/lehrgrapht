@@ -2,10 +2,12 @@ import { Plot } from '../../models/plot';
 import { PlotGenerationSettings, WordPlot, WordService } from './word.service';
 import { inject, Injectable } from '@angular/core';
 import { DocumentStorageService } from '../document-storage.service';
+import { PlotService } from '../plot.service';
 
 @Injectable()
 export class WordForWebService extends WordService {
   private readonly documentStorageService = inject(DocumentStorageService);
+  private readonly plotService = inject(PlotService);
 
   override plotGenerationSettings: PlotGenerationSettings = {
     applyScaleFactor: false,
@@ -57,6 +59,41 @@ export class WordForWebService extends WordService {
       image.delete();
       await this.documentStorageService.remove(id);
       await context.sync();
+    });
+  }
+
+  override clone(id: string): Promise<string | undefined> {
+    return Word.run(async () => {
+      const wordPlot = await this.get(id);
+
+      if (!wordPlot) {
+        return;
+      }
+
+      const clonedWordPlot = JSON.parse(
+        JSON.stringify(wordPlot),
+      ) as Required<WordPlot>;
+      clonedWordPlot.id = this.plotService.generateId();
+      clonedWordPlot.model.name += ' (Kopie)';
+
+      const plot = await this.plotService.generate(
+        clonedWordPlot.model,
+        this.plotGenerationSettings,
+      );
+
+      if (!plot) {
+        return;
+      }
+
+      await this.upsertPicture({
+        model: clonedWordPlot.model,
+        id: clonedWordPlot.id,
+        base64Picture: plot.base64,
+        height: plot.heightInPoints,
+        width: plot.widthInPoints,
+      });
+
+      return clonedWordPlot.id;
     });
   }
 
@@ -128,7 +165,9 @@ export class WordForWebService extends WordService {
       await context.sync();
 
       const picture = range.insertInlinePictureFromBase64(
-        options.base64Picture,
+        this.plotService.extractRawPictureDataFromBase64Picture(
+          options.base64Picture,
+        ),
         shouldReplace ? Word.InsertLocation.replace : Word.InsertLocation.end,
       );
       picture.altTextDescription = options.id;
