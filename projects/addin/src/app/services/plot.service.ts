@@ -144,6 +144,7 @@ export class PlotService {
     }
 
     const annotations = [
+      // x-labels.
       ...xAnnotationRange.map(x => ({
         x,
         y: 0,
@@ -153,16 +154,37 @@ export class PlotService {
         showarrow: false,
         xanchor: 'center',
         yanchor: 'top',
+        yshift: -2,
         font: {
           size: 10,
         },
       })),
+      // x-tick lines, remove the line that would be placed next to the x-axis arrow.
+      ...xAnnotationRange
+        .slice(0, xAnnotationRange.length - 1)
+        .filter(x => x !== 0)
+        .map(x => ({
+          x,
+          y: 0,
+          xref: 'x',
+          yref: 'y',
+          showarrow: true,
+          xanchor: 'center',
+          yanchor: 'top',
+          ax: 0,
+          ay: 6,
+          yshift: 3,
+          arrowhead: 0,
+          arrowwidth: 1,
+        })),
+      // y-tick lines.
       ...yAnnotationRange.map(y => ({
         x: 0,
         y,
         text: `${y}`,
         xref: 'x',
         yref: 'y',
+        xshift: -4,
         showarrow: false,
         xanchor: 'right',
         yanchor: 'center',
@@ -170,14 +192,32 @@ export class PlotService {
           size: 10,
         },
       })),
+      // y-tick lines, remove the line that would be placed next to the y-axis arrow.
+      ...yAnnotationRange
+        .slice(0, yAnnotationRange.length - 1)
+        .filter(y => y !== 0)
+        .map(y => ({
+          x: 0,
+          y,
+          xref: 'x',
+          yref: 'y',
+          showarrow: true,
+          xanchor: 'left',
+          yanchor: 'middle',
+          ax: 6,
+          xshift: -3,
+          ay: 0,
+          arrowhead: 0,
+          arrowwidth: 1,
+        })),
     ] as Partial<Annotations>[];
 
     const arrows = [
       {
-        x: 1,
+        x: xValueMax,
         y: 0,
         showarrow: true,
-        xref: 'paper',
+        xref: 'x',
         yref: 'y',
         ax: -20,
         ay: 0,
@@ -187,10 +227,10 @@ export class PlotService {
       },
       {
         x: 0,
-        y: 1,
+        y: yValueFlatMax,
         showarrow: true,
         xref: 'x',
-        yref: 'paper',
+        yref: 'y',
         ax: 0,
         ay: 20,
         arrowwidth: 1,

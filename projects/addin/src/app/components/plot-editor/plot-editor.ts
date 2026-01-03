@@ -106,7 +106,7 @@ export class PlotEditor {
     ],
     markers: [],
     showAxisLabels: true,
-    placeAxisLabelsInside: false,
+    placeAxisLabelsInside: true,
     squarePlots: false,
     automaticallyAdjustLimitsToValueRange: false,
   });
