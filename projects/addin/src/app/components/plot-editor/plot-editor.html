@@ -144,7 +144,7 @@
             >
           </div>
         }
-        <div class="mb-1 flex items-center">
+        <div class="mb-4 flex items-center">
           <input
             class="border-default-medium bg-neutral-secondary-medium focus:ring-brand-soft h-4 w-4 rounded-xs border focus:ring-2"
             id="square-plots"
@@ -155,6 +155,19 @@
             class="text-heading ms-2 text-sm font-medium select-none"
             for="square-plots"
             >Plot quadratisch generieren</label
+          >
+        </div>
+        <div class="flex items-center">
+          <input
+            class="border-default-medium bg-neutral-secondary-medium focus:ring-brand-soft h-4 w-4 rounded-xs border focus:ring-2"
+            id="limit-equals-value-range"
+            [field]="editorForm.automaticallyAdjustLimitsToValueRange"
+            type="checkbox"
+          />
+          <label
+            class="text-heading ms-2 text-sm font-medium select-none"
+            for="limit-equals-value-range"
+            >Grenzen automatisch dem Wertebereich anpassen</label
           >
         </div>
       </lg-content-container>

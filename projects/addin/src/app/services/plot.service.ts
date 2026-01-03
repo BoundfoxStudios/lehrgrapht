@@ -36,16 +36,16 @@ export class PlotService {
       return;
     }
 
-    const xValues = mathjs.range(plot.range.x.min, plot.range.x.max, 0.1, true);
+    const valueRanges = this.createRanges(plot);
     let yValues: Matrix[] | undefined;
 
     try {
       if (plot.fnx.length) {
         yValues = expressions.map(expression =>
-          xValues.map((x: number): number => expression.evaluate({ x })),
+          valueRanges.x.map((x: number): number => expression.evaluate({ x })),
         );
       } else {
-        yValues = [mathjs.range(plot.range.y.min, plot.range.y.max, 0.1, true)];
+        yValues = [valueRanges.y];
       }
     } catch {
       return;
@@ -60,7 +60,7 @@ export class PlotService {
 
     let cleanXValues: number[] = [];
     let cleanYValues: number[][] = yValues.map(() => []);
-    const xValuesArray = xValues.toArray() as number[];
+    const xValuesArray = valueRanges.xNumbers;
     const yValuesArray = yValues.map(y => y.toArray() as number[]);
 
     if (plot.fnx.length) {
@@ -74,14 +74,22 @@ export class PlotService {
         }
       }
     } else {
-      cleanXValues = xValues.toArray() as number[];
+      cleanXValues = valueRanges.xNumbers;
       cleanYValues = [yValues[0].toArray() as number[]];
     }
 
-    const valueRange = Math.max(...cleanXValues) - Math.min(...cleanXValues);
-    const yValueFlat = cleanYValues.flatMap(y => y);
-    const yValueFlatMin = Math.min(...yValueFlat);
-    const yValueFlatMax = Math.max(...yValueFlat);
+    const xValueFlat = plot.automaticallyAdjustLimitsToValueRange
+      ? cleanXValues
+      : valueRanges.xNumbers;
+    const xValueMin = mathjs.min(xValueFlat);
+    const xValueMax = mathjs.max(xValueFlat);
+    const xValueRange = xValueMax - xValueMin;
+
+    const yValueFlat = plot.automaticallyAdjustLimitsToValueRange
+      ? cleanYValues.flatMap(y => y)
+      : valueRanges.yNumbers;
+    const yValueFlatMin = mathjs.min(yValueFlat);
+    const yValueFlatMax = mathjs.max(yValueFlat);
     const yValueRange = yValueFlatMax - yValueFlatMin;
 
     const dtick = 0.5;
@@ -95,10 +103,10 @@ export class PlotService {
 
     const tickSquares = {
       x: plot.squarePlots
-        ? Math.max(valueRange, yValueRange) / dtick
-        : valueRange / dtick,
+        ? Math.max(xValueRange, yValueRange) / dtick
+        : xValueRange / dtick,
       y: plot.squarePlots
-        ? Math.max(valueRange, yValueRange) / dtick
+        ? Math.max(xValueRange, yValueRange) / dtick
         : yValueRange / dtick,
     };
 
@@ -270,12 +278,12 @@ export class PlotService {
               r: mmMargin.r * mmToInches * ppiBase,
             },
             xaxis: {
-              range: [Math.min(...cleanXValues), Math.max(...cleanXValues)],
+              range: [xValueMin, xValueMax],
               autorange: false,
               showticklabels:
                 plot.showAxisLabels && !plot.placeAxisLabelsInside,
               tickmode: 'linear',
-              dtick: 0.5,
+              dtick,
               scaleanchor: 'y',
               ticklabelstep: 2,
               gridcolor: '#a6a6a6',
@@ -289,7 +297,7 @@ export class PlotService {
               tickmode: 'linear',
               showticklabels:
                 plot.showAxisLabels && !plot.placeAxisLabelsInside,
-              dtick: 0.5,
+              dtick,
               ticklabelstep: 2,
               gridcolor: '#a6a6a6',
               tickfont: {
@@ -320,5 +328,30 @@ export class PlotService {
     } catch {
       return;
     }
+  }
+
+  private createRanges(plot: Plot): {
+    x: Matrix;
+    xNumbers: number[];
+    xMin: number;
+    xMax: number;
+    y: Matrix;
+    yNumbers: number[];
+    yMin: number;
+    yMax: number;
+  } {
+    const x = mathjs.range(plot.range.x.min, plot.range.x.max, 0.1, true);
+    const y = mathjs.range(plot.range.y.min, plot.range.y.max, 0.1, true);
+
+    return {
+      x,
+      xNumbers: x.toArray() as number[],
+      xMin: mathjs.min(x) as number,
+      xMax: mathjs.max(x) as number,
+      y,
+      yNumbers: y.toArray() as number[],
+      yMin: mathjs.min(y) as number,
+      yMax: mathjs.max(y) as number,
+    };
   }
 }
