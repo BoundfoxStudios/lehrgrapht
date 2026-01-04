@@ -155,6 +155,7 @@ export class PlotService {
         xanchor: 'center',
         yanchor: 'top',
         yshift: -2,
+        xshift: x === 0 ? 6 : undefined,
         font: {
           size: 10,
         },
