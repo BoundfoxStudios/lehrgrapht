@@ -5,6 +5,7 @@ import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import {
   faBug,
   faCopy,
+  faGear,
   faInfoCircle,
   faPen,
   faRefresh,
@@ -52,4 +53,5 @@ export class PlotList {
   }
 
   protected readonly faCopy = faCopy;
+  protected readonly faGear = faGear;
 }

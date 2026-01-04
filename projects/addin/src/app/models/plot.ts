@@ -5,6 +5,14 @@ export interface MathFunction {
   color: string;
 }
 
+export interface PlotSettings {
+  zeroLineWidth: number;
+  zeroLineColor: string;
+  gridLineWidth: number;
+  gridLineColor: string;
+  plotLineWidth: number;
+}
+
 export interface Plot {
   name: string;
   range: PlotRange;

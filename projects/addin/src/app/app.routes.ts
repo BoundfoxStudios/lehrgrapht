@@ -9,6 +9,7 @@ import { WordForWebNotice } from './components/word-for-web-notice/word-for-web-
 import { DebugInfo } from './components/debug-info/debug-info';
 import { Changelog } from './components/changelog/changelog';
 import { changelogGuard } from './components/changelog/changelog.guard';
+import { Settings } from './components/settings/settings';
 
 export const routes: Routes = [
   {
@@ -24,6 +25,10 @@ export const routes: Routes = [
         path: '',
         pathMatch: 'full',
         redirectTo: 'list',
+      },
+      {
+        path: 'settings',
+        component: Settings,
       },
       {
         path: 'list',

@@ -2,7 +2,7 @@ import * as mathjs from 'mathjs';
 import { EvalFunction, Matrix } from 'mathjs';
 import { Injectable } from '@angular/core';
 import Plotly, { Annotations, PlotData } from 'plotly.js-dist-min';
-import { Plot } from '../models/plot';
+import { Plot, PlotSettings } from '../models/plot';
 import { modelIdPrefix } from './word/word.service';
 import { v7 } from 'uuid';
 
@@ -10,6 +10,7 @@ import { v7 } from 'uuid';
 export class PlotService {
   async generate(
     plot: Plot,
+    plotSettings: PlotSettings,
     options: {
       applyScaleFactor: boolean;
     },
@@ -145,7 +146,7 @@ export class PlotService {
 
     const annotations = [
       // x-labels.
-      ...xAnnotationRange.map(x => ({
+      ...xAnnotationRange.slice(1, xAnnotationRange.length - 1).map(x => ({
         x,
         y: 0,
         text: `${x}`,
@@ -173,13 +174,13 @@ export class PlotService {
           xanchor: 'center',
           yanchor: 'top',
           ax: 0,
-          ay: 6,
-          yshift: 3,
+          ay: 4 * plotSettings.zeroLineWidth,
+          yshift: 2 * plotSettings.zeroLineWidth,
           arrowhead: 0,
-          arrowwidth: 1,
+          arrowwidth: plotSettings.zeroLineWidth,
         })),
       // y-tick lines.
-      ...yAnnotationRange.map(y => ({
+      ...yAnnotationRange.slice(1, yAnnotationRange.length - 1).map(y => ({
         x: 0,
         y,
         text: `${y}`,
@@ -205,11 +206,11 @@ export class PlotService {
           showarrow: true,
           xanchor: 'left',
           yanchor: 'middle',
-          ax: 6,
-          xshift: -3,
+          ax: 4 * plotSettings.zeroLineWidth,
+          xshift: -2 * plotSettings.zeroLineWidth,
           ay: 0,
           arrowhead: 0,
-          arrowwidth: 1,
+          arrowwidth: plotSettings.zeroLineWidth,
         })),
     ] as Partial<Annotations>[];
 
@@ -222,9 +223,9 @@ export class PlotService {
         yref: 'y',
         ax: -20,
         ay: 0,
-        arrowwidth: 1,
-        arrowsize: 1.5,
-        arrowhead: 5,
+        arrowwidth: plotSettings.zeroLineWidth,
+        arrowhead: 2,
+        arrowcolor: plotSettings.zeroLineColor,
       },
       {
         x: 0,
@@ -234,9 +235,9 @@ export class PlotService {
         yref: 'y',
         ax: 0,
         ay: 20,
-        arrowwidth: 1,
-        arrowsize: 1.5,
-        arrowhead: 5,
+        arrowwidth: plotSettings.zeroLineWidth,
+        arrowhead: 2,
+        arrowcolor: plotSettings.zeroLineColor,
       },
     ] as Partial<Annotations>[];
 
@@ -275,6 +276,7 @@ export class PlotService {
           y,
           line: {
             color: plot.fnx[i].color,
+            width: plotSettings.plotLineWidth,
           },
         })) as Partial<PlotData>[]),
       );
@@ -330,13 +332,16 @@ export class PlotService {
               dtick,
               scaleanchor: 'y',
               ticklabelstep: 2,
-              gridcolor: '#a6a6a6',
+              gridcolor: plotSettings.gridLineColor,
+              gridwidth: plotSettings.gridLineWidth,
               tickfont: {
                 size: 10,
               },
               zeroline: plot.showAxis,
-              linewidth: 1,
-              linecolor: '#a6a6a6',
+              zerolinewidth: plotSettings.zeroLineWidth,
+              zerolinecolor: plotSettings.zeroLineColor,
+              linewidth: plotSettings.gridLineWidth,
+              linecolor: plotSettings.gridLineColor,
               mirror: true,
             },
             yaxis: {
@@ -347,13 +352,16 @@ export class PlotService {
                 plot.showAxisLabels && !plot.placeAxisLabelsInside,
               dtick,
               ticklabelstep: 2,
-              gridcolor: '#a6a6a6',
+              gridcolor: plotSettings.gridLineColor,
+              gridwidth: plotSettings.gridLineWidth,
               tickfont: {
                 size: 10,
               },
               zeroline: plot.showAxis,
-              linewidth: 1,
-              linecolor: '#a6a6a6',
+              zerolinewidth: plotSettings.zeroLineWidth,
+              zerolinecolor: plotSettings.zeroLineColor,
+              linewidth: plotSettings.gridLineWidth,
+              linecolor: plotSettings.gridLineColor,
               mirror: true,
             },
           },

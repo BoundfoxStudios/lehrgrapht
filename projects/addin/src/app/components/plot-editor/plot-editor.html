@@ -14,7 +14,7 @@
   <lg-content-container class="flex flex-1">
     <div class="group flex-1">
       <label
-        class="text-heading mb-2.5 block text-sm font-medium"
+        class="text-heading mb-1 block text-sm font-medium"
         for="name"
         >Name</label
       >
@@ -30,14 +30,14 @@
   <lg-accordion>
     <lg-accordion-panel
       [title]="rangeTitle()"
-      persistenceId="range"
+      persistenceId="editor-range"
     >
-      <lg-content-container class="flex flex-col space-y-2">
+      <lg-content-container class="flex flex-col space-y-4">
         <div class="space-y-2">
           <div class="grid grid-cols-2 gap-6">
             <div class="group">
               <label
-                class="text-heading mb-2.5 block text-sm font-medium"
+                class="text-heading mb-1 block text-sm font-medium"
                 for="min-x"
                 >Min X</label
               >
@@ -51,7 +51,7 @@
             </div>
             <div class="group">
               <label
-                class="text-heading mb-2.5 block text-sm font-medium"
+                class="text-heading mb-1 block text-sm font-medium"
                 for="max-x"
                 >Max X</label
               >
@@ -77,7 +77,7 @@
           <div class="grid grid-cols-2 gap-6">
             <div class="group">
               <label
-                class="text-heading mb-2.5 block text-sm font-medium"
+                class="text-heading mb-1 block text-sm font-medium"
                 for="min-y"
                 >Min Y</label
               >
@@ -91,7 +91,7 @@
             </div>
             <div class="group">
               <label
-                class="text-heading mb-2.5 block text-sm font-medium"
+                class="text-heading mb-1 block text-sm font-medium"
                 for="max-y"
                 >Max Y</label
               >
@@ -114,12 +114,12 @@
           }
         </div>
 
-        Kästchen: {{ squareCount() }}
+        <span>Kästchen: {{ squareCount() }}</span>
       </lg-content-container>
     </lg-accordion-panel>
     <lg-accordion-panel
       title="Einstellungen"
-      persistenceId="settings"
+      persistenceId="editor-settings"
     >
       <lg-content-container class="flex flex-col">
         <div class="mb-1 flex items-center">
@@ -195,7 +195,7 @@
     </lg-accordion-panel>
     <lg-accordion-panel
       title="Funktionen f(x)"
-      persistenceId="functions"
+      persistenceId="editor-functions"
     >
       <lg-content-container class="flex flex-col space-y-2">
         <div class="text-heading mb-2.5 flex justify-end text-sm font-medium">
@@ -210,29 +210,38 @@
         </div>
         @for (control of editorForm.fnx; let index = $index; track index) {
           <div>
-            <div class="flex items-center space-x-2">
-              <input
-                class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
-                [field]="control.fnx"
-                type="text"
-                spellcheck="false"
-                autocorrect="off"
-                autocomplete="off"
-                autocapitalize="off"
-              />
+            <div class="flex flex-1 flex-col">
+              <label
+                class="text-heading mb-1 block text-sm font-medium"
+                [for]="'fnx-' + $index"
+                >Funktion {{ index + 1 }}: f(x) =
+              </label>
 
-              <input
-                class="h-8 w-8 shrink-0 border-none"
-                [field]="control.color"
-                type="color"
-              />
+              <div class="flex items-center space-x-2">
+                <input
+                  class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
+                  [field]="control.fnx"
+                  [id]="'fnx-' + $index"
+                  type="text"
+                  spellcheck="false"
+                  autocorrect="off"
+                  autocomplete="off"
+                  autocapitalize="off"
+                />
 
-              <button
-                (click)="removeFx(index)"
-                type="button"
-              >
-                <fa-icon [icon]="faTrashCan" />
-              </button>
+                <input
+                  class="h-8 w-8 shrink-0 border-none"
+                  [field]="control.color"
+                  type="color"
+                />
+
+                <button
+                  (click)="removeFx(index)"
+                  type="button"
+                >
+                  <fa-icon [icon]="faTrashCan" />
+                </button>
+              </div>
             </div>
             <lg-math-display [math]="control.fnx().value()" />
           </div>
@@ -241,7 +250,7 @@
     </lg-accordion-panel>
     <lg-accordion-panel
       title="Punkte (x/y)"
-      persistenceId="markers"
+      persistenceId="editor-markers"
     >
       <lg-content-container class="flex flex-col space-y-2">
         <div class="text-heading mb-2.5 flex justify-end text-sm font-medium">
@@ -312,5 +321,8 @@
     subtitle="Die Vorschau entspricht nicht der Größe des Bildes, das in Word eingefügt
       wird."
   />
-  <lg-plot-preview [plot]="editorModel()" />
+  <lg-plot-preview
+    [plot]="editorModel()"
+    [plotSettings]="plotSettings()"
+  />
 }

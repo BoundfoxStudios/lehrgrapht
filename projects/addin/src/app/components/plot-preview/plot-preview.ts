@@ -1,9 +1,9 @@
-import { Component, inject, input } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { PlotService } from '../../services/plot.service';
 import { switchMap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
-import { Plot } from '../../models/plot';
+import { Plot, PlotSettings } from '../../models/plot';
 import { ContentContainer } from '../content-container/content-container';
 
 @Component({
@@ -16,10 +16,16 @@ export class PlotPreview {
   private readonly plotService = inject(PlotService);
 
   readonly plot = input.required<Plot>();
+  readonly plotSettings = input.required<PlotSettings>();
 
-  preview$ = toObservable(this.plot).pipe(
-    switchMap(plot =>
-      this.plotService.generate(plot, {
+  private readonly model = computed(() => ({
+    plot: this.plot(),
+    plotSettings: this.plotSettings(),
+  }));
+
+  preview$ = toObservable(this.model).pipe(
+    switchMap(({ plot, plotSettings }) =>
+      this.plotService.generate(plot, plotSettings, {
         applyScaleFactor: true,
       }),
     ),

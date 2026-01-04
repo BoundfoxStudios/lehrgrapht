@@ -15,7 +15,7 @@ import { ContentContainer } from '../content-container/content-container';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faPlusCircle, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import { MathDisplay } from '../math-display/math-display';
-import { Plot } from '../../models/plot';
+import { Plot, PlotSettings } from '../../models/plot';
 import { ActivatedRoute, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
@@ -23,6 +23,10 @@ import { WordService } from '../../services/word/word.service';
 import { Section } from '../section/section';
 import { Accordion } from '../accordion/accordion';
 import { AccordionPanel } from '../accordion/accordion-panel/accordion-panel';
+import {
+  defaultPlotSettings,
+  PlotSettingsService,
+} from '../../services/plot-settings.service';
 
 const colors = ['#3737d0', '#af2c2c', '#2a8c1a', '#f18238'];
 
@@ -72,9 +76,12 @@ export class PlotEditor {
   protected readonly faTrashCan = faTrashCan;
 
   private readonly plotService = inject(PlotService);
+  private readonly plotSettingsService = inject(PlotSettingsService);
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly wordService = inject(WordService);
   private readonly router = inject(Router);
+
+  protected readonly plotSettings = signal<PlotSettings>(defaultPlotSettings);
 
   protected readonly activeId = toSignal(
     this.activatedRoute.paramMap.pipe(map(params => params.get('id'))),
@@ -86,7 +93,7 @@ export class PlotEditor {
       params ? this.wordService.get(params) : Promise.resolve(undefined),
   });
 
-  protected editorModel = signal<Plot>({
+  protected readonly editorModel = signal<Plot>({
     name: 'Neuer Plot',
     range: {
       x: {
@@ -112,18 +119,18 @@ export class PlotEditor {
     automaticallyAdjustLimitsToValueRange: false,
   });
 
-  protected squareCount = computed(
+  protected readonly squareCount = computed(
     () =>
       `${(this.editorModel().range.x.max - this.editorModel().range.x.min) * 2} / ${(this.editorModel().range.y.max - this.editorModel().range.y.min) * 2}`,
   );
 
-  protected rangeTitle = computed(() => {
+  protected readonly rangeTitle = computed(() => {
     const range = this.editorModel().range;
 
     return `Grenzen (x: ${range.x.min}/${range.x.max}, y: ${range.y.min}/${range.y.max}) (K: ${this.squareCount()})`;
   });
 
-  protected editorForm = form(this.editorModel, schema => {
+  protected readonly editorForm = form(this.editorModel, schema => {
     lessThanValidator(
       schema.range.x.min,
       schema.range.x.max,
@@ -137,6 +144,8 @@ export class PlotEditor {
   });
 
   constructor() {
+    this.plotSettings.set(this.plotSettingsService.get());
+
     effect(() => {
       const existingPlot = this.existingPlot.value();
 
@@ -150,7 +159,7 @@ export class PlotEditor {
     const existingPlot = this.existingPlot.value();
 
     const model = this.editorModel();
-    const plot = await this.plotService.generate(model, {
+    const plot = await this.plotService.generate(model, this.plotSettings(), {
       applyScaleFactor:
         this.wordService.plotGenerationSettings.applyScaleFactor,
     });

@@ -12,18 +12,28 @@
       <button
         class="app-button"
         (click)="plots.reload()"
+        title="Plots neuladen"
       >
         <fa-icon [icon]="faRefresh" />
       </button>
       <a
         class="app-button"
+        [routerLink]="['/plot/settings']"
+        title="Einstellungen"
+      >
+        <fa-icon [icon]="faGear" />
+      </a>
+      <a
+        class="app-button"
         [routerLink]="['/plot/info']"
+        title="Info"
       >
         <fa-icon [icon]="faInfoCircle" />
       </a>
       <a
         class="app-button"
         [routerLink]="['/plot/debug']"
+        title="Entwicklerinformationen"
       >
         <fa-icon [icon]="faBug" />
       </a>

@@ -3,11 +3,13 @@ import { PlotGenerationSettings, WordPlot, WordService } from './word.service';
 import { inject, Injectable } from '@angular/core';
 import { DocumentStorageService } from '../document-storage.service';
 import { PlotService } from '../plot.service';
+import { PlotSettingsService } from '../plot-settings.service';
 
 @Injectable()
 export class WordForWebService extends WordService {
   private readonly documentStorageService = inject(DocumentStorageService);
   private readonly plotService = inject(PlotService);
+  private readonly plotSettingsService = inject(PlotSettingsService);
 
   override plotGenerationSettings: PlotGenerationSettings = {
     applyScaleFactor: false,
@@ -78,6 +80,7 @@ export class WordForWebService extends WordService {
 
       const plot = await this.plotService.generate(
         clonedWordPlot.model,
+        this.plotSettingsService.get(),
         this.plotGenerationSettings,
       );
 

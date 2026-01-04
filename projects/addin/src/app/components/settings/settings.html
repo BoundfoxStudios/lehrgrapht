@@ -1,0 +1,99 @@
+<lg-header
+  [backLink]="['/plot/list']"
+  title="Einstellungen"
+/>
+
+<lg-content-container class="flex flex-col space-y-2">
+  <p>
+    Hier kannst Du Einstellungen tätigen, die sich auf neue Plots auswirken wird
+    oder wenn Du bestehende aktualisierst. Die Einstellungen sind zudem
+    dokumentübergreifend, d.h. im Idealfall stellst Du sie einmal ein, dass sie
+    für Deinen Geschmack und Drucker passen.
+  </p>
+  <p>Deine Änderungen werden sofort gespeichert.</p>
+</lg-content-container>
+
+<lg-accordion>
+  <lg-accordion-panel
+    [isExpanded]="true"
+    title="Linien"
+    persistenceId="settings-lines"
+  >
+    <lg-content-container class="flex flex-col space-y-4">
+      <div class="flex flex-1 flex-col">
+        <label
+          class="text-heading mb-1 block text-sm font-medium"
+          for="zero-line-width"
+          >0-Linie Breite &amp; Farbe</label
+        >
+        <div class="flex items-center space-x-2">
+          <input
+            class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
+            id="zero-line-width"
+            [field]="editorForm.zeroLineWidth"
+            type="number"
+            step="0.5"
+          />
+          <input
+            class="h-8 w-8 shrink-0 border-none"
+            [field]="editorForm.zeroLineColor"
+            type="color"
+          />
+        </div>
+      </div>
+      <div class="flex flex-1 flex-col">
+        <label
+          class="text-heading mb-1 block text-sm font-medium"
+          for="grid-line-width"
+          >Kästchen-Linie Breite &amp; Farbe</label
+        >
+        <div class="flex items-center space-x-2">
+          <input
+            class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
+            id="grid-line-width"
+            [field]="editorForm.gridLineWidth"
+            type="number"
+            step="0.5"
+          />
+          <input
+            class="h-8 w-8 shrink-0 border-none"
+            [field]="editorForm.gridLineColor"
+            type="color"
+          />
+        </div>
+      </div>
+      <div class="flex flex-1 flex-col">
+        <label
+          class="text-heading mb-1 block text-sm font-medium"
+          for="plot-line-width"
+          >Graph-Linie Breite</label
+        >
+        <div class="flex items-center space-x-2">
+          <input
+            class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
+            id="plot-line-width"
+            [field]="editorForm.plotLineWidth"
+            type="number"
+            step="0.5"
+          />
+        </div>
+      </div>
+    </lg-content-container>
+  </lg-accordion-panel>
+  <lg-accordion-panel
+    [isExpanded]="true"
+    persistenceId="settings-preview"
+    title="Vorschau"
+  >
+    <div class="flex justify-center">
+      <lg-plot-preview
+        [plot]="examplePlot1"
+        [plotSettings]="editorModel()"
+      />
+      <lg-plot-preview
+        [plot]="examplePlot2"
+        [plotSettings]="editorModel()"
+      />
+    </div>
+  </lg-accordion-panel>
+</lg-accordion>
