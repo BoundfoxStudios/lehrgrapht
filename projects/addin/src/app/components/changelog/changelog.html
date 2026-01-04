@@ -9,13 +9,23 @@
 }
 
 <lg-accordion class="mt-4 block">
-  <lg-accordion-panel title="Version 1.2.0">
+  <lg-accordion-panel
+    [isExpanded]="true"
+    title="Version 1.2.0"
+  >
     <lg-content-container>
       <ul class="ml-4 list-disc">
         <li>
           Neue Einstellung: Grenzen automatisch an Wertebereich anpassen oder
           Grenzen so nutzen, wie von der Benutzer:in eingegeben.
         </li>
+        <li>
+          Setzen der allgemeinen Einstellungen für Linienstärken und -farben.
+        </li>
+        <li>Unterstützung von nicht-quadratischen Plots.</li>
+        <li>Anzeige von Strichen an der 0-Linie.</li>
+        <li>Duplizieren von Plots.</li>
+        <li>Möglichkeit, leere Plots zu erzeugen.</li>
       </ul></lg-content-container
     >
   </lg-accordion-panel>
