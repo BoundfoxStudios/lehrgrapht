@@ -310,8 +310,9 @@ export class PlotService {
             showlegend: false,
             width: plotSizePx.width,
             height: plotSizePx.height,
-            annotations:
-              plot.showAxisLabels && plot.placeAxisLabelsInside
+            annotations: !plot.showAxis
+              ? undefined
+              : plot.showAxisLabels && plot.placeAxisLabelsInside
                 ? [...annotations, ...arrows]
                 : arrows,
             margin: {
@@ -333,6 +334,10 @@ export class PlotService {
               tickfont: {
                 size: 10,
               },
+              zeroline: plot.showAxis,
+              linewidth: 1,
+              linecolor: '#a6a6a6',
+              mirror: true,
             },
             yaxis: {
               range: [yValueFlatMin, yValueFlatMax],
@@ -346,6 +351,10 @@ export class PlotService {
               tickfont: {
                 size: 10,
               },
+              zeroline: plot.showAxis,
+              linewidth: 1,
+              linecolor: '#a6a6a6',
+              mirror: true,
             },
           },
           config: {

@@ -46,6 +46,7 @@
                 id="min-x"
                 [field]="editorForm.range.x.min"
                 type="number"
+                step="1"
               />
             </div>
             <div class="group">
@@ -59,6 +60,7 @@
                 id="max-x"
                 [field]="editorForm.range.x.max"
                 type="number"
+                step="1"
               />
             </div>
           </div>
@@ -84,6 +86,7 @@
                 id="min-y"
                 [field]="editorForm.range.y.min"
                 type="number"
+                step="1"
               />
             </div>
             <div class="group">
@@ -97,6 +100,7 @@
                 id="max-y"
                 [field]="editorForm.range.y.max"
                 type="number"
+                step="1"
               />
             </div>
           </div>
@@ -109,6 +113,8 @@
             </ul>
           }
         </div>
+
+        Kästchen: {{ squareCount() }}
       </lg-content-container>
     </lg-accordion-panel>
     <lg-accordion-panel
@@ -119,30 +125,45 @@
         <div class="mb-1 flex items-center">
           <input
             class="border-default-medium bg-neutral-secondary-medium focus:ring-brand-soft h-4 w-4 rounded-xs border focus:ring-2"
-            id="show-axis-labels"
-            [field]="editorForm.showAxisLabels"
+            id="show-axis"
+            [field]="editorForm.showAxis"
             type="checkbox"
           />
           <label
             class="text-heading ms-2 text-sm font-medium select-none"
-            for="show-axis-labels"
-            >Achsenbeschriftung</label
+            for="show-axis"
+            >Achsen</label
           >
         </div>
-        @if (editorModel().showAxisLabels) {
-          <div class="mb-4 ml-4 flex items-center">
+        @if (editorModel().showAxis) {
+          <div class="mb-1 ml-4 flex items-center">
             <input
               class="border-default-medium bg-neutral-secondary-medium focus:ring-brand-soft h-4 w-4 rounded-xs border focus:ring-2"
-              id="place-axis-labels-inside"
-              [field]="editorForm.placeAxisLabelsInside"
+              id="show-axis-labels"
+              [field]="editorForm.showAxisLabels"
               type="checkbox"
             />
             <label
               class="text-heading ms-2 text-sm font-medium select-none"
-              for="place-axis-labels-inside"
-              >An 0-Linie anzeigen</label
+              for="show-axis-labels"
+              >Achsenbeschriftung</label
             >
           </div>
+          @if (editorModel().showAxisLabels) {
+            <div class="mb-4 ml-8 flex items-center">
+              <input
+                class="border-default-medium bg-neutral-secondary-medium focus:ring-brand-soft h-4 w-4 rounded-xs border focus:ring-2"
+                id="place-axis-labels-inside"
+                [field]="editorForm.placeAxisLabelsInside"
+                type="checkbox"
+              />
+              <label
+                class="text-heading ms-2 text-sm font-medium select-none"
+                for="place-axis-labels-inside"
+                >An 0-Linie anzeigen</label
+              >
+            </div>
+          }
         }
         <div class="mb-4 flex items-center">
           <input

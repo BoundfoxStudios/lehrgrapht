@@ -15,6 +15,7 @@ export interface Plot {
     text: string;
   }[];
   showAxisLabels: boolean;
+  showAxis: boolean;
   placeAxisLabelsInside: boolean;
   squarePlots: boolean;
   automaticallyAdjustLimitsToValueRange: boolean;

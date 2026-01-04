@@ -105,16 +105,22 @@ export class PlotEditor {
       },
     ],
     markers: [],
+    showAxis: true,
     showAxisLabels: true,
     placeAxisLabelsInside: true,
     squarePlots: false,
     automaticallyAdjustLimitsToValueRange: false,
   });
 
+  protected squareCount = computed(
+    () =>
+      `${(this.editorModel().range.x.max - this.editorModel().range.x.min) * 2} / ${(this.editorModel().range.y.max - this.editorModel().range.y.min) * 2}`,
+  );
+
   protected rangeTitle = computed(() => {
     const range = this.editorModel().range;
 
-    return `Grenzen (x: ${range.x.min}/${range.x.max}, y: ${range.y.min}/${range.y.max})`;
+    return `Grenzen (x: ${range.x.min}/${range.x.max}, y: ${range.y.min}/${range.y.max}) (K: ${this.squareCount()})`;
   });
 
   protected editorForm = form(this.editorModel, schema => {
