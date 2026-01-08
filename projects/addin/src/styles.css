@@ -3,6 +3,13 @@
 @import 'tailwindcss';
 @import 'flowbite/src/themes/default.css';
 
+@theme {
+  --breakpoint-*: initial;
+  --breakpoint-sm: 22rem;
+  --breakpoint-lg: 32rem;
+  --breakpoint-xl: 42rem;
+}
+
 @layer components {
   .app-button {
     @apply bg-brand hover:bg-brand-strong focus:ring-brand-medium rounded-base box-border cursor-pointer border border-transparent px-4 py-2.5 text-sm leading-5 font-medium text-white shadow-xs focus:ring-4 focus:outline-none;
