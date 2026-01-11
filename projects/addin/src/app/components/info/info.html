@@ -14,18 +14,13 @@
   <ul class="ml-8 list-disc">
     <li>
       Mail:
-      <a
-        class="underline"
-        href="mailto:support@lehrgrapht.de"
-        >support&#64;lehrgrapht.de</a
-      >
+      <lgs-support-email-link
+        [subject]="'LehrGrapht Version ' + lehrgraphtVersion"
+      />
     </li>
     <li>
       Fehler direkt auf
-      <a href="https://github.com/boundfoxstudios/lehrgrapht/issues">
-        <fa-icon [icon]="faGithub" />
-        <span class="pl-1 underline">GitHub</span></a
-      >
+      <lgs-github-link deepLink="issues" />
       melden
     </li>
   </ul>
@@ -33,9 +28,6 @@
   <h2 class="font-bold">Open Source</h2>
   <p>
     LehrGrapht ist Open Source, weitere Informationen findest Du auf
-    <a href="https://github.com/boundfoxstudios/lehrgrapht">
-      <fa-icon [icon]="faGithub" />
-      <span class="pl-1 underline">GitHub</span>.</a
-    >
+    <lgs-github-link />.
   </p>
 </lg-content-container>

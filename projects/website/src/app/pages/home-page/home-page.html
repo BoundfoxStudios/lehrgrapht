@@ -12,12 +12,11 @@
       class="rounded-sm bg-pink-600 px-8 py-4 text-white"
       href="https://marketplace.microsoft.com/en-us/product/office/WA200009741"
       target="_blank"
-      ><fa-icon [icon]="faMicrosoft" /> Download (Microsoft Marketplace)</a
     >
-    <a href="https://github.com/boundfoxstudios/lehrgrapht">
-      <fa-icon [icon]="faGithub" />
-      <span class="pl-1 underline">GitHub (Source Code)</span></a
+      <fa-icon [icon]="faMicrosoft" />
+      Download (Microsoft Marketplace)</a
     >
+    <lgs-github-link text="GitHub (Source Code)" />
   </div>
 </lgw-content-container>
 
@@ -169,16 +168,10 @@
         <dt class="mt-4 font-bold">Was kostet LehrGrapht?</dt>
         <dd>
           LehrGrapht ist kostenfrei und sogar Open Source auf
-          <a href="https://github.com/boundfoxstudios/lehrgrapht">
-            <fa-icon [icon]="faGithub" />
-            <span class="pl-1 underline">GitHub</span></a
-          >! Der Entwickler freut sich jedoch über eine nette E-Mail (<a
-            class="underline"
-            href="mailto:support@lehrgrapht.de"
-            >support&#64;lehrgrapht.de</a
-          >), eine kleine Spende via
-          <a href="https://ko-fi.com/BoundfoxStudios"
-            ><fa-icon [icon]="faCoffee" />
+          <lgs-github-link />! Der Entwickler freut sich jedoch über eine nette
+          E-Mail (<lgs-support-email-link />), eine kleine Spende via
+          <a href="https://ko-fi.com/BoundfoxStudios">
+            <fa-icon [icon]="faCoffee" />
             <span class="pl-1 underline">Ko-Fi</span></a
           >
           oder einfach über das Weitererzählen an Deine Kolleg:innen!
@@ -213,10 +206,7 @@
           Nein. LehrGrapht sammelt keinerlei Daten. Da LehrGrapht Open Source
           ist, kannst Du dies auch jederzeit selbst nachprüfen. Du findest den
           Source Code auf
-          <a href="https://github.com/boundfoxstudios/lehrgrapht">
-            <fa-icon [icon]="faGithub" />
-            <span class="pl-1 underline">GitHub</span></a
-          >.
+          <lgs-github-link />.
         </dd>
 
         <dt class="mt-4 font-bold">
@@ -224,16 +214,9 @@
         </dt>
         <dd>
           Du kannst bei Problemen entweder direkt einen Fehler bei
-          <a href="https://github.com/boundfoxstudios/lehrgrapht/issues">
-            <fa-icon [icon]="faGithub" />
-            <span class="pl-1 underline">GitHub</span></a
-          >
+          <lgs-github-link deepLink="issues" />
           melden oder Du schreibst dem Entwickler eine E-Mail:
-          <a
-            class="underline"
-            href="mailto:support@lehrgrapht.de"
-            >support&#64;lehrgrapht.de</a
-          >
+          <lgs-support-email-link />
         </dd>
 
         <dt class="mt-4 font-bold">
@@ -242,16 +225,9 @@
         <dd>
           Falls Du noch Ideen für weitere Features in LehrGrapht hast, die Du
           gerne hättest, kannst Du sie entweder auf
-          <a href="https://github.com/boundfoxstudios/lehrgrapht/issues">
-            <fa-icon [icon]="faGithub" />
-            <span class="pl-1 underline">GitHub</span></a
-          >
+          <lgs-github-link deepLink="issues" />
           vorschlagen oder Du schreibst dem Entwickler eine E-Mail:
-          <a
-            class="underline"
-            href="mailto:support@lehrgrapht.de"
-            >support&#64;lehrgrapht.de</a
-          >
+          <lgs-support-email-link />
         </dd>
       </dl>
     </div>

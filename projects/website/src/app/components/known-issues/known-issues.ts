@@ -12,10 +12,17 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { TruncatePipe } from '../../pipes/truncate.pipe';
 import { DatePipe } from '@angular/common';
+import { GitHubLink, SupportEmailLink } from '@lehrgrapht/shared';
 
 @Component({
   selector: 'lgw-known-issues',
-  imports: [FaIconComponent, TruncatePipe, DatePipe],
+  imports: [
+    FaIconComponent,
+    TruncatePipe,
+    DatePipe,
+    GitHubLink,
+    SupportEmailLink,
+  ],
   templateUrl: './known-issues.html',
   styleUrl: './known-issues.css',
 })

@@ -11,10 +11,18 @@ import {
 import { faGithub, faMicrosoft } from '@fortawesome/free-brands-svg-icons';
 import { KnownIssues } from '../../components/known-issues/known-issues';
 import { Meta, Title } from '@angular/platform-browser';
+import { GitHubLink, SupportEmailLink } from '@lehrgrapht/shared';
 
 @Component({
   selector: 'lgw-home-page',
-  imports: [Hero, ContentContainer, FaIconComponent, KnownIssues],
+  imports: [
+    Hero,
+    ContentContainer,
+    FaIconComponent,
+    KnownIssues,
+    GitHubLink,
+    SupportEmailLink,
+  ],
   templateUrl: './home-page.html',
   styleUrl: './home-page.css',
 })
