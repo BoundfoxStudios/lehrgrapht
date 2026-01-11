@@ -1,14 +1,30 @@
 <lg-content-container class="flex justify-center">
   @let preview = preview$ | async;
 
-  @if (!preview) {
+  @if (plotHasErrorCode(preview)) {
     <p>
       Keine Vorschau verfügbar.<br />
-      Prüfe bitte, ob Du sinnvolle Grenzen hast oder Fehler in den Formeln sind.
+
+      @switch (preview) {
+        @case (PlotGenerateErrorCode.compile) {
+          Eine oder mehrere Funktionen sind fehlerhaft oder beinhalten Terme,
+          die LehrGrapht (noch) nicht versteht.
+        }
+
+        @case (PlotGenerateErrorCode.evaluate) {
+          Die Funktoinen können nicht berechnet werden. Schaue bitte, ob Deine
+          Grenzen passen oder in den Funktionen Fehler sind.
+        }
+
+        @case (PlotGenerateErrorCode.plot) {
+          Der Plot kann aufgrund eines unbekannten Fehlers nicht generiert
+          werden.
+        }
+      }
     </p>
   }
 
-  @if (preview) {
+  @if (preview && !plotHasErrorCode(preview)) {
     <img
       [src]="preview.base64"
       alt="Preview"

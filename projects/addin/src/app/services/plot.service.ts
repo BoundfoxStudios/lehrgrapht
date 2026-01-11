@@ -2,9 +2,62 @@ import * as mathjs from 'mathjs';
 import { EvalFunction, Matrix } from 'mathjs';
 import { Injectable } from '@angular/core';
 import Plotly, { Annotations, PlotData } from 'plotly.js-dist-min';
-import { Plot, PlotSettings } from '../models/plot';
+import { MathFunction, Plot, PlotSettings } from '../models/plot';
 import { modelIdPrefix } from './word/word.service';
 import { v7 } from 'uuid';
+
+export enum PlotGenerateErrorCode {
+  /**
+   * Happens during the compilation of the math expressions.
+   */
+  compile,
+
+  /**
+   * Happens during the evalution of the compiled math expressions.
+   */
+  evaluate,
+
+  /**
+   * Happens during plot generation.
+   */
+  plot,
+}
+
+export const plotHasErrorCode = (
+  plot: unknown,
+): plot is PlotGenerateErrorCode => {
+  return (
+    plot === PlotGenerateErrorCode.compile ||
+    plot === PlotGenerateErrorCode.evaluate ||
+    plot === PlotGenerateErrorCode.plot
+  );
+};
+
+interface ValueRanges {
+  x: Matrix;
+  xNumbers: number[];
+  xMin: number;
+  xMax: number;
+  y: Matrix;
+  yNumbers: number[];
+  yMin: number;
+  yMax: number;
+}
+
+const mmToInches = 1 / 25.4;
+const mmToPoints = 72 / 25.4;
+const devicePixelRatio = window.devicePixelRatio || 1;
+const ppiBase = 96;
+const effectiveDpi = 254 * devicePixelRatio; // MacBookPro dpi
+const scaleFactor = effectiveDpi / 96;
+const dtick = 0.5;
+const mmPerTick = 5;
+const mmMargin = {
+  t: 7.5,
+  b: 7.5,
+  l: 7.5,
+  r: 7.5,
+};
 
 @Injectable({ providedIn: 'root' })
 export class PlotService {
@@ -22,64 +75,23 @@ export class PlotService {
         widthInPoints: number;
         heightInPoints: number;
       }
-    | undefined
+    | PlotGenerateErrorCode
   > {
-    const expressions: EvalFunction[] = [];
+    const expressions = this.compileExpressions(plot.fnx);
 
-    try {
-      for (const f of plot.fnx) {
-        const expression = mathjs.compile(f.fnx);
-        expressions.push(expression);
-      }
-    } catch {
-      return;
-    }
-
-    if (expressions.length !== plot.fnx.length) {
-      return;
+    if (expressions === PlotGenerateErrorCode.compile) {
+      return PlotGenerateErrorCode.compile;
     }
 
     const valueRanges = this.createRanges(plot);
-    let yValues: Matrix[] | undefined;
+    const yValues = this.evaluateExpressions(expressions, valueRanges);
 
-    try {
-      if (plot.fnx.length) {
-        yValues = expressions.map(expression =>
-          valueRanges.x.map((x: number): number => expression.evaluate({ x })),
-        );
-      } else {
-        yValues = [valueRanges.y];
-      }
-    } catch {
-      return;
+    if (yValues === PlotGenerateErrorCode.evaluate) {
+      return PlotGenerateErrorCode.evaluate;
     }
 
-    const mmToInches = 1 / 25.4;
-    const mmToPoints = 72 / 25.4;
-    const dpr = window.devicePixelRatio || 1;
-    const ppiBase = 96;
-    const effectiveDpi = 254 * dpr; // 254 is MBP dpi
-    const scaleFactor = effectiveDpi / 96;
-
-    let cleanXValues: number[] = [];
-    let cleanYValues: number[][] = yValues.map(() => []);
-    const xValuesArray = valueRanges.xNumbers;
-    const yValuesArray = yValues.map(y => y.toArray() as number[]);
-
-    if (plot.fnx.length) {
-      for (let i = 0; i < yValuesArray.length; i++) {
-        for (let ii = 0; ii < yValuesArray[i].length; ii++) {
-          const y = yValuesArray[i][ii];
-          if (y >= plot.range.y.min && y <= plot.range.y.max) {
-            cleanXValues.push(xValuesArray[ii]);
-            cleanYValues[i].push(yValuesArray[i][ii]);
-          }
-        }
-      }
-    } else {
-      cleanXValues = valueRanges.xNumbers;
-      cleanYValues = [yValues[0].toArray() as number[]];
-    }
+    const { cleanXValues, cleanYValues, xValuesArray, yValuesArray } =
+      this.cleanUpValues(yValues, valueRanges, plot);
 
     const xValueFlat = plot.automaticallyAdjustLimitsToValueRange
       ? cleanXValues
@@ -94,15 +106,6 @@ export class PlotService {
     const yValueFlatMin = mathjs.min(yValueFlat);
     const yValueFlatMax = mathjs.max(yValueFlat);
     const yValueRange = yValueFlatMax - yValueFlatMin;
-
-    const dtick = 0.5;
-    const mmPerTick = 5;
-    const mmMargin = {
-      t: 7.5,
-      b: 7.5,
-      l: 7.5,
-      r: 7.5,
-    };
 
     const tickSquares = {
       x: plot.squarePlots
@@ -386,8 +389,40 @@ export class PlotService {
         heightInPoints: plotSizePoints.height,
       };
     } catch {
-      return;
+      return PlotGenerateErrorCode.plot;
     }
+  }
+
+  private cleanUpValues(
+    yValues: Matrix[],
+    valueRanges: ValueRanges,
+    plot: Plot,
+  ): {
+    cleanXValues: number[];
+    cleanYValues: number[][];
+    xValuesArray: number[];
+    yValuesArray: number[][];
+  } {
+    let cleanXValues: number[] = [];
+    let cleanYValues: number[][] = yValues.map(() => []);
+    const xValuesArray = valueRanges.xNumbers;
+    const yValuesArray = yValues.map(y => y.toArray() as number[]);
+
+    if (plot.fnx.length) {
+      for (let i = 0; i < yValuesArray.length; i++) {
+        for (let ii = 0; ii < yValuesArray[i].length; ii++) {
+          const y = yValuesArray[i][ii];
+          if (y >= plot.range.y.min && y <= plot.range.y.max) {
+            cleanXValues.push(xValuesArray[ii]);
+            cleanYValues[i].push(yValuesArray[i][ii]);
+          }
+        }
+      }
+    } else {
+      cleanXValues = valueRanges.xNumbers;
+      cleanYValues = [yValues[0].toArray() as number[]];
+    }
+    return { cleanXValues, cleanYValues, xValuesArray, yValuesArray };
   }
 
   generateId(): string {
@@ -398,16 +433,7 @@ export class PlotService {
     return base64Picture.substring('data:image/png;base64,'.length);
   }
 
-  private createRanges(plot: Plot): {
-    x: Matrix;
-    xNumbers: number[];
-    xMin: number;
-    xMax: number;
-    y: Matrix;
-    yNumbers: number[];
-    yMin: number;
-    yMax: number;
-  } {
+  private createRanges(plot: Plot): ValueRanges {
     const x = mathjs.range(plot.range.x.min, plot.range.x.max, 0.1, true);
     const y = mathjs.range(plot.range.y.min, plot.range.y.max, 0.1, true);
 
@@ -421,5 +447,43 @@ export class PlotService {
       yMin: mathjs.min(y) as number,
       yMax: mathjs.max(y) as number,
     };
+  }
+
+  private compileExpressions(
+    fnx: MathFunction[],
+  ): EvalFunction[] | PlotGenerateErrorCode.compile {
+    const expressions: EvalFunction[] = [];
+
+    try {
+      for (const f of fnx) {
+        const expression = mathjs.compile(f.fnx);
+        expressions.push(expression);
+      }
+    } catch {
+      return PlotGenerateErrorCode.compile;
+    }
+
+    return expressions;
+  }
+
+  private evaluateExpressions(
+    functions: EvalFunction[],
+    valueRanges: ValueRanges,
+  ): Matrix[] | PlotGenerateErrorCode.evaluate {
+    let yValues: Matrix[] | undefined;
+
+    try {
+      if (functions.length) {
+        yValues = functions.map(expression =>
+          valueRanges.x.map((x: number): number => expression.evaluate({ x })),
+        );
+      } else {
+        yValues = [valueRanges.y];
+      }
+    } catch {
+      return PlotGenerateErrorCode.evaluate;
+    }
+
+    return yValues;
   }
 }

@@ -1,5 +1,6 @@
 import { Component, effect, ElementRef, inject, input } from '@angular/core';
 import * as mathjs from 'mathjs';
+import { ConstantNode } from 'mathjs';
 
 @Component({
   selector: 'lg-math-display',
@@ -17,9 +18,16 @@ export class MathDisplay {
       const math = this.math();
 
       try {
-        const tex = mathjs.parse(math).toTex({ parenthesis: 'keep' });
+        const parsedMath = mathjs.parse(math);
 
         this.elementRef.nativeElement.innerHTML = '';
+
+        if (parsedMath instanceof ConstantNode) {
+          return;
+        }
+
+        const tex = parsedMath.toTex({ parenthesis: 'keep' });
+
         this.elementRef.nativeElement.appendChild(MathJax.tex2svg(tex));
       } catch {
         // Noop, just don't do anything.

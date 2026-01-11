@@ -9,7 +9,7 @@ import {
 import { Header } from '../header/header';
 import { Field, form, SchemaPath, validate } from '@angular/forms/signals';
 import { PlotPreview } from '../plot-preview/plot-preview';
-import { PlotService } from '../../services/plot.service';
+import { plotHasErrorCode, PlotService } from '../../services/plot.service';
 import { FormsModule } from '@angular/forms';
 import { ContentContainer } from '../content-container/content-container';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
@@ -164,7 +164,7 @@ export class PlotEditor {
         this.wordService.plotGenerationSettings.applyScaleFactor,
     });
 
-    if (!plot) {
+    if (plotHasErrorCode(plot)) {
       return;
     }
 

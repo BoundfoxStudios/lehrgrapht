@@ -1,6 +1,10 @@
 import { Component, computed, inject, input } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
-import { PlotService } from '../../services/plot.service';
+import {
+  PlotGenerateErrorCode,
+  plotHasErrorCode,
+  PlotService,
+} from '../../services/plot.service';
 import { switchMap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { Plot, PlotSettings } from '../../models/plot';
@@ -30,4 +34,6 @@ export class PlotPreview {
       }),
     ),
   );
+  protected readonly plotHasErrorCode = plotHasErrorCode;
+  protected readonly PlotGenerateErrorCode = PlotGenerateErrorCode;
 }

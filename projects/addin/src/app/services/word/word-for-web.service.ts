@@ -2,7 +2,7 @@ import { Plot } from '../../models/plot';
 import { PlotGenerationSettings, WordPlot, WordService } from './word.service';
 import { inject, Injectable } from '@angular/core';
 import { DocumentStorageService } from '../document-storage.service';
-import { PlotService } from '../plot.service';
+import { plotHasErrorCode, PlotService } from '../plot.service';
 import { PlotSettingsService } from '../plot-settings.service';
 
 @Injectable()
@@ -84,7 +84,7 @@ export class WordForWebService extends WordService {
         this.plotGenerationSettings,
       );
 
-      if (!plot) {
+      if (plotHasErrorCode(plot)) {
         return;
       }
 
