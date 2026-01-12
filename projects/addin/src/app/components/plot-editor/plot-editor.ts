@@ -239,4 +239,28 @@ export class PlotEditor {
       return { ...model, markers };
     });
   }
+
+  protected addLine(): void {
+    this.editorModel.update(model => ({
+      ...model,
+      lines: [
+        ...model.lines,
+        {
+          x1: 0,
+          y1: 0,
+          x2: 1,
+          y2: 1,
+          color: colors[model.lines.length % colors.length],
+        },
+      ],
+    }));
+  }
+
+  protected removeLine(index: number): void {
+    this.editorModel.update(model => {
+      const lines = [...model.lines];
+      lines.splice(index, 1);
+      return { ...model, lines };
+    });
+  }
 }

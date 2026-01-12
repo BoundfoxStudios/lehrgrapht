@@ -307,6 +307,22 @@ export class PlotService {
       });
     }
 
+    if (plot.lines.length) {
+      data.push(
+        ...plot.lines.map<Partial<PlotData>>(line => ({
+          type: 'scatter',
+          mode: 'lines',
+          fill: 'none',
+          x: [line.x1, line.x2],
+          y: [line.y1, line.y2],
+          line: {
+            color: line.color,
+            width: plotSettings.plotLineWidth,
+          },
+        })),
+      );
+    }
+
     try {
       const image = await Plotly.toImage(
         {
