@@ -16,6 +16,7 @@ export class AccordionPanel implements OnInit {
   protected readonly faChevronUp = faChevronUp;
 
   readonly title = input.required<string>();
+  readonly subTitle = input<string>();
   readonly isExpanded = model(false);
   readonly persistenceId = input<string>();
 

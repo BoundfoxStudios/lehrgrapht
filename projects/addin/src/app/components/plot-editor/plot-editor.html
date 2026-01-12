@@ -194,7 +194,7 @@
       </lg-content-container>
     </lg-accordion-panel>
     <lg-accordion-panel
-      title="Funktionen f(x)"
+      [title]="functionsTitle()"
       persistenceId="editor-functions"
     >
       <lg-content-container class="flex flex-col space-y-2">
@@ -249,7 +249,7 @@
       </lg-content-container>
     </lg-accordion-panel>
     <lg-accordion-panel
-      title="Punkte (x/y)"
+      [title]="markersTitle()"
       persistenceId="editor-markers"
     >
       <lg-content-container class="flex flex-col space-y-2">
@@ -297,6 +297,19 @@
           </div>
         }
       </lg-content-container>
+    </lg-accordion-panel>
+    <lg-accordion-panel
+      [title]="areasTitle()"
+      persistenceId="editor-areas"
+    >
+      <lg-content-container> </lg-content-container>
+    </lg-accordion-panel>
+    <lg-accordion-panel
+      [title]="linesTitle()"
+      subTitle="Zeichnet eine Linie von Punkt 1 zu Punkt 2."
+      persistenceId="editor-lines"
+    >
+      <lg-content-container> </lg-content-container>
     </lg-accordion-panel>
   </lg-accordion>
 

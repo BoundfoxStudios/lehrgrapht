@@ -22,6 +22,17 @@ export interface Plot {
     y: number;
     text: string;
   }[];
+  areas: {
+    points: { x: number; y: number };
+    color: string;
+  }[];
+  lines: {
+    x1: number;
+    x2: number;
+    y1: number;
+    y2: number;
+    color: string;
+  }[];
   showAxisLabels: boolean;
   showAxis: boolean;
   placeAxisLabelsInside: boolean;

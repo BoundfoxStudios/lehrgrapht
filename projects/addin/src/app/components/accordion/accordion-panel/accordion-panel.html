@@ -1,11 +1,17 @@
 <button
-  class="bg-brand flex flex-1 cursor-pointer justify-between px-2 py-1 text-white outline-0"
+  class="bg-brand flex flex-1 cursor-pointer flex-col px-2 py-1 text-white outline-0"
   (click)="toggle()"
   type="button"
 >
-  {{ title() }}
+  <div class="flex flex-1 justify-between">
+    {{ title() }}
 
-  <fa-icon [icon]="isExpanded() ? faChevronUp : faChevronDown" />
+    <fa-icon [icon]="isExpanded() ? faChevronUp : faChevronDown" />
+  </div>
+
+  @if (isExpanded() && subTitle(); as subTitle) {
+    <div class="text-left text-sm">{{ subTitle }}</div>
+  }
 </button>
 @if (isExpanded()) {
   <div>

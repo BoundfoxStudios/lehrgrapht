@@ -112,6 +112,8 @@ export class PlotEditor {
       },
     ],
     markers: [],
+    lines: [],
+    areas: [],
     showAxis: true,
     showAxisLabels: true,
     placeAxisLabelsInside: true,
@@ -128,6 +130,30 @@ export class PlotEditor {
     const range = this.editorModel().range;
 
     return `Grenzen (x: ${range.x.min}/${range.x.max}, y: ${range.y.min}/${range.y.max}) (K: ${this.squareCount()})`;
+  });
+
+  protected readonly functionsTitle = computed(() => {
+    const fnx = this.editorModel().fnx;
+
+    return `Funktionen (Anzahl: ${fnx.length})`;
+  });
+
+  protected readonly markersTitle = computed(() => {
+    const markers = this.editorModel().markers;
+
+    return `Punkte (x/y) (Anzahl: ${markers.length})`;
+  });
+
+  protected readonly areasTitle = computed(() => {
+    const areas = this.editorModel().areas;
+
+    return `Flächen (Anzahl: ${areas.length})`;
+  });
+
+  protected readonly linesTitle = computed(() => {
+    const lines = this.editorModel().lines;
+
+    return `Linien (Anzahl: ${lines.length})`;
   });
 
   protected readonly editorForm = form(this.editorModel, schema => {
