@@ -263,4 +263,52 @@ export class PlotEditor {
       return { ...model, lines };
     });
   }
+
+  protected addArea(): void {
+    this.editorModel.update(model => ({
+      ...model,
+      areas: [
+        ...model.areas,
+        {
+          points: [
+            { x: 0, y: 0 },
+            { x: 1, y: 0 },
+            { x: 1, y: 1 },
+          ],
+          color: colors[model.areas.length % colors.length],
+        },
+      ],
+    }));
+  }
+
+  protected removeArea(index: number): void {
+    this.editorModel.update(model => {
+      const areas = [...model.areas];
+      areas.splice(index, 1);
+      return { ...model, areas };
+    });
+  }
+
+  protected addAreaPoint(areaIndex: number): void {
+    this.editorModel.update(model => {
+      const areas = model.areas.map((area, i) =>
+        i === areaIndex
+          ? { ...area, points: [...area.points, { x: 0, y: 0 }] }
+          : area,
+      );
+      return { ...model, areas };
+    });
+  }
+
+  protected removeAreaPoint(areaIndex: number, pointIndex: number): void {
+    this.editorModel.update(model => {
+      const areas = model.areas.map((area, i) => {
+        if (i !== areaIndex) return area;
+        const points = [...area.points];
+        points.splice(pointIndex, 1);
+        return { ...area, points };
+      });
+      return { ...model, areas };
+    });
+  }
 }

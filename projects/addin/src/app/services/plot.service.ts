@@ -44,6 +44,15 @@ interface ValueRanges {
   yMax: number;
 }
 
+const hexToRgba = (hex: string, alpha: number): string => {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  if (!result) return hex;
+  const r = parseInt(result[1], 16);
+  const g = parseInt(result[2], 16);
+  const b = parseInt(result[3], 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+};
+
 const mmToInches = 1 / 25.4;
 const mmToPoints = 72 / 25.4;
 const devicePixelRatio = window.devicePixelRatio || 1;
@@ -318,6 +327,23 @@ export class PlotService {
           line: {
             color: line.color,
             width: plotSettings.plotLineWidth,
+          },
+        })),
+      );
+    }
+
+    if (plot.areas.length) {
+      data.push(
+        ...plot.areas.map<Partial<PlotData>>(area => ({
+          type: 'scatter',
+          mode: 'lines',
+          fillcolor: hexToRgba(area.color, 0.7),
+          fill: 'toself',
+          x: [...area.points, area.points[0]].map(point => point.x),
+          y: [...area.points, area.points[0]].map(point => point.y),
+          line: {
+            width: plotSettings.zeroLineWidth,
+            color: plotSettings.zeroLineColor,
           },
         })),
       );

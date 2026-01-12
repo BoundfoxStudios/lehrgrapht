@@ -23,7 +23,7 @@ export interface Plot {
     text: string;
   }[];
   areas: {
-    points: { x: number; y: number };
+    points: { x: number; y: number }[];
     color: string;
   }[];
   lines: {
