@@ -475,7 +475,6 @@ export class PlotEditor {
           { x: event.x, y: event.y, text: `P${model.markers.length + 1}` },
         ],
       }));
-      this.interactiveMode.set(InteractiveMode.Off);
       return;
     }
 
