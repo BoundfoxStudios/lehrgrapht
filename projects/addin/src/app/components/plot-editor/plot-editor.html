@@ -756,40 +756,39 @@
     </lg-accordion-panel>
   </lg-accordion>
 
-  <div class="sticky bottom-0 border-t border-gray-200 bg-gray-50 p-3">
-    <button
-      class="app-button w-full"
-      type="submit"
-    >
-      @if (isEditMode) {
-        Plot aktualisieren
-      } @else {
-        In Word einfügen
-      }
-    </button>
+  @let fnx = editorForm().value().fnx;
+  <div class="sticky bottom-0 border-t border-gray-200 bg-gray-50">
+    <div class="p-3">
+      <button
+        class="app-button w-full"
+        type="submit"
+      >
+        @if (isEditMode) {
+          Plot aktualisieren
+        } @else {
+          In Word einfügen
+        }
+      </button>
+    </div>
+    @if (fnx) {
+      <lg-section
+        [title]="
+          isAnyInteractiveMode()
+            ? 'Vorschau - Klicke um Punkte hinzuzufügen'
+            : 'Vorschau'
+        "
+        [subtitle]="
+          isAnyInteractiveMode()
+            ? 'Punkte werden auf 0.5 gerundet'
+            : 'Die Vorschau entspricht nicht der Größe des Bildes, das in Word eingefügt wird.'
+        "
+      />
+      <lg-plot-preview
+        [plot]="previewModel()"
+        [plotSettings]="plotSettings()"
+        [interactive]="isAnyInteractiveMode()"
+        (plotClick)="onPlotClick($event)"
+      />
+    }
   </div>
 </form>
-
-@let fnx = editorForm().value().fnx;
-@if (fnx) {
-  <div class="sticky bottom-0 border-t border-gray-200 bg-gray-50">
-    <lg-section
-      [title]="
-        isAnyInteractiveMode()
-          ? 'Vorschau - Klicke um Punkte hinzuzufügen'
-          : 'Vorschau'
-      "
-      [subtitle]="
-        isAnyInteractiveMode()
-          ? 'Punkte werden auf 0.5 gerundet'
-          : 'Die Vorschau entspricht nicht der Größe des Bildes, das in Word eingefügt wird.'
-      "
-    />
-    <lg-plot-preview
-      [plot]="previewModel()"
-      [plotSettings]="plotSettings()"
-      [interactive]="isAnyInteractiveMode()"
-      (plotClick)="onPlotClick($event)"
-    />
-  </div>
-}
