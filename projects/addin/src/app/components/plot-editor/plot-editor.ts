@@ -35,6 +35,13 @@ import {
 
 const colors = ['#3737d0', '#af2c2c', '#2a8c1a', '#f18238'];
 
+enum InteractiveMode {
+  Off = 'off',
+  Area = 'area',
+  Marker = 'marker',
+  Line = 'line',
+}
+
 const lessThanValidator = (
   fieldA: SchemaPath<number>,
   fieldB: SchemaPath<number>,
@@ -90,13 +97,13 @@ export class PlotEditor {
 
   protected readonly plotSettings = signal<PlotSettings>(defaultPlotSettings);
 
-  protected readonly interactiveAreaMode = signal(false);
+  protected readonly InteractiveMode = InteractiveMode;
+  protected readonly interactiveMode = signal<InteractiveMode>(
+    InteractiveMode.Off,
+  );
   protected readonly interactiveAreaPoints = signal<{ x: number; y: number }[]>(
     [],
   );
-
-  protected readonly interactiveMarkerMode = signal(false);
-  protected readonly interactiveLineMode = signal(false);
   protected readonly interactiveLinePoints = signal<{ x: number; y: number }[]>(
     [],
   );
@@ -145,20 +152,21 @@ export class PlotEditor {
   );
 
   protected readonly isAnyInteractiveMode = computed(
-    () =>
-      this.interactiveAreaMode() ||
-      this.interactiveMarkerMode() ||
-      this.interactiveLineMode(),
+    () => this.interactiveMode() !== InteractiveMode.Off,
   );
 
   protected readonly previewModel = computed(() => {
     const model = this.editorModel();
+    const mode = this.interactiveMode();
 
     let areas = model.areas;
     const markers = model.markers;
     let lines = model.lines;
 
-    if (this.interactiveAreaMode() && this.interactiveAreaPoints().length > 0) {
+    if (
+      mode === InteractiveMode.Area &&
+      this.interactiveAreaPoints().length > 0
+    ) {
       areas = [
         ...areas,
         {
@@ -169,7 +177,7 @@ export class PlotEditor {
     }
 
     if (
-      this.interactiveLineMode() &&
+      mode === InteractiveMode.Line &&
       this.interactiveLinePoints().length === 2
     ) {
       const pts = this.interactiveLinePoints();
@@ -422,12 +430,12 @@ export class PlotEditor {
   }
 
   protected startInteractiveArea(): void {
-    this.interactiveAreaMode.set(true);
+    this.interactiveMode.set(InteractiveMode.Area);
     this.interactiveAreaPoints.set([]);
   }
 
   protected cancelInteractiveArea(): void {
-    this.interactiveAreaMode.set(false);
+    this.interactiveMode.set(InteractiveMode.Off);
     this.interactiveAreaPoints.set([]);
   }
 
@@ -447,17 +455,19 @@ export class PlotEditor {
       }));
     }
 
-    this.interactiveAreaMode.set(false);
+    this.interactiveMode.set(InteractiveMode.Off);
     this.interactiveAreaPoints.set([]);
   }
 
   protected onPlotClick(event: PlotClickEvent): void {
-    if (this.interactiveAreaMode()) {
+    const mode = this.interactiveMode();
+
+    if (mode === InteractiveMode.Area) {
       this.interactiveAreaPoints.update(points => [...points, event]);
       return;
     }
 
-    if (this.interactiveMarkerMode()) {
+    if (mode === InteractiveMode.Marker) {
       this.editorModel.update(model => ({
         ...model,
         markers: [
@@ -465,10 +475,11 @@ export class PlotEditor {
           { x: event.x, y: event.y, text: `P${model.markers.length + 1}` },
         ],
       }));
+      this.interactiveMode.set(InteractiveMode.Off);
       return;
     }
 
-    if (this.interactiveLineMode()) {
+    if (mode === InteractiveMode.Line) {
       this.interactiveLinePoints.update(points => {
         const newPoints = [...points, event];
         if (newPoints.length === 2) {
@@ -485,7 +496,7 @@ export class PlotEditor {
               },
             ],
           }));
-          this.interactiveLineMode.set(false);
+          this.interactiveMode.set(InteractiveMode.Off);
           return [];
         }
         return newPoints;
@@ -503,20 +514,20 @@ export class PlotEditor {
   }
 
   protected startInteractiveMarker(): void {
-    this.interactiveMarkerMode.set(true);
+    this.interactiveMode.set(InteractiveMode.Marker);
   }
 
   protected cancelInteractiveMarker(): void {
-    this.interactiveMarkerMode.set(false);
+    this.interactiveMode.set(InteractiveMode.Off);
   }
 
   protected startInteractiveLine(): void {
-    this.interactiveLineMode.set(true);
+    this.interactiveMode.set(InteractiveMode.Line);
     this.interactiveLinePoints.set([]);
   }
 
   protected cancelInteractiveLine(): void {
-    this.interactiveLineMode.set(false);
+    this.interactiveMode.set(InteractiveMode.Off);
     this.interactiveLinePoints.set([]);
   }
 

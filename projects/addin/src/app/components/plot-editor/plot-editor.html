@@ -316,7 +316,7 @@
           </div>
         }
 
-        @if (interactiveMarkerMode()) {
+        @if (interactiveMode() === InteractiveMode.Marker) {
           <div class="border-brand bg-brand/5 rounded-lg border-2 p-3">
             <div class="mb-2 flex items-center justify-between">
               <span class="text-brand text-sm font-medium"
@@ -445,7 +445,7 @@
           </div>
         }
 
-        @if (interactiveAreaMode()) {
+        @if (interactiveMode() === InteractiveMode.Area) {
           <div class="border-brand bg-brand/5 rounded-lg border-2 p-3">
             <div class="mb-2 flex items-center justify-between">
               <span class="text-brand text-sm font-medium"
@@ -635,7 +635,7 @@
           </div>
         }
 
-        @if (interactiveLineMode()) {
+        @if (interactiveMode() === InteractiveMode.Line) {
           <div class="border-brand bg-brand/5 rounded-lg border-2 p-3">
             <div class="mb-2 flex items-center justify-between">
               <span class="text-brand text-sm font-medium"
