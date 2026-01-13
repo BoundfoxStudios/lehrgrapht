@@ -311,4 +311,51 @@ export class PlotEditor {
       return { ...model, areas };
     });
   }
+
+  protected autoAdjustLimits(): void {
+    const lines = this.editorModel().lines;
+    const markers = this.editorModel().markers;
+    const areas = this.editorModel().areas;
+
+    const allPoints: { x: number; y: number }[] = [];
+
+    for (const line of lines) {
+      allPoints.push({ x: line.x1, y: line.y1 });
+      allPoints.push({ x: line.x2, y: line.y2 });
+    }
+
+    // Add marker points
+    for (const marker of markers) {
+      allPoints.push({ x: marker.x, y: marker.y });
+    }
+
+    // Add area points
+    for (const area of areas) {
+      allPoints.push(...area.points);
+    }
+
+    if (!allPoints.length) {
+      return;
+    }
+
+    let minX = allPoints[0].x;
+    let maxX = allPoints[0].x;
+    let minY = allPoints[0].y;
+    let maxY = allPoints[0].y;
+
+    for (const point of allPoints) {
+      if (point.x < minX) minX = point.x;
+      if (point.x > maxX) maxX = point.x;
+      if (point.y < minY) minY = point.y;
+      if (point.y > maxY) maxY = point.y;
+    }
+
+    this.editorModel.update(model => ({
+      ...model,
+      range: {
+        x: { min: minX - 1, max: maxX + 1 },
+        y: { min: minY - 1, max: maxY + 1 },
+      },
+    }));
+  }
 }
