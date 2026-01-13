@@ -325,27 +325,23 @@
               <span
                 class="bg-brand rounded-full px-2 py-0.5 text-xs text-white"
               >
-                {{ interactiveMarkerPoints().length }} Punkte
+                {{ interactivePoints().length }} Punkte
               </span>
             </div>
 
             <div class="mb-3 h-[5.25rem] overflow-y-auto">
-              @if (interactiveMarkerPoints().length > 0) {
+              @if (interactivePoints().length > 0) {
                 <div class="space-y-1">
-                  @for (
-                    point of interactiveMarkerPoints();
-                    let i = $index;
-                    track i
-                  ) {
+                  @for (point of interactivePoints(); let i = $index; track i) {
                     <div
                       class="flex items-center justify-between rounded bg-white px-2 py-1 text-sm"
                     >
                       <span class="text-gray-600"
-                        >{{ point.text }}: ({{ point.x }}, {{ point.y }})</span
+                        >P{{ i + 1 }}: ({{ point.x }}, {{ point.y }})</span
                       >
                       <button
                         class="text-gray-400 hover:text-red-500"
-                        (click)="removeInteractiveMarkerPoint(i)"
+                        (click)="removeInteractivePoint(i)"
                         type="button"
                       >
                         <fa-icon
@@ -366,7 +362,7 @@
             <div class="flex gap-2">
               <button
                 class="app-button small flex-1"
-                [disabled]="interactiveMarkerPoints().length < 1"
+                [disabled]="interactivePoints().length < 1"
                 (click)="finishInteractiveMarker()"
                 type="button"
               >
@@ -505,18 +501,14 @@
               <span
                 class="bg-brand rounded-full px-2 py-0.5 text-xs text-white"
               >
-                {{ interactiveAreaPoints().length }} Punkte
+                {{ interactivePoints().length }} Punkte
               </span>
             </div>
 
             <div class="mb-3 h-[5.25rem] overflow-y-auto">
-              @if (interactiveAreaPoints().length > 0) {
+              @if (interactivePoints().length > 0) {
                 <div class="space-y-1">
-                  @for (
-                    point of interactiveAreaPoints();
-                    let i = $index;
-                    track i
-                  ) {
+                  @for (point of interactivePoints(); let i = $index; track i) {
                     <div
                       class="flex items-center justify-between rounded bg-white px-2 py-1 text-sm"
                     >
@@ -546,7 +538,7 @@
             <div class="flex gap-2">
               <button
                 class="app-button small flex-1"
-                [disabled]="interactiveAreaPoints().length < 3"
+                [disabled]="interactivePoints().length < 3"
                 (click)="finishInteractiveArea()"
                 type="button"
               >
@@ -697,18 +689,14 @@
               <span
                 class="bg-brand rounded-full px-2 py-0.5 text-xs text-white"
               >
-                {{ interactiveLinePoints().length }}/2 Punkte
+                {{ interactivePoints().length }}/2 Punkte
               </span>
             </div>
 
             <div class="mb-3 h-[3.5rem] overflow-y-auto">
-              @if (interactiveLinePoints().length > 0) {
+              @if (interactivePoints().length > 0) {
                 <div class="space-y-1">
-                  @for (
-                    point of interactiveLinePoints();
-                    let i = $index;
-                    track i
-                  ) {
+                  @for (point of interactivePoints(); let i = $index; track i) {
                     <div
                       class="flex items-center justify-between rounded bg-white px-2 py-1 text-sm"
                     >
@@ -718,7 +706,7 @@
                       >
                       <button
                         class="text-gray-400 hover:text-red-500"
-                        (click)="removeInteractiveLinePoint(i)"
+                        (click)="removeInteractivePoint(i)"
                         type="button"
                       >
                         <fa-icon

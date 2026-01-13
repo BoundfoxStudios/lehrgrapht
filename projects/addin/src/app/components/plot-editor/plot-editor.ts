@@ -84,6 +84,7 @@ const lessThanValidator = (
   styleUrl: './plot-editor.css',
 })
 export class PlotEditor {
+  protected readonly InteractiveMode = InteractiveMode;
   protected readonly faPlusCircle = faPlusCircle;
   protected readonly faTrashCan = faTrashCan;
   protected readonly faMousePointer = faMousePointer;
@@ -97,19 +98,10 @@ export class PlotEditor {
 
   protected readonly plotSettings = signal<PlotSettings>(defaultPlotSettings);
 
-  protected readonly InteractiveMode = InteractiveMode;
   protected readonly interactiveMode = signal<InteractiveMode>(
     InteractiveMode.Off,
   );
-  protected readonly interactiveAreaPoints = signal<{ x: number; y: number }[]>(
-    [],
-  );
-  protected readonly interactiveMarkerPoints = signal<
-    { x: number; y: number; text: string }[]
-  >([]);
-  protected readonly interactiveLinePoints = signal<{ x: number; y: number }[]>(
-    [],
-  );
+  protected readonly interactivePoints = signal<{ x: number; y: number }[]>([]);
 
   protected readonly activeId = toSignal(
     this.activatedRoute.paramMap.pipe(map(params => params.get('id'))),
@@ -166,31 +158,29 @@ export class PlotEditor {
     let markers = model.markers;
     let lines = model.lines;
 
-    if (
-      mode === InteractiveMode.Area &&
-      this.interactiveAreaPoints().length > 0
-    ) {
+    const pts = this.interactivePoints();
+
+    if (mode === InteractiveMode.Area && pts.length > 0) {
       areas = [
         ...areas,
         {
-          points: this.interactiveAreaPoints(),
+          points: pts,
           color: colors[areas.length % colors.length],
         },
       ];
     }
 
-    if (
-      mode === InteractiveMode.Marker &&
-      this.interactiveMarkerPoints().length > 0
-    ) {
-      markers = [...markers, ...this.interactiveMarkerPoints()];
+    if (mode === InteractiveMode.Marker && pts.length > 0) {
+      markers = [
+        ...markers,
+        ...pts.map((p, i) => ({
+          ...p,
+          text: `P${markers.length + i + 1}`,
+        })),
+      ];
     }
 
-    if (
-      mode === InteractiveMode.Line &&
-      this.interactiveLinePoints().length === 2
-    ) {
-      const pts = this.interactiveLinePoints();
+    if (mode === InteractiveMode.Line && pts.length === 2) {
       lines = [
         ...lines,
         {
@@ -404,12 +394,10 @@ export class PlotEditor {
       allPoints.push({ x: line.x2, y: line.y2 });
     }
 
-    // Add marker points
     for (const marker of markers) {
       allPoints.push({ x: marker.x, y: marker.y });
     }
 
-    // Add area points
     for (const area of areas) {
       allPoints.push(...area.points);
     }
@@ -441,16 +429,16 @@ export class PlotEditor {
 
   protected startInteractiveArea(): void {
     this.interactiveMode.set(InteractiveMode.Area);
-    this.interactiveAreaPoints.set([]);
+    this.interactivePoints.set([]);
   }
 
   protected cancelInteractiveArea(): void {
     this.interactiveMode.set(InteractiveMode.Off);
-    this.interactiveAreaPoints.set([]);
+    this.interactivePoints.set([]);
   }
 
   protected finishInteractiveArea(): void {
-    const points = this.interactiveAreaPoints();
+    const points = this.interactivePoints();
 
     if (points.length >= 3) {
       this.editorModel.update(model => ({
@@ -466,30 +454,19 @@ export class PlotEditor {
     }
 
     this.interactiveMode.set(InteractiveMode.Off);
-    this.interactiveAreaPoints.set([]);
+    this.interactivePoints.set([]);
   }
 
   protected onPlotClick(event: PlotClickEvent): void {
     const mode = this.interactiveMode();
 
-    if (mode === InteractiveMode.Area) {
-      this.interactiveAreaPoints.update(points => [...points, event]);
-      return;
-    }
-
-    if (mode === InteractiveMode.Marker) {
-      const existingCount =
-        this.editorModel().markers.length +
-        this.interactiveMarkerPoints().length;
-      this.interactiveMarkerPoints.update(points => [
-        ...points,
-        { x: event.x, y: event.y, text: `P${existingCount + 1}` },
-      ]);
+    if (mode === InteractiveMode.Area || mode === InteractiveMode.Marker) {
+      this.interactivePoints.update(points => [...points, event]);
       return;
     }
 
     if (mode === InteractiveMode.Line) {
-      this.interactiveLinePoints.update(points => {
+      this.interactivePoints.update(points => {
         const newPoints = [...points, event];
         if (newPoints.length === 2) {
           this.editorModel.update(model => ({
@@ -515,7 +492,7 @@ export class PlotEditor {
   }
 
   protected removeInteractivePoint(index: number): void {
-    this.interactiveAreaPoints.update(points => {
+    this.interactivePoints.update(points => {
       const newPoints = [...points];
       newPoints.splice(index, 1);
       return newPoints;
@@ -524,51 +501,41 @@ export class PlotEditor {
 
   protected startInteractiveMarker(): void {
     this.interactiveMode.set(InteractiveMode.Marker);
-    this.interactiveMarkerPoints.set([]);
+    this.interactivePoints.set([]);
   }
 
   protected cancelInteractiveMarker(): void {
     this.interactiveMode.set(InteractiveMode.Off);
-    this.interactiveMarkerPoints.set([]);
+    this.interactivePoints.set([]);
   }
 
   protected finishInteractiveMarker(): void {
-    const points = this.interactiveMarkerPoints();
+    const points = this.interactivePoints();
 
     if (points.length > 0) {
       this.editorModel.update(model => ({
         ...model,
-        markers: [...model.markers, ...points],
+        markers: [
+          ...model.markers,
+          ...points.map((p, i) => ({
+            ...p,
+            text: `P${model.markers.length + i + 1}`,
+          })),
+        ],
       }));
     }
 
     this.interactiveMode.set(InteractiveMode.Off);
-    this.interactiveMarkerPoints.set([]);
-  }
-
-  protected removeInteractiveMarkerPoint(index: number): void {
-    this.interactiveMarkerPoints.update(points => {
-      const newPoints = [...points];
-      newPoints.splice(index, 1);
-      return newPoints;
-    });
+    this.interactivePoints.set([]);
   }
 
   protected startInteractiveLine(): void {
     this.interactiveMode.set(InteractiveMode.Line);
-    this.interactiveLinePoints.set([]);
+    this.interactivePoints.set([]);
   }
 
   protected cancelInteractiveLine(): void {
     this.interactiveMode.set(InteractiveMode.Off);
-    this.interactiveLinePoints.set([]);
-  }
-
-  protected removeInteractiveLinePoint(index: number): void {
-    this.interactiveLinePoints.update(points => {
-      const newPoints = [...points];
-      newPoints.splice(index, 1);
-      return newPoints;
-    });
+    this.interactivePoints.set([]);
   }
 }
