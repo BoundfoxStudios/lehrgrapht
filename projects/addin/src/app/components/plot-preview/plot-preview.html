@@ -25,16 +25,34 @@
   }
 
   @if (preview && !plotHasErrorCode(preview)) {
-    <img
-      [src]="preview.base64"
-      [class.cursor-crosshair]="interactive()"
-      [class.ring-2]="interactive()"
-      [class.ring-brand]="interactive()"
-      [class.ring-offset-2]="interactive()"
-      (click)="onImageClick($event)"
-      alt="Preview"
-      width="300"
-      height="300"
-    />
+    <div class="relative inline-block">
+      <img
+        [src]="preview.base64"
+        [class.cursor-crosshair]="interactive()"
+        [class.ring-2]="interactive()"
+        [class.ring-brand]="interactive()"
+        [class.ring-offset-2]="interactive()"
+        (click)="onImageClick($event)"
+        (mousemove)="onImageMouseMove($event)"
+        (mouseleave)="onImageMouseLeave()"
+        alt="Preview"
+        width="300"
+        height="300"
+      />
+      @if (interactive() && hoverPosition(); as pos) {
+        <div
+          class="pointer-events-none absolute h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-red-500 shadow-md"
+          [style.left.%]="pos.percentX"
+          [style.top.%]="pos.percentY"
+        ></div>
+        <div
+          class="pointer-events-none absolute -translate-x-1/2 translate-y-2 rounded bg-gray-800 px-1.5 py-0.5 text-xs text-white"
+          [style.left.%]="pos.percentX"
+          [style.top.%]="pos.percentY"
+        >
+          ({{ pos.x }}, {{ pos.y }})
+        </div>
+      }
+    </div>
   }
 </lg-content-container>
