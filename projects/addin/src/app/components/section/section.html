@@ -1,7 +1,8 @@
-<h3 class="bg-brand p-1 text-white">
-  {{ title() }}
-</h3>
-
-@if (subtitle(); as subtitle) {
-  <p class="bg-brand px-1 pb-1 text-xs text-white">{{ subtitle }}</p>
-}
+<div class="from-brand to-brand-strong bg-gradient-to-r px-3 py-2 shadow-sm">
+  <h3 class="text-sm font-medium text-white">
+    {{ title() }}
+  </h3>
+  @if (subtitle(); as subtitle) {
+    <p class="mt-0.5 text-xs text-white/80">{{ subtitle }}</p>
+  }
+</div>

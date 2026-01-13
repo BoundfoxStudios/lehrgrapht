@@ -10,30 +10,30 @@
         Neuer Plot
       </a>
       <button
-        class="app-button"
+        class="app-button icon-only"
         (click)="plots.reload()"
         title="Plots neuladen"
       >
         <fa-icon [icon]="faRefresh" />
       </button>
     </div>
-    <div class="ml-auto flex flex-1 space-x-2 lg:flex-none">
+    <div class="ml-auto flex flex-1 gap-1.5 lg:flex-none">
       <a
-        class="app-button"
+        class="app-button secondary icon-only"
         [routerLink]="['/plot/settings']"
         title="Einstellungen"
       >
         <fa-icon [icon]="faGear" />
       </a>
       <a
-        class="app-button"
+        class="app-button secondary icon-only"
         [routerLink]="['/plot/info']"
         title="Info"
       >
         <fa-icon [icon]="faInfoCircle" />
       </a>
       <a
-        class="app-button"
+        class="app-button secondary icon-only"
         [routerLink]="['/plot/debug']"
         title="Entwicklerinformationen"
       >
@@ -42,58 +42,90 @@
     </div>
   </div>
 
-  <h2>
-    @let plotList = plots.value(); Liste erkannter Plots im Dokument:
+  <div class="flex items-center gap-2">
+    <h2 class="text-sm font-medium text-gray-700">
+      @let plotList = plots.value(); Erkannte Plots:
+    </h2>
     @if (plots.isLoading()) {
       <fa-icon
+        class="text-brand"
         [icon]="faRefresh"
         [animation]="'spin'"
       />
     } @else {
-      {{ plotList.length }}
+      <span
+        class="bg-brand inline-flex h-6 min-w-6 items-center justify-center rounded-full px-2 text-xs font-medium text-white"
+      >
+        {{ plotList.length }}
+      </span>
     }
-  </h2>
+  </div>
 
-  <div class="flex flex-col space-y-2">
+  <div class="flex flex-col gap-2">
     @let selectedPlot = wordService.selection();
 
     @for (plot of plotList; track plot.id; let index = $index) {
       @let isSelected = selectedPlot?.id === plot.id;
       <div
-        class="rounded-sm p-2"
-        [class.bg-brand-light]="isSelected"
-        [class.odd:bg-gray-200]="!isSelected"
+        class="rounded-lg border p-3 transition-all duration-200"
+        [class.border-brand]="isSelected"
+        [class.bg-brand-soft]="isSelected"
+        [class.shadow-sm]="isSelected"
+        [class.border-gray-200]="!isSelected"
+        [class.bg-white]="!isSelected"
+        [class.hover:border-gray-300]="!isSelected"
+        [class.hover:shadow-xs]="!isSelected"
       >
-        <div class="flex items-center space-x-1">
+        <div class="flex items-center gap-2">
           <button
-            class="flex-1 text-left font-bold"
+            class="flex-1 text-left transition-colors duration-150"
             (click)="select(plot.id)"
           >
-            <h3 [class.text-white]="isSelected">
-              {{ plot.model?.name ?? 'Plot ' + index }}
+            <h3
+              class="font-semibold"
+              [class.text-brand-strong]="isSelected"
+              [class.text-gray-800]="!isSelected"
+            >
+              {{ plot.model?.name ?? 'Plot ' + (index + 1) }}
             </h3>
           </button>
-          <a
-            class="app-button small"
-            [routerLink]="['/plot/editor', plot.id]"
-            title="Plot editieren"
-            ><fa-icon [icon]="faPen"
-          /></a>
-          <button
-            class="app-button small"
-            (click)="clonePlot(plot.id)"
-            title="Plot klonen"
-          >
-            <fa-icon [icon]="faCopy" />
-          </button>
-          <button
-            class="app-button small"
-            (click)="deletePlot(plot.id)"
-            title="Plot löschen"
-          >
-            <fa-icon [icon]="faTrashCan" />
-          </button>
+          <div class="flex gap-1">
+            <a
+              class="app-button small"
+              [routerLink]="['/plot/editor', plot.id]"
+              title="Plot editieren"
+              ><fa-icon [icon]="faPen"
+            /></a>
+            <button
+              class="app-button small"
+              (click)="clonePlot(plot.id)"
+              title="Plot klonen"
+            >
+              <fa-icon [icon]="faCopy" />
+            </button>
+            <button
+              class="app-button small"
+              (click)="deletePlot(plot.id)"
+              title="Plot löschen"
+            >
+              <fa-icon [icon]="faTrashCan" />
+            </button>
+          </div>
         </div>
+      </div>
+    }
+
+    @if (plotList.length === 0 && !plots.isLoading()) {
+      <div
+        class="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-6 text-center"
+      >
+        <p class="text-sm text-gray-500">Keine Plots im Dokument gefunden.</p>
+        <a
+          class="app-button mt-3 inline-block"
+          [routerLink]="'/plot/editor'"
+        >
+          Ersten Plot erstellen
+        </a>
       </div>
     }
   </div>

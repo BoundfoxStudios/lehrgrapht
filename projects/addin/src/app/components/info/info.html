@@ -4,30 +4,53 @@
 />
 
 <lg-content-container class="flex-col space-y-4">
-  <h2 class="font-bold">LehrGrapht Version</h2>
-  <p>{{ lehrgraphtVersion }}</p>
+  <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-xs">
+    <h2 class="text-xs font-medium tracking-wide text-gray-500 uppercase">
+      Version
+    </h2>
+    <p class="text-brand mt-1 text-lg font-semibold">{{ lehrgraphtVersion }}</p>
+  </div>
 
-  <h2 class="font-bold">Entwickler</h2>
-  <p>Boundfox Studios // Manuel Rauber</p>
+  <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-xs">
+    <h2 class="text-xs font-medium tracking-wide text-gray-500 uppercase">
+      Entwickler
+    </h2>
+    <p class="mt-1 font-medium text-gray-800">Boundfox Studios</p>
+    <p class="text-sm text-gray-600">Manuel Rauber</p>
+  </div>
 
-  <h2 class="font-bold">Kontakt / Support</h2>
-  <ul class="ml-8 list-disc">
-    <li>
-      Mail:
-      <lgs-support-email-link
-        [subject]="'LehrGrapht Version ' + lehrgraphtVersion"
-      />
-    </li>
-    <li>
-      Fehler direkt auf
-      <lgs-github-link deepLink="issues" />
-      melden
-    </li>
-  </ul>
+  <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-xs">
+    <h2 class="mb-3 text-xs font-medium tracking-wide text-gray-500 uppercase">
+      Kontakt / Support
+    </h2>
+    <ul class="space-y-2">
+      <li class="flex items-start gap-2">
+        <span class="bg-brand mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full"></span>
+        <span class="text-sm text-gray-700">
+          Mail:
+          <lgs-support-email-link
+            [subject]="'LehrGrapht Version ' + lehrgraphtVersion"
+          />
+        </span>
+      </li>
+      <li class="flex items-start gap-2">
+        <span class="bg-brand mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full"></span>
+        <span class="text-sm text-gray-700">
+          Fehler direkt auf
+          <lgs-github-link deepLink="issues" />
+          melden
+        </span>
+      </li>
+    </ul>
+  </div>
 
-  <h2 class="font-bold">Open Source</h2>
-  <p>
-    LehrGrapht ist Open Source, weitere Informationen findest Du auf
-    <lgs-github-link />.
-  </p>
+  <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-xs">
+    <h2 class="text-xs font-medium tracking-wide text-gray-500 uppercase">
+      Open Source
+    </h2>
+    <p class="mt-1 text-sm text-gray-700">
+      LehrGrapht ist Open Source, weitere Informationen findest Du auf
+      <lgs-github-link />.
+    </p>
+  </div>
 </lg-content-container>

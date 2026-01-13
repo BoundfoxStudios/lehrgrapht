@@ -1,36 +1,68 @@
 <lg-header title="Willkommen!" />
 
-<lg-content-container class="flex-col space-y-4">
-  <p>Willkommen zu LehrGrapht!</p>
+<lg-content-container class="flex-col space-y-5">
+  <div class="text-center">
+    <h2 class="text-lg font-semibold text-gray-800">
+      Willkommen zu LehrGrapht!
+    </h2>
+    <p class="mt-1 text-sm text-gray-600">
+      Erstelle Plots für Arbeitsblätter, Klassenarbeiten und mehr.
+    </p>
+  </div>
 
-  <p>
-    LehrGrapht hilft Dir Plots für Arbeitsblätter, Klassenarbeiten, etc. zu
-    erstellen.
-  </p>
+  <div class="flex justify-center">
+    <img
+      class="w-72 rounded-lg border border-gray-200 shadow-sm"
+      src="example-plot.png"
+      alt="Beispiel"
+    />
+  </div>
 
-  <img
-    class="w-80"
-    src="example-plot.png"
-    alt="Beispiel"
-  />
-
-  <ul class="ml-4">
-    <li>
-      <fa-icon [icon]="faTableCells" /> Maßstabsgetreu für 5x5 mm Karopapier.
+  <ul class="space-y-2.5">
+    <li class="flex items-center gap-3 rounded-lg bg-gray-50 p-3">
+      <span
+        class="bg-brand/10 text-brand flex h-8 w-8 items-center justify-center rounded-full"
+      >
+        <fa-icon [icon]="faTableCells" />
+      </span>
+      <span class="text-sm text-gray-700"
+        >Maßstabsgetreu für 5x5 mm Karopapier</span
+      >
     </li>
-    <li><fa-icon [icon]="faImages" /> Beliebig viele Schaubilder.</li>
-    <li>
-      <fa-icon [icon]="faChartLine" /> Beliebig viele Graphen pro Schaubild.
+    <li class="flex items-center gap-3 rounded-lg bg-gray-50 p-3">
+      <span
+        class="bg-brand/10 text-brand flex h-8 w-8 items-center justify-center rounded-full"
+      >
+        <fa-icon [icon]="faImages" />
+      </span>
+      <span class="text-sm text-gray-700">Beliebig viele Schaubilder</span>
     </li>
-    <li><fa-icon [icon]="faMapPin" /> Einzeichnen von Punkten.</li>
+    <li class="flex items-center gap-3 rounded-lg bg-gray-50 p-3">
+      <span
+        class="bg-brand/10 text-brand flex h-8 w-8 items-center justify-center rounded-full"
+      >
+        <fa-icon [icon]="faChartLine" />
+      </span>
+      <span class="text-sm text-gray-700"
+        >Beliebig viele Graphen pro Schaubild</span
+      >
+    </li>
+    <li class="flex items-center gap-3 rounded-lg bg-gray-50 p-3">
+      <span
+        class="bg-brand/10 text-brand flex h-8 w-8 items-center justify-center rounded-full"
+      >
+        <fa-icon [icon]="faMapPin" />
+      </span>
+      <span class="text-sm text-gray-700">Einzeichnen von Punkten</span>
+    </li>
   </ul>
 
-  <div class="mt-4">
+  <div class="pt-2">
     <button
-      class="app-button"
+      class="app-button w-full"
       (click)="proceed()"
     >
-      Weiter
+      Los geht's
     </button>
   </div>
 </lg-content-container>

@@ -1,6 +1,6 @@
 import { Component, input, model, OnInit } from '@angular/core';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'lg-accordion-panel',
@@ -13,7 +13,6 @@ import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 })
 export class AccordionPanel implements OnInit {
   protected readonly faChevronDown = faChevronDown;
-  protected readonly faChevronUp = faChevronUp;
 
   readonly title = input.required<string>();
   readonly subTitle = input<string>();

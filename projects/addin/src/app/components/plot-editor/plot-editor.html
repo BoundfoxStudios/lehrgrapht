@@ -14,12 +14,12 @@
   <lg-content-container class="flex flex-1">
     <div class="group flex-1">
       <label
-        class="text-heading mb-1 block text-sm font-medium"
+        class="app-label"
         for="name"
         >Name</label
       >
       <input
-        class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
+        class="app-input"
         id="name"
         [field]="editorForm.name"
         type="text"
@@ -37,12 +37,12 @@
           <div class="grid grid-cols-2 gap-6">
             <div class="group">
               <label
-                class="text-heading mb-1 block text-sm font-medium"
+                class="app-label"
                 for="min-x"
                 >Min X</label
               >
               <input
-                class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
+                class="app-input"
                 id="min-x"
                 [field]="editorForm.range.x.min"
                 type="number"
@@ -51,12 +51,12 @@
             </div>
             <div class="group">
               <label
-                class="text-heading mb-1 block text-sm font-medium"
+                class="app-label"
                 for="max-x"
                 >Max X</label
               >
               <input
-                class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
+                class="app-input"
                 id="max-x"
                 [field]="editorForm.range.x.max"
                 type="number"
@@ -77,12 +77,12 @@
           <div class="grid grid-cols-2 gap-6">
             <div class="group">
               <label
-                class="text-heading mb-1 block text-sm font-medium"
+                class="app-label"
                 for="min-y"
                 >Min Y</label
               >
               <input
-                class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
+                class="app-input"
                 id="min-y"
                 [field]="editorForm.range.y.min"
                 type="number"
@@ -91,12 +91,12 @@
             </div>
             <div class="group">
               <label
-                class="text-heading mb-1 block text-sm font-medium"
+                class="app-label"
                 for="max-y"
                 >Max Y</label
               >
               <input
-                class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
+                class="app-input"
                 id="max-y"
                 [field]="editorForm.range.y.max"
                 type="number"
@@ -132,7 +132,7 @@
       <lg-content-container class="flex flex-col">
         <div class="mb-1 flex items-center">
           <input
-            class="border-default-medium bg-neutral-secondary-medium focus:ring-brand-soft h-4 w-4 rounded-xs border focus:ring-2"
+            class="app-checkbox"
             id="show-axis"
             [field]="editorForm.showAxis"
             type="checkbox"
@@ -146,7 +146,7 @@
         @if (editorModel().showAxis) {
           <div class="mb-1 ml-4 flex items-center">
             <input
-              class="border-default-medium bg-neutral-secondary-medium focus:ring-brand-soft h-4 w-4 rounded-xs border focus:ring-2"
+              class="app-checkbox"
               id="show-axis-labels"
               [field]="editorForm.showAxisLabels"
               type="checkbox"
@@ -160,7 +160,7 @@
           @if (editorModel().showAxisLabels) {
             <div class="mb-4 ml-8 flex items-center">
               <input
-                class="border-default-medium bg-neutral-secondary-medium focus:ring-brand-soft h-4 w-4 rounded-xs border focus:ring-2"
+                class="app-checkbox"
                 id="place-axis-labels-inside"
                 [field]="editorForm.placeAxisLabelsInside"
                 type="checkbox"
@@ -175,7 +175,7 @@
         }
         <div class="mb-4 flex items-center">
           <input
-            class="border-default-medium bg-neutral-secondary-medium focus:ring-brand-soft h-4 w-4 rounded-xs border focus:ring-2"
+            class="app-checkbox"
             id="square-plots"
             [field]="editorForm.squarePlots"
             type="checkbox"
@@ -188,7 +188,7 @@
         </div>
         <div class="flex items-center">
           <input
-            class="border-default-medium bg-neutral-secondary-medium focus:ring-brand-soft h-4 w-4 rounded-xs border focus:ring-2"
+            class="app-checkbox"
             id="limit-equals-value-range"
             [field]="editorForm.automaticallyAdjustLimitsToValueRange"
             type="checkbox"
@@ -220,14 +220,14 @@
           <div>
             <div class="flex flex-1 flex-col">
               <label
-                class="text-heading mb-1 block text-sm font-medium"
+                class="app-label"
                 [for]="'fnx-' + $index"
                 >Funktion {{ index + 1 }}: f(x) =
               </label>
 
               <div class="flex items-center space-x-2">
                 <input
-                  class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
+                  class="app-input"
                   [field]="control.fnx"
                   [id]="'fnx-' + $index"
                   type="text"
@@ -275,7 +275,7 @@
           <div>
             <div class="flex items-center space-x-2">
               <input
-                class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
+                class="app-input"
                 [field]="control.text"
                 type="text"
                 spellcheck="false"
@@ -285,12 +285,12 @@
               />
 
               <input
-                class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
+                class="app-input"
                 [field]="control.x"
                 type="number"
               />
               <input
-                class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
+                class="app-input"
                 [field]="control.y"
                 type="number"
               />
@@ -362,12 +362,12 @@
               <div class="mb-1 flex items-center space-y-4 space-x-2">
                 <div class="flex flex-1 flex-col">
                   <label
-                    class="text-heading mb-1 block text-xs font-medium"
+                    class="app-label text-xs"
                     [for]="'area-' + areaIndex + '-x-' + pointIndex"
                     >X{{ pointIndex + 1 }}</label
                   >
                   <input
-                    class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
+                    class="app-input"
                     [field]="point.x"
                     [id]="'area-' + areaIndex + '-x-' + pointIndex"
                     type="number"
@@ -375,12 +375,12 @@
                 </div>
                 <div class="flex flex-1 flex-col">
                   <label
-                    class="text-heading mb-1 block text-xs font-medium"
+                    class="app-label text-xs"
                     [for]="'area-' + areaIndex + '-y-' + pointIndex"
                     >Y{{ pointIndex + 1 }}</label
                   >
                   <input
-                    class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
+                    class="app-input"
                     [field]="point.y"
                     [id]="'area-' + areaIndex + '-y-' + pointIndex"
                     type="number"
@@ -438,12 +438,12 @@
               <div class="flex space-x-2">
                 <div class="flex flex-col">
                   <label
-                    class="text-heading mb-1 block text-xs font-medium"
+                    class="app-label text-xs"
                     [for]="'line-x1-' + $index"
                     >X1</label
                   >
                   <input
-                    class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
+                    class="app-input"
                     [field]="control.x1"
                     [id]="'line-x1-' + $index"
                     type="number"
@@ -451,12 +451,12 @@
                 </div>
                 <div class="flex flex-col">
                   <label
-                    class="text-heading mb-1 block text-xs font-medium"
+                    class="app-label text-xs"
                     [for]="'line-y1-' + $index"
                     >Y1</label
                   >
                   <input
-                    class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
+                    class="app-input"
                     [field]="control.y1"
                     [id]="'line-y1-' + $index"
                     type="number"
@@ -466,12 +466,12 @@
               <div class="flex space-x-2">
                 <div class="flex flex-col">
                   <label
-                    class="text-heading mb-1 block text-xs font-medium"
+                    class="app-label text-xs"
                     [for]="'line-x2-' + $index"
                     >X2</label
                   >
                   <input
-                    class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
+                    class="app-input"
                     [field]="control.x2"
                     [id]="'line-x2-' + $index"
                     type="number"
@@ -479,12 +479,12 @@
                 </div>
                 <div class="flex flex-col">
                   <label
-                    class="text-heading mb-1 block text-xs font-medium"
+                    class="app-label text-xs"
                     [for]="'line-y2-' + $index"
                     >Y2</label
                   >
                   <input
-                    class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs"
+                    class="app-input"
                     [field]="control.y2"
                     [id]="'line-y2-' + $index"
                     type="number"

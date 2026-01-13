@@ -1,8 +1,10 @@
-<header class="bg-brand relative flex p-2 text-white">
+<header
+  class="from-brand to-brand-strong relative flex bg-gradient-to-r p-3 text-white shadow-md"
+>
   @if (backLink(); as backLink) {
     <div class="flex items-center">
       <a
-        class="absolute"
+        class="absolute left-3 flex h-8 w-8 items-center justify-center rounded-full bg-white/10 transition-all duration-200 hover:scale-105 hover:bg-white/20"
         [routerLink]="backLink"
         ><fa-icon [icon]="faArrowCircleLeft"
       /></a>
@@ -10,9 +12,11 @@
   }
 
   <div class="flex flex-1 flex-col">
-    <h1 class="flex-1 text-center text-2xl">{{ title() }}</h1>
+    <h1 class="flex-1 text-center text-xl font-semibold tracking-wide">
+      {{ title() }}
+    </h1>
     @if (subtitle(); as subtitle) {
-      <h2 class="text-center text-sm">{{ subtitle }}</h2>
+      <h2 class="text-center text-xs text-white/80">{{ subtitle }}</h2>
     }
   </div>
 </header>

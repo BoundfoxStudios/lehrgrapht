@@ -1,20 +1,23 @@
 <button
-  class="bg-brand flex flex-1 cursor-pointer flex-col px-2 py-1 text-white outline-0"
+  class="from-brand to-brand-strong hover:from-brand-strong hover:to-brand-strong flex flex-1 cursor-pointer flex-col bg-gradient-to-r px-3 py-2.5 text-white outline-0 transition-all duration-200"
   (click)="toggle()"
   type="button"
 >
-  <div class="flex flex-1 justify-between">
-    {{ title() }}
-
-    <fa-icon [icon]="isExpanded() ? faChevronUp : faChevronDown" />
+  <div class="flex flex-1 items-center justify-between gap-2">
+    <span class="font-medium">{{ title() }}</span>
+    <fa-icon
+      class="transition-transform duration-200"
+      [class.rotate-180]="isExpanded()"
+      [icon]="faChevronDown"
+    />
   </div>
 
   @if (isExpanded() && subTitle(); as subTitle) {
-    <div class="text-left text-sm">{{ subTitle }}</div>
+    <div class="mt-1 text-left text-xs text-white/80">{{ subTitle }}</div>
   }
 </button>
 @if (isExpanded()) {
-  <div>
+  <div class="border-x border-b border-gray-200 bg-gray-50/50">
     <ng-content />
   </div>
 }

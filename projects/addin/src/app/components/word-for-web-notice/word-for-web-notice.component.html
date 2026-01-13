@@ -1,29 +1,34 @@
 <lg-header title="Word for Web" />
 
-<lg-content-container class="flex-col space-y-2">
-  <p>
-    Vielen Dank für Dein Interesse an LehrGrapht! LehrGrapht ist für die
-    Desktop-Version von Word entwickelt. Es funktioniert auch hier in Word for
-    Web (oder Office for Web), allerdings nur mit einem eingeschränkten
-    Funktionsumfang.
-  </p>
-  <p>
-    <strong
-      >In Word for Web solltest Du die erzeugten Plots nicht mit der
+<lg-content-container class="flex-col space-y-4">
+  <div class="rounded-lg border border-blue-200 bg-blue-50 p-3">
+    <p class="text-sm text-blue-800">
+      Vielen Dank für Dein Interesse an LehrGrapht! LehrGrapht ist für die
+      Desktop-Version von Word entwickelt. Es funktioniert auch hier in Word for
+      Web (oder Office for Web), allerdings nur mit einem eingeschränkten
+      Funktionsumfang.
+    </p>
+  </div>
+
+  <div class="rounded-lg border border-amber-200 bg-amber-50 p-3">
+    <p class="text-sm font-medium text-amber-800">
+      In Word for Web solltest Du die erzeugten Plots nicht mit der
       Textumbruch-Option "Vor dem Text" oder "Hinter dem Text" benutzen. In
       diesem Fall kann LehrGrapht die Plots leider nicht mehr erkennen. Dies
-      funktioniert ausschließlich nur in der Desktop-Variante von Word!</strong
-    >
-  </p>
-  <p>
+      funktioniert ausschließlich nur in der Desktop-Variante von Word!
+    </p>
+  </div>
+
+  <p class="text-sm text-gray-700">
     Der Entwickler empfiehlt Dir, dass Du LehrGrapht in der Desktop-Version von
     Word verwendest, um alle Funktionen nutzen zu können. Die Web-Variante ist
     praktisch, um kurz zu schauen, ob LehrGrapht Dir für Deine Arbeit helfen
     kann.
   </p>
-  <div class="mt-4">
+
+  <div class="pt-2">
     <button
-      class="app-button"
+      class="app-button w-full"
       (click)="proceed()"
     >
       Weiter

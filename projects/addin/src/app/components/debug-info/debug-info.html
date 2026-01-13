@@ -6,25 +6,24 @@
 <lg-content-container class="flex flex-col space-y-4">
   <div class="flex flex-1 justify-end">
     <button
-      class="app-button"
+      class="app-button icon-only"
       (click)="plots.reload(); models.reload()"
     >
       <fa-icon [icon]="faRefresh" />
     </button>
   </div>
 
-  <p>
-    <strong>Achtung!</strong> Diese Ansicht ist für den Entwickler gedacht, um
-    schneller Fehler zu finden. Du kannst Dir die Informationen gerne ansehen
-    oder im Fehlerfall dem Entwickler weiterleiten, aber Du solltest nichts
-    daran ändern.
-  </p>
-  <p>
-    <strong
-      >Es gibt keinen Bestätigungsdialog, wenn Du auf einen Button
-      drückst.</strong
-    >
-  </p>
+  <div class="rounded-lg border border-amber-200 bg-amber-50 p-3">
+    <p class="text-sm text-amber-800">
+      <strong>Achtung!</strong> Diese Ansicht ist für den Entwickler gedacht, um
+      schneller Fehler zu finden. Du kannst Dir die Informationen gerne ansehen
+      oder im Fehlerfall dem Entwickler weiterleiten, aber Du solltest nichts
+      daran ändern.
+    </p>
+    <p class="mt-2 text-sm font-medium text-amber-800">
+      Es gibt keinen Bestätigungsdialog, wenn Du auf einen Button drückst.
+    </p>
+  </div>
 </lg-content-container>
 
 <lg-section

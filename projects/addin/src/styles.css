@@ -12,10 +12,34 @@
 
 @layer components {
   .app-button {
-    @apply bg-brand hover:bg-brand-strong focus:ring-brand-medium rounded-base box-border cursor-pointer border border-transparent px-4 py-2.5 text-sm leading-5 font-medium text-white shadow-xs focus:ring-4 focus:outline-none;
+    @apply bg-brand hover:bg-brand-strong focus:ring-brand-medium rounded-base box-border cursor-pointer border border-transparent px-4 py-2.5 text-sm leading-5 font-medium text-white shadow-sm transition-all duration-200 ease-in-out focus:ring-4 focus:outline-none active:scale-[0.98];
 
     &.small {
-      @apply px-2 py-1 text-xs;
+      @apply px-2.5 py-1.5 text-xs;
     }
+
+    &.secondary {
+      @apply border-gray-300 bg-gray-100 text-gray-700 hover:bg-gray-200;
+    }
+
+    &.icon-only {
+      @apply px-2.5 py-2.5;
+    }
+  }
+
+  .app-input {
+    @apply bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs transition-all duration-200 ease-in-out;
+  }
+
+  .app-checkbox {
+    @apply border-default-medium bg-neutral-secondary-medium focus:ring-brand-soft h-4 w-4 rounded-xs border transition-colors duration-200 focus:ring-2;
+  }
+
+  .app-label {
+    @apply text-heading mb-1 block text-sm font-medium;
+  }
+
+  .app-card {
+    @apply border-default-medium rounded-base border bg-white p-3 shadow-xs transition-shadow duration-200 hover:shadow-sm;
   }
 }
