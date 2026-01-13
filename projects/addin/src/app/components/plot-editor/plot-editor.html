@@ -8,11 +8,11 @@
 />
 
 <form
-  class="flex-1 space-y-4"
+  class="flex flex-1 flex-col"
   (ngSubmit)="sendToWord()"
 >
   <lg-content-container class="flex flex-1">
-    <div class="group flex-1">
+    <div class="flex-1">
       <label
         class="app-label"
         for="name"
@@ -23,23 +23,25 @@
         id="name"
         [field]="editorForm.name"
         type="text"
+        placeholder="z.B. Parabel, Sinus, ..."
       />
     </div>
   </lg-content-container>
 
-  <lg-accordion>
+  <lg-accordion class="flex-1">
     <lg-accordion-panel
       [title]="rangeTitle()"
       persistenceId="editor-range"
     >
-      <lg-content-container class="flex flex-col space-y-4">
-        <div class="space-y-2">
-          <div class="grid grid-cols-2 gap-6">
-            <div class="group">
+      <lg-content-container class="flex flex-col space-y-3">
+        <div class="rounded-lg border border-gray-200 bg-white p-3">
+          <div class="mb-2 text-xs font-medium text-gray-500">X-Achse</div>
+          <div class="flex gap-3">
+            <div class="flex-1">
               <label
-                class="app-label"
+                class="mb-1 block text-xs text-gray-600"
                 for="min-x"
-                >Min X</label
+                >Min</label
               >
               <input
                 class="app-input"
@@ -49,11 +51,11 @@
                 step="1"
               />
             </div>
-            <div class="group">
+            <div class="flex-1">
               <label
-                class="app-label"
+                class="mb-1 block text-xs text-gray-600"
                 for="max-x"
-                >Max X</label
+                >Max</label
               >
               <input
                 class="app-input"
@@ -64,22 +66,23 @@
               />
             </div>
           </div>
-
           @if (editorForm.range.x.min().errors().length) {
-            <ul>
+            <ul class="mt-2 text-xs text-red-600">
               @for (error of editorForm.range.x.min().errors(); track error) {
                 <li>{{ error.message }}</li>
               }
             </ul>
           }
         </div>
-        <div class="space-y-2">
-          <div class="grid grid-cols-2 gap-6">
-            <div class="group">
+
+        <div class="rounded-lg border border-gray-200 bg-white p-3">
+          <div class="mb-2 text-xs font-medium text-gray-500">Y-Achse</div>
+          <div class="flex gap-3">
+            <div class="flex-1">
               <label
-                class="app-label"
+                class="mb-1 block text-xs text-gray-600"
                 for="min-y"
-                >Min Y</label
+                >Min</label
               >
               <input
                 class="app-input"
@@ -89,11 +92,11 @@
                 step="1"
               />
             </div>
-            <div class="group">
+            <div class="flex-1">
               <label
-                class="app-label"
+                class="mb-1 block text-xs text-gray-600"
                 for="max-y"
-                >Max Y</label
+                >Max</label
               >
               <input
                 class="app-input"
@@ -104,9 +107,8 @@
               />
             </div>
           </div>
-
           @if (editorForm.range.y.min().errors().length) {
-            <ul>
+            <ul class="mt-2 text-xs text-red-600">
               @for (error of editorForm.range.y.min().errors(); track error) {
                 <li>{{ error.message }}</li>
               }
@@ -114,14 +116,19 @@
           }
         </div>
 
-        <span>Kästchen: {{ squareCount() }}</span>
+        <div
+          class="flex items-center justify-between rounded-lg bg-gray-100 px-3 py-2"
+        >
+          <span class="text-sm text-gray-600">Kästchen:</span>
+          <span class="font-medium text-gray-800">{{ squareCount() }}</span>
+        </div>
 
         <button
-          class="app-button"
+          class="app-button w-full text-sm"
           (click)="autoAdjustLimits()"
           type="button"
         >
-          Grenzen an Punkte/Flächen/Linien anpassen
+          Grenzen automatisch anpassen
         </button>
       </lg-content-container>
     </lg-accordion-panel>
@@ -129,151 +136,154 @@
       title="Einstellungen"
       persistenceId="editor-settings"
     >
-      <lg-content-container class="flex flex-col">
-        <div class="mb-1 flex items-center">
+      <lg-content-container class="flex flex-col space-y-2">
+        <label
+          class="flex cursor-pointer items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-colors hover:bg-gray-50"
+        >
           <input
             class="app-checkbox"
             id="show-axis"
             [field]="editorForm.showAxis"
             type="checkbox"
           />
-          <label
-            class="text-heading ms-2 text-sm font-medium select-none"
-            for="show-axis"
-            >Achsen</label
-          >
-        </div>
+          <span class="text-sm text-gray-700">Achsen anzeigen</span>
+        </label>
+
         @if (editorModel().showAxis) {
-          <div class="mb-1 ml-4 flex items-center">
+          <label
+            class="ml-4 flex cursor-pointer items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-colors hover:bg-gray-50"
+          >
             <input
               class="app-checkbox"
               id="show-axis-labels"
               [field]="editorForm.showAxisLabels"
               type="checkbox"
             />
-            <label
-              class="text-heading ms-2 text-sm font-medium select-none"
-              for="show-axis-labels"
-              >Achsenbeschriftung</label
-            >
-          </div>
+            <span class="text-sm text-gray-700">Achsenbeschriftung</span>
+          </label>
+
           @if (editorModel().showAxisLabels) {
-            <div class="mb-4 ml-8 flex items-center">
+            <label
+              class="ml-8 flex cursor-pointer items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-colors hover:bg-gray-50"
+            >
               <input
                 class="app-checkbox"
                 id="place-axis-labels-inside"
                 [field]="editorForm.placeAxisLabelsInside"
                 type="checkbox"
               />
-              <label
-                class="text-heading ms-2 text-sm font-medium select-none"
-                for="place-axis-labels-inside"
-                >An 0-Linie anzeigen</label
-              >
-            </div>
+              <span class="text-sm text-gray-700">An 0-Linie anzeigen</span>
+            </label>
           }
         }
-        <div class="mb-4 flex items-center">
+
+        <label
+          class="flex cursor-pointer items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-colors hover:bg-gray-50"
+        >
           <input
             class="app-checkbox"
             id="square-plots"
             [field]="editorForm.squarePlots"
             type="checkbox"
           />
-          <label
-            class="text-heading ms-2 text-sm font-medium select-none"
-            for="square-plots"
-            >Plot quadratisch generieren</label
-          >
-        </div>
-        <div class="flex items-center">
+          <span class="text-sm text-gray-700">Plot quadratisch generieren</span>
+        </label>
+
+        <label
+          class="flex cursor-pointer items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-colors hover:bg-gray-50"
+        >
           <input
             class="app-checkbox"
             id="limit-equals-value-range"
             [field]="editorForm.automaticallyAdjustLimitsToValueRange"
             type="checkbox"
           />
-          <label
-            class="text-heading ms-2 text-sm font-medium select-none"
-            for="limit-equals-value-range"
-            >Grenzen automatisch dem Wertebereich anpassen</label
+          <span class="text-sm text-gray-700"
+            >Grenzen automatisch anpassen</span
           >
-        </div>
+        </label>
       </lg-content-container>
     </lg-accordion-panel>
     <lg-accordion-panel
       [title]="functionsTitle()"
       persistenceId="editor-functions"
     >
-      <lg-content-container class="flex flex-col space-y-2">
-        <div class="text-heading mb-2.5 flex justify-end text-sm font-medium">
-          <span class="inline-block"
-            ><button
-              (click)="addFx()"
-              type="button"
-            >
-              <fa-icon [icon]="faPlusCircle" /> Funktion hinzufügen
-            </button></span
-          >
-        </div>
+      <lg-content-container class="flex flex-col space-y-3">
         @for (control of editorForm.fnx; let index = $index; track index) {
-          <div>
-            <div class="flex flex-1 flex-col">
-              <label
-                class="app-label"
-                [for]="'fnx-' + $index"
-                >Funktion {{ index + 1 }}: f(x) =
-              </label>
-
-              <div class="flex items-center space-x-2">
+          <div class="rounded-lg border border-gray-200 bg-white p-3 shadow-xs">
+            <div class="mb-2 flex items-center justify-between">
+              <span class="text-xs font-medium text-gray-500"
+                >Funktion {{ index + 1 }}</span
+              >
+              <div class="flex items-center gap-2">
                 <input
-                  class="app-input"
-                  [field]="control.fnx"
-                  [id]="'fnx-' + $index"
-                  type="text"
-                  spellcheck="false"
-                  autocorrect="off"
-                  autocomplete="off"
-                  autocapitalize="off"
-                />
-
-                <input
-                  class="h-8 w-8 shrink-0 border-none"
+                  class="h-7 w-7 cursor-pointer rounded border-none"
                   [field]="control.color"
                   type="color"
+                  title="Farbe wählen"
                 />
-
                 <button
+                  class="flex h-7 w-7 items-center justify-center rounded text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
                   (click)="removeFx(index)"
                   type="button"
+                  title="Funktion entfernen"
                 >
                   <fa-icon [icon]="faTrashCan" />
                 </button>
               </div>
             </div>
+            <div class="flex items-center gap-2">
+              <span class="text-sm text-gray-600">f(x) =</span>
+              <input
+                class="app-input flex-1"
+                [field]="control.fnx"
+                [id]="'fnx-' + $index"
+                type="text"
+                spellcheck="false"
+                autocorrect="off"
+                autocomplete="off"
+                autocapitalize="off"
+                placeholder="z.B. x^2, sin(x), ..."
+              />
+            </div>
             <lg-math-display [math]="control.fnx().value()" />
           </div>
         }
+
+        <button
+          class="hover:border-brand hover:bg-brand/5 hover:text-brand flex w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-white py-3 text-sm text-gray-600 transition-colors"
+          (click)="addFx()"
+          type="button"
+        >
+          <fa-icon [icon]="faPlusCircle" />
+          <span>Funktion hinzufügen</span>
+        </button>
       </lg-content-container>
     </lg-accordion-panel>
     <lg-accordion-panel
       [title]="markersTitle()"
       persistenceId="editor-markers"
     >
-      <lg-content-container class="flex flex-col space-y-2">
-        <div class="text-heading mb-2.5 flex justify-end text-sm font-medium">
-          <span class="inline-block"
-            ><button
-              (click)="addMarker()"
-              type="button"
-            >
-              <fa-icon [icon]="faPlusCircle" /> Punkt hinzufügen
-            </button></span
-          >
-        </div>
+      <lg-content-container class="flex flex-col space-y-3">
         @for (control of editorForm.markers; let index = $index; track index) {
-          <div>
-            <div class="flex items-center space-x-2">
+          <div class="rounded-lg border border-gray-200 bg-white p-3 shadow-xs">
+            <div class="mb-2 flex items-center justify-between">
+              <span class="text-xs font-medium text-gray-500"
+                >Punkt {{ index + 1 }}</span
+              >
+              <button
+                class="flex h-7 w-7 items-center justify-center rounded text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
+                (click)="removeMarker(index)"
+                type="button"
+                title="Punkt entfernen"
+              >
+                <fa-icon [icon]="faTrashCan" />
+              </button>
+            </div>
+            <div class="mb-2">
+              <label class="mb-1 block text-xs text-gray-600"
+                >Beschriftung</label
+              >
               <input
                 class="app-input"
                 [field]="control.text"
@@ -282,234 +292,263 @@
                 autocorrect="off"
                 autocomplete="off"
                 autocapitalize="off"
+                placeholder="z.B. P, A, ..."
               />
-
-              <input
-                class="app-input"
-                [field]="control.x"
-                type="number"
-              />
-              <input
-                class="app-input"
-                [field]="control.y"
-                type="number"
-              />
-
-              <button
-                (click)="removeMarker(index)"
-                type="button"
-              >
-                <fa-icon [icon]="faTrashCan" />
-              </button>
+            </div>
+            <div class="flex gap-3">
+              <div class="flex-1">
+                <label class="mb-1 block text-xs text-gray-600">X</label>
+                <input
+                  class="app-input"
+                  [field]="control.x"
+                  type="number"
+                />
+              </div>
+              <div class="flex-1">
+                <label class="mb-1 block text-xs text-gray-600">Y</label>
+                <input
+                  class="app-input"
+                  [field]="control.y"
+                  type="number"
+                />
+              </div>
             </div>
           </div>
         }
+
+        <button
+          class="hover:border-brand hover:bg-brand/5 hover:text-brand flex w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-white py-3 text-sm text-gray-600 transition-colors"
+          (click)="addMarker()"
+          type="button"
+        >
+          <fa-icon [icon]="faPlusCircle" />
+          <span>Punkt hinzufügen</span>
+        </button>
       </lg-content-container>
     </lg-accordion-panel>
     <lg-accordion-panel
       [title]="areasTitle()"
       persistenceId="editor-areas"
     >
-      <lg-content-container class="flex flex-col space-y-2">
-        <div class="text-heading mb-2.5 flex justify-end text-sm font-medium">
-          <span class="inline-block"
-            ><button
-              (click)="addArea()"
-              type="button"
-            >
-              <fa-icon [icon]="faPlusCircle" /> Fläche hinzufügen
-            </button></span
-          >
-        </div>
+      <lg-content-container class="flex flex-col space-y-3">
         @for (
           control of editorForm.areas;
           let areaIndex = $index;
           track areaIndex
         ) {
-          <div class="border-default-medium rounded-base border p-2">
-            <div class="mb-2 flex items-center justify-between">
-              <span class="text-heading text-sm font-medium"
+          <div class="rounded-lg border border-gray-200 bg-white p-3 shadow-xs">
+            <div class="mb-3 flex items-center justify-between">
+              <span class="text-xs font-medium text-gray-500"
                 >Fläche {{ areaIndex + 1 }}</span
               >
-              <div class="flex items-center space-x-2">
+              <div class="flex items-center gap-2">
                 <input
-                  class="h-8 w-8 shrink-0 border-none"
+                  class="h-7 w-7 cursor-pointer rounded border-none"
                   [field]="control.color"
                   type="color"
+                  title="Farbe wählen"
                 />
                 <button
+                  class="flex h-7 w-7 items-center justify-center rounded text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
                   (click)="removeArea(areaIndex)"
                   type="button"
+                  title="Fläche entfernen"
                 >
                   <fa-icon [icon]="faTrashCan" />
                 </button>
               </div>
             </div>
-            <div class="mb-2 flex justify-end">
-              <button
-                class="text-xs"
-                (click)="addAreaPoint(areaIndex)"
-                type="button"
-              >
-                <fa-icon [icon]="faPlusCircle" /> Punkt hinzufügen
-              </button>
+
+            <div class="space-y-2">
+              @for (
+                point of control.points;
+                let pointIndex = $index;
+                track pointIndex
+              ) {
+                <div class="flex items-end gap-2 rounded-md bg-gray-50 p-2">
+                  <div class="flex-1">
+                    <label
+                      class="mb-1 block text-xs text-gray-500"
+                      [for]="'area-' + areaIndex + '-x-' + pointIndex"
+                      >X{{ pointIndex + 1 }}</label
+                    >
+                    <input
+                      class="app-input"
+                      [field]="point.x"
+                      [id]="'area-' + areaIndex + '-x-' + pointIndex"
+                      type="number"
+                    />
+                  </div>
+                  <div class="flex-1">
+                    <label
+                      class="mb-1 block text-xs text-gray-500"
+                      [for]="'area-' + areaIndex + '-y-' + pointIndex"
+                      >Y{{ pointIndex + 1 }}</label
+                    >
+                    <input
+                      class="app-input"
+                      [field]="point.y"
+                      [id]="'area-' + areaIndex + '-y-' + pointIndex"
+                      type="number"
+                    />
+                  </div>
+                  <button
+                    class="mb-1 flex h-8 w-8 shrink-0 items-center justify-center rounded text-gray-400 transition-colors hover:bg-red-100 hover:text-red-500"
+                    (click)="removeAreaPoint(areaIndex, pointIndex)"
+                    type="button"
+                    title="Punkt entfernen"
+                  >
+                    <fa-icon [icon]="faTrashCan" />
+                  </button>
+                </div>
+              }
             </div>
-            @for (
-              point of control.points;
-              let pointIndex = $index;
-              track pointIndex
-            ) {
-              <div class="mb-1 flex items-center space-y-4 space-x-2">
-                <div class="flex flex-1 flex-col">
-                  <label
-                    class="app-label text-xs"
-                    [for]="'area-' + areaIndex + '-x-' + pointIndex"
-                    >X{{ pointIndex + 1 }}</label
-                  >
-                  <input
-                    class="app-input"
-                    [field]="point.x"
-                    [id]="'area-' + areaIndex + '-x-' + pointIndex"
-                    type="number"
-                  />
-                </div>
-                <div class="flex flex-1 flex-col">
-                  <label
-                    class="app-label text-xs"
-                    [for]="'area-' + areaIndex + '-y-' + pointIndex"
-                    >Y{{ pointIndex + 1 }}</label
-                  >
-                  <input
-                    class="app-input"
-                    [field]="point.y"
-                    [id]="'area-' + areaIndex + '-y-' + pointIndex"
-                    type="number"
-                  />
-                </div>
-                <button
-                  class="mt-5"
-                  (click)="removeAreaPoint(areaIndex, pointIndex)"
-                  type="button"
-                >
-                  <fa-icon [icon]="faTrashCan" />
-                </button>
-              </div>
-            }
+
+            <button
+              class="hover:border-brand hover:text-brand mt-2 flex w-full items-center justify-center gap-1 rounded-md border border-dashed border-gray-300 py-2 text-xs text-gray-500 transition-colors"
+              (click)="addAreaPoint(areaIndex)"
+              type="button"
+            >
+              <fa-icon [icon]="faPlusCircle" />
+              <span>Punkt hinzufügen</span>
+            </button>
           </div>
         }
+
+        <button
+          class="hover:border-brand hover:bg-brand/5 hover:text-brand flex w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-white py-3 text-sm text-gray-600 transition-colors"
+          (click)="addArea()"
+          type="button"
+        >
+          <fa-icon [icon]="faPlusCircle" />
+          <span>Fläche hinzufügen</span>
+        </button>
       </lg-content-container>
     </lg-accordion-panel>
     <lg-accordion-panel
       [title]="linesTitle()"
       persistenceId="editor-lines"
     >
-      <lg-content-container class="flex flex-col space-y-2">
-        <div class="text-heading mb-2.5 flex justify-end text-sm font-medium">
-          <span class="inline-block"
-            ><button
-              (click)="addLine()"
-              type="button"
-            >
-              <fa-icon [icon]="faPlusCircle" /> Linie hinzufügen
-            </button></span
-          >
-        </div>
+      <lg-content-container class="flex flex-col space-y-3">
         @for (control of editorForm.lines; let index = $index; track index) {
-          <div class="border-default-medium rounded-base border p-2">
-            <div class="mb-2 flex items-center justify-between">
-              <span class="text-heading text-sm font-medium"
+          <div class="rounded-lg border border-gray-200 bg-white p-3 shadow-xs">
+            <div class="mb-3 flex items-center justify-between">
+              <span class="text-xs font-medium text-gray-500"
                 >Linie {{ index + 1 }}</span
               >
-              <div class="flex items-center space-x-2">
+              <div class="flex items-center gap-2">
                 <input
-                  class="h-8 w-8 shrink-0 border-none"
+                  class="h-7 w-7 cursor-pointer rounded border-none"
                   [field]="control.color"
                   type="color"
+                  title="Farbe wählen"
                 />
                 <button
+                  class="flex h-7 w-7 items-center justify-center rounded text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
                   (click)="removeLine(index)"
                   type="button"
+                  title="Linie entfernen"
                 >
                   <fa-icon [icon]="faTrashCan" />
                 </button>
               </div>
             </div>
-            <div class="flex flex-col gap-2 sm:flex-row">
-              <div class="flex space-x-2">
-                <div class="flex flex-col">
-                  <label
-                    class="app-label text-xs"
-                    [for]="'line-x1-' + $index"
-                    >X1</label
-                  >
-                  <input
-                    class="app-input"
-                    [field]="control.x1"
-                    [id]="'line-x1-' + $index"
-                    type="number"
-                  />
+
+            <div class="space-y-2">
+              <div class="rounded-md bg-gray-50 p-2">
+                <div class="mb-1 text-xs font-medium text-gray-500">
+                  Startpunkt
                 </div>
-                <div class="flex flex-col">
-                  <label
-                    class="app-label text-xs"
-                    [for]="'line-y1-' + $index"
-                    >Y1</label
-                  >
-                  <input
-                    class="app-input"
-                    [field]="control.y1"
-                    [id]="'line-y1-' + $index"
-                    type="number"
-                  />
+                <div class="flex gap-3">
+                  <div class="flex-1">
+                    <label
+                      class="mb-1 block text-xs text-gray-500"
+                      [for]="'line-x1-' + $index"
+                      >X</label
+                    >
+                    <input
+                      class="app-input"
+                      [field]="control.x1"
+                      [id]="'line-x1-' + $index"
+                      type="number"
+                    />
+                  </div>
+                  <div class="flex-1">
+                    <label
+                      class="mb-1 block text-xs text-gray-500"
+                      [for]="'line-y1-' + $index"
+                      >Y</label
+                    >
+                    <input
+                      class="app-input"
+                      [field]="control.y1"
+                      [id]="'line-y1-' + $index"
+                      type="number"
+                    />
+                  </div>
                 </div>
               </div>
-              <div class="flex space-x-2">
-                <div class="flex flex-col">
-                  <label
-                    class="app-label text-xs"
-                    [for]="'line-x2-' + $index"
-                    >X2</label
-                  >
-                  <input
-                    class="app-input"
-                    [field]="control.x2"
-                    [id]="'line-x2-' + $index"
-                    type="number"
-                  />
+              <div class="rounded-md bg-gray-50 p-2">
+                <div class="mb-1 text-xs font-medium text-gray-500">
+                  Endpunkt
                 </div>
-                <div class="flex flex-col">
-                  <label
-                    class="app-label text-xs"
-                    [for]="'line-y2-' + $index"
-                    >Y2</label
-                  >
-                  <input
-                    class="app-input"
-                    [field]="control.y2"
-                    [id]="'line-y2-' + $index"
-                    type="number"
-                  />
+                <div class="flex gap-3">
+                  <div class="flex-1">
+                    <label
+                      class="mb-1 block text-xs text-gray-500"
+                      [for]="'line-x2-' + $index"
+                      >X</label
+                    >
+                    <input
+                      class="app-input"
+                      [field]="control.x2"
+                      [id]="'line-x2-' + $index"
+                      type="number"
+                    />
+                  </div>
+                  <div class="flex-1">
+                    <label
+                      class="mb-1 block text-xs text-gray-500"
+                      [for]="'line-y2-' + $index"
+                      >Y</label
+                    >
+                    <input
+                      class="app-input"
+                      [field]="control.y2"
+                      [id]="'line-y2-' + $index"
+                      type="number"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         }
+
+        <button
+          class="hover:border-brand hover:bg-brand/5 hover:text-brand flex w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-white py-3 text-sm text-gray-600 transition-colors"
+          (click)="addLine()"
+          type="button"
+        >
+          <fa-icon [icon]="faPlusCircle" />
+          <span>Linie hinzufügen</span>
+        </button>
       </lg-content-container>
     </lg-accordion-panel>
   </lg-accordion>
 
-  <lg-content-container>
+  <div class="sticky bottom-0 border-t border-gray-200 bg-gray-50 p-3">
     <button
-      class="app-button"
+      class="app-button w-full"
       type="submit"
     >
       @if (isEditMode) {
-        Aktualisieren
+        Plot aktualisieren
       } @else {
-        In Word einbinden
+        In Word einfügen
       }
     </button>
-  </lg-content-container>
+  </div>
 </form>
 
 @let fnx = editorForm().value().fnx;
