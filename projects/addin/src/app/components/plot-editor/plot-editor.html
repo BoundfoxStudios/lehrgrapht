@@ -772,22 +772,24 @@
 
 @let fnx = editorForm().value().fnx;
 @if (fnx) {
-  <lg-section
-    [title]="
-      isAnyInteractiveMode()
-        ? 'Vorschau - Klicke um Punkte hinzuzufügen'
-        : 'Vorschau'
-    "
-    [subtitle]="
-      isAnyInteractiveMode()
-        ? 'Punkte werden auf 0.5 gerundet'
-        : 'Die Vorschau entspricht nicht der Größe des Bildes, das in Word eingefügt wird.'
-    "
-  />
-  <lg-plot-preview
-    [plot]="previewModel()"
-    [plotSettings]="plotSettings()"
-    [interactive]="isAnyInteractiveMode()"
-    (plotClick)="onPlotClick($event)"
-  />
+  <div class="sticky bottom-0 border-t border-gray-200 bg-gray-50">
+    <lg-section
+      [title]="
+        isAnyInteractiveMode()
+          ? 'Vorschau - Klicke um Punkte hinzuzufügen'
+          : 'Vorschau'
+      "
+      [subtitle]="
+        isAnyInteractiveMode()
+          ? 'Punkte werden auf 0.5 gerundet'
+          : 'Die Vorschau entspricht nicht der Größe des Bildes, das in Word eingefügt wird.'
+      "
+    />
+    <lg-plot-preview
+      [plot]="previewModel()"
+      [plotSettings]="plotSettings()"
+      [interactive]="isAnyInteractiveMode()"
+      (plotClick)="onPlotClick($event)"
+    />
+  </div>
 }
