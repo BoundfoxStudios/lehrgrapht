@@ -316,14 +316,44 @@
           </div>
         }
 
-        <button
-          class="hover:border-brand hover:bg-brand/5 hover:text-brand flex w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-white py-3 text-sm text-gray-600 transition-colors"
-          (click)="addMarker()"
-          type="button"
-        >
-          <fa-icon [icon]="faPlusCircle" />
-          <span>Punkt hinzufügen</span>
-        </button>
+        @if (interactiveMarkerMode()) {
+          <div class="border-brand bg-brand/5 rounded-lg border-2 p-3">
+            <div class="mb-2 flex items-center justify-between">
+              <span class="text-brand text-sm font-medium"
+                >Interaktiver Punkt</span
+              >
+            </div>
+            <p class="mb-3 text-xs text-gray-600">
+              Klicke auf die Vorschau unten, um einen Punkt zu setzen.
+            </p>
+            <button
+              class="app-button small secondary w-full"
+              (click)="cancelInteractiveMarker()"
+              type="button"
+            >
+              Abbrechen
+            </button>
+          </div>
+        } @else {
+          <div class="flex gap-2">
+            <button
+              class="hover:border-brand hover:bg-brand/5 hover:text-brand flex flex-1 items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-white py-3 text-sm text-gray-600 transition-colors"
+              (click)="addMarker()"
+              type="button"
+            >
+              <fa-icon [icon]="faPlusCircle" />
+              <span>Manuell</span>
+            </button>
+            <button
+              class="hover:border-brand hover:bg-brand/5 hover:text-brand flex flex-1 items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-white py-3 text-sm text-gray-600 transition-colors"
+              (click)="startInteractiveMarker()"
+              type="button"
+            >
+              <fa-icon [icon]="faMousePointer" />
+              <span>Interaktiv</span>
+            </button>
+          </div>
+        }
       </lg-content-container>
     </lg-accordion-panel>
     <lg-accordion-panel
@@ -605,14 +635,80 @@
           </div>
         }
 
-        <button
-          class="hover:border-brand hover:bg-brand/5 hover:text-brand flex w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-white py-3 text-sm text-gray-600 transition-colors"
-          (click)="addLine()"
-          type="button"
-        >
-          <fa-icon [icon]="faPlusCircle" />
-          <span>Linie hinzufügen</span>
-        </button>
+        @if (interactiveLineMode()) {
+          <div class="border-brand bg-brand/5 rounded-lg border-2 p-3">
+            <div class="mb-2 flex items-center justify-between">
+              <span class="text-brand text-sm font-medium"
+                >Interaktive Linie</span
+              >
+              <span
+                class="bg-brand rounded-full px-2 py-0.5 text-xs text-white"
+              >
+                {{ interactiveLinePoints().length }}/2 Punkte
+              </span>
+            </div>
+
+            @if (interactiveLinePoints().length > 0) {
+              <div class="mb-3 space-y-1">
+                @for (
+                  point of interactiveLinePoints();
+                  let i = $index;
+                  track i
+                ) {
+                  <div
+                    class="flex items-center justify-between rounded bg-white px-2 py-1 text-sm"
+                  >
+                    <span class="text-gray-600"
+                      >{{ i === 0 ? 'Start' : 'Ende' }}: ({{ point.x }},
+                      {{ point.y }})</span
+                    >
+                    <button
+                      class="text-gray-400 hover:text-red-500"
+                      (click)="removeInteractiveLinePoint(i)"
+                      type="button"
+                    >
+                      <fa-icon
+                        [icon]="faTrashCan"
+                        size="sm"
+                      />
+                    </button>
+                  </div>
+                }
+              </div>
+            } @else {
+              <p class="mb-3 text-xs text-gray-600">
+                Klicke auf die Vorschau, um Start- und Endpunkt zu setzen.
+              </p>
+            }
+
+            <button
+              class="app-button small secondary w-full"
+              (click)="cancelInteractiveLine()"
+              type="button"
+            >
+              Abbrechen
+            </button>
+          </div>
+        } @else {
+          <div class="flex gap-2">
+            <button
+              class="hover:border-brand hover:bg-brand/5 hover:text-brand flex flex-1 items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-white py-3 text-sm text-gray-600 transition-colors"
+              (click)="addLine()"
+              type="button"
+            >
+              <fa-icon [icon]="faPlusCircle" />
+              <span>Manuell</span>
+            </button>
+            <button
+              class="hover:border-brand hover:bg-brand/5 hover:text-brand flex flex-1 items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-white py-3 text-sm text-gray-600 transition-colors"
+              (click)="startInteractiveLine()"
+              type="button"
+            >
+              <fa-icon [icon]="faMousePointer" />
+              <span>Interaktiv</span>
+            </button>
+          </div>
+        }
       </lg-content-container>
     </lg-accordion-panel>
   </lg-accordion>
@@ -635,12 +731,12 @@
 @if (fnx) {
   <lg-section
     [title]="
-      interactiveAreaMode()
+      isAnyInteractiveMode()
         ? 'Vorschau - Klicke um Punkte hinzuzufügen'
         : 'Vorschau'
     "
     [subtitle]="
-      interactiveAreaMode()
+      isAnyInteractiveMode()
         ? 'Punkte werden auf 0.5 gerundet'
         : 'Die Vorschau entspricht nicht der Größe des Bildes, das in Word eingefügt wird.'
     "
@@ -648,7 +744,7 @@
   <lg-plot-preview
     [plot]="previewModel()"
     [plotSettings]="plotSettings()"
-    [interactive]="interactiveAreaMode()"
+    [interactive]="isAnyInteractiveMode()"
     (plotClick)="onPlotClick($event)"
   />
 }
