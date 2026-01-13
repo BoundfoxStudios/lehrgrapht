@@ -458,37 +458,39 @@
               </span>
             </div>
 
-            @if (interactiveAreaPoints().length > 0) {
-              <div class="mb-3 space-y-1">
-                @for (
-                  point of interactiveAreaPoints();
-                  let i = $index;
-                  track i
-                ) {
-                  <div
-                    class="flex items-center justify-between rounded bg-white px-2 py-1 text-sm"
-                  >
-                    <span class="text-gray-600"
-                      >P{{ i + 1 }}: ({{ point.x }}, {{ point.y }})</span
+            <div class="mb-3 h-24 overflow-y-auto">
+              @if (interactiveAreaPoints().length > 0) {
+                <div class="space-y-1">
+                  @for (
+                    point of interactiveAreaPoints();
+                    let i = $index;
+                    track i
+                  ) {
+                    <div
+                      class="flex items-center justify-between rounded bg-white px-2 py-1 text-sm"
                     >
-                    <button
-                      class="text-gray-400 hover:text-red-500"
-                      (click)="removeInteractivePoint(i)"
-                      type="button"
-                    >
-                      <fa-icon
-                        [icon]="faTrashCan"
-                        size="sm"
-                      />
-                    </button>
-                  </div>
-                }
-              </div>
-            } @else {
-              <p class="mb-3 text-xs text-gray-600">
-                Klicke auf die Vorschau unten, um Punkte hinzuzufügen.
-              </p>
-            }
+                      <span class="text-gray-600"
+                        >P{{ i + 1 }}: ({{ point.x }}, {{ point.y }})</span
+                      >
+                      <button
+                        class="text-gray-400 hover:text-red-500"
+                        (click)="removeInteractivePoint(i)"
+                        type="button"
+                      >
+                        <fa-icon
+                          [icon]="faTrashCan"
+                          size="sm"
+                        />
+                      </button>
+                    </div>
+                  }
+                </div>
+              } @else {
+                <p class="text-xs text-gray-600">
+                  Klicke auf die Vorschau unten, um Punkte hinzuzufügen.
+                </p>
+              }
+            </div>
 
             <div class="flex gap-2">
               <button
@@ -648,38 +650,40 @@
               </span>
             </div>
 
-            @if (interactiveLinePoints().length > 0) {
-              <div class="mb-3 space-y-1">
-                @for (
-                  point of interactiveLinePoints();
-                  let i = $index;
-                  track i
-                ) {
-                  <div
-                    class="flex items-center justify-between rounded bg-white px-2 py-1 text-sm"
-                  >
-                    <span class="text-gray-600"
-                      >{{ i === 0 ? 'Start' : 'Ende' }}: ({{ point.x }},
-                      {{ point.y }})</span
+            <div class="mb-3 h-16 overflow-y-auto">
+              @if (interactiveLinePoints().length > 0) {
+                <div class="space-y-1">
+                  @for (
+                    point of interactiveLinePoints();
+                    let i = $index;
+                    track i
+                  ) {
+                    <div
+                      class="flex items-center justify-between rounded bg-white px-2 py-1 text-sm"
                     >
-                    <button
-                      class="text-gray-400 hover:text-red-500"
-                      (click)="removeInteractiveLinePoint(i)"
-                      type="button"
-                    >
-                      <fa-icon
-                        [icon]="faTrashCan"
-                        size="sm"
-                      />
-                    </button>
-                  </div>
-                }
-              </div>
-            } @else {
-              <p class="mb-3 text-xs text-gray-600">
-                Klicke auf die Vorschau, um Start- und Endpunkt zu setzen.
-              </p>
-            }
+                      <span class="text-gray-600"
+                        >{{ i === 0 ? 'Start' : 'Ende' }}: ({{ point.x }},
+                        {{ point.y }})</span
+                      >
+                      <button
+                        class="text-gray-400 hover:text-red-500"
+                        (click)="removeInteractiveLinePoint(i)"
+                        type="button"
+                      >
+                        <fa-icon
+                          [icon]="faTrashCan"
+                          size="sm"
+                        />
+                      </button>
+                    </div>
+                  }
+                </div>
+              } @else {
+                <p class="text-xs text-gray-600">
+                  Klicke auf die Vorschau, um Start- und Endpunkt zu setzen.
+                </p>
+              }
+            </div>
 
             <button
               class="app-button small secondary w-full"
