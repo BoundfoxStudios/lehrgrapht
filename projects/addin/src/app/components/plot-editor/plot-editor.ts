@@ -104,6 +104,9 @@ export class PlotEditor {
   protected readonly interactiveAreaPoints = signal<{ x: number; y: number }[]>(
     [],
   );
+  protected readonly interactiveMarkerPoints = signal<
+    { x: number; y: number; text: string }[]
+  >([]);
   protected readonly interactiveLinePoints = signal<{ x: number; y: number }[]>(
     [],
   );
@@ -160,7 +163,7 @@ export class PlotEditor {
     const mode = this.interactiveMode();
 
     let areas = model.areas;
-    const markers = model.markers;
+    let markers = model.markers;
     let lines = model.lines;
 
     if (
@@ -174,6 +177,13 @@ export class PlotEditor {
           color: colors[areas.length % colors.length],
         },
       ];
+    }
+
+    if (
+      mode === InteractiveMode.Marker &&
+      this.interactiveMarkerPoints().length > 0
+    ) {
+      markers = [...markers, ...this.interactiveMarkerPoints()];
     }
 
     if (
@@ -468,13 +478,13 @@ export class PlotEditor {
     }
 
     if (mode === InteractiveMode.Marker) {
-      this.editorModel.update(model => ({
-        ...model,
-        markers: [
-          ...model.markers,
-          { x: event.x, y: event.y, text: `P${model.markers.length + 1}` },
-        ],
-      }));
+      const existingCount =
+        this.editorModel().markers.length +
+        this.interactiveMarkerPoints().length;
+      this.interactiveMarkerPoints.update(points => [
+        ...points,
+        { x: event.x, y: event.y, text: `P${existingCount + 1}` },
+      ]);
       return;
     }
 
@@ -514,10 +524,34 @@ export class PlotEditor {
 
   protected startInteractiveMarker(): void {
     this.interactiveMode.set(InteractiveMode.Marker);
+    this.interactiveMarkerPoints.set([]);
   }
 
   protected cancelInteractiveMarker(): void {
     this.interactiveMode.set(InteractiveMode.Off);
+    this.interactiveMarkerPoints.set([]);
+  }
+
+  protected finishInteractiveMarker(): void {
+    const points = this.interactiveMarkerPoints();
+
+    if (points.length > 0) {
+      this.editorModel.update(model => ({
+        ...model,
+        markers: [...model.markers, ...points],
+      }));
+    }
+
+    this.interactiveMode.set(InteractiveMode.Off);
+    this.interactiveMarkerPoints.set([]);
+  }
+
+  protected removeInteractiveMarkerPoint(index: number): void {
+    this.interactiveMarkerPoints.update(points => {
+      const newPoints = [...points];
+      newPoints.splice(index, 1);
+      return newPoints;
+    });
   }
 
   protected startInteractiveLine(): void {

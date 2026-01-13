@@ -320,19 +320,70 @@
           <div class="border-brand bg-brand/5 rounded-lg border-2 p-3">
             <div class="mb-2 flex items-center justify-between">
               <span class="text-brand text-sm font-medium"
-                >Interaktiver Punkt</span
+                >Interaktive Punkte</span
               >
+              <span
+                class="bg-brand rounded-full px-2 py-0.5 text-xs text-white"
+              >
+                {{ interactiveMarkerPoints().length }} Punkte
+              </span>
             </div>
-            <p class="mb-3 text-xs text-gray-600">
-              Klicke auf die Vorschau unten, um einen Punkt zu setzen.
-            </p>
-            <button
-              class="app-button small secondary w-full"
-              (click)="cancelInteractiveMarker()"
-              type="button"
-            >
-              Abbrechen
-            </button>
+
+            <div class="mb-3 h-[5.25rem] overflow-y-auto">
+              @if (interactiveMarkerPoints().length > 0) {
+                <div class="space-y-1">
+                  @for (
+                    point of interactiveMarkerPoints();
+                    let i = $index;
+                    track i
+                  ) {
+                    <div
+                      class="flex items-center justify-between rounded bg-white px-2 py-1 text-sm"
+                    >
+                      <span class="text-gray-600"
+                        >{{ point.text }}: ({{ point.x }}, {{ point.y }})</span
+                      >
+                      <button
+                        class="text-gray-400 hover:text-red-500"
+                        (click)="removeInteractiveMarkerPoint(i)"
+                        type="button"
+                      >
+                        <fa-icon
+                          [icon]="faTrashCan"
+                          size="sm"
+                        />
+                      </button>
+                    </div>
+                  }
+                </div>
+              } @else {
+                <p class="text-xs text-gray-600">
+                  Klicke auf die Vorschau unten, um Punkte hinzuzufügen.
+                </p>
+              }
+            </div>
+
+            <div class="flex gap-2">
+              <button
+                class="app-button small flex-1"
+                [disabled]="interactiveMarkerPoints().length < 1"
+                (click)="finishInteractiveMarker()"
+                type="button"
+              >
+                <fa-icon
+                  class="mr-1"
+                  [icon]="faCheck"
+                />
+                Fertig
+              </button>
+              <button
+                class="app-button small secondary"
+                (click)="cancelInteractiveMarker()"
+                type="button"
+              >
+                Abbrechen
+              </button>
+            </div>
           </div>
         } @else {
           <div class="flex gap-2">
@@ -458,7 +509,7 @@
               </span>
             </div>
 
-            <div class="mb-3 h-24 overflow-y-auto">
+            <div class="mb-3 h-[5.25rem] overflow-y-auto">
               @if (interactiveAreaPoints().length > 0) {
                 <div class="space-y-1">
                   @for (
@@ -650,7 +701,7 @@
               </span>
             </div>
 
-            <div class="mb-3 h-16 overflow-y-auto">
+            <div class="mb-3 h-[3.5rem] overflow-y-auto">
               @if (interactiveLinePoints().length > 0) {
                 <div class="space-y-1">
                   @for (
