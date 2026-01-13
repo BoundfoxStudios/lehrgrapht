@@ -8,12 +8,17 @@ import {
 } from '@angular/core';
 import { Header } from '../header/header';
 import { Field, form, SchemaPath, validate } from '@angular/forms/signals';
-import { PlotPreview } from '../plot-preview/plot-preview';
+import { PlotClickEvent, PlotPreview } from '../plot-preview/plot-preview';
 import { plotHasErrorCode, PlotService } from '../../services/plot.service';
 import { FormsModule } from '@angular/forms';
 import { ContentContainer } from '../content-container/content-container';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { faPlusCircle, faTrashCan } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCheck,
+  faMousePointer,
+  faPlusCircle,
+  faTrashCan,
+} from '@fortawesome/free-solid-svg-icons';
 import { MathDisplay } from '../math-display/math-display';
 import { Plot, PlotSettings } from '../../models/plot';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -74,6 +79,8 @@ const lessThanValidator = (
 export class PlotEditor {
   protected readonly faPlusCircle = faPlusCircle;
   protected readonly faTrashCan = faTrashCan;
+  protected readonly faMousePointer = faMousePointer;
+  protected readonly faCheck = faCheck;
 
   private readonly plotService = inject(PlotService);
   private readonly plotSettingsService = inject(PlotSettingsService);
@@ -82,6 +89,11 @@ export class PlotEditor {
   private readonly router = inject(Router);
 
   protected readonly plotSettings = signal<PlotSettings>(defaultPlotSettings);
+
+  protected readonly interactiveAreaMode = signal(false);
+  protected readonly interactiveAreaPoints = signal<{ x: number; y: number }[]>(
+    [],
+  );
 
   protected readonly activeId = toSignal(
     this.activatedRoute.paramMap.pipe(map(params => params.get('id'))),
@@ -357,5 +369,51 @@ export class PlotEditor {
         y: { min: minY - 1, max: maxY + 1 },
       },
     }));
+  }
+
+  protected startInteractiveArea(): void {
+    this.interactiveAreaMode.set(true);
+    this.interactiveAreaPoints.set([]);
+  }
+
+  protected cancelInteractiveArea(): void {
+    this.interactiveAreaMode.set(false);
+    this.interactiveAreaPoints.set([]);
+  }
+
+  protected finishInteractiveArea(): void {
+    const points = this.interactiveAreaPoints();
+
+    if (points.length >= 3) {
+      this.editorModel.update(model => ({
+        ...model,
+        areas: [
+          ...model.areas,
+          {
+            points: [...points],
+            color: colors[model.areas.length % colors.length],
+          },
+        ],
+      }));
+    }
+
+    this.interactiveAreaMode.set(false);
+    this.interactiveAreaPoints.set([]);
+  }
+
+  protected onPlotClick(event: PlotClickEvent): void {
+    if (!this.interactiveAreaMode()) {
+      return;
+    }
+
+    this.interactiveAreaPoints.update(points => [...points, event]);
+  }
+
+  protected removeInteractivePoint(index: number): void {
+    this.interactiveAreaPoints.update(points => {
+      const newPoints = [...points];
+      newPoints.splice(index, 1);
+      return newPoints;
+    });
   }
 }

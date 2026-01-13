@@ -25,6 +25,10 @@
     &.icon-only {
       @apply px-2.5 py-2.5;
     }
+
+    &:disabled {
+      @apply hover:bg-brand cursor-not-allowed opacity-50 active:scale-100;
+    }
   }
 
   .app-input {

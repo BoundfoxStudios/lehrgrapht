@@ -415,14 +415,94 @@
           </div>
         }
 
-        <button
-          class="hover:border-brand hover:bg-brand/5 hover:text-brand flex w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-white py-3 text-sm text-gray-600 transition-colors"
-          (click)="addArea()"
-          type="button"
-        >
-          <fa-icon [icon]="faPlusCircle" />
-          <span>Fläche hinzufügen</span>
-        </button>
+        @if (interactiveAreaMode()) {
+          <div class="border-brand bg-brand/5 rounded-lg border-2 p-3">
+            <div class="mb-2 flex items-center justify-between">
+              <span class="text-brand text-sm font-medium"
+                >Interaktive Fläche</span
+              >
+              <span
+                class="bg-brand rounded-full px-2 py-0.5 text-xs text-white"
+              >
+                {{ interactiveAreaPoints().length }} Punkte
+              </span>
+            </div>
+
+            @if (interactiveAreaPoints().length > 0) {
+              <div class="mb-3 space-y-1">
+                @for (
+                  point of interactiveAreaPoints();
+                  let i = $index;
+                  track i
+                ) {
+                  <div
+                    class="flex items-center justify-between rounded bg-white px-2 py-1 text-sm"
+                  >
+                    <span class="text-gray-600"
+                      >P{{ i + 1 }}: ({{ point.x }}, {{ point.y }})</span
+                    >
+                    <button
+                      class="text-gray-400 hover:text-red-500"
+                      (click)="removeInteractivePoint(i)"
+                      type="button"
+                    >
+                      <fa-icon
+                        [icon]="faTrashCan"
+                        size="sm"
+                      />
+                    </button>
+                  </div>
+                }
+              </div>
+            } @else {
+              <p class="mb-3 text-xs text-gray-600">
+                Klicke auf die Vorschau unten, um Punkte hinzuzufügen.
+              </p>
+            }
+
+            <div class="flex gap-2">
+              <button
+                class="app-button small flex-1"
+                [disabled]="interactiveAreaPoints().length < 3"
+                (click)="finishInteractiveArea()"
+                type="button"
+              >
+                <fa-icon
+                  class="mr-1"
+                  [icon]="faCheck"
+                />
+                Fertig {{ interactiveAreaPoints().length < 3 }}
+              </button>
+              <button
+                class="app-button small secondary"
+                (click)="cancelInteractiveArea()"
+                type="button"
+              >
+                Abbrechen
+              </button>
+            </div>
+          </div>
+        } @else {
+          <div class="flex gap-2">
+            <button
+              class="hover:border-brand hover:bg-brand/5 hover:text-brand flex flex-1 items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-white py-3 text-sm text-gray-600 transition-colors"
+              (click)="addArea()"
+              type="button"
+            >
+              <fa-icon [icon]="faPlusCircle" />
+              <span>Manuell</span>
+            </button>
+
+            <button
+              class="hover:border-brand hover:bg-brand/5 hover:text-brand flex flex-1 items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-white py-3 text-sm text-gray-600 transition-colors"
+              (click)="startInteractiveArea()"
+              type="button"
+            >
+              <fa-icon [icon]="faMousePointer" />
+              <span>Interaktiv</span>
+            </button>
+          </div>
+        }
       </lg-content-container>
     </lg-accordion-panel>
     <lg-accordion-panel
@@ -554,12 +634,21 @@
 @let fnx = editorForm().value().fnx;
 @if (fnx) {
   <lg-section
-    title="Vorschau"
-    subtitle="Die Vorschau entspricht nicht der Größe des Bildes, das in Word eingefügt
-      wird."
+    [title]="
+      interactiveAreaMode()
+        ? 'Vorschau - Klicke um Punkte hinzuzufügen'
+        : 'Vorschau'
+    "
+    [subtitle]="
+      interactiveAreaMode()
+        ? 'Punkte werden auf 0.5 gerundet'
+        : 'Die Vorschau entspricht nicht der Größe des Bildes, das in Word eingefügt wird.'
+    "
   />
   <lg-plot-preview
     [plot]="editorModel()"
     [plotSettings]="plotSettings()"
+    [interactive]="interactiveAreaMode()"
+    (plotClick)="onPlotClick($event)"
   />
 }

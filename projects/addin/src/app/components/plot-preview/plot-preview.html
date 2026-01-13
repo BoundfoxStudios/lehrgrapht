@@ -27,6 +27,11 @@
   @if (preview && !plotHasErrorCode(preview)) {
     <img
       [src]="preview.base64"
+      [class.cursor-crosshair]="interactive()"
+      [class.ring-2]="interactive()"
+      [class.ring-brand]="interactive()"
+      [class.ring-offset-2]="interactive()"
+      (click)="onImageClick($event)"
       alt="Preview"
       width="300"
       height="300"
