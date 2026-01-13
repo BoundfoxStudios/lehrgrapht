@@ -138,6 +138,26 @@ export class PlotEditor {
       `${(this.editorModel().range.x.max - this.editorModel().range.x.min) * 2} / ${(this.editorModel().range.y.max - this.editorModel().range.y.min) * 2}`,
   );
 
+  protected readonly previewModel = computed(() => {
+    const model = this.editorModel();
+    const interactivePoints = this.interactiveAreaPoints();
+
+    if (!this.interactiveAreaMode() || interactivePoints.length === 0) {
+      return model;
+    }
+
+    return {
+      ...model,
+      areas: [
+        ...model.areas,
+        {
+          points: interactivePoints,
+          color: colors[model.areas.length % colors.length],
+        },
+      ],
+    };
+  });
+
   protected readonly rangeTitle = computed(() => {
     const range = this.editorModel().range;
 
