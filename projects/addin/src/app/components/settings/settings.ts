@@ -65,6 +65,8 @@ export class Settings {
     placeAxisLabelsInside: true,
     squarePlots: false,
     automaticallyAdjustLimitsToValueRange: false,
+    axisLabelX: 'x',
+    axisLabelY: 'y',
   };
 
   protected readonly examplePlot2: Plot = {
@@ -97,6 +99,8 @@ export class Settings {
     placeAxisLabelsInside: false,
     squarePlots: false,
     automaticallyAdjustLimitsToValueRange: false,
+    axisLabelX: 'x',
+    axisLabelY: 'y',
   };
 
   constructor() {

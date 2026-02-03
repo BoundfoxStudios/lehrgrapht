@@ -142,6 +142,8 @@ export class PlotEditor {
     placeAxisLabelsInside: true,
     squarePlots: false,
     automaticallyAdjustLimitsToValueRange: false,
+    axisLabelX: 'x',
+    axisLabelY: 'y',
   });
 
   protected readonly squareCount = computed(

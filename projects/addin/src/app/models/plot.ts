@@ -42,4 +42,6 @@ export interface Plot {
   placeAxisLabelsInside: boolean;
   squarePlots: boolean;
   automaticallyAdjustLimitsToValueRange: boolean;
+  axisLabelX: string;
+  axisLabelY: string;
 }

@@ -259,19 +259,19 @@ export class PlotService {
     if (plot.showAxisLabels) {
       arrows.push(
         {
-          x: 0.25,
+          x: 0.1,
           y: 1.01,
-          text: 'y',
+          text: plot.axisLabelY || 'y',
           showarrow: false,
           yanchor: 'top',
-          xanchor: 'center',
+          xanchor: 'left',
           xref: 'x',
           yref: 'paper',
         },
         {
           x: 1,
           y: 0.55,
-          text: 'x',
+          text: plot.axisLabelX || 'x',
           showarrow: false,
           yanchor: 'top',
           xanchor: 'right',
