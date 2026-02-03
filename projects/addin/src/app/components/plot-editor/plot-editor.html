@@ -250,14 +250,78 @@
           </div>
         }
 
-        <button
-          class="hover:border-brand hover:bg-brand/5 hover:text-brand flex w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-white py-3 text-sm text-gray-600 transition-colors"
-          (click)="addFx()"
-          type="button"
-        >
-          <fa-icon [icon]="faPlusCircle" />
-          <span>Funktion hinzufügen</span>
-        </button>
+        @if (interactiveMode() === InteractiveMode.StraightLine) {
+          <div class="border-brand bg-brand/5 rounded-lg border-2 p-3">
+            <div class="mb-2 flex items-center justify-between">
+              <span class="text-brand text-sm font-medium"
+                >Gerade Interaktiv</span
+              >
+              <span
+                class="bg-brand rounded-full px-2 py-0.5 text-xs text-white"
+              >
+                {{ interactivePoints().length }}/2 Punkte
+              </span>
+            </div>
+
+            <div class="mb-3 h-[3.5rem] overflow-y-auto">
+              @if (interactivePoints().length > 0) {
+                <div class="space-y-1">
+                  @for (point of interactivePoints(); let i = $index; track i) {
+                    <div
+                      class="flex items-center justify-between rounded bg-white px-2 py-1 text-sm"
+                    >
+                      <span class="text-gray-600"
+                        >P{{ i + 1 }}: ({{ point.x }}, {{ point.y }})</span
+                      >
+                      <button
+                        class="text-gray-400 hover:text-red-500"
+                        (click)="removeInteractivePoint(i)"
+                        type="button"
+                      >
+                        <fa-icon
+                          [icon]="faTrashCan"
+                          size="sm"
+                        />
+                      </button>
+                    </div>
+                  }
+                </div>
+              } @else {
+                <p class="text-xs text-gray-600">
+                  Klicke auf die Vorschau, um zwei Punkte für die Gerade zu
+                  setzen.
+                </p>
+              }
+            </div>
+
+            <button
+              class="app-button small secondary w-full"
+              (click)="cancelInteractiveStraightLine()"
+              type="button"
+            >
+              Abbrechen
+            </button>
+          </div>
+        } @else {
+          <div class="flex gap-2">
+            <button
+              class="hover:border-brand hover:bg-brand/5 hover:text-brand flex flex-1 items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-white py-3 text-sm text-gray-600 transition-colors"
+              (click)="addFx()"
+              type="button"
+            >
+              <fa-icon [icon]="faPlusCircle" />
+              <span>Manuell</span>
+            </button>
+            <button
+              class="hover:border-brand hover:bg-brand/5 hover:text-brand flex flex-1 items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-white py-3 text-sm text-gray-600 transition-colors"
+              (click)="startInteractiveStraightLine()"
+              type="button"
+            >
+              <fa-icon [icon]="faMousePointer" />
+              <span>Gerade Interaktiv</span>
+            </button>
+          </div>
+        }
       </lg-content-container>
     </lg-accordion-panel>
     <lg-accordion-panel

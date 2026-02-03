@@ -40,6 +40,7 @@ enum InteractiveMode {
   Area = 'area',
   Marker = 'marker',
   Line = 'line',
+  StraightLine = 'straightLine',
 }
 
 const lessThanValidator = (
@@ -193,7 +194,22 @@ export class PlotEditor {
       ];
     }
 
-    return { ...model, areas, markers, lines };
+    let fnx = model.fnx;
+
+    if (mode === InteractiveMode.StraightLine && pts.length === 2) {
+      const fnxString = this.calculateStraightLineFunction(pts[0], pts[1]);
+      if (fnxString) {
+        fnx = [
+          ...fnx,
+          {
+            fnx: fnxString,
+            color: colors[fnx.length % colors.length],
+          },
+        ];
+      }
+    }
+
+    return { ...model, areas, markers, lines, fnx };
   });
 
   protected readonly rangeTitle = computed(() => {
@@ -489,6 +505,34 @@ export class PlotEditor {
       });
       return;
     }
+
+    if (mode === InteractiveMode.StraightLine) {
+      this.interactivePoints.update(points => {
+        const newPoints = [...points, event];
+        if (newPoints.length === 2) {
+          const [p1, p2] = newPoints;
+          const fnxString = this.calculateStraightLineFunction(p1, p2);
+
+          if (fnxString) {
+            this.editorModel.update(model => ({
+              ...model,
+              fnx: [
+                ...model.fnx,
+                {
+                  fnx: fnxString,
+                  color: colors[model.fnx.length % colors.length],
+                },
+              ],
+            }));
+          }
+
+          this.interactiveMode.set(InteractiveMode.Off);
+          return [];
+        }
+        return newPoints;
+      });
+      return;
+    }
   }
 
   protected removeInteractivePoint(index: number): void {
@@ -537,5 +581,43 @@ export class PlotEditor {
   protected cancelInteractiveLine(): void {
     this.interactiveMode.set(InteractiveMode.Off);
     this.interactivePoints.set([]);
+  }
+
+  protected startInteractiveStraightLine(): void {
+    this.interactiveMode.set(InteractiveMode.StraightLine);
+    this.interactivePoints.set([]);
+  }
+
+  protected cancelInteractiveStraightLine(): void {
+    this.interactiveMode.set(InteractiveMode.Off);
+    this.interactivePoints.set([]);
+  }
+
+  private calculateStraightLineFunction(
+    p1: { x: number; y: number },
+    p2: { x: number; y: number },
+  ): string | null {
+    if (p1.x === p2.x) {
+      return null;
+    }
+
+    const m = (p2.y - p1.y) / (p2.x - p1.x);
+    const b = p1.y - m * p1.x;
+
+    const mRounded = Math.round(m * 100) / 100;
+    const bRounded = Math.round(b * 100) / 100;
+
+    if (mRounded === 0) {
+      return `${bRounded}`;
+    }
+
+    const mStr = mRounded === 1 ? '' : mRounded === -1 ? '-' : `${mRounded}*`;
+
+    if (bRounded === 0) {
+      return `${mStr}x`;
+    }
+
+    const bStr = bRounded > 0 ? `+${bRounded}` : `${bRounded}`;
+    return `${mStr}x${bStr}`;
   }
 }
