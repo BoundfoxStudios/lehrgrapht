@@ -1,8 +1,9 @@
 import * as mathjs from 'mathjs';
 import { EvalFunction, Matrix } from 'mathjs';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import Plotly, { Annotations, PlotData } from 'plotly.js-dist-min';
 import { MathFunction, Plot, PlotSettings } from '../models/plot';
+import { MarkerNamingService } from './marker-naming.service';
 import { modelIdPrefix } from './word/word.service';
 import { v7 } from 'uuid';
 
@@ -70,6 +71,8 @@ const mmMargin = {
 
 @Injectable({ providedIn: 'root' })
 export class PlotService {
+  private readonly markerNamingService = inject(MarkerNamingService);
+
   async generate(
     plot: Plot,
     plotSettings: PlotSettings,
@@ -347,6 +350,46 @@ export class PlotService {
           },
         })),
       );
+
+      const areaPointMarkers: { x: number; y: number; text: string }[] = [];
+      let pointIndex = 0;
+      for (const area of plot.areas) {
+        if (area.showPoints) {
+          for (const point of area.points) {
+            areaPointMarkers.push({
+              x: point.x,
+              y: point.y,
+              text: this.markerNamingService.generateName(
+                pointIndex,
+                plotSettings.markerNamingScheme,
+              ),
+            });
+            pointIndex++;
+          }
+        }
+      }
+
+      if (areaPointMarkers.length) {
+        data.push({
+          type: 'scatter',
+          mode: 'text+markers',
+          x: areaPointMarkers.map(m => m.x),
+          y: areaPointMarkers.map(m => m.y),
+          text: areaPointMarkers.map(m => m.text),
+          marker: {
+            symbol: 'x-thin',
+            color: '#000000',
+            size: 10,
+            line: {
+              width: 1.5,
+            },
+          },
+          textfont: {
+            size: 12,
+          },
+          textposition: 'bottom left',
+        });
+      }
     }
 
     try {

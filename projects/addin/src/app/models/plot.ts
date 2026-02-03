@@ -28,6 +28,7 @@ export interface Plot {
   areas: {
     points: { x: number; y: number }[];
     color: string;
+    showPoints: boolean;
   }[];
   lines: {
     x1: number;

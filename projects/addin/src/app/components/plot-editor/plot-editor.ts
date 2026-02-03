@@ -20,7 +20,8 @@ import {
   faTrashCan,
 } from '@fortawesome/free-solid-svg-icons';
 import { MathDisplay } from '../math-display/math-display';
-import { MarkerNamingScheme, Plot, PlotSettings } from '../../models/plot';
+import { Plot, PlotSettings } from '../../models/plot';
+import { MarkerNamingService } from '../../services/marker-naming.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
@@ -67,23 +68,6 @@ const lessThanValidator = (
   });
 };
 
-const generateMarkerName = (
-  index: number,
-  scheme: MarkerNamingScheme,
-): string => {
-  if (scheme === 'numeric') {
-    return `P${index + 1}`;
-  }
-
-  let result = '';
-  let n = index;
-  do {
-    result = String.fromCharCode(65 + (n % 26)) + result;
-    n = Math.floor(n / 26) - 1;
-  } while (n >= 0);
-  return result;
-};
-
 @Component({
   selector: 'lg-plot-editor',
   imports: [
@@ -107,9 +91,9 @@ export class PlotEditor {
   protected readonly faTrashCan = faTrashCan;
   protected readonly faMousePointer = faMousePointer;
   protected readonly faCheck = faCheck;
-  protected readonly generateMarkerName = generateMarkerName;
 
   private readonly plotService = inject(PlotService);
+  protected readonly markerNamingService = inject(MarkerNamingService);
   private readonly plotSettingsService = inject(PlotSettingsService);
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly wordService = inject(WordService);
@@ -186,6 +170,7 @@ export class PlotEditor {
         {
           points: pts,
           color: colors[areas.length % colors.length],
+          showPoints: false,
         },
       ];
     }
@@ -195,7 +180,7 @@ export class PlotEditor {
         ...markers,
         ...pts.map((p, i) => ({
           ...p,
-          text: generateMarkerName(markers.length + i, scheme),
+          text: this.markerNamingService.generateName(markers.length + i, scheme),
         })),
       ];
     }
@@ -336,7 +321,7 @@ export class PlotEditor {
       ...model,
       markers: [
         ...model.markers,
-        { x: 0, y: 0, text: generateMarkerName(model.markers.length, scheme) },
+        { x: 0, y: 0, text: this.markerNamingService.generateName(model.markers.length, scheme) },
       ],
     }));
   }
@@ -385,6 +370,7 @@ export class PlotEditor {
             { x: 1, y: 1 },
           ],
           color: colors[model.areas.length % colors.length],
+          showPoints: false,
         },
       ],
     }));
@@ -487,6 +473,7 @@ export class PlotEditor {
           {
             points: [...points],
             color: colors[model.areas.length % colors.length],
+            showPoints: false,
           },
         ],
       }));
@@ -587,7 +574,7 @@ export class PlotEditor {
           ...model.markers,
           ...points.map((p, i) => ({
             ...p,
-            text: generateMarkerName(model.markers.length + i, scheme),
+            text: this.markerNamingService.generateName(model.markers.length + i, scheme),
           })),
         ],
       }));

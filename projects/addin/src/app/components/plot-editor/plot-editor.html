@@ -401,7 +401,7 @@
                       class="flex items-center justify-between rounded bg-white px-2 py-1 text-sm"
                     >
                       <span class="text-gray-600"
-                        >{{ generateMarkerName(editorModel().markers.length + i, plotSettings().markerNamingScheme) }}: ({{ point.x }}, {{ point.y }})</span
+                        >{{ markerNamingService.generateName(editorModel().markers.length + i, plotSettings().markerNamingScheme) }}: ({{ point.x }}, {{ point.y }})</span
                       >
                       <button
                         class="text-gray-400 hover:text-red-500"
@@ -483,6 +483,18 @@
                 >Fläche {{ areaIndex + 1 }}</span
               >
               <div class="flex items-center gap-2">
+                <label
+                  class="flex cursor-pointer items-center gap-1 text-xs text-gray-500"
+                  [for]="'area-' + areaIndex + '-show-points'"
+                >
+                  <input
+                    class="h-4 w-4 cursor-pointer rounded border-gray-300"
+                    [field]="control.showPoints"
+                    [id]="'area-' + areaIndex + '-show-points'"
+                    type="checkbox"
+                  />
+                  Punkte
+                </label>
                 <input
                   class="h-7 w-7 cursor-pointer rounded border-none"
                   [field]="control.color"
