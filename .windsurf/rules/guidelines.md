@@ -67,3 +67,4 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 
 - Use conventional commits
 - Make useful small commits
+- If possible, reference the issue number in the commit message
