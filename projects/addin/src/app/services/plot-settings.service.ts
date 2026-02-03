@@ -7,6 +7,7 @@ export const defaultPlotSettings: PlotSettings = {
   zeroLineWidth: 1.5,
   gridLineWidth: 1.5,
   gridLineColor: '#a6a6a6',
+  markerNamingScheme: 'alphabetic',
 };
 
 const plotSettingsKey = 'plot-settings';
@@ -19,6 +20,10 @@ export class PlotSettingsService {
 
   get(): PlotSettings {
     const item = localStorage.getItem(plotSettingsKey);
-    return item ? (JSON.parse(item) as PlotSettings) : defaultPlotSettings;
+    if (!item) {
+      return defaultPlotSettings;
+    }
+    const stored = JSON.parse(item) as Partial<PlotSettings>;
+    return { ...defaultPlotSettings, ...stored };
   }
 }

@@ -82,6 +82,29 @@
   </lg-accordion-panel>
   <lg-accordion-panel
     [isExpanded]="true"
+    title="Punkte"
+    persistenceId="settings-markers"
+  >
+    <lg-content-container class="flex flex-col space-y-4">
+      <div class="flex flex-1 flex-col">
+        <label
+          class="app-label"
+          for="marker-naming-scheme"
+          >Namensschema</label
+        >
+        <select
+          class="app-input"
+          id="marker-naming-scheme"
+          [field]="editorForm.markerNamingScheme"
+        >
+          <option value="alphabetic">Alphabetisch (A, B, C, ...)</option>
+          <option value="numeric">Numerisch (P1, P2, P3, ...)</option>
+        </select>
+      </div>
+    </lg-content-container>
+  </lg-accordion-panel>
+  <lg-accordion-panel
+    [isExpanded]="true"
     persistenceId="settings-preview"
     title="Vorschau"
   >

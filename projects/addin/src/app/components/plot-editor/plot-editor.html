@@ -401,7 +401,7 @@
                       class="flex items-center justify-between rounded bg-white px-2 py-1 text-sm"
                     >
                       <span class="text-gray-600"
-                        >P{{ i + 1 }}: ({{ point.x }}, {{ point.y }})</span
+                        >{{ generateMarkerName(editorModel().markers.length + i, plotSettings().markerNamingScheme) }}: ({{ point.x }}, {{ point.y }})</span
                       >
                       <button
                         class="text-gray-400 hover:text-red-500"

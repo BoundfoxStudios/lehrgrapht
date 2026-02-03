@@ -5,12 +5,15 @@ export interface MathFunction {
   color: string;
 }
 
+export type MarkerNamingScheme = 'alphabetic' | 'numeric';
+
 export interface PlotSettings {
   zeroLineWidth: number;
   zeroLineColor: string;
   gridLineWidth: number;
   gridLineColor: string;
   plotLineWidth: number;
+  markerNamingScheme: MarkerNamingScheme;
 }
 
 export interface Plot {

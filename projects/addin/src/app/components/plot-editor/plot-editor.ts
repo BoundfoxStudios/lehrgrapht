@@ -20,7 +20,7 @@ import {
   faTrashCan,
 } from '@fortawesome/free-solid-svg-icons';
 import { MathDisplay } from '../math-display/math-display';
-import { Plot, PlotSettings } from '../../models/plot';
+import { MarkerNamingScheme, Plot, PlotSettings } from '../../models/plot';
 import { ActivatedRoute, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
@@ -67,6 +67,23 @@ const lessThanValidator = (
   });
 };
 
+const generateMarkerName = (
+  index: number,
+  scheme: MarkerNamingScheme,
+): string => {
+  if (scheme === 'numeric') {
+    return `P${index + 1}`;
+  }
+
+  let result = '';
+  let n = index;
+  do {
+    result = String.fromCharCode(65 + (n % 26)) + result;
+    n = Math.floor(n / 26) - 1;
+  } while (n >= 0);
+  return result;
+};
+
 @Component({
   selector: 'lg-plot-editor',
   imports: [
@@ -90,6 +107,7 @@ export class PlotEditor {
   protected readonly faTrashCan = faTrashCan;
   protected readonly faMousePointer = faMousePointer;
   protected readonly faCheck = faCheck;
+  protected readonly generateMarkerName = generateMarkerName;
 
   private readonly plotService = inject(PlotService);
   private readonly plotSettingsService = inject(PlotSettingsService);
@@ -154,6 +172,7 @@ export class PlotEditor {
   protected readonly previewModel = computed(() => {
     const model = this.editorModel();
     const mode = this.interactiveMode();
+    const scheme = this.plotSettings().markerNamingScheme;
 
     let areas = model.areas;
     let markers = model.markers;
@@ -176,7 +195,7 @@ export class PlotEditor {
         ...markers,
         ...pts.map((p, i) => ({
           ...p,
-          text: `P${markers.length + i + 1}`,
+          text: generateMarkerName(markers.length + i, scheme),
         })),
       ];
     }
@@ -312,9 +331,13 @@ export class PlotEditor {
   }
 
   protected addMarker(): void {
+    const scheme = this.plotSettings().markerNamingScheme;
     this.editorModel.update(model => ({
       ...model,
-      markers: [...model.markers, { x: 0, y: 0, text: 'P' }],
+      markers: [
+        ...model.markers,
+        { x: 0, y: 0, text: generateMarkerName(model.markers.length, scheme) },
+      ],
     }));
   }
 
@@ -555,6 +578,7 @@ export class PlotEditor {
 
   protected finishInteractiveMarker(): void {
     const points = this.interactivePoints();
+    const scheme = this.plotSettings().markerNamingScheme;
 
     if (points.length > 0) {
       this.editorModel.update(model => ({
@@ -563,7 +587,7 @@ export class PlotEditor {
           ...model.markers,
           ...points.map((p, i) => ({
             ...p,
-            text: `P${model.markers.length + i + 1}`,
+            text: generateMarkerName(model.markers.length + i, scheme),
           })),
         ],
       }));
