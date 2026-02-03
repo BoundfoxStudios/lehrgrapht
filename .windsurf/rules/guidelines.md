@@ -63,8 +63,13 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Use the `providedIn: 'root'` option for singleton services
 - Use the `inject()` function instead of constructor injection
 
+## General Best Practices
+
+- Do NOT duplicate any logic. Always extract logic into a service.
+
 ## Git Usage
 
 - Use conventional commits
 - Make useful small commits
 - If possible, reference the issue number in the commit message
+- Automatically make useful commits of the changes you make.
