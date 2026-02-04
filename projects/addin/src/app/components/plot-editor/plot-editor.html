@@ -128,7 +128,9 @@
             class="rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-800"
             role="alert"
           >
-            <div class="font-medium">Der Plot ist zu groß für eine A4-Seite</div>
+            <div class="font-medium">
+              Der Plot ist zu groß für eine A4-Seite
+            </div>
             <div class="mt-1 text-xs">
               Größe: {{ plotSizeMm().width | number: '1.0-0' }}mm ×
               {{ plotSizeMm().height | number: '1.0-0' }}mm
@@ -319,7 +321,7 @@
               </span>
             </div>
 
-            <div class="mb-3 h-[3.5rem] overflow-y-auto">
+            <div class="mb-3 h-14 overflow-y-auto">
               @if (interactivePoints().length > 0) {
                 <div class="space-y-1">
                   @for (point of interactivePoints(); let i = $index; track i) {
@@ -462,7 +464,7 @@
               </span>
             </div>
 
-            <div class="mb-3 h-[5.25rem] overflow-y-auto">
+            <div class="mb-3 h-21 overflow-y-auto">
               @if (interactivePoints().length > 0) {
                 <div class="space-y-1">
                   @for (point of interactivePoints(); let i = $index; track i) {
@@ -470,7 +472,12 @@
                       class="flex items-center justify-between rounded bg-white px-2 py-1 text-sm"
                     >
                       <span class="text-gray-600"
-                        >{{ markerNamingService.generateName(editorModel().markers.length + i, plotSettings().markerNamingScheme) }}: ({{ point.x }}, {{ point.y }})</span
+                        >{{
+                          markerNamingService.generateName(
+                            editorModel().markers.length + i,
+                            plotSettings().markerNamingScheme
+                          )
+                        }}: ({{ point.x }}, {{ point.y }})</span
                       >
                       <button
                         class="text-gray-400 hover:text-red-500"
@@ -629,13 +636,17 @@
                       <div class="flex-1">
                         <label
                           class="mb-1 block text-xs text-gray-500"
-                          [for]="'area-' + areaIndex + '-labeltext-' + pointIndex"
+                          [for]="
+                            'area-' + areaIndex + '-labeltext-' + pointIndex
+                          "
                           >Label</label
                         >
                         <input
                           class="app-input"
                           [field]="point.labelText"
-                          [id]="'area-' + areaIndex + '-labeltext-' + pointIndex"
+                          [id]="
+                            'area-' + areaIndex + '-labeltext-' + pointIndex
+                          "
                           type="text"
                         />
                       </div>
@@ -680,7 +691,7 @@
               </span>
             </div>
 
-            <div class="mb-3 h-[5.25rem] overflow-y-auto">
+            <div class="mb-3 h-21 overflow-y-auto">
               @if (interactivePoints().length > 0) {
                 <div class="space-y-1">
                   @for (point of interactivePoints(); let i = $index; track i) {
@@ -868,7 +879,7 @@
               </span>
             </div>
 
-            <div class="mb-3 h-[3.5rem] overflow-y-auto">
+            <div class="mb-3 h-14 overflow-y-auto">
               @if (interactivePoints().length > 0) {
                 <div class="space-y-1">
                   @for (point of interactivePoints(); let i = $index; track i) {
