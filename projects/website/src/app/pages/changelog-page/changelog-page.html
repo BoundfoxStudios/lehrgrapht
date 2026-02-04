@@ -1,0 +1,21 @@
+<lgw-hero>
+  <h1>Versionshistorie</h1>
+  <p>Alle Änderungen und Neuerungen von LehrGrapht im Überblick.</p>
+</lgw-hero>
+
+<lgw-content-container class="mt-12 block">
+  <div class="space-y-8">
+    @for (entry of changelogData; track entry.version) {
+      <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <h2 class="text-brand mb-4 text-xl font-bold">
+          Version {{ entry.version }}
+        </h2>
+        <ul class="ml-4 list-disc space-y-2 text-gray-700">
+          @for (change of entry.changes; track change) {
+            <li>{{ change }}</li>
+          }
+        </ul>
+      </div>
+    }
+  </div>
+</lgw-content-container>
