@@ -367,7 +367,7 @@ export class PlotService {
             areaPointMarkers.push({
               x: point.x,
               y: point.y,
-              text: point.labelText,
+              text: point.labelText ?? '',
               textposition: position,
             });
           }
