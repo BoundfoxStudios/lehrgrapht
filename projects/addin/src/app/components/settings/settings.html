@@ -92,14 +92,10 @@
           for="marker-naming-scheme"
           >Namensschema</label
         >
-        <select
-          class="app-input"
-          id="marker-naming-scheme"
+        <lg-dropdown
           [field]="editorForm.markerNamingScheme"
-        >
-          <option value="alphabetic">Alphabetisch (A, B, C, ...)</option>
-          <option value="numeric">Numerisch (P1, P2, P3, ...)</option>
-        </select>
+          [options]="markerNamingSchemeOptions"
+        />
       </div>
     </lg-content-container>
   </lg-accordion-panel>

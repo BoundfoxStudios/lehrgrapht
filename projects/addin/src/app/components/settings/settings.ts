@@ -1,6 +1,6 @@
 import { Component, effect, inject, signal } from '@angular/core';
 import { Header } from '../header/header';
-import { Plot, PlotSettings } from '../../models/plot';
+import { MarkerNamingScheme, Plot, PlotSettings } from '../../models/plot';
 import { Field, form, min } from '@angular/forms/signals';
 import { Accordion } from '../accordion/accordion';
 import { AccordionPanel } from '../accordion/accordion-panel/accordion-panel';
@@ -10,6 +10,7 @@ import {
   defaultPlotSettings,
   PlotSettingsService,
 } from '../../services/plot-settings.service';
+import { Dropdown, DropdownOption } from '../dropdown/dropdown';
 
 @Component({
   selector: 'lg-settings',
@@ -20,12 +21,18 @@ import {
     ContentContainer,
     Field,
     PlotPreview,
+    Dropdown,
   ],
   templateUrl: './settings.html',
   styleUrl: './settings.css',
 })
 export class Settings {
   private readonly plotSettingsService = inject(PlotSettingsService);
+
+  protected readonly markerNamingSchemeOptions: DropdownOption<MarkerNamingScheme>[] = [
+    { value: 'alphabetic', label: 'Alphabetisch (A, B, C, ...)' },
+    { value: 'numeric', label: 'Numerisch (P1, P2, P3, ...)' },
+  ];
 
   protected readonly editorModel = signal<PlotSettings>(defaultPlotSettings);
 
