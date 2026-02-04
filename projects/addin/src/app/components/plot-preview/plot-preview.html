@@ -34,8 +34,10 @@
         [class.ring-brand]="interactive()"
         [class.ring-offset-2]="interactive()"
         (click)="onImageClick($event)"
+        (keydown.enter)="$event.preventDefault()"
         (mousemove)="onImageMouseMove($event)"
         (mouseleave)="onImageMouseLeave()"
+        [tabindex]="interactive() ? 0 : -1"
         alt="Preview"
       />
       @if (interactive() && hoverPosition(); as pos) {
