@@ -123,6 +123,26 @@
           <span class="font-medium text-gray-800">{{ squareCount() }}</span>
         </div>
 
+        @if (plotSizeMm().exceedsA4) {
+          <div
+            class="rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-800"
+            role="alert"
+          >
+            <div class="font-medium">Der Plot ist zu groß für eine A4-Seite</div>
+            <div class="mt-1 text-xs">
+              Größe: {{ plotSizeMm().width | number: '1.0-0' }}mm ×
+              {{ plotSizeMm().height | number: '1.0-0' }}mm
+              @if (plotSizeMm().exceedsWidth && plotSizeMm().exceedsHeight) {
+                (Breite und Höhe überschritten)
+              } @else if (plotSizeMm().exceedsWidth) {
+                (Breite überschritten, max. 180mm)
+              } @else {
+                (Höhe überschritten, max. 267mm)
+              }
+            </div>
+          </div>
+        }
+
         <button
           class="app-button w-full text-sm"
           (click)="autoAdjustLimits()"

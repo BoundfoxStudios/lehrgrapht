@@ -9,7 +9,8 @@ import {
 import { Header } from '../header/header';
 import { Field, form, SchemaPath, validate } from '@angular/forms/signals';
 import { PlotClickEvent, PlotPreview } from '../plot-preview/plot-preview';
-import { plotHasErrorCode, PlotService } from '../../services/plot.service';
+import { plotHasErrorCode, PlotService, PlotSizeMm } from '../../services/plot.service';
+import { DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ContentContainer } from '../content-container/content-container';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
@@ -84,6 +85,7 @@ const lessThanValidator = (
     Accordion,
     AccordionPanel,
     Dropdown,
+    DecimalPipe,
   ],
   templateUrl: './plot-editor.html',
   styleUrl: './plot-editor.css',
@@ -164,6 +166,10 @@ export class PlotEditor {
   protected readonly squareCount = computed(
     () =>
       `${(this.editorModel().range.x.max - this.editorModel().range.x.min) * 2} / ${(this.editorModel().range.y.max - this.editorModel().range.y.min) * 2}`,
+  );
+
+  protected readonly plotSizeMm = computed<PlotSizeMm>(() =>
+    this.plotService.calculatePlotSizeMm(this.editorModel()),
   );
 
   protected readonly isAnyInteractiveMode = computed(

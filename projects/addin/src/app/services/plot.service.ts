@@ -69,6 +69,17 @@ const mmMargin = {
   r: 7.5,
 };
 
+export const A4_USABLE_WIDTH_MM = 180;
+export const A4_USABLE_HEIGHT_MM = 267;
+
+export interface PlotSizeMm {
+  width: number;
+  height: number;
+  exceedsA4: boolean;
+  exceedsWidth: boolean;
+  exceedsHeight: boolean;
+}
+
 @Injectable({ providedIn: 'root' })
 export class PlotService {
   private readonly markerNamingService = inject(MarkerNamingService);
@@ -537,6 +548,36 @@ export class PlotService {
 
   extractRawPictureDataFromBase64Picture(base64Picture: string): string {
     return base64Picture.substring('data:image/png;base64,'.length);
+  }
+
+  calculatePlotSizeMm(plot: Plot): PlotSizeMm {
+    const xRange = plot.range.x.max - plot.range.x.min;
+    const yRange = plot.range.y.max - plot.range.y.min;
+
+    const tickSquaresX = plot.squarePlots
+      ? Math.max(xRange, yRange) / dtick
+      : xRange / dtick;
+    const tickSquaresY = plot.squarePlots
+      ? Math.max(xRange, yRange) / dtick
+      : yRange / dtick;
+
+    const width =
+      tickSquaresX * mmPerTick +
+      (mmMargin.l + mmMargin.r + mmMargin.t + mmMargin.b) / 2;
+    const height =
+      tickSquaresY * mmPerTick +
+      (mmMargin.l + mmMargin.r + mmMargin.t + mmMargin.b) / 2;
+
+    const exceedsWidth = width > A4_USABLE_WIDTH_MM;
+    const exceedsHeight = height > A4_USABLE_HEIGHT_MM;
+
+    return {
+      width,
+      height,
+      exceedsA4: exceedsWidth || exceedsHeight,
+      exceedsWidth,
+      exceedsHeight,
+    };
   }
 
   private createRanges(plot: Plot): ValueRanges {
