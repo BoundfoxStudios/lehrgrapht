@@ -33,6 +33,8 @@ import {
   defaultPlotSettings,
   PlotSettingsService,
 } from '../../services/plot-settings.service';
+import { Dropdown, DropdownOption } from '../dropdown/dropdown';
+import { LabelPosition } from '../../models/plot';
 
 const colors = ['#3737d0', '#af2c2c', '#2a8c1a', '#f18238'];
 
@@ -81,6 +83,7 @@ const lessThanValidator = (
     Section,
     Accordion,
     AccordionPanel,
+    Dropdown,
   ],
   templateUrl: './plot-editor.html',
   styleUrl: './plot-editor.css',
@@ -91,6 +94,18 @@ export class PlotEditor {
   protected readonly faTrashCan = faTrashCan;
   protected readonly faMousePointer = faMousePointer;
   protected readonly faCheck = faCheck;
+
+  protected readonly labelPositionOptions: DropdownOption<LabelPosition>[] = [
+    { value: 'auto', label: 'Auto' },
+    { value: 'top left', label: 'Oben links' },
+    { value: 'top center', label: 'Oben' },
+    { value: 'top right', label: 'Oben rechts' },
+    { value: 'middle left', label: 'Links' },
+    { value: 'middle right', label: 'Rechts' },
+    { value: 'bottom left', label: 'Unten links' },
+    { value: 'bottom center', label: 'Unten' },
+    { value: 'bottom right', label: 'Unten rechts' },
+  ];
 
   private readonly plotService = inject(PlotService);
   protected readonly markerNamingService = inject(MarkerNamingService);
@@ -274,7 +289,7 @@ export class PlotEditor {
 
       if (existingPlot) {
         const model = existingPlot.model;
-        const migratedAreas = model.areas.map(area => ({
+        const migratedAreas: Plot['areas'] = model.areas.map(area => ({
           ...area,
           points: area.points.map(point => ({
             ...point,

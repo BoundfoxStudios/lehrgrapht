@@ -612,21 +612,10 @@
                           [for]="'area-' + areaIndex + '-label-' + pointIndex"
                           >Position</label
                         >
-                        <select
-                          class="app-input"
+                        <lg-dropdown
                           [field]="point.labelPosition"
-                          [id]="'area-' + areaIndex + '-label-' + pointIndex"
-                        >
-                          <option value="auto">Auto</option>
-                          <option value="top left">Oben links</option>
-                          <option value="top center">Oben</option>
-                          <option value="top right">Oben rechts</option>
-                          <option value="middle left">Links</option>
-                          <option value="middle right">Rechts</option>
-                          <option value="bottom left">Unten links</option>
-                          <option value="bottom center">Unten</option>
-                          <option value="bottom right">Unten rechts</option>
-                        </select>
+                          [options]="labelPositionOptions"
+                        />
                       </div>
                     </div>
                   }
