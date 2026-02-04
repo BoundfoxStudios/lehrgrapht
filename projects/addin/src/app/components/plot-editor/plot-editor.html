@@ -381,12 +381,15 @@
               </button>
             </div>
             <div class="mb-2">
-              <label class="mb-1 block text-xs text-gray-600"
+              <label
+                class="mb-1 block text-xs text-gray-600"
+                [for]="'marker-text-' + $index"
                 >Beschriftung</label
               >
               <input
                 class="app-input"
                 [field]="control.text"
+                [id]="'marker-text-' + $index"
                 type="text"
                 spellcheck="false"
                 autocorrect="off"
@@ -397,18 +400,28 @@
             </div>
             <div class="flex gap-3">
               <div class="flex-1">
-                <label class="mb-1 block text-xs text-gray-600">X</label>
+                <label
+                  class="mb-1 block text-xs text-gray-600"
+                  [for]="'marker-x-' + $index"
+                  >X</label
+                >
                 <input
                   class="app-input"
                   [field]="control.x"
+                  [id]="'marker-x-' + $index"
                   type="number"
                 />
               </div>
               <div class="flex-1">
-                <label class="mb-1 block text-xs text-gray-600">Y</label>
+                <label
+                  class="mb-1 block text-xs text-gray-600"
+                  [for]="'marker-y-' + $index"
+                  >Y</label
+                >
                 <input
                   class="app-input"
                   [field]="control.y"
+                  [id]="'marker-y-' + $index"
                   type="number"
                 />
               </div>
