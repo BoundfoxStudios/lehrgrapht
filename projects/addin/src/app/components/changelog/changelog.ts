@@ -7,6 +7,7 @@ import { UserExperienceService } from '../../services/user-experience.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Accordion } from '../accordion/accordion';
 import { AccordionPanel } from '../accordion/accordion-panel/accordion-panel';
+import { changelogData } from '@lehrgrapht/shared';
 
 @Component({
   selector: 'lg-changelog',
@@ -16,6 +17,7 @@ import { AccordionPanel } from '../accordion/accordion-panel/accordion-panel';
 })
 export class Changelog {
   protected readonly lehrgraphtVersion = lehrgraphtVersion;
+  protected readonly changelogData = changelogData;
 
   private readonly router = inject(Router);
   private readonly activatedRoute = inject(ActivatedRoute);
