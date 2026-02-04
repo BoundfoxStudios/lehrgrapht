@@ -365,13 +365,16 @@ export class PlotService {
               point.labelPosition && point.labelPosition !== 'auto'
                 ? point.labelPosition
                 : this.calculateLabelPosition(point, area.points);
+            const text =
+              point.labelText ||
+              this.markerNamingService.generateName(
+                pointIndex,
+                plotSettings.markerNamingScheme,
+              );
             areaPointMarkers.push({
               x: point.x,
               y: point.y,
-              text: this.markerNamingService.generateName(
-                pointIndex,
-                plotSettings.markerNamingScheme,
-              ),
+              text,
               textposition: position,
             });
             pointIndex++;

@@ -592,27 +592,43 @@
                     </button>
                   </div>
                   @if (control.showPoints().value()) {
-                    <div class="mt-2">
-                      <label
-                        class="mb-1 block text-xs text-gray-500"
-                        [for]="'area-' + areaIndex + '-label-' + pointIndex"
-                        >Label-Position</label
-                      >
-                      <select
-                        class="app-input"
-                        [field]="point.labelPosition"
-                        [id]="'area-' + areaIndex + '-label-' + pointIndex"
-                      >
-                        <option value="auto">Automatisch</option>
-                        <option value="top left">Oben links</option>
-                        <option value="top center">Oben</option>
-                        <option value="top right">Oben rechts</option>
-                        <option value="middle left">Links</option>
-                        <option value="middle right">Rechts</option>
-                        <option value="bottom left">Unten links</option>
-                        <option value="bottom center">Unten</option>
-                        <option value="bottom right">Unten rechts</option>
-                      </select>
+                    <div class="mt-2 flex gap-2">
+                      <div class="flex-1">
+                        <label
+                          class="mb-1 block text-xs text-gray-500"
+                          [for]="'area-' + areaIndex + '-labeltext-' + pointIndex"
+                          >Label</label
+                        >
+                        <input
+                          class="app-input"
+                          [field]="point.labelText"
+                          [id]="'area-' + areaIndex + '-labeltext-' + pointIndex"
+                          type="text"
+                          placeholder="Auto"
+                        />
+                      </div>
+                      <div class="flex-1">
+                        <label
+                          class="mb-1 block text-xs text-gray-500"
+                          [for]="'area-' + areaIndex + '-label-' + pointIndex"
+                          >Position</label
+                        >
+                        <select
+                          class="app-input"
+                          [field]="point.labelPosition"
+                          [id]="'area-' + areaIndex + '-label-' + pointIndex"
+                        >
+                          <option value="auto">Auto</option>
+                          <option value="top left">Oben links</option>
+                          <option value="top center">Oben</option>
+                          <option value="top right">Oben rechts</option>
+                          <option value="middle left">Links</option>
+                          <option value="middle right">Rechts</option>
+                          <option value="bottom left">Unten links</option>
+                          <option value="bottom center">Unten</option>
+                          <option value="bottom right">Unten rechts</option>
+                        </select>
+                      </div>
                     </div>
                   }
                 </div>

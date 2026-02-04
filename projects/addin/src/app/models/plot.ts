@@ -22,6 +22,7 @@ export interface AreaPoint {
   x: number;
   y: number;
   labelPosition: LabelPosition;
+  labelText: string;
 }
 
 export interface PlotSettings {

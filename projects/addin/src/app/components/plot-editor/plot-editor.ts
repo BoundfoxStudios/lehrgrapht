@@ -170,7 +170,7 @@ export class PlotEditor {
       areas = [
         ...areas,
         {
-          points: pts.map(p => ({ ...p, labelPosition: 'auto' as const })),
+          points: pts.map(p => ({ ...p, labelPosition: 'auto' as const, labelText: '' })),
           color: colors[areas.length % colors.length],
           showPoints: false,
         },
@@ -274,6 +274,7 @@ export class PlotEditor {
           points: area.points.map(point => ({
             ...point,
             labelPosition: point.labelPosition ?? 'auto',
+            labelText: point.labelText ?? '',
           })),
         }));
         this.editorModel.set({ ...model, areas: migratedAreas });
@@ -375,9 +376,9 @@ export class PlotEditor {
         ...model.areas,
         {
           points: [
-            { x: 0, y: 0, labelPosition: 'auto' },
-            { x: 1, y: 0, labelPosition: 'auto' },
-            { x: 1, y: 1, labelPosition: 'auto' },
+            { x: 0, y: 0, labelPosition: 'auto', labelText: '' },
+            { x: 1, y: 0, labelPosition: 'auto', labelText: '' },
+            { x: 1, y: 1, labelPosition: 'auto', labelText: '' },
           ],
           color: colors[model.areas.length % colors.length],
           showPoints: false,
@@ -398,7 +399,7 @@ export class PlotEditor {
     this.editorModel.update(model => {
       const areas = model.areas.map((area, i) =>
         i === areaIndex
-          ? { ...area, points: [...area.points, { x: 0, y: 0, labelPosition: 'auto' as const }] }
+          ? { ...area, points: [...area.points, { x: 0, y: 0, labelPosition: 'auto' as const, labelText: '' }] }
           : area,
       );
       return { ...model, areas };
@@ -481,7 +482,7 @@ export class PlotEditor {
         areas: [
           ...model.areas,
           {
-            points: points.map(p => ({ ...p, labelPosition: 'auto' as const })),
+            points: points.map(p => ({ ...p, labelPosition: 'auto' as const, labelText: '' })),
             color: colors[model.areas.length % colors.length],
             showPoints: false,
           },
