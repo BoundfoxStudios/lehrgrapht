@@ -2,7 +2,13 @@ import * as mathjs from 'mathjs';
 import { EvalFunction, Matrix } from 'mathjs';
 import { inject, Injectable } from '@angular/core';
 import Plotly, { Annotations, PlotData } from 'plotly.js-dist-min';
-import { AreaPoint, LabelPosition, MathFunction, Plot, PlotSettings } from '../models/plot';
+import {
+  AreaPoint,
+  LabelPosition,
+  MathFunction,
+  Plot,
+  PlotSettings,
+} from '../models/plot';
 import { MarkerNamingService } from './marker-naming.service';
 import { modelIdPrefix } from './word/word.service';
 import { v7 } from 'uuid';
@@ -34,41 +40,6 @@ export const plotHasErrorCode = (
   );
 };
 
-interface ValueRanges {
-  x: Matrix;
-  xNumbers: number[];
-  xMin: number;
-  xMax: number;
-  y: Matrix;
-  yNumbers: number[];
-  yMin: number;
-  yMax: number;
-}
-
-const hexToRgba = (hex: string, alpha: number): string => {
-  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  if (!result) return hex;
-  const r = parseInt(result[1], 16);
-  const g = parseInt(result[2], 16);
-  const b = parseInt(result[3], 16);
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-};
-
-const mmToInches = 1 / 25.4;
-const mmToPoints = 72 / 25.4;
-const devicePixelRatio = window.devicePixelRatio || 1;
-const ppiBase = 96;
-const effectiveDpi = 254 * devicePixelRatio; // MacBookPro dpi
-const scaleFactor = effectiveDpi / 96;
-const dtick = 0.5;
-const mmPerTick = 5;
-const mmMargin = {
-  t: 7.5,
-  b: 7.5,
-  l: 7.5,
-  r: 7.5,
-};
-
 export const A4_USABLE_WIDTH_MM = 180;
 export const A4_USABLE_HEIGHT_MM = 267;
 
@@ -80,6 +51,55 @@ export interface PlotSizeMm {
   exceedsHeight: boolean;
 }
 
+interface ValueRanges {
+  x: Matrix;
+  xNumbers: number[];
+  xMin: number;
+  xMax: number;
+  y: Matrix;
+  yNumbers: number[];
+  yMin: number;
+  yMax: number;
+}
+
+interface PlotSizeCalculation {
+  xValueMin: number;
+  xValueMax: number;
+  yValueMin: number;
+  yValueMax: number;
+  plotSizePx: { width: number; height: number };
+  plotSizePoints: { width: number; height: number };
+}
+
+interface CleanedValues {
+  cleanXValues: number[];
+  cleanYValues: number[][];
+  xValuesArray: number[];
+  yValuesArray: number[][];
+}
+
+const hexToRgba = (hex: string, alpha: number): string => {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  if (!result) return hex;
+  const r = parseInt(result[1], 16);
+  const g = parseInt(result[2], 16);
+  const b = parseInt(result[3], 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+};
+
+const PLOT_CONSTANTS = {
+  mmToInches: 1 / 25.4,
+  mmToPoints: 72 / 25.4,
+  ppiBase: 96,
+  dtick: 0.5,
+  mmPerTick: 5,
+  mmMargin: { t: 7.5, b: 7.5, l: 7.5, r: 7.5 },
+} as const;
+
+const devicePixelRatio = window.devicePixelRatio || 1;
+const effectiveDpi = 254 * devicePixelRatio;
+const scaleFactor = effectiveDpi / PLOT_CONSTANTS.ppiBase
+
 @Injectable({ providedIn: 'root' })
 export class PlotService {
   private readonly markerNamingService = inject(MarkerNamingService);
@@ -87,9 +107,7 @@ export class PlotService {
   async generate(
     plot: Plot,
     plotSettings: PlotSettings,
-    options: {
-      applyScaleFactor: boolean;
-    },
+    options: { applyScaleFactor: boolean },
   ): Promise<
     | {
         base64: string;
@@ -101,34 +119,91 @@ export class PlotService {
     | PlotGenerateErrorCode
   > {
     const expressions = this.compileExpressions(plot.fnx);
-
     if (expressions === PlotGenerateErrorCode.compile) {
       return PlotGenerateErrorCode.compile;
     }
 
     const valueRanges = this.createRanges(plot);
     const yValues = this.evaluateExpressions(expressions, valueRanges);
-
     if (yValues === PlotGenerateErrorCode.evaluate) {
       return PlotGenerateErrorCode.evaluate;
     }
 
-    const { cleanXValues, cleanYValues, xValuesArray, yValuesArray } =
-      this.cleanUpValues(yValues, valueRanges, plot);
+    const cleanedValues = this.cleanUpValues(yValues, valueRanges, plot);
+    const sizeCalc = this.calculatePlotSize(plot, cleanedValues, valueRanges);
+    const annotations = this.buildAnnotations(plot, plotSettings);
+    const arrows = this.buildArrows(
+      plot,
+      plotSettings,
+      sizeCalc.xValueMax,
+      sizeCalc.yValueMax,
+    );
+    const data = this.buildPlotData(
+      plot,
+      plotSettings,
+      cleanedValues.xValuesArray,
+      cleanedValues.yValuesArray,
+    );
+
+    return this.renderPlot(
+      plot,
+      plotSettings,
+      sizeCalc,
+      annotations,
+      arrows,
+      data,
+      options.applyScaleFactor,
+    );
+  }
+
+  private cleanUpValues(
+    yValues: Matrix[],
+    valueRanges: ValueRanges,
+    plot: Plot,
+  ): CleanedValues {
+    let cleanXValues: number[] = [];
+    let cleanYValues: number[][] = yValues.map(() => []);
+    const xValuesArray = valueRanges.xNumbers;
+    const yValuesArray = yValues.map(y => y.toArray() as number[]);
+
+    if (plot.fnx.length) {
+      for (let i = 0; i < yValuesArray.length; i++) {
+        for (let ii = 0; ii < yValuesArray[i].length; ii++) {
+          const y = yValuesArray[i][ii];
+          if (y >= plot.range.y.min && y <= plot.range.y.max) {
+            cleanXValues.push(xValuesArray[ii]);
+            cleanYValues[i].push(yValuesArray[i][ii]);
+          }
+        }
+      }
+    } else {
+      cleanXValues = valueRanges.xNumbers;
+      cleanYValues = [yValues[0].toArray() as number[]];
+    }
+    return { cleanXValues, cleanYValues, xValuesArray, yValuesArray };
+  }
+
+  private calculatePlotSize(
+    plot: Plot,
+    cleanedValues: CleanedValues,
+    valueRanges: ValueRanges,
+  ): PlotSizeCalculation {
+    const { dtick, mmPerTick, mmMargin, mmToInches, mmToPoints, ppiBase } =
+      PLOT_CONSTANTS;
 
     const xValueFlat = plot.automaticallyAdjustLimitsToValueRange
-      ? cleanXValues
+      ? cleanedValues.cleanXValues
       : valueRanges.xNumbers;
     const xValueMin = mathjs.min(xValueFlat);
     const xValueMax = mathjs.max(xValueFlat);
     const xValueRange = xValueMax - xValueMin;
 
     const yValueFlat = plot.automaticallyAdjustLimitsToValueRange
-      ? cleanYValues.flatMap(y => y)
+      ? cleanedValues.cleanYValues.flatMap(y => y)
       : valueRanges.yNumbers;
-    const yValueFlatMin = mathjs.min(yValueFlat);
-    const yValueFlatMax = mathjs.max(yValueFlat);
-    const yValueRange = yValueFlatMax - yValueFlatMin;
+    const yValueMin = mathjs.min(yValueFlat);
+    const yValueMax = mathjs.max(yValueFlat);
+    const yValueRange = yValueMax - yValueMin;
 
     const tickSquares = {
       x: plot.squarePlots
@@ -139,25 +214,32 @@ export class PlotService {
         : yValueRange / dtick,
     };
 
+    const marginTotal = (mmMargin.l + mmMargin.r + mmMargin.t + mmMargin.b) / 2;
     const plotSizeMm = {
-      width:
-        tickSquares.x * mmPerTick +
-        (mmMargin.l + mmMargin.r + mmMargin.t + mmMargin.b) / 2,
-      height:
-        tickSquares.y * mmPerTick +
-        (mmMargin.l + mmMargin.r + mmMargin.t + mmMargin.b) / 2,
+      width: tickSquares.x * mmPerTick + marginTotal,
+      height: tickSquares.y * mmPerTick + marginTotal,
     };
 
-    const plotSizePx = {
-      width: plotSizeMm.width * mmToInches * ppiBase,
-      height: plotSizeMm.height * mmToInches * ppiBase,
+    return {
+      xValueMin,
+      xValueMax,
+      yValueMin,
+      yValueMax,
+      plotSizePx: {
+        width: plotSizeMm.width * mmToInches * ppiBase,
+        height: plotSizeMm.height * mmToInches * ppiBase,
+      },
+      plotSizePoints: {
+        width: plotSizeMm.width * mmToPoints,
+        height: plotSizeMm.height * mmToPoints,
+      },
     };
+  }
 
-    const plotSizePoints = {
-      width: plotSizeMm.width * mmToPoints,
-      height: plotSizeMm.height * mmToPoints,
-    };
-
+  private buildAnnotations(
+    plot: Plot,
+    plotSettings: PlotSettings,
+  ): Partial<Annotations>[] {
     const xAnnotationRange = mathjs
       .range(plot.range.x.min, plot.range.x.max, 1, true)
       .toArray() as number[];
@@ -170,77 +252,98 @@ export class PlotService {
       yAnnotationRange = yAnnotationRange.filter(y => y !== 0);
     }
 
-    const annotations = [
-      // x-labels.
-      ...xAnnotationRange.slice(1, xAnnotationRange.length - 1).map(x => ({
+    return [
+      ...this.buildXLabels(xAnnotationRange),
+      ...this.buildXTickLines(xAnnotationRange, plotSettings),
+      ...this.buildYLabels(yAnnotationRange),
+      ...this.buildYTickLines(yAnnotationRange, plotSettings),
+    ];
+  }
+
+  private buildXLabels(xRange: number[]): Partial<Annotations>[] {
+    return xRange.slice(1, xRange.length - 1).map(x => ({
+      x,
+      y: 0,
+      text: `${x}`,
+      xref: 'x',
+      yref: 'y',
+      showarrow: false,
+      xanchor: 'center',
+      yanchor: 'top',
+      yshift: -2,
+      xshift: x === 0 ? 6 : undefined,
+      font: { size: 10 },
+    }));
+  }
+
+  private buildXTickLines(
+    xRange: number[],
+    plotSettings: PlotSettings,
+  ): Partial<Annotations>[] {
+    return xRange
+      .slice(0, xRange.length - 1)
+      .filter(x => x !== 0)
+      .map(x => ({
         x,
         y: 0,
-        text: `${x}`,
         xref: 'x',
         yref: 'y',
-        showarrow: false,
+        showarrow: true,
         xanchor: 'center',
         yanchor: 'top',
-        yshift: -2,
-        xshift: x === 0 ? 6 : undefined,
-        font: {
-          size: 10,
-        },
-      })),
-      // x-tick lines, remove the line that would be placed next to the x-axis arrow.
-      ...xAnnotationRange
-        .slice(0, xAnnotationRange.length - 1)
-        .filter(x => x !== 0)
-        .map(x => ({
-          x,
-          y: 0,
-          xref: 'x',
-          yref: 'y',
-          showarrow: true,
-          xanchor: 'center',
-          yanchor: 'top',
-          ax: 0,
-          ay: 4 * plotSettings.zeroLineWidth,
-          yshift: 2 * plotSettings.zeroLineWidth,
-          arrowhead: 0,
-          arrowwidth: plotSettings.zeroLineWidth,
-        })),
-      // y-tick lines.
-      ...yAnnotationRange.slice(1, yAnnotationRange.length - 1).map(y => ({
+        ax: 0,
+        ay: 4 * plotSettings.zeroLineWidth,
+        yshift: 2 * plotSettings.zeroLineWidth,
+        arrowhead: 0,
+        arrowwidth: plotSettings.zeroLineWidth,
+      }));
+  }
+
+  private buildYLabels(yRange: number[]): Partial<Annotations>[] {
+    return yRange.slice(1, yRange.length - 1).map(y => ({
+      x: 0,
+      y,
+      text: `${y}`,
+      xref: 'x',
+      yref: 'y',
+      xshift: -4,
+      showarrow: false,
+      xanchor: 'right',
+      yanchor: 'middle',
+      font: { size: 10 },
+    }));
+  }
+
+  private buildYTickLines(
+    yRange: number[],
+    plotSettings: PlotSettings,
+  ): Partial<Annotations>[] {
+    return yRange
+      .slice(0, yRange.length - 1)
+      .filter(y => y !== 0)
+      .map(y => ({
         x: 0,
         y,
-        text: `${y}`,
         xref: 'x',
         yref: 'y',
-        xshift: -4,
-        showarrow: false,
-        xanchor: 'right',
-        yanchor: 'center',
-        font: {
-          size: 10,
-        },
-      })),
-      // y-tick lines, remove the line that would be placed next to the y-axis arrow.
-      ...yAnnotationRange
-        .slice(0, yAnnotationRange.length - 1)
-        .filter(y => y !== 0)
-        .map(y => ({
-          x: 0,
-          y,
-          xref: 'x',
-          yref: 'y',
-          showarrow: true,
-          xanchor: 'left',
-          yanchor: 'middle',
-          ax: 4 * plotSettings.zeroLineWidth,
-          xshift: -2 * plotSettings.zeroLineWidth,
-          ay: 0,
-          arrowhead: 0,
-          arrowwidth: plotSettings.zeroLineWidth,
-        })),
-    ] as Partial<Annotations>[];
+        showarrow: true,
+        xanchor: 'left',
+        yanchor: 'middle',
+        ax: 4 * plotSettings.zeroLineWidth,
+        xshift: -2 * plotSettings.zeroLineWidth,
+        ay: 0,
+        arrowhead: 0,
+        arrowwidth: plotSettings.zeroLineWidth,
+      }));
+  }
 
-    const arrows = [
+  private buildArrows(
+    plot: Plot,
+    plotSettings: PlotSettings,
+    xValueMax: number,
+    yValueMax: number,
+  ): Partial<Annotations>[] {
+    const arrows: Partial<Annotations>[] = [
       {
         x: xValueMax,
         y: 0,
@@ -255,7 +358,7 @@ export class PlotService {
       },
       {
         x: 0,
-        y: yValueFlatMax,
+        y: yValueMax,
         showarrow: true,
         xref: 'x',
         yref: 'y',
@@ -265,7 +368,7 @@ export class PlotService {
         arrowhead: 2,
         arrowcolor: plotSettings.zeroLineColor,
       },
-    ] as Partial<Annotations>[];
+    ];
 
     if (plot.showAxisLabels) {
       arrows.push(
@@ -292,137 +395,194 @@ export class PlotService {
       );
     }
 
+    return arrows;
+  }
+
+  private buildPlotData(
+    plot: Plot,
+    plotSettings: PlotSettings,
+    xValuesArray: number[],
+    yValuesArray: number[][],
+  ): Partial<PlotData>[] {
     const data: Partial<PlotData>[] = [];
 
-    if (plot.fnx.length) {
-      data.push(
-        ...(yValuesArray.map((y, i) => ({
-          type: 'scatter',
-          x: xValuesArray,
-          y,
-          line: {
-            color: plot.fnx[i].color,
-            width: plotSettings.plotLineWidth,
-          },
-        })) as Partial<PlotData>[]),
-      );
+    this.addFunctionData(data, plot, plotSettings, xValuesArray, yValuesArray);
+    this.addMarkerData(data, plot);
+    this.addLineData(data, plot, plotSettings);
+    this.addAreaData(data, plot, plotSettings);
+
+    return data;
+  }
+
+  private addFunctionData(
+    data: Partial<PlotData>[],
+    plot: Plot,
+    plotSettings: PlotSettings,
+    xValuesArray: number[],
+    yValuesArray: number[][],
+  ): void {
+    if (!plot.fnx.length) return;
+
+    data.push(
+      ...(yValuesArray.map((y, i) => ({
+        type: 'scatter',
+        x: xValuesArray,
+        y,
+        line: {
+          color: plot.fnx[i].color,
+          width: plotSettings.plotLineWidth,
+        },
+      })) as Partial<PlotData>[]),
+    );
+  }
+
+  private addMarkerData(data: Partial<PlotData>[], plot: Plot): void {
+    if (!plot.markers.length) return;
+
+    data.push({
+      type: 'scatter',
+      mode: 'text+markers',
+      x: plot.markers.map(marker => marker.x),
+      y: plot.markers.map(marker => marker.y),
+      text: plot.markers.map(marker => marker.text),
+      marker: {
+        symbol: 'x-thin',
+        color: '#000000',
+        size: 10,
+        line: { width: 1.5 },
+      },
+      textfont: { size: 12 },
+      textposition: 'bottom left',
+    });
+  }
+
+  private addLineData(
+    data: Partial<PlotData>[],
+    plot: Plot,
+    plotSettings: PlotSettings,
+  ): void {
+    if (!plot.lines.length) return;
+
+    data.push(
+      ...plot.lines.map<Partial<PlotData>>(line => ({
+        type: 'scatter',
+        mode: 'lines',
+        fill: 'none',
+        x: [line.x1, line.x2],
+        y: [line.y1, line.y2],
+        line: {
+          color: line.color,
+          width: plotSettings.plotLineWidth,
+        },
+      })),
+    );
+  }
+
+  private addAreaData(
+    data: Partial<PlotData>[],
+    plot: Plot,
+    plotSettings: PlotSettings,
+  ): void {
+    if (!plot.areas.length) return;
+
+    data.push(
+      ...plot.areas.map<Partial<PlotData>>(area => ({
+        type: 'scatter',
+        mode: 'lines',
+        fillcolor: hexToRgba(area.color, 0.7),
+        fill: 'toself',
+        x: [...area.points, area.points[0]].map(point => point.x),
+        y: [...area.points, area.points[0]].map(point => point.y),
+        line: {
+          width: plotSettings.zeroLineWidth,
+          color: plotSettings.zeroLineColor,
+        },
+      })),
+    );
+
+    this.addAreaPointMarkers(data, plot);
+  }
+
+  private addAreaPointMarkers(data: Partial<PlotData>[], plot: Plot): void {
+    const areaPointMarkers: {
+      x: number;
+      y: number;
+      text: string;
+      textposition: Exclude<LabelPosition, 'auto'>;
+    }[] = [];
+
+    for (const area of plot.areas) {
+      if (!area.showPoints) continue;
+
+      for (const point of area.points) {
+        const position =
+          point.labelPosition !== 'auto'
+            ? point.labelPosition
+            : this.calculateLabelPosition(point, area.points);
+        areaPointMarkers.push({
+          x: point.x,
+          y: point.y,
+          text: point.labelText,
+          textposition: position,
+        });
+      }
     }
 
-    if (plot.markers.length) {
+    if (!areaPointMarkers.length) return;
+
+    const groupedByPosition = new Map<
+      Exclude<LabelPosition, 'auto'>,
+      typeof areaPointMarkers
+    >();
+
+    for (const marker of areaPointMarkers) {
+      const existing = groupedByPosition.get(marker.textposition);
+      if (existing) {
+        existing.push(marker);
+      } else {
+        groupedByPosition.set(marker.textposition, [marker]);
+      }
+    }
+
+    for (const [position, markers] of groupedByPosition) {
       data.push({
         type: 'scatter',
         mode: 'text+markers',
-        x: plot.markers.map(marker => marker.x),
-        y: plot.markers.map(marker => marker.y),
-        text: plot.markers.map(marker => marker.text),
+        x: markers.map(m => m.x),
+        y: markers.map(m => m.y),
+        text: markers.map(m => m.text),
         marker: {
           symbol: 'x-thin',
           color: '#000000',
           size: 10,
-          line: {
-            width: 1.5,
-          },
+          line: { width: 1.5 },
         },
-        textfont: {
-          size: 12,
-        },
-        textposition: 'bottom left',
+        textfont: { size: 12 },
+        textposition: position,
       });
     }
+  }
 
-    if (plot.lines.length) {
-      data.push(
-        ...plot.lines.map<Partial<PlotData>>(line => ({
-          type: 'scatter',
-          mode: 'lines',
-          fill: 'none',
-          x: [line.x1, line.x2],
-          y: [line.y1, line.y2],
-          line: {
-            color: line.color,
-            width: plotSettings.plotLineWidth,
-          },
-        })),
-      );
-    }
-
-    if (plot.areas.length) {
-      data.push(
-        ...plot.areas.map<Partial<PlotData>>(area => ({
-          type: 'scatter',
-          mode: 'lines',
-          fillcolor: hexToRgba(area.color, 0.7),
-          fill: 'toself',
-          x: [...area.points, area.points[0]].map(point => point.x),
-          y: [...area.points, area.points[0]].map(point => point.y),
-          line: {
-            width: plotSettings.zeroLineWidth,
-            color: plotSettings.zeroLineColor,
-          },
-        })),
-      );
-
-      const areaPointMarkers: {
-        x: number;
-        y: number;
-        text: string;
-        textposition: Exclude<LabelPosition, 'auto'>;
-      }[] = [];
-      for (const area of plot.areas) {
-        if (area.showPoints) {
-          for (const point of area.points) {
-            const position =
-              point.labelPosition !== 'auto'
-                ? point.labelPosition
-                : this.calculateLabelPosition(point, area.points);
-            areaPointMarkers.push({
-              x: point.x,
-              y: point.y,
-              text: point.labelText,
-              textposition: position,
-            });
-          }
-        }
+  private async renderPlot(
+    plot: Plot,
+    plotSettings: PlotSettings,
+    sizeCalc: PlotSizeCalculation,
+    annotations: Partial<Annotations>[],
+    arrows: Partial<Annotations>[],
+    data: Partial<PlotData>[],
+    applyScaleFactor: boolean,
+  ): Promise<
+    | {
+        base64: string;
+        widthInPx: number;
+        heightInPx: number;
+        widthInPoints: number;
+        heightInPoints: number;
       }
-
-      if (areaPointMarkers.length) {
-        const groupedByPosition = new Map<
-          Exclude<LabelPosition, 'auto'>,
-          typeof areaPointMarkers
-        >();
-
-        for (const marker of areaPointMarkers) {
-          const existing = groupedByPosition.get(marker.textposition);
-          if (existing) {
-            existing.push(marker);
-          } else {
-            groupedByPosition.set(marker.textposition, [marker]);
-          }
-        }
-
-        for (const [position, markers] of groupedByPosition) {
-          data.push({
-            type: 'scatter',
-            mode: 'text+markers',
-            x: markers.map(m => m.x),
-            y: markers.map(m => m.y),
-            text: markers.map(m => m.text),
-            marker: {
-              symbol: 'x-thin',
-              color: '#000000',
-              size: 10,
-              line: {
-                width: 1.5,
-              },
-            },
-            textfont: {
-              size: 12,
-            },
-            textposition: position,
-          });
-        }
-      }
-    }
+    | PlotGenerateErrorCode
+  > {
+    const { dtick, mmMargin, mmToInches, ppiBase } = PLOT_CONSTANTS;
+    const { plotSizePx, plotSizePoints, xValueMin, xValueMax, yValueMin, yValueMax } = sizeCalc;
 
     try {
       const image = await Plotly.toImage(
@@ -454,9 +614,7 @@ export class PlotService {
               ticklabelstep: 2,
               gridcolor: plotSettings.gridLineColor,
               gridwidth: plotSettings.gridLineWidth,
-              tickfont: {
-                size: 10,
-              },
+              tickfont: { size: 10 },
               zeroline: plot.showAxis,
               zerolinewidth: plotSettings.zeroLineWidth,
               zerolinecolor: plotSettings.zeroLineColor,
@@ -465,7 +623,7 @@ export class PlotService {
               mirror: true,
             },
             yaxis: {
-              range: [yValueFlatMin, yValueFlatMax],
+              range: [yValueMin, yValueMax],
               autorange: false,
               tickmode: 'linear',
               showticklabels:
@@ -474,9 +632,7 @@ export class PlotService {
               ticklabelstep: 2,
               gridcolor: plotSettings.gridLineColor,
               gridwidth: plotSettings.gridLineWidth,
-              tickfont: {
-                size: 10,
-              },
+              tickfont: { size: 10 },
               zeroline: plot.showAxis,
               zerolinewidth: plotSettings.zeroLineWidth,
               zerolinecolor: plotSettings.zeroLineColor,
@@ -485,16 +641,14 @@ export class PlotService {
               mirror: true,
             },
           },
-          config: {
-            staticPlot: true,
-          },
+          config: { staticPlot: true },
           data,
         },
         {
           format: 'png',
           width: plotSizePx.width,
           height: plotSizePx.height,
-          scale: options.applyScaleFactor ? scaleFactor : undefined,
+          scale: applyScaleFactor ? scaleFactor : undefined,
         },
       );
 
@@ -510,38 +664,6 @@ export class PlotService {
     }
   }
 
-  private cleanUpValues(
-    yValues: Matrix[],
-    valueRanges: ValueRanges,
-    plot: Plot,
-  ): {
-    cleanXValues: number[];
-    cleanYValues: number[][];
-    xValuesArray: number[];
-    yValuesArray: number[][];
-  } {
-    let cleanXValues: number[] = [];
-    let cleanYValues: number[][] = yValues.map(() => []);
-    const xValuesArray = valueRanges.xNumbers;
-    const yValuesArray = yValues.map(y => y.toArray() as number[]);
-
-    if (plot.fnx.length) {
-      for (let i = 0; i < yValuesArray.length; i++) {
-        for (let ii = 0; ii < yValuesArray[i].length; ii++) {
-          const y = yValuesArray[i][ii];
-          if (y >= plot.range.y.min && y <= plot.range.y.max) {
-            cleanXValues.push(xValuesArray[ii]);
-            cleanYValues[i].push(yValuesArray[i][ii]);
-          }
-        }
-      }
-    } else {
-      cleanXValues = valueRanges.xNumbers;
-      cleanYValues = [yValues[0].toArray() as number[]];
-    }
-    return { cleanXValues, cleanYValues, xValuesArray, yValuesArray };
-  }
-
   generateId(): string {
     return `${modelIdPrefix}${v7()}`;
   }
@@ -551,6 +673,7 @@ export class PlotService {
   }
 
   calculatePlotSizeMm(plot: Plot): PlotSizeMm {
+    const { dtick, mmPerTick, mmMargin } = PLOT_CONSTANTS;
     const xRange = plot.range.x.max - plot.range.x.min;
     const yRange = plot.range.y.max - plot.range.y.min;
 
@@ -561,12 +684,9 @@ export class PlotService {
       ? Math.max(xRange, yRange) / dtick
       : yRange / dtick;
 
-    const width =
-      tickSquaresX * mmPerTick +
-      (mmMargin.l + mmMargin.r + mmMargin.t + mmMargin.b) / 2;
-    const height =
-      tickSquaresY * mmPerTick +
-      (mmMargin.l + mmMargin.r + mmMargin.t + mmMargin.b) / 2;
+    const marginTotal = (mmMargin.l + mmMargin.r + mmMargin.t + mmMargin.b) / 2;
+    const width = tickSquaresX * mmPerTick + marginTotal;
+    const height = tickSquaresY * mmPerTick + marginTotal;
 
     const exceedsWidth = width > A4_USABLE_WIDTH_MM;
     const exceedsHeight = height > A4_USABLE_HEIGHT_MM;
