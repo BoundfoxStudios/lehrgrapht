@@ -361,13 +361,13 @@ export class PlotService {
         if (area.showPoints) {
           for (const point of area.points) {
             const position =
-              point.labelPosition && point.labelPosition !== 'auto'
+              point.labelPosition !== 'auto'
                 ? point.labelPosition
                 : this.calculateLabelPosition(point, area.points);
             areaPointMarkers.push({
               x: point.x,
               y: point.y,
-              text: point.labelText ?? '',
+              text: point.labelText,
               textposition: position,
             });
           }
