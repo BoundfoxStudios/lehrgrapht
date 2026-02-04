@@ -10,6 +10,7 @@
   role="combobox"
   aria-haspopup="listbox"
   [attr.aria-expanded]="isOpen()"
+  [attr.aria-controls]="isOpen() ? 'dropdown-listbox' : null"
 >
   <span>{{ displayLabel() }}</span>
   <fa-icon
@@ -29,6 +30,7 @@
 >
   <ul
     #optionsList
+    id="dropdown-listbox"
     class="z-50 box-border w-full max-h-60 overflow-auto rounded-lg border border-gray-200 bg-white py-1 shadow-lg"
     role="listbox"
   >
@@ -40,8 +42,10 @@
         [class.text-blue-600]="option.value === value()"
         [attr.data-focused]="focusedIndex() === i"
         (click)="selectOption(option)"
+        (keydown.enter)="selectOption(option)"
         (mouseenter)="onOptionMouseEnter(i)"
         role="option"
+        tabindex="0"
         [attr.aria-selected]="option.value === value()"
       >
         @if (itemTemplate(); as template) {

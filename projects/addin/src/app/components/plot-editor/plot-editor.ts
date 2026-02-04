@@ -293,7 +293,10 @@ export class PlotEditor {
           ...area,
           points: area.points.map(point => ({
             ...point,
-            labelPosition: point.labelPosition ?? 'auto',
+            labelPosition:
+              // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+              point.labelPosition ?? 'auto',
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             labelText: point.labelText ?? '',
           })),
         }));
