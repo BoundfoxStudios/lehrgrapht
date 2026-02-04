@@ -357,7 +357,6 @@ export class PlotService {
         text: string;
         textposition: Exclude<LabelPosition, 'auto'>;
       }[] = [];
-      let pointIndex = 0;
       for (const area of plot.areas) {
         if (area.showPoints) {
           for (const point of area.points) {
@@ -365,19 +364,12 @@ export class PlotService {
               point.labelPosition && point.labelPosition !== 'auto'
                 ? point.labelPosition
                 : this.calculateLabelPosition(point, area.points);
-            const text =
-              point.labelText ||
-              this.markerNamingService.generateName(
-                pointIndex,
-                plotSettings.markerNamingScheme,
-              );
             areaPointMarkers.push({
               x: point.x,
               y: point.y,
-              text,
+              text: point.labelText,
               textposition: position,
             });
-            pointIndex++;
           }
         }
       }

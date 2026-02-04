@@ -167,10 +167,15 @@ export class PlotEditor {
     const pts = this.interactivePoints();
 
     if (mode === InteractiveMode.Area && pts.length > 0) {
+      const startIndex = this.getNextLabelIndex();
       areas = [
         ...areas,
         {
-          points: pts.map(p => ({ ...p, labelPosition: 'auto' as const, labelText: '' })),
+          points: pts.map((p, i) => ({
+            ...p,
+            labelPosition: 'auto' as const,
+            labelText: this.markerNamingService.generateName(startIndex + i, scheme),
+          })),
           color: colors[areas.length % colors.length],
           showPoints: false,
         },
@@ -370,15 +375,17 @@ export class PlotEditor {
   }
 
   protected addArea(): void {
+    const scheme = this.plotSettings().markerNamingScheme;
+    const startIndex = this.getNextLabelIndex();
     this.editorModel.update(model => ({
       ...model,
       areas: [
         ...model.areas,
         {
           points: [
-            { x: 0, y: 0, labelPosition: 'auto', labelText: '' },
-            { x: 1, y: 0, labelPosition: 'auto', labelText: '' },
-            { x: 1, y: 1, labelPosition: 'auto', labelText: '' },
+            { x: 0, y: 0, labelPosition: 'auto', labelText: this.markerNamingService.generateName(startIndex, scheme) },
+            { x: 1, y: 0, labelPosition: 'auto', labelText: this.markerNamingService.generateName(startIndex + 1, scheme) },
+            { x: 1, y: 1, labelPosition: 'auto', labelText: this.markerNamingService.generateName(startIndex + 2, scheme) },
           ],
           color: colors[model.areas.length % colors.length],
           showPoints: false,
@@ -396,10 +403,12 @@ export class PlotEditor {
   }
 
   protected addAreaPoint(areaIndex: number): void {
+    const scheme = this.plotSettings().markerNamingScheme;
+    const nextIndex = this.getNextLabelIndex();
     this.editorModel.update(model => {
       const areas = model.areas.map((area, i) =>
         i === areaIndex
-          ? { ...area, points: [...area.points, { x: 0, y: 0, labelPosition: 'auto' as const, labelText: '' }] }
+          ? { ...area, points: [...area.points, { x: 0, y: 0, labelPosition: 'auto' as const, labelText: this.markerNamingService.generateName(nextIndex, scheme) }] }
           : area,
       );
       return { ...model, areas };
@@ -477,12 +486,18 @@ export class PlotEditor {
     const points = this.interactivePoints();
 
     if (points.length >= 3) {
+      const scheme = this.plotSettings().markerNamingScheme;
+      const startIndex = this.getNextLabelIndex();
       this.editorModel.update(model => ({
         ...model,
         areas: [
           ...model.areas,
           {
-            points: points.map(p => ({ ...p, labelPosition: 'auto' as const, labelText: '' })),
+            points: points.map((p, i) => ({
+              ...p,
+              labelPosition: 'auto' as const,
+              labelText: this.markerNamingService.generateName(startIndex + i, scheme),
+            })),
             color: colors[model.areas.length % colors.length],
             showPoints: false,
           },
@@ -641,5 +656,16 @@ export class PlotEditor {
 
     const bStr = bRounded > 0 ? `+${bRounded}` : `${bRounded}`;
     return `${mStr}x${bStr}`;
+  }
+
+  private getNextLabelIndex(): number {
+    const model = this.editorModel();
+    let index = 0;
+    for (const area of model.areas) {
+      if (area.showPoints) {
+        index += area.points.length;
+      }
+    }
+    return index;
   }
 }
