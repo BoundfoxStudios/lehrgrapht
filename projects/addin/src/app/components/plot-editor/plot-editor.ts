@@ -170,7 +170,7 @@ export class PlotEditor {
       areas = [
         ...areas,
         {
-          points: pts,
+          points: pts.map(p => ({ ...p, labelPosition: 'auto' as const })),
           color: colors[areas.length % colors.length],
           showPoints: false,
         },
@@ -268,7 +268,15 @@ export class PlotEditor {
       const existingPlot = this.existingPlot.value();
 
       if (existingPlot) {
-        this.editorModel.set(existingPlot.model);
+        const model = existingPlot.model;
+        const migratedAreas = model.areas.map(area => ({
+          ...area,
+          points: area.points.map(point => ({
+            ...point,
+            labelPosition: point.labelPosition ?? 'auto',
+          })),
+        }));
+        this.editorModel.set({ ...model, areas: migratedAreas });
       }
     });
   }
@@ -367,9 +375,9 @@ export class PlotEditor {
         ...model.areas,
         {
           points: [
-            { x: 0, y: 0 },
-            { x: 1, y: 0 },
-            { x: 1, y: 1 },
+            { x: 0, y: 0, labelPosition: 'auto' },
+            { x: 1, y: 0, labelPosition: 'auto' },
+            { x: 1, y: 1, labelPosition: 'auto' },
           ],
           color: colors[model.areas.length % colors.length],
           showPoints: false,
@@ -390,7 +398,7 @@ export class PlotEditor {
     this.editorModel.update(model => {
       const areas = model.areas.map((area, i) =>
         i === areaIndex
-          ? { ...area, points: [...area.points, { x: 0, y: 0 }] }
+          ? { ...area, points: [...area.points, { x: 0, y: 0, labelPosition: 'auto' as const }] }
           : area,
       );
       return { ...model, areas };
@@ -473,7 +481,7 @@ export class PlotEditor {
         areas: [
           ...model.areas,
           {
-            points: [...points],
+            points: points.map(p => ({ ...p, labelPosition: 'auto' as const })),
             color: colors[model.areas.length % colors.length],
             showPoints: false,
           },

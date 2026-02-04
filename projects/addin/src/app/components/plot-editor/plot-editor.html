@@ -554,41 +554,67 @@
                 let pointIndex = $index;
                 track pointIndex
               ) {
-                <div class="flex items-end gap-2 rounded-md bg-gray-50 p-2">
-                  <div class="flex-1">
-                    <label
-                      class="mb-1 block text-xs text-gray-500"
-                      [for]="'area-' + areaIndex + '-x-' + pointIndex"
-                      >X{{ pointIndex + 1 }}</label
+                <div class="rounded-md bg-gray-50 p-2">
+                  <div class="flex items-end gap-2">
+                    <div class="flex-1">
+                      <label
+                        class="mb-1 block text-xs text-gray-500"
+                        [for]="'area-' + areaIndex + '-x-' + pointIndex"
+                        >X{{ pointIndex + 1 }}</label
+                      >
+                      <input
+                        class="app-input"
+                        [field]="point.x"
+                        [id]="'area-' + areaIndex + '-x-' + pointIndex"
+                        type="number"
+                      />
+                    </div>
+                    <div class="flex-1">
+                      <label
+                        class="mb-1 block text-xs text-gray-500"
+                        [for]="'area-' + areaIndex + '-y-' + pointIndex"
+                        >Y{{ pointIndex + 1 }}</label
+                      >
+                      <input
+                        class="app-input"
+                        [field]="point.y"
+                        [id]="'area-' + areaIndex + '-y-' + pointIndex"
+                        type="number"
+                      />
+                    </div>
+                    <button
+                      class="mb-1 flex h-8 w-8 shrink-0 items-center justify-center rounded text-gray-400 transition-colors hover:bg-red-100 hover:text-red-500"
+                      (click)="removeAreaPoint(areaIndex, pointIndex)"
+                      type="button"
+                      title="Punkt entfernen"
                     >
-                    <input
-                      class="app-input"
-                      [field]="point.x"
-                      [id]="'area-' + areaIndex + '-x-' + pointIndex"
-                      type="number"
-                    />
+                      <fa-icon [icon]="faTrashCan" />
+                    </button>
                   </div>
-                  <div class="flex-1">
-                    <label
-                      class="mb-1 block text-xs text-gray-500"
-                      [for]="'area-' + areaIndex + '-y-' + pointIndex"
-                      >Y{{ pointIndex + 1 }}</label
-                    >
-                    <input
-                      class="app-input"
-                      [field]="point.y"
-                      [id]="'area-' + areaIndex + '-y-' + pointIndex"
-                      type="number"
-                    />
-                  </div>
-                  <button
-                    class="mb-1 flex h-8 w-8 shrink-0 items-center justify-center rounded text-gray-400 transition-colors hover:bg-red-100 hover:text-red-500"
-                    (click)="removeAreaPoint(areaIndex, pointIndex)"
-                    type="button"
-                    title="Punkt entfernen"
-                  >
-                    <fa-icon [icon]="faTrashCan" />
-                  </button>
+                  @if (control.showPoints().value()) {
+                    <div class="mt-2">
+                      <label
+                        class="mb-1 block text-xs text-gray-500"
+                        [for]="'area-' + areaIndex + '-label-' + pointIndex"
+                        >Label-Position</label
+                      >
+                      <select
+                        class="app-input"
+                        [field]="point.labelPosition"
+                        [id]="'area-' + areaIndex + '-label-' + pointIndex"
+                      >
+                        <option value="auto">Automatisch</option>
+                        <option value="top left">Oben links</option>
+                        <option value="top center">Oben</option>
+                        <option value="top right">Oben rechts</option>
+                        <option value="middle left">Links</option>
+                        <option value="middle right">Rechts</option>
+                        <option value="bottom left">Unten links</option>
+                        <option value="bottom center">Unten</option>
+                        <option value="bottom right">Unten rechts</option>
+                      </select>
+                    </div>
+                  }
                 </div>
               }
             </div>

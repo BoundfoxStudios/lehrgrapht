@@ -7,6 +7,23 @@ export interface MathFunction {
 
 export type MarkerNamingScheme = 'alphabetic' | 'numeric';
 
+export type LabelPosition =
+  | 'top left'
+  | 'top center'
+  | 'top right'
+  | 'middle left'
+  | 'middle right'
+  | 'bottom left'
+  | 'bottom center'
+  | 'bottom right'
+  | 'auto';
+
+export interface AreaPoint {
+  x: number;
+  y: number;
+  labelPosition: LabelPosition;
+}
+
 export interface PlotSettings {
   zeroLineWidth: number;
   zeroLineColor: string;
@@ -26,7 +43,7 @@ export interface Plot {
     text: string;
   }[];
   areas: {
-    points: { x: number; y: number }[];
+    points: AreaPoint[];
     color: string;
     showPoints: boolean;
   }[];

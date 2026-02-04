@@ -2,7 +2,7 @@ import * as mathjs from 'mathjs';
 import { EvalFunction, Matrix } from 'mathjs';
 import { inject, Injectable } from '@angular/core';
 import Plotly, { Annotations, PlotData } from 'plotly.js-dist-min';
-import { MathFunction, Plot, PlotSettings } from '../models/plot';
+import { AreaPoint, LabelPosition, MathFunction, Plot, PlotSettings } from '../models/plot';
 import { MarkerNamingService } from './marker-naming.service';
 import { modelIdPrefix } from './word/word.service';
 import { v7 } from 'uuid';
@@ -351,11 +351,20 @@ export class PlotService {
         })),
       );
 
-      const areaPointMarkers: { x: number; y: number; text: string }[] = [];
+      const areaPointMarkers: {
+        x: number;
+        y: number;
+        text: string;
+        textposition: Exclude<LabelPosition, 'auto'>;
+      }[] = [];
       let pointIndex = 0;
       for (const area of plot.areas) {
         if (area.showPoints) {
           for (const point of area.points) {
+            const position =
+              point.labelPosition && point.labelPosition !== 'auto'
+                ? point.labelPosition
+                : this.calculateLabelPosition(point, area.points);
             areaPointMarkers.push({
               x: point.x,
               y: point.y,
@@ -363,6 +372,7 @@ export class PlotService {
                 pointIndex,
                 plotSettings.markerNamingScheme,
               ),
+              textposition: position,
             });
             pointIndex++;
           }
@@ -370,25 +380,41 @@ export class PlotService {
       }
 
       if (areaPointMarkers.length) {
-        data.push({
-          type: 'scatter',
-          mode: 'text+markers',
-          x: areaPointMarkers.map(m => m.x),
-          y: areaPointMarkers.map(m => m.y),
-          text: areaPointMarkers.map(m => m.text),
-          marker: {
-            symbol: 'x-thin',
-            color: '#000000',
-            size: 10,
-            line: {
-              width: 1.5,
+        const groupedByPosition = new Map<
+          Exclude<LabelPosition, 'auto'>,
+          typeof areaPointMarkers
+        >();
+
+        for (const marker of areaPointMarkers) {
+          const existing = groupedByPosition.get(marker.textposition);
+          if (existing) {
+            existing.push(marker);
+          } else {
+            groupedByPosition.set(marker.textposition, [marker]);
+          }
+        }
+
+        for (const [position, markers] of groupedByPosition) {
+          data.push({
+            type: 'scatter',
+            mode: 'text+markers',
+            x: markers.map(m => m.x),
+            y: markers.map(m => m.y),
+            text: markers.map(m => m.text),
+            marker: {
+              symbol: 'x-thin',
+              color: '#000000',
+              size: 10,
+              line: {
+                width: 1.5,
+              },
             },
-          },
-          textfont: {
-            size: 12,
-          },
-          textposition: 'bottom left',
-        });
+            textfont: {
+              size: 12,
+            },
+            textposition: position,
+          });
+        }
       }
     }
 
@@ -570,5 +596,28 @@ export class PlotService {
     }
 
     return yValues;
+  }
+
+  private calculateLabelPosition(
+    point: AreaPoint,
+    polygonPoints: AreaPoint[],
+  ): Exclude<LabelPosition, 'auto'> {
+    const centroid = {
+      x: polygonPoints.reduce((sum, p) => sum + p.x, 0) / polygonPoints.length,
+      y: polygonPoints.reduce((sum, p) => sum + p.y, 0) / polygonPoints.length,
+    };
+
+    const dx = point.x - centroid.x;
+    const dy = point.y - centroid.y;
+    const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+
+    if (angle >= -22.5 && angle < 22.5) return 'middle right';
+    if (angle >= 22.5 && angle < 67.5) return 'top right';
+    if (angle >= 67.5 && angle < 112.5) return 'top center';
+    if (angle >= 112.5 && angle < 157.5) return 'top left';
+    if (angle >= 157.5 || angle < -157.5) return 'middle left';
+    if (angle >= -157.5 && angle < -112.5) return 'bottom left';
+    if (angle >= -112.5 && angle < -67.5) return 'bottom center';
+    return 'bottom right';
   }
 }
