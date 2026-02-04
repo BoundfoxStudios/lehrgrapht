@@ -83,7 +83,7 @@
               "projects/website/**/*.ts",
               "projects/website/**/*.html"
             ],
-            "eslintConfig": "projects/website/eslint.config.js"
+            "eslintConfig": "projects/website/eslint.config.mjs"
           }
         }
       }
@@ -168,7 +168,7 @@
               "projects/addin/**/*.ts",
               "projects/addin/**/*.html"
             ],
-            "eslintConfig": "projects/addin/eslint.config.js"
+            "eslintConfig": "projects/addin/eslint.config.mjs"
           }
         }
       }
