@@ -61,10 +61,12 @@ export class Settings {
       {
         fnx: 'x',
         color: '#3737d0',
+        showLegend: false,
       },
       {
         fnx: 'x^2-3',
         color: '#af2c2c',
+        showLegend: false,
       },
     ],
     markers: [],
@@ -77,6 +79,7 @@ export class Settings {
     automaticallyAdjustLimitsToValueRange: false,
     axisLabelX: 'x',
     axisLabelY: 'y',
+    showLegend: false,
   };
 
   protected readonly examplePlot2: Plot = {
@@ -96,10 +99,12 @@ export class Settings {
       {
         fnx: 'x',
         color: '#3737d0',
+        showLegend: false,
       },
       {
         fnx: 'x^2-3',
         color: '#af2c2c',
+        showLegend: false,
       },
     ],
     markers: [],
@@ -112,6 +117,7 @@ export class Settings {
     automaticallyAdjustLimitsToValueRange: false,
     axisLabelX: 'x',
     axisLabelY: 'y',
+    showLegend: false,
   };
 
   constructor() {
