@@ -52,9 +52,9 @@ The presence of `migrate-to-latest.ts` signals unreleased model changes. Its abs
 
 ## Testing
 
-Tests live in `projects/addin/src/app/models/migration.spec.ts`. Run with `npx ng test addin --no-watch`.
+Each migration script has a co-located spec file (e.g. `migrations/migrate-to-latest.spec.ts`). Run with `npx ng test addin --no-watch`.
 
-For each migrated field, write two tests:
+Tests call the migration function directly (not via `MigrationService`). For each migrated field, write two tests:
 
 - **Backfill test:** Input without the field results in the correct default value.
 - **Preserve test:** Input with an existing value keeps that value unchanged.
