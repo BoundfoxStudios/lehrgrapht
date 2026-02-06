@@ -94,11 +94,12 @@ const PLOT_CONSTANTS = {
   dtick: 0.5,
   mmPerTick: 5,
   mmMargin: { t: 7.5, b: 7.5, l: 7.5, r: 7.5 },
+  mmMarginLegendRight: 30,
 } as const;
 
 const devicePixelRatio = window.devicePixelRatio || 1;
 const effectiveDpi = 254 * devicePixelRatio;
-const scaleFactor = effectiveDpi / PLOT_CONSTANTS.ppiBase
+const scaleFactor = effectiveDpi / PLOT_CONSTANTS.ppiBase;
 
 @Injectable({ providedIn: 'root' })
 export class PlotService {
@@ -214,7 +215,11 @@ export class PlotService {
         : yValueRange / dtick,
     };
 
-    const marginTotal = (mmMargin.l + mmMargin.r + mmMargin.t + mmMargin.b) / 2;
+    const rightMargin = plot.showLegend
+      ? PLOT_CONSTANTS.mmMarginLegendRight
+      : mmMargin.r;
+    const marginTotal =
+      (mmMargin.l + rightMargin + mmMargin.t + mmMargin.b) / 2;
     const plotSizeMm = {
       width: tickSquares.x * mmPerTick + marginTotal,
       height: tickSquares.y * mmPerTick + marginTotal,
@@ -428,6 +433,8 @@ export class PlotService {
         type: 'scatter',
         x: xValuesArray,
         y,
+        name: `f(x) = ${plot.fnx[i].fnx}`,
+        showlegend: plot.showLegend && plot.fnx[i].showLegend,
         line: {
           color: plot.fnx[i].color,
           width: plotSettings.plotLineWidth,
@@ -582,14 +589,21 @@ export class PlotService {
     | PlotGenerateErrorCode
   > {
     const { dtick, mmMargin, mmToInches, ppiBase } = PLOT_CONSTANTS;
-    const { plotSizePx, plotSizePoints, xValueMin, xValueMax, yValueMin, yValueMax } = sizeCalc;
+    const {
+      plotSizePx,
+      plotSizePoints,
+      xValueMin,
+      xValueMax,
+      yValueMin,
+      yValueMax,
+    } = sizeCalc;
 
     try {
       const image = await Plotly.toImage(
         {
           layout: {
             autosize: false,
-            showlegend: false,
+            showlegend: plot.showLegend,
             width: plotSizePx.width,
             height: plotSizePx.height,
             annotations: !plot.showAxis
@@ -601,7 +615,19 @@ export class PlotService {
               t: mmMargin.t * mmToInches * ppiBase,
               b: mmMargin.b * mmToInches * ppiBase,
               l: mmMargin.l * mmToInches * ppiBase,
-              r: mmMargin.r * mmToInches * ppiBase,
+              r:
+                (plot.showLegend
+                  ? PLOT_CONSTANTS.mmMarginLegendRight
+                  : mmMargin.r) *
+                mmToInches *
+                ppiBase,
+            },
+            legend: {
+              x: 1.02,
+              xanchor: 'left',
+              y: 1,
+              yanchor: 'top',
+              font: { size: 10 },
             },
             xaxis: {
               range: [xValueMin, xValueMax],
@@ -684,7 +710,11 @@ export class PlotService {
       ? Math.max(xRange, yRange) / dtick
       : yRange / dtick;
 
-    const marginTotal = (mmMargin.l + mmMargin.r + mmMargin.t + mmMargin.b) / 2;
+    const rightMargin = plot.showLegend
+      ? PLOT_CONSTANTS.mmMarginLegendRight
+      : mmMargin.r;
+    const marginTotal =
+      (mmMargin.l + rightMargin + mmMargin.t + mmMargin.b) / 2;
     const width = tickSquaresX * mmPerTick + marginTotal;
     const height = tickSquaresY * mmPerTick + marginTotal;
 
