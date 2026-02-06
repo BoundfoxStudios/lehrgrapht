@@ -79,7 +79,6 @@ export class Settings {
     automaticallyAdjustLimitsToValueRange: false,
     axisLabelX: 'x',
     axisLabelY: 'y',
-    showLegend: false,
   };
 
   protected readonly examplePlot2: Plot = {
@@ -117,7 +116,6 @@ export class Settings {
     automaticallyAdjustLimitsToValueRange: false,
     axisLabelX: 'x',
     axisLabelY: 'y',
-    showLegend: false,
   };
 
   constructor() {

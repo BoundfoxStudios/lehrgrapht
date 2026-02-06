@@ -64,5 +64,4 @@ export interface Plot {
   automaticallyAdjustLimitsToValueRange: boolean;
   axisLabelX: string;
   axisLabelY: string;
-  showLegend: boolean;
 }

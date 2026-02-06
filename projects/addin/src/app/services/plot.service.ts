@@ -215,7 +215,8 @@ export class PlotService {
         : yValueRange / dtick,
     };
 
-    const rightMargin = plot.showLegend
+    const hasLegend = plot.fnx.some(fn => fn.showLegend);
+    const rightMargin = hasLegend
       ? PLOT_CONSTANTS.mmMarginLegendRight
       : mmMargin.r;
     const marginTotal =
@@ -433,8 +434,8 @@ export class PlotService {
         type: 'scatter',
         x: xValuesArray,
         y,
-        name: `f(x) = ${plot.fnx[i].fnx}`,
-        showlegend: plot.showLegend && plot.fnx[i].showLegend,
+        name: plot.fnx[i].fnx,
+        showlegend: plot.fnx[i].showLegend,
         line: {
           color: plot.fnx[i].color,
           width: plotSettings.plotLineWidth,
@@ -601,13 +602,14 @@ export class PlotService {
       yValueMin,
       yValueMax,
     } = sizeCalc;
+    const hasLegend = plot.fnx.some(fn => fn.showLegend);
 
     try {
       const image = await Plotly.toImage(
         {
           layout: {
             autosize: false,
-            showlegend: plot.showLegend,
+            showlegend: hasLegend,
             width: plotSizePx.width,
             height: plotSizePx.height,
             annotations: !plot.showAxis
@@ -620,9 +622,7 @@ export class PlotService {
               b: mmMargin.b * mmToInches * ppiBase,
               l: mmMargin.l * mmToInches * ppiBase,
               r:
-                (plot.showLegend
-                  ? PLOT_CONSTANTS.mmMarginLegendRight
-                  : mmMargin.r) *
+                (hasLegend ? PLOT_CONSTANTS.mmMarginLegendRight : mmMargin.r) *
                 mmToInches *
                 ppiBase,
             },
@@ -714,7 +714,8 @@ export class PlotService {
       ? Math.max(xRange, yRange) / dtick
       : yRange / dtick;
 
-    const rightMargin = plot.showLegend
+    const hasLegend = plot.fnx.some(fn => fn.showLegend);
+    const rightMargin = hasLegend
       ? PLOT_CONSTANTS.mmMarginLegendRight
       : mmMargin.r;
     const marginTotal =

@@ -14,7 +14,6 @@ export const migrateToLatest: Migration = {
     return {
       ...plot,
       fnx: migratedFnx,
-      showLegend: plot['showLegend'] ?? false,
     };
   },
 };
