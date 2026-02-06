@@ -162,6 +162,7 @@ export class WordForDesktopService extends WordService {
     return Word.run(async context => {
       let top: number | undefined;
       let left: number | undefined;
+      let restoreSelection: Word.Range | undefined;
 
       if (options.existingId) {
         const oldShape = await this.getShape(context, {
@@ -171,6 +172,11 @@ export class WordForDesktopService extends WordService {
         if (oldShape) {
           top = oldShape.top;
           left = oldShape.left;
+
+          restoreSelection = context.document.getSelection();
+          restoreSelection.track();
+          oldShape.select();
+          await context.sync();
 
           oldShape.delete();
         }
@@ -190,6 +196,12 @@ export class WordForDesktopService extends WordService {
         },
       );
       picture.altTextDescription = options.id;
+
+      if (restoreSelection) {
+        restoreSelection.select();
+        restoreSelection.untrack();
+      }
+
       await context.sync();
 
       await this.documentStorageService.setPlot(options.id, options.model);
