@@ -8,6 +8,7 @@ Any change to the `Plot` interface or its related types (`MathFunction`, `PlotRa
 
 1. **If `models/migrations/migrate-to-latest.ts` exists:** Update the migration function to also handle the new field changes.
 2. **If `models/migrations/migrate-to-latest.ts` does not exist:** Create it with a new migration function and register it in `models/migration.ts`.
+3. **Add tests** in `models/migration.spec.ts` that verify the migration correctly handles both missing fields (backfilled with defaults) and existing fields (preserved). Every new or changed field must have test coverage.
 
 Each migration file exports a `Migration` object:
 
@@ -48,6 +49,15 @@ Register it in `models/migration.ts` by importing and adding it to the `migratio
 4. **Next model change:** Create a new `migrate-to-latest.ts`.
 
 The presence of `migrate-to-latest.ts` signals unreleased model changes. Its absence means no pending migration.
+
+## Testing
+
+Tests live in `projects/addin/src/app/models/migration.spec.ts`. Run with `npx ng test addin --no-watch`.
+
+For each migrated field, write two tests:
+
+- **Backfill test:** Input without the field results in the correct default value.
+- **Preserve test:** Input with an existing value keeps that value unchanged.
 
 ## Key Files
 
