@@ -1,6 +1,11 @@
 import { inject, Injectable } from '@angular/core';
 import { Plot } from '../../models/plot';
-import { PlotGenerationSettings, WordPlot, WordService } from './word.service';
+import {
+  modelIdPrefix,
+  PlotGenerationSettings,
+  WordPlot,
+  WordService,
+} from './word.service';
 import { DocumentStorageService } from '../document-storage.service';
 import { plotHasErrorCode, PlotService } from '../plot.service';
 import { PlotSettingsService } from '../plot-settings.service';
@@ -17,36 +22,42 @@ export class WordForDesktopService extends WordService {
 
   override async list(): Promise<WordPlot[]> {
     return Word.run(async context => {
-      const shapes = await this.getShapes(context);
+      const shapes = context.document.body.shapes.load('items');
+      const plotModels =
+        await this.documentStorageService.loadAllPlotsFromContext(
+          context,
+          modelIdPrefix,
+        );
 
       const result: WordPlot[] = [];
-
       for (const shape of shapes.items) {
-        const plot = await this.get(shape.altTextDescription);
-        if (!plot) {
-          continue;
+        const model = plotModels.get(shape.altTextDescription);
+        if (model) {
+          result.push({ id: shape.altTextDescription, model });
         }
-
-        result.push(plot);
       }
-
       return result;
     });
   }
 
   override listRaw(): Promise<(WordPlot | { id: string })[]> {
     return Word.run(async context => {
-      const shapes = await this.getShapes(context);
-
-      const list = await this.list();
+      const shapes = context.document.body.shapes.load('items');
+      const plotModels =
+        await this.documentStorageService.loadAllPlotsFromContext(
+          context,
+          modelIdPrefix,
+        );
 
       const result: (WordPlot | { id: string })[] = [];
-
       for (const shape of shapes.items) {
-        const item = list.find(plot => plot.id === shape.altTextDescription);
-        result.push(item ?? { id: shape.altTextDescription });
+        const model = plotModels.get(shape.altTextDescription);
+        result.push(
+          model
+            ? { id: shape.altTextDescription, model }
+            : { id: shape.altTextDescription },
+        );
       }
-
       return result;
     });
   }

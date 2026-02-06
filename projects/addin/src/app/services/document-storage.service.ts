@@ -64,6 +64,45 @@ export class DocumentStorageService {
     });
   }
 
+  async loadAllPlotsFromContext(
+    context: Word.RequestContext,
+    plotIdPrefix: string,
+  ): Promise<Map<string, Plot>> {
+    const settings = context.document.settings.load();
+    await context.sync();
+
+    const plotMap = new Map<string, Plot>();
+    const migratedEntries: { key: string; plot: Plot }[] = [];
+    const fullPrefix = `${idKeyPrefix}${plotIdPrefix}`;
+
+    for (const setting of settings.items) {
+      if (!setting.key.startsWith(fullPrefix)) {
+        continue;
+      }
+
+      const id = setting.key.substring(idKeyPrefix.length);
+      const raw = setting.value as Record<string, unknown>;
+      const { plot, wasMigrated } = this.migrationService.migrate(raw);
+      plotMap.set(id, plot);
+
+      if (wasMigrated) {
+        migratedEntries.push({ key: setting.key, plot });
+      }
+    }
+
+    if (migratedEntries.length > 0) {
+      for (const { key, plot } of migratedEntries) {
+        context.document.settings.add(key, {
+          ...plot,
+          version: lehrgraphtVersion,
+        });
+      }
+      await context.sync();
+    }
+
+    return plotMap;
+  }
+
   async getPlot(id: string): Promise<Plot | undefined> {
     const raw = await this.get<Record<string, unknown>>(id);
     if (!raw) {

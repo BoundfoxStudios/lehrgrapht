@@ -1,5 +1,10 @@
 import { Plot } from '../../models/plot';
-import { PlotGenerationSettings, WordPlot, WordService } from './word.service';
+import {
+  modelIdPrefix,
+  PlotGenerationSettings,
+  WordPlot,
+  WordService,
+} from './word.service';
 import { inject, Injectable } from '@angular/core';
 import { DocumentStorageService } from '../document-storage.service';
 import { plotHasErrorCode, PlotService } from '../plot.service';
@@ -17,35 +22,42 @@ export class WordForWebService extends WordService {
 
   override list(): Promise<WordPlot[]> {
     return Word.run(async context => {
-      const images = await this.getImages(context);
+      const images = context.document.body.inlinePictures.load('items');
+      const plotModels =
+        await this.documentStorageService.loadAllPlotsFromContext(
+          context,
+          modelIdPrefix,
+        );
 
       const result: WordPlot[] = [];
-
       for (const image of images.items) {
-        const plot = await this.get(image.altTextDescription);
-
-        if (!plot) {
-          continue;
+        const model = plotModels.get(image.altTextDescription);
+        if (model) {
+          result.push({ id: image.altTextDescription, model });
         }
-
-        result.push(plot);
       }
-
       return result;
     });
   }
 
   override listRaw(): Promise<(WordPlot | { id: string })[]> {
     return Word.run(async context => {
-      const images = await this.getImages(context);
+      const images = context.document.body.inlinePictures.load('items');
+      const plotModels =
+        await this.documentStorageService.loadAllPlotsFromContext(
+          context,
+          modelIdPrefix,
+        );
 
       const result: (WordPlot | { id: string })[] = [];
-
       for (const image of images.items) {
-        const plot = await this.get(image.altTextDescription);
-        result.push(plot ?? { id: image.altTextDescription });
+        const model = plotModels.get(image.altTextDescription);
+        result.push(
+          model
+            ? { id: image.altTextDescription, model }
+            : { id: image.altTextDescription },
+        );
       }
-
       return result;
     });
   }
