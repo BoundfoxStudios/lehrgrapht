@@ -274,18 +274,10 @@
                 >Funktion {{ index + 1 }}</span
               >
               <div class="flex items-center gap-2">
-                <label
-                  class="flex cursor-pointer items-center gap-1 text-xs text-gray-500"
-                  [for]="'fnx-legend-' + index"
-                >
-                  <input
-                    class="h-4 w-4 cursor-pointer rounded border-gray-300"
-                    [field]="control.showLegend"
-                    [id]="'fnx-legend-' + index"
-                    type="checkbox"
-                  />
-                  Legende
-                </label>
+                <lg-dropdown
+                  [field]="control.legendPosition"
+                  [options]="legendPositionOptions"
+                />
                 <input
                   class="h-7 w-7 cursor-pointer rounded border-none"
                   [field]="control.color"

@@ -61,12 +61,12 @@ export class Settings {
       {
         fnx: 'x',
         color: '#3737d0',
-        showLegend: false,
+        legendPosition: 'none',
       },
       {
         fnx: 'x^2-3',
         color: '#af2c2c',
-        showLegend: false,
+        legendPosition: 'none',
       },
     ],
     markers: [],
@@ -98,12 +98,12 @@ export class Settings {
       {
         fnx: 'x',
         color: '#3737d0',
-        showLegend: false,
+        legendPosition: 'none',
       },
       {
         fnx: 'x^2-3',
         color: '#af2c2c',
-        showLegend: false,
+        legendPosition: 'none',
       },
     ],
     markers: [],

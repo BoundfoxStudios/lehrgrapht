@@ -1,9 +1,11 @@
 import { PlotRange } from './plot-range';
 
+export type FunctionLegendPosition = 'none' | 'start' | 'end';
+
 export interface MathFunction {
   fnx: string;
   color: string;
-  showLegend: boolean;
+  legendPosition: FunctionLegendPosition;
 }
 
 export type MarkerNamingScheme = 'alphabetic' | 'numeric';
