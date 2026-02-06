@@ -1,7 +1,7 @@
-import { migrateToLatest } from './migrate-to-latest';
+import { migrateTo141 } from './migrate-to-1.4.1';
 
-describe('migrate-to-latest', () => {
-  const migrate = migrateToLatest.migrate;
+describe('migrate-to-1.4.1', () => {
+  const migrate = migrateTo141.migrate;
 
   it('should backfill axisLabelX and axisLabelY', () => {
     const result = migrate({ areas: [] });

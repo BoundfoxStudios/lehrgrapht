@@ -1,7 +1,7 @@
 import { Migration } from '../migration';
 
-export const migrateToLatest: Migration = {
-  version: 'latest',
+export const migrateTo141: Migration = {
+  version: '1.4.1',
   migrate: (plot: Record<string, unknown>): Record<string, unknown> => {
     const areas = plot['areas'] as Record<string, unknown>[] | undefined;
 

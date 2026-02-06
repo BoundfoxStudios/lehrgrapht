@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Plot } from './plot';
 import { lehrgraphtVersion } from '../../version';
-import { migrateToLatest } from './migrations/migrate-to-latest';
+import { migrateTo141 } from './migrations/migrate-to-1.4.1';
 
 export type MigrationFn = (
   plot: Record<string, unknown>,
@@ -20,7 +20,7 @@ const DEV_VERSION = '0.0.0';
  * All registered migrations, ordered by version.
  * Migrations with version "latest" are applied last.
  */
-const migrations: Migration[] = [migrateToLatest];
+const migrations: Migration[] = [migrateTo141];
 
 export interface MigrationResult {
   plot: Plot;
