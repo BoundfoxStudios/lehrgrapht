@@ -25,7 +25,7 @@ import {
   faTrashCan,
 } from '@fortawesome/free-solid-svg-icons';
 import { MathDisplay } from '../math-display/math-display';
-import { Plot, PlotSettings } from '../../models/plot';
+import { FunctionLegendPosition, Plot, PlotSettings } from '../../models/plot';
 import { lehrgraphtVersion } from '../../../version';
 import { MarkerNamingService } from '../../services/marker-naming.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -114,6 +114,13 @@ export class PlotEditor {
     { value: 'bottom right', label: 'Unten rechts' },
   ];
 
+  protected readonly legendPositionOptions: DropdownOption<FunctionLegendPosition>[] =
+    [
+      { value: 'none', label: 'Keine' },
+      { value: 'start', label: 'Anfang' },
+      { value: 'end', label: 'Ende' },
+    ];
+
   private readonly plotService = inject(PlotService);
   protected readonly markerNamingService = inject(MarkerNamingService);
   private readonly plotSettingsService = inject(PlotSettingsService);
@@ -155,7 +162,7 @@ export class PlotEditor {
       {
         fnx: 'x',
         color: colors[0],
-        showLegend: false,
+        legendPosition: 'none',
       },
     ],
     markers: [],
@@ -249,7 +256,7 @@ export class PlotEditor {
           {
             fnx: fnxString,
             color: colors[fnx.length % colors.length],
-            showLegend: false,
+            legendPosition: 'none',
           },
         ];
       }
@@ -355,7 +362,7 @@ export class PlotEditor {
         {
           fnx: 'x',
           color: colors[model.fnx.length % colors.length],
-          showLegend: false,
+          legendPosition: 'none',
         },
       ],
     }));
@@ -635,7 +642,7 @@ export class PlotEditor {
                 {
                   fnx: fnxString,
                   color: colors[model.fnx.length % colors.length],
-                  showLegend: false,
+                  legendPosition: 'none',
                 },
               ],
             }));

@@ -94,7 +94,6 @@ const PLOT_CONSTANTS = {
   dtick: 0.5,
   mmPerTick: 5,
   mmMargin: { t: 7.5, b: 7.5, l: 7.5, r: 7.5 },
-  mmMarginLegendRight: 30,
 } as const;
 
 const devicePixelRatio = window.devicePixelRatio || 1;
@@ -133,6 +132,12 @@ export class PlotService {
     const cleanedValues = this.cleanUpValues(yValues, valueRanges, plot);
     const sizeCalc = this.calculatePlotSize(plot, cleanedValues, valueRanges);
     const annotations = this.buildAnnotations(plot, plotSettings);
+    const functionLabels = this.buildFunctionLabels(
+      plot,
+      cleanedValues.xValuesArray,
+      cleanedValues.yValuesArray,
+    );
+    annotations.push(...functionLabels);
     const arrows = this.buildArrows(
       plot,
       plotSettings,
@@ -215,12 +220,7 @@ export class PlotService {
         : yValueRange / dtick,
     };
 
-    const hasLegend = plot.fnx.some(fn => fn.showLegend);
-    const rightMargin = hasLegend
-      ? PLOT_CONSTANTS.mmMarginLegendRight
-      : mmMargin.r;
-    const marginTotal =
-      (mmMargin.l + rightMargin + mmMargin.t + mmMargin.b) / 2;
+    const marginTotal = (mmMargin.l + mmMargin.r + mmMargin.t + mmMargin.b) / 2;
     const plotSizeMm = {
       width: tickSquares.x * mmPerTick + marginTotal,
       height: tickSquares.y * mmPerTick + marginTotal,
@@ -404,6 +404,44 @@ export class PlotService {
     return arrows;
   }
 
+  private buildFunctionLabels(
+    plot: Plot,
+    xValuesArray: number[],
+    yValuesArray: number[][],
+  ): Partial<Annotations>[] {
+    const labels: Partial<Annotations>[] = [];
+
+    for (let i = 0; i < plot.fnx.length; i++) {
+      const fn = plot.fnx[i];
+      if (fn.legendPosition === 'none') continue;
+
+      const yValues = yValuesArray[i];
+      if (yValues.length === 0) continue;
+
+      const isStart = fn.legendPosition === 'start';
+      const index = isStart ? 0 : xValuesArray.length - 1;
+      const x = xValuesArray[index];
+      const y = yValues[index];
+
+      if (!Number.isFinite(y)) continue;
+
+      labels.push({
+        x,
+        y,
+        text: `f(x) = ${fn.fnx}`,
+        showarrow: false,
+        xref: 'x',
+        yref: 'y',
+        xanchor: isStart ? 'right' : 'left',
+        yanchor: 'bottom',
+        xshift: isStart ? -5 : 5,
+        font: { size: 10, color: fn.color },
+      });
+    }
+
+    return labels;
+  }
+
   private buildPlotData(
     plot: Plot,
     plotSettings: PlotSettings,
@@ -434,8 +472,6 @@ export class PlotService {
         type: 'scatter',
         x: xValuesArray,
         y,
-        name: plot.fnx[i].fnx,
-        showlegend: plot.fnx[i].showLegend,
         line: {
           color: plot.fnx[i].color,
           width: plotSettings.plotLineWidth,
@@ -602,14 +638,13 @@ export class PlotService {
       yValueMin,
       yValueMax,
     } = sizeCalc;
-    const hasLegend = plot.fnx.some(fn => fn.showLegend);
 
     try {
       const image = await Plotly.toImage(
         {
           layout: {
             autosize: false,
-            showlegend: hasLegend,
+            showlegend: false,
             width: plotSizePx.width,
             height: plotSizePx.height,
             annotations: !plot.showAxis
@@ -621,17 +656,7 @@ export class PlotService {
               t: mmMargin.t * mmToInches * ppiBase,
               b: mmMargin.b * mmToInches * ppiBase,
               l: mmMargin.l * mmToInches * ppiBase,
-              r:
-                (hasLegend ? PLOT_CONSTANTS.mmMarginLegendRight : mmMargin.r) *
-                mmToInches *
-                ppiBase,
-            },
-            legend: {
-              x: 1.02,
-              xanchor: 'left',
-              y: 1,
-              yanchor: 'top',
-              font: { size: 10 },
+              r: mmMargin.r * mmToInches * ppiBase,
             },
             xaxis: {
               range: [xValueMin, xValueMax],
@@ -714,12 +739,7 @@ export class PlotService {
       ? Math.max(xRange, yRange) / dtick
       : yRange / dtick;
 
-    const hasLegend = plot.fnx.some(fn => fn.showLegend);
-    const rightMargin = hasLegend
-      ? PLOT_CONSTANTS.mmMarginLegendRight
-      : mmMargin.r;
-    const marginTotal =
-      (mmMargin.l + rightMargin + mmMargin.t + mmMargin.b) / 2;
+    const marginTotal = (mmMargin.l + mmMargin.r + mmMargin.t + mmMargin.b) / 2;
     const width = tickSquaresX * mmPerTick + marginTotal;
     const height = tickSquaresY * mmPerTick + marginTotal;
 

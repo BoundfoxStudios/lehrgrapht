@@ -8,7 +8,7 @@ export const migrateToLatest: Migration = {
 
     const migratedFnx = (fnx ?? []).map(fn => ({
       ...fn,
-      showLegend: fn['showLegend'] ?? false,
+      legendPosition: fn['legendPosition'] ?? 'none',
     }));
 
     return {
