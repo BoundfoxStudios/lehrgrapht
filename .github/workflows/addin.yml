@@ -41,6 +41,7 @@ jobs:
       - run: npm run build
         env:
           BASE_HREF: /addin/${{steps.version.outputs.value}}/
+      - run: npx ng test addin --no-watch
       - run: npm run prepare-deployment
         env:
           APP_VERSION: ${{ steps.version.outputs.value }}
