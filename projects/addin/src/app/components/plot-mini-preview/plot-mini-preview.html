@@ -1,0 +1,9 @@
+@if (preview$ | async; as result) {
+  @if (!isError(result)) {
+    <img
+      class="max-h-10 rounded border border-gray-200"
+      [src]="result.base64"
+      alt="Plot-Vorschau"
+    />
+  }
+}

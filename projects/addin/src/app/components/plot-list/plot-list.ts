@@ -13,10 +13,17 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { ContentContainer } from '../content-container/content-container';
 import { WordPlot, WordService } from '../../services/word/word.service';
+import { PlotMiniPreview } from '../plot-mini-preview/plot-mini-preview';
 
 @Component({
   selector: 'lg-plot-list',
-  imports: [RouterLink, Header, FaIconComponent, ContentContainer],
+  imports: [
+    RouterLink,
+    Header,
+    FaIconComponent,
+    ContentContainer,
+    PlotMiniPreview,
+  ],
   templateUrl: './plot-list.html',
   styleUrl: './plot-list.css',
 })

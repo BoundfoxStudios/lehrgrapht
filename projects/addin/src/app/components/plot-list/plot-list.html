@@ -78,9 +78,12 @@
       >
         <div class="flex items-center gap-2">
           <button
-            class="flex-1 text-left transition-colors duration-150"
+            class="flex flex-1 items-center gap-2 text-left transition-colors duration-150"
             (click)="select(plot.id)"
           >
+            @if (plot.model) {
+              <lg-plot-mini-preview [plot]="plot.model" />
+            }
             <h3
               class="font-semibold"
               [class.text-brand-strong]="isSelected"
