@@ -155,6 +155,7 @@ export class PlotEditor {
       {
         fnx: 'x',
         color: colors[0],
+        showLegend: false,
       },
     ],
     markers: [],
@@ -167,6 +168,7 @@ export class PlotEditor {
     automaticallyAdjustLimitsToValueRange: false,
     axisLabelX: 'x',
     axisLabelY: 'y',
+    showLegend: false,
   });
 
   protected readonly squareCount = computed(
@@ -248,6 +250,7 @@ export class PlotEditor {
           {
             fnx: fnxString,
             color: colors[fnx.length % colors.length],
+            showLegend: false,
           },
         ];
       }
@@ -350,7 +353,11 @@ export class PlotEditor {
       ...model,
       fnx: [
         ...model.fnx,
-        { fnx: 'x', color: colors[model.fnx.length % colors.length] },
+        {
+          fnx: 'x',
+          color: colors[model.fnx.length % colors.length],
+          showLegend: false,
+        },
       ],
     }));
   }
@@ -629,6 +636,7 @@ export class PlotEditor {
                 {
                   fnx: fnxString,
                   color: colors[model.fnx.length % colors.length],
+                  showLegend: false,
                 },
               ],
             }));
