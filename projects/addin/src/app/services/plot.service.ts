@@ -145,14 +145,6 @@ export class PlotService {
       margin,
     );
     const annotations = this.buildAnnotations(plot, plotSettings);
-    const functionLabels = this.buildFunctionLabels(
-      plot,
-      cleanedValues.xValuesArray,
-      cleanedValues.yValuesArray,
-      sizeCalc.yValueMin,
-      sizeCalc.yValueMax,
-    );
-    annotations.push(...functionLabels);
     const arrows = this.buildArrows(
       plot,
       plotSettings,
@@ -166,7 +158,7 @@ export class PlotService {
       cleanedValues.yValuesArray,
     );
 
-    return this.renderPlot(
+    const result = await this.renderPlot(
       plot,
       plotSettings,
       sizeCalc,
@@ -176,6 +168,22 @@ export class PlotService {
       data,
       options.applyScaleFactor,
     );
+
+    if (plotHasErrorCode(result)) {
+      return result;
+    }
+
+    const composited = await this.compositeFunctionLabels(
+      result.base64,
+      plot,
+      cleanedValues.xValuesArray,
+      cleanedValues.yValuesArray,
+      sizeCalc,
+      margin,
+      options.applyScaleFactor,
+    );
+
+    return { ...result, base64: composited };
   }
 
   private cleanUpValues(
@@ -420,14 +428,102 @@ export class PlotService {
     return arrows;
   }
 
-  private buildFunctionLabels(
+  private async compositeFunctionLabels(
+    plotBase64: string,
     plot: Plot,
     xValuesArray: number[],
     yValuesArray: number[][],
-    visibleYMin: number,
-    visibleYMax: number,
-  ): Partial<Annotations>[] {
-    const labels: Partial<Annotations>[] = [];
+    sizeCalc: PlotSizeCalculation,
+    margin: PlotMarginMm,
+    applyScaleFactor: boolean,
+  ): Promise<string> {
+    if (typeof MathJax === 'undefined') return plotBase64;
+
+    const labels = this.collectFunctionLabels(
+      plot,
+      xValuesArray,
+      yValuesArray,
+      sizeCalc,
+    );
+    if (labels.length === 0) return plotBase64;
+
+    const plotImg = await this.loadImage(plotBase64);
+    const canvas = document.createElement('canvas');
+    canvas.width = plotImg.naturalWidth;
+    canvas.height = plotImg.naturalHeight;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return plotBase64;
+
+    ctx.drawImage(plotImg, 0, 0);
+
+    const scale = applyScaleFactor ? scaleFactor : 1;
+    const { mmToInches, ppiBase } = PLOT_CONSTANTS;
+    const marginLPx = margin.l * mmToInches * ppiBase * scale;
+    const marginTPx = margin.t * mmToInches * ppiBase * scale;
+    const plotAreaW =
+      canvas.width - (margin.l + margin.r) * mmToInches * ppiBase * scale;
+    const plotAreaH =
+      canvas.height - (margin.t + margin.b) * mmToInches * ppiBase * scale;
+    const dataRangeX = sizeCalc.xValueMax - sizeCalc.xValueMin;
+    const dataRangeY = sizeCalc.yValueMax - sizeCalc.yValueMin;
+
+    const gapPx = 5 * scale;
+
+    for (const label of labels) {
+      const mathSvg = this.renderMathSvgElement(label.expression, label.color);
+      if (!mathSvg) continue;
+
+      const labelImg = await this.svgElementToImage(mathSvg.svg, scale);
+      if (!labelImg) continue;
+
+      // Convert data coordinates to canvas pixel coordinates
+      const canvasX =
+        marginLPx + ((label.x - sizeCalc.xValueMin) / dataRangeX) * plotAreaW;
+      const canvasY =
+        marginTPx + ((sizeCalc.yValueMax - label.y) / dataRangeY) * plotAreaH;
+
+      let drawX: number;
+      if (label.isStart) {
+        drawX = canvasX - gapPx - labelImg.width;
+      } else {
+        drawX = canvasX + gapPx;
+      }
+
+      let drawY: number;
+      if (label.isTop) {
+        drawY = canvasY - gapPx - labelImg.height;
+      } else {
+        drawY = canvasY + gapPx;
+      }
+
+      ctx.drawImage(labelImg, drawX, drawY);
+    }
+
+    return canvas.toDataURL('image/png');
+  }
+
+  private collectFunctionLabels(
+    plot: Plot,
+    xValuesArray: number[],
+    yValuesArray: number[][],
+    sizeCalc: PlotSizeCalculation,
+  ): {
+    expression: string;
+    color: string;
+    x: number;
+    y: number;
+    isStart: boolean;
+    isTop: boolean;
+  }[] {
+    const labels: {
+      expression: string;
+      color: string;
+      x: number;
+      y: number;
+      isStart: boolean;
+      isTop: boolean;
+    }[] = [];
+    const yMid = (sizeCalc.yValueMin + sizeCalc.yValueMax) / 2;
 
     for (let i = 0; i < plot.fnx.length; i++) {
       const fn = plot.fnx[i];
@@ -440,27 +536,19 @@ export class PlotService {
       const pos = this.findLabelPosition(
         xValuesArray,
         yValues,
-        visibleYMin,
-        visibleYMax,
+        sizeCalc.yValueMin,
+        sizeCalc.yValueMax,
         isStart,
       );
       if (!pos) continue;
 
-      const yMid = (visibleYMin + visibleYMax) / 2;
-      const isTop = pos.y >= yMid;
-
       labels.push({
+        expression: fn.fnx,
+        color: fn.color,
         x: pos.x,
         y: pos.y,
-        text: fn.fnx,
-        showarrow: false,
-        xref: 'x',
-        yref: 'y',
-        xanchor: isStart ? 'right' : 'left',
-        yanchor: isTop ? 'bottom' : 'top',
-        xshift: isStart ? -5 : 5,
-        yshift: isTop ? 2.5 : -2.5,
-        font: { size: 10, color: fn.color },
+        isStart,
+        isTop: pos.y >= yMid,
       });
     }
 
@@ -716,73 +804,78 @@ export class PlotService {
       yValueMax,
     } = sizeCalc;
 
+    const tempDiv = document.createElement('div');
+    tempDiv.style.cssText = 'position:absolute;visibility:hidden';
+    document.body.appendChild(tempDiv);
+
     try {
-      const image = await Plotly.toImage(
+      await Plotly.newPlot(
+        tempDiv,
+        data,
         {
-          layout: {
-            autosize: false,
-            showlegend: false,
-            width: plotSizePx.width,
-            height: plotSizePx.height,
-            annotations: !plot.showAxis
-              ? undefined
-              : plot.showAxisLabels && plot.placeAxisLabelsInside
-                ? [...annotations, ...arrows]
-                : arrows,
-            margin: {
-              t: margin.t * mmToInches * ppiBase,
-              b: margin.b * mmToInches * ppiBase,
-              l: margin.l * mmToInches * ppiBase,
-              r: margin.r * mmToInches * ppiBase,
-            },
-            xaxis: {
-              range: [xValueMin, xValueMax],
-              autorange: false,
-              showticklabels:
-                plot.showAxisLabels && !plot.placeAxisLabelsInside,
-              tickmode: 'linear',
-              dtick,
-              scaleanchor: 'y',
-              ticklabelstep: 2,
-              gridcolor: plotSettings.gridLineColor,
-              gridwidth: plotSettings.gridLineWidth,
-              tickfont: { size: 10 },
-              zeroline: plot.showAxis,
-              zerolinewidth: plotSettings.zeroLineWidth,
-              zerolinecolor: plotSettings.zeroLineColor,
-              linewidth: plotSettings.gridLineWidth,
-              linecolor: plotSettings.gridLineColor,
-              mirror: true,
-            },
-            yaxis: {
-              range: [yValueMin, yValueMax],
-              autorange: false,
-              tickmode: 'linear',
-              showticklabels:
-                plot.showAxisLabels && !plot.placeAxisLabelsInside,
-              dtick,
-              ticklabelstep: 2,
-              gridcolor: plotSettings.gridLineColor,
-              gridwidth: plotSettings.gridLineWidth,
-              tickfont: { size: 10 },
-              zeroline: plot.showAxis,
-              zerolinewidth: plotSettings.zeroLineWidth,
-              zerolinecolor: plotSettings.zeroLineColor,
-              linewidth: plotSettings.gridLineWidth,
-              linecolor: plotSettings.gridLineColor,
-              mirror: true,
-            },
-          },
-          config: { staticPlot: true },
-          data,
-        },
-        {
-          format: 'png',
+          autosize: false,
+          showlegend: false,
           width: plotSizePx.width,
           height: plotSizePx.height,
-          scale: applyScaleFactor ? scaleFactor : undefined,
+          annotations: !plot.showAxis
+            ? undefined
+            : plot.showAxisLabels && plot.placeAxisLabelsInside
+              ? [...annotations, ...arrows]
+              : arrows,
+          margin: {
+            t: margin.t * mmToInches * ppiBase,
+            b: margin.b * mmToInches * ppiBase,
+            l: margin.l * mmToInches * ppiBase,
+            r: margin.r * mmToInches * ppiBase,
+          },
+          xaxis: {
+            range: [xValueMin, xValueMax],
+            autorange: false,
+            showticklabels: plot.showAxisLabels && !plot.placeAxisLabelsInside,
+            tickmode: 'linear',
+            dtick,
+            scaleanchor: 'y',
+            ticklabelstep: 2,
+            gridcolor: plotSettings.gridLineColor,
+            gridwidth: plotSettings.gridLineWidth,
+            tickfont: { size: 10 },
+            zeroline: plot.showAxis,
+            zerolinewidth: plotSettings.zeroLineWidth,
+            zerolinecolor: plotSettings.zeroLineColor,
+            linewidth: plotSettings.gridLineWidth,
+            linecolor: plotSettings.gridLineColor,
+            mirror: true,
+          },
+          yaxis: {
+            range: [yValueMin, yValueMax],
+            autorange: false,
+            tickmode: 'linear',
+            showticklabels: plot.showAxisLabels && !plot.placeAxisLabelsInside,
+            dtick,
+            ticklabelstep: 2,
+            gridcolor: plotSettings.gridLineColor,
+            gridwidth: plotSettings.gridLineWidth,
+            tickfont: { size: 10 },
+            zeroline: plot.showAxis,
+            zerolinewidth: plotSettings.zeroLineWidth,
+            zerolinecolor: plotSettings.zeroLineColor,
+            linewidth: plotSettings.gridLineWidth,
+            linecolor: plotSettings.gridLineColor,
+            mirror: true,
+          },
         },
+        { staticPlot: true },
       );
+
+      const image = await Plotly.toImage(tempDiv, {
+        format: 'png',
+        width: plotSizePx.width,
+        height: plotSizePx.height,
+        scale: applyScaleFactor ? scaleFactor : undefined,
+      });
+
+      Plotly.purge(tempDiv);
+      document.body.removeChild(tempDiv);
 
       return {
         base64: image,
@@ -792,6 +885,8 @@ export class PlotService {
         heightInPoints: plotSizePoints.height,
       };
     } catch {
+      Plotly.purge(tempDiv);
+      document.body.removeChild(tempDiv);
       return PlotGenerateErrorCode.plot;
     }
   }
@@ -860,6 +955,140 @@ export class PlotService {
       l: base.l + extraLeft,
       r: base.r + extraRight,
     };
+  }
+
+  private renderMathSvgElement(
+    expression: string,
+    color: string,
+  ): { svg: SVGSVGElement; widthPx: number; heightPx: number } | undefined {
+    try {
+      const node = mathjs.parse(expression);
+      if (node.type === 'ConstantNode') return undefined;
+      const tex = node.toTex({ parenthesis: 'keep' });
+
+      const container = MathJax.tex2svg(tex) as Element;
+      const tempDiv = document.createElement('div');
+      tempDiv.style.cssText =
+        'position:absolute;visibility:hidden;font-size:10px';
+      tempDiv.appendChild(container);
+      document.body.appendChild(tempDiv);
+
+      const svg = tempDiv.querySelector('svg');
+      if (!svg) {
+        document.body.removeChild(tempDiv);
+        return undefined;
+      }
+
+      const rect = svg.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) {
+        document.body.removeChild(tempDiv);
+        return undefined;
+      }
+
+      // Set the fill color directly on the SVG while it's still in the DOM
+      svg.style.color = color;
+
+      return { svg, widthPx: rect.width, heightPx: rect.height };
+    } catch {
+      return undefined;
+    }
+  }
+
+  private async svgElementToImage(
+    svg: SVGSVGElement,
+    scale: number,
+  ): Promise<HTMLImageElement | undefined> {
+    const tempDiv = svg.closest('div');
+
+    try {
+      const widthPx = svg.getBoundingClientRect().width;
+      const heightPx = svg.getBoundingClientRect().height;
+      const canvasWidth = Math.ceil(widthPx * scale);
+      const canvasHeight = Math.ceil(heightPx * scale);
+
+      // Use XMLSerializer on the live DOM SVG (references still resolvable)
+      // We need to inline external defs before serializing
+      const svgClone = svg.cloneNode(true) as SVGSVGElement;
+      svgClone.setAttribute('width', `${widthPx}`);
+      svgClone.setAttribute('height', `${heightPx}`);
+      if (!svgClone.hasAttribute('xmlns')) {
+        svgClone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+      }
+      this.inlineSvgDefs(svgClone);
+
+      let svgString = new XMLSerializer().serializeToString(svgClone);
+      svgString = svgString.replace(/currentColor/g, svg.style.color);
+
+      const blob = new Blob([svgString], { type: 'image/svg+xml' });
+      const url = URL.createObjectURL(blob);
+
+      try {
+        const img = await this.loadImage(url);
+
+        // Rasterize to canvas at the desired scale
+        const canvas = document.createElement('canvas');
+        canvas.width = canvasWidth;
+        canvas.height = canvasHeight;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return undefined;
+        ctx.drawImage(img, 0, 0, canvasWidth, canvasHeight);
+
+        // Convert canvas to a new image
+        const pngUrl = canvas.toDataURL('image/png');
+        return await this.loadImage(pngUrl);
+      } finally {
+        URL.revokeObjectURL(url);
+      }
+    } catch {
+      return undefined;
+    } finally {
+      if (tempDiv) {
+        document.body.removeChild(tempDiv);
+      }
+    }
+  }
+
+  private loadImage(src: string): Promise<HTMLImageElement> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = (): void => {
+        resolve(img);
+      };
+      img.onerror = (): void => {
+        reject(new Error(`Failed to load image: ${src.substring(0, 100)}`));
+      };
+      img.src = src;
+    });
+  }
+
+  private inlineSvgDefs(svgClone: SVGElement): void {
+    const uses = svgClone.querySelectorAll('use');
+    if (uses.length === 0) return;
+
+    let defs = svgClone.querySelector('defs');
+    if (!defs) {
+      defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+      svgClone.insertBefore(defs, svgClone.firstChild);
+    }
+
+    const inlinedIds = new Set<string>();
+    for (const use of Array.from(uses)) {
+      const href = use.getAttribute('href') ?? use.getAttribute('xlink:href');
+      if (!href?.startsWith('#')) continue;
+
+      const id = href.substring(1);
+      if (inlinedIds.has(id)) continue;
+      if (svgClone.querySelector(`[id="${id}"]`)) {
+        inlinedIds.add(id);
+        continue;
+      }
+
+      const referencedEl = document.getElementById(id);
+      if (referencedEl) {
+        defs.appendChild(referencedEl.cloneNode(true));
+        inlinedIds.add(id);
+      }
+    }
   }
 
   private createRanges(plot: Plot): ValueRanges {
