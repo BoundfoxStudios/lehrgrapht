@@ -9,7 +9,11 @@ import {
 import { Header } from '../header/header';
 import { Field, form, SchemaPath, validate } from '@angular/forms/signals';
 import { PlotClickEvent, PlotPreview } from '../plot-preview/plot-preview';
-import { plotHasErrorCode, PlotService, PlotSizeMm } from '../../services/plot.service';
+import {
+  plotHasErrorCode,
+  PlotService,
+  PlotSizeMm,
+} from '../../services/plot.service';
 import { DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ContentContainer } from '../content-container/content-container';
@@ -195,7 +199,10 @@ export class PlotEditor {
           points: pts.map((p, i) => ({
             ...p,
             labelPosition: 'auto' as const,
-            labelText: this.markerNamingService.generateName(startIndex + i, scheme),
+            labelText: this.markerNamingService.generateName(
+              startIndex + i,
+              scheme,
+            ),
           })),
           color: colors[areas.length % colors.length],
           showPoints: false,
@@ -208,7 +215,10 @@ export class PlotEditor {
         ...markers,
         ...pts.map((p, i) => ({
           ...p,
-          text: this.markerNamingService.generateName(markers.length + i, scheme),
+          text: this.markerNamingService.generateName(
+            markers.length + i,
+            scheme,
+          ),
         })),
       ];
     }
@@ -297,6 +307,8 @@ export class PlotEditor {
         const model = existingPlot.model;
         const migratedAreas: Plot['areas'] = model.areas.map(area => ({
           ...area,
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+          showPoints: area.showPoints ?? false,
           points: area.points.map(point => ({
             ...point,
             labelPosition:
@@ -306,7 +318,14 @@ export class PlotEditor {
             labelText: point.labelText ?? '',
           })),
         }));
-        this.editorModel.set({ ...model, areas: migratedAreas });
+        this.editorModel.set({
+          ...model,
+          areas: migratedAreas,
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+          axisLabelX: model.axisLabelX ?? 'x',
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+          axisLabelY: model.axisLabelY ?? 'y',
+        });
       }
     });
   }
@@ -361,7 +380,14 @@ export class PlotEditor {
       ...model,
       markers: [
         ...model.markers,
-        { x: 0, y: 0, text: this.markerNamingService.generateName(model.markers.length, scheme) },
+        {
+          x: 0,
+          y: 0,
+          text: this.markerNamingService.generateName(
+            model.markers.length,
+            scheme,
+          ),
+        },
       ],
     }));
   }
@@ -407,9 +433,33 @@ export class PlotEditor {
         ...model.areas,
         {
           points: [
-            { x: 0, y: 0, labelPosition: 'auto', labelText: this.markerNamingService.generateName(startIndex, scheme) },
-            { x: 1, y: 0, labelPosition: 'auto', labelText: this.markerNamingService.generateName(startIndex + 1, scheme) },
-            { x: 1, y: 1, labelPosition: 'auto', labelText: this.markerNamingService.generateName(startIndex + 2, scheme) },
+            {
+              x: 0,
+              y: 0,
+              labelPosition: 'auto',
+              labelText: this.markerNamingService.generateName(
+                startIndex,
+                scheme,
+              ),
+            },
+            {
+              x: 1,
+              y: 0,
+              labelPosition: 'auto',
+              labelText: this.markerNamingService.generateName(
+                startIndex + 1,
+                scheme,
+              ),
+            },
+            {
+              x: 1,
+              y: 1,
+              labelPosition: 'auto',
+              labelText: this.markerNamingService.generateName(
+                startIndex + 2,
+                scheme,
+              ),
+            },
           ],
           color: colors[model.areas.length % colors.length],
           showPoints: false,
@@ -432,7 +482,21 @@ export class PlotEditor {
     this.editorModel.update(model => {
       const areas = model.areas.map((area, i) =>
         i === areaIndex
-          ? { ...area, points: [...area.points, { x: 0, y: 0, labelPosition: 'auto' as const, labelText: this.markerNamingService.generateName(nextIndex, scheme) }] }
+          ? {
+              ...area,
+              points: [
+                ...area.points,
+                {
+                  x: 0,
+                  y: 0,
+                  labelPosition: 'auto' as const,
+                  labelText: this.markerNamingService.generateName(
+                    nextIndex,
+                    scheme,
+                  ),
+                },
+              ],
+            }
           : area,
       );
       return { ...model, areas };
@@ -520,7 +584,10 @@ export class PlotEditor {
             points: points.map((p, i) => ({
               ...p,
               labelPosition: 'auto' as const,
-              labelText: this.markerNamingService.generateName(startIndex + i, scheme),
+              labelText: this.markerNamingService.generateName(
+                startIndex + i,
+                scheme,
+              ),
             })),
             color: colors[model.areas.length % colors.length],
             showPoints: false,
@@ -624,7 +691,10 @@ export class PlotEditor {
           ...model.markers,
           ...points.map((p, i) => ({
             ...p,
-            text: this.markerNamingService.generateName(model.markers.length + i, scheme),
+            text: this.markerNamingService.generateName(
+              model.markers.length + i,
+              scheme,
+            ),
           })),
         ],
       }));
