@@ -3,6 +3,7 @@ import { PlotRange } from './plot-range';
 export interface MathFunction {
   fnx: string;
   color: string;
+  showLegend: boolean;
 }
 
 export type MarkerNamingScheme = 'alphabetic' | 'numeric';
@@ -63,4 +64,5 @@ export interface Plot {
   automaticallyAdjustLimitsToValueRange: boolean;
   axisLabelX: string;
   axisLabelY: string;
+  showLegend: boolean;
 }
