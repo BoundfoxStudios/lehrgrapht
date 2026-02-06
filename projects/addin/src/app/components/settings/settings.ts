@@ -11,6 +11,7 @@ import {
   PlotSettingsService,
 } from '../../services/plot-settings.service';
 import { Dropdown, DropdownOption } from '../dropdown/dropdown';
+import { lehrgraphtVersion } from '../../../version';
 
 @Component({
   selector: 'lg-settings',
@@ -29,10 +30,11 @@ import { Dropdown, DropdownOption } from '../dropdown/dropdown';
 export class Settings {
   private readonly plotSettingsService = inject(PlotSettingsService);
 
-  protected readonly markerNamingSchemeOptions: DropdownOption<MarkerNamingScheme>[] = [
-    { value: 'alphabetic', label: 'Alphabetisch (A, B, C, ...)' },
-    { value: 'numeric', label: 'Numerisch (P1, P2, P3, ...)' },
-  ];
+  protected readonly markerNamingSchemeOptions: DropdownOption<MarkerNamingScheme>[] =
+    [
+      { value: 'alphabetic', label: 'Alphabetisch (A, B, C, ...)' },
+      { value: 'numeric', label: 'Numerisch (P1, P2, P3, ...)' },
+    ];
 
   protected readonly editorModel = signal<PlotSettings>(defaultPlotSettings);
 
@@ -43,6 +45,7 @@ export class Settings {
   });
 
   protected readonly examplePlot1: Plot = {
+    version: lehrgraphtVersion,
     name: 'Beispiel',
     range: {
       x: {
@@ -77,6 +80,7 @@ export class Settings {
   };
 
   protected readonly examplePlot2: Plot = {
+    version: lehrgraphtVersion,
     name: 'Beispiel',
     range: {
       x: {

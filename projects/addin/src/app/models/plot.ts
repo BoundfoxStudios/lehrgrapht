@@ -35,6 +35,7 @@ export interface PlotSettings {
 }
 
 export interface Plot {
+  version: string;
   name: string;
   range: PlotRange;
   fnx: MathFunction[];

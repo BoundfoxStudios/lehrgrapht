@@ -26,6 +26,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { MathDisplay } from '../math-display/math-display';
 import { Plot, PlotSettings } from '../../models/plot';
+import { lehrgraphtVersion } from '../../../version';
 import { MarkerNamingService } from '../../services/marker-naming.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -138,6 +139,7 @@ export class PlotEditor {
   });
 
   protected readonly editorModel = signal<Plot>({
+    version: lehrgraphtVersion,
     name: 'Neuer Plot',
     range: {
       x: {
@@ -304,28 +306,7 @@ export class PlotEditor {
       const existingPlot = this.existingPlot.value();
 
       if (existingPlot) {
-        const model = existingPlot.model;
-        const migratedAreas: Plot['areas'] = model.areas.map(area => ({
-          ...area,
-          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-          showPoints: area.showPoints ?? false,
-          points: area.points.map(point => ({
-            ...point,
-            labelPosition:
-              // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-              point.labelPosition ?? 'auto',
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-            labelText: point.labelText ?? '',
-          })),
-        }));
-        this.editorModel.set({
-          ...model,
-          areas: migratedAreas,
-          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-          axisLabelX: model.axisLabelX ?? 'x',
-          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-          axisLabelY: model.axisLabelY ?? 'y',
-        });
+        this.editorModel.set(existingPlot.model);
       }
     });
   }

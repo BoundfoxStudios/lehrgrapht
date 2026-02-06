@@ -121,7 +121,7 @@ export class WordForWebService extends WordService {
         return;
       }
 
-      const model = await this.documentStorageService.get<Plot>(
+      const model = await this.documentStorageService.getPlot(
         image.altTextDescription,
       );
 
@@ -176,7 +176,7 @@ export class WordForWebService extends WordService {
       picture.altTextDescription = options.id;
       await context.sync();
 
-      await this.documentStorageService.set(options.id, options.model);
+      await this.documentStorageService.setPlot(options.id, options.model);
     });
   }
 

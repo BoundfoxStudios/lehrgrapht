@@ -1,9 +1,13 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
+import { Plot } from '../models/plot';
+import { MigrationService } from '../models/migration';
+import { lehrgraphtVersion } from '../../version';
 
 const idKeyPrefix = 'lehrgrapht-';
 
 @Injectable({ providedIn: 'root' })
 export class DocumentStorageService {
+  private readonly migrationService = inject(MigrationService);
   async set(id: string, model: unknown): Promise<void> {
     await Word.run(async context => {
       context.document.settings.add(this.createKey(id), model);
@@ -58,6 +62,25 @@ export class DocumentStorageService {
           value: item.value as unknown,
         }));
     });
+  }
+
+  async getPlot(id: string): Promise<Plot | undefined> {
+    const raw = await this.get<Record<string, unknown>>(id);
+    if (!raw) {
+      return undefined;
+    }
+
+    const { plot, wasMigrated } = this.migrationService.migrate(raw);
+
+    if (wasMigrated) {
+      await this.setPlot(id, plot);
+    }
+
+    return plot;
+  }
+
+  async setPlot(id: string, plot: Plot): Promise<void> {
+    await this.set(id, { ...plot, version: lehrgraphtVersion });
   }
 
   private createKey(id: string): string {
