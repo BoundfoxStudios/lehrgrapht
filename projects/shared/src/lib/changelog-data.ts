@@ -5,6 +5,12 @@ export interface ChangelogEntry {
 
 export const changelogData: ChangelogEntry[] = [
   {
+    version: '1.4.1',
+    changes: [
+      'Fehler behoben, bei dem Plots aus Version 1.3.0 nicht korrekt geladen werden konnten.',
+    ],
+  },
+  {
     version: '1.4.0',
     changes: [
       'Eigene Achsenbeschriftungen für X- und Y-Achse.',
