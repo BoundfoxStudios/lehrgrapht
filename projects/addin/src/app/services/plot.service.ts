@@ -449,6 +449,7 @@ export class PlotService {
     data.push({
       type: 'scatter',
       mode: 'text+markers',
+      showlegend: false,
       x: plot.markers.map(marker => marker.x),
       y: plot.markers.map(marker => marker.y),
       text: plot.markers.map(marker => marker.text),
@@ -474,6 +475,7 @@ export class PlotService {
       ...plot.lines.map<Partial<PlotData>>(line => ({
         type: 'scatter',
         mode: 'lines',
+        showlegend: false,
         fill: 'none',
         x: [line.x1, line.x2],
         y: [line.y1, line.y2],
@@ -496,6 +498,7 @@ export class PlotService {
       ...plot.areas.map<Partial<PlotData>>(area => ({
         type: 'scatter',
         mode: 'lines',
+        showlegend: false,
         fillcolor: hexToRgba(area.color, 0.7),
         fill: 'toself',
         x: [...area.points, area.points[0]].map(point => point.x),
@@ -555,6 +558,7 @@ export class PlotService {
       data.push({
         type: 'scatter',
         mode: 'text+markers',
+        showlegend: false,
         x: markers.map(m => m.x),
         y: markers.map(m => m.y),
         text: markers.map(m => m.text),
