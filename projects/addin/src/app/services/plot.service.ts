@@ -78,6 +78,13 @@ interface CleanedValues {
   yValuesArray: number[][];
 }
 
+interface PlotMarginMm {
+  t: number;
+  b: number;
+  l: number;
+  r: number;
+}
+
 const hexToRgba = (hex: string, alpha: number): string => {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   if (!result) return hex;
@@ -130,12 +137,20 @@ export class PlotService {
     }
 
     const cleanedValues = this.cleanUpValues(yValues, valueRanges, plot);
-    const sizeCalc = this.calculatePlotSize(plot, cleanedValues, valueRanges);
+    const margin = this.calculateEffectiveMargin(plot);
+    const sizeCalc = this.calculatePlotSize(
+      plot,
+      cleanedValues,
+      valueRanges,
+      margin,
+    );
     const annotations = this.buildAnnotations(plot, plotSettings);
     const functionLabels = this.buildFunctionLabels(
       plot,
       cleanedValues.xValuesArray,
       cleanedValues.yValuesArray,
+      sizeCalc.yValueMin,
+      sizeCalc.yValueMax,
     );
     annotations.push(...functionLabels);
     const arrows = this.buildArrows(
@@ -155,6 +170,7 @@ export class PlotService {
       plot,
       plotSettings,
       sizeCalc,
+      margin,
       annotations,
       arrows,
       data,
@@ -193,8 +209,9 @@ export class PlotService {
     plot: Plot,
     cleanedValues: CleanedValues,
     valueRanges: ValueRanges,
+    margin: PlotMarginMm,
   ): PlotSizeCalculation {
-    const { dtick, mmPerTick, mmMargin, mmToInches, mmToPoints, ppiBase } =
+    const { dtick, mmPerTick, mmToInches, mmToPoints, ppiBase } =
       PLOT_CONSTANTS;
 
     const xValueFlat = plot.automaticallyAdjustLimitsToValueRange
@@ -220,10 +237,9 @@ export class PlotService {
         : yValueRange / dtick,
     };
 
-    const marginTotal = (mmMargin.l + mmMargin.r + mmMargin.t + mmMargin.b) / 2;
     const plotSizeMm = {
-      width: tickSquares.x * mmPerTick + marginTotal,
-      height: tickSquares.y * mmPerTick + marginTotal,
+      width: tickSquares.x * mmPerTick + margin.l + margin.r,
+      height: tickSquares.y * mmPerTick + margin.t + margin.b,
     };
 
     return {
@@ -408,6 +424,8 @@ export class PlotService {
     plot: Plot,
     xValuesArray: number[],
     yValuesArray: number[][],
+    visibleYMin: number,
+    visibleYMax: number,
   ): Partial<Annotations>[] {
     const labels: Partial<Annotations>[] = [];
 
@@ -419,27 +437,85 @@ export class PlotService {
       if (yValues.length === 0) continue;
 
       const isStart = fn.legendPosition === 'start';
-      const index = isStart ? 0 : xValuesArray.length - 1;
-      const x = xValuesArray[index];
-      const y = yValues[index];
+      const pos = this.findLabelPosition(
+        xValuesArray,
+        yValues,
+        visibleYMin,
+        visibleYMax,
+        isStart,
+      );
+      if (!pos) continue;
 
-      if (!Number.isFinite(y)) continue;
+      const yMid = (visibleYMin + visibleYMax) / 2;
+      const isTop = pos.y >= yMid;
 
       labels.push({
-        x,
-        y,
-        text: `f(x) = ${fn.fnx}`,
+        x: pos.x,
+        y: pos.y,
+        text: fn.fnx,
         showarrow: false,
         xref: 'x',
         yref: 'y',
         xanchor: isStart ? 'right' : 'left',
-        yanchor: 'bottom',
+        yanchor: isTop ? 'bottom' : 'top',
         xshift: isStart ? -5 : 5,
+        yshift: isTop ? 2.5 : -2.5,
         font: { size: 10, color: fn.color },
       });
     }
 
     return labels;
+  }
+
+  private findLabelPosition(
+    xValues: number[],
+    yValues: number[],
+    yMin: number,
+    yMax: number,
+    fromStart: boolean,
+  ): { x: number; y: number } | undefined {
+    const isVisible = (i: number): boolean =>
+      Number.isFinite(yValues[i]) && yValues[i] >= yMin && yValues[i] <= yMax;
+
+    // Find the first/last visible index
+    let edgeIdx = -1;
+    if (fromStart) {
+      for (let i = 0; i < yValues.length; i++) {
+        if (isVisible(i)) {
+          edgeIdx = i;
+          break;
+        }
+      }
+    } else {
+      for (let i = yValues.length - 1; i >= 0; i--) {
+        if (isVisible(i)) {
+          edgeIdx = i;
+          break;
+        }
+      }
+    }
+
+    if (edgeIdx === -1) return undefined;
+
+    // Check the adjacent point just outside the visible range
+    const outerIdx = fromStart ? edgeIdx - 1 : edgeIdx + 1;
+    if (
+      outerIdx >= 0 &&
+      outerIdx < yValues.length &&
+      Number.isFinite(yValues[outerIdx]) &&
+      !isVisible(outerIdx)
+    ) {
+      // Interpolate to find the exact boundary crossing
+      const yBoundary = yValues[outerIdx] > yMax ? yMax : yMin;
+      const dy = yValues[outerIdx] - yValues[edgeIdx];
+      if (dy !== 0) {
+        const t = (yBoundary - yValues[edgeIdx]) / dy;
+        const x = xValues[edgeIdx] + t * (xValues[outerIdx] - xValues[edgeIdx]);
+        return { x, y: yBoundary };
+      }
+    }
+
+    return { x: xValues[edgeIdx], y: yValues[edgeIdx] };
   }
 
   private buildPlotData(
@@ -615,6 +691,7 @@ export class PlotService {
     plot: Plot,
     plotSettings: PlotSettings,
     sizeCalc: PlotSizeCalculation,
+    margin: PlotMarginMm,
     annotations: Partial<Annotations>[],
     arrows: Partial<Annotations>[],
     data: Partial<PlotData>[],
@@ -629,7 +706,7 @@ export class PlotService {
       }
     | PlotGenerateErrorCode
   > {
-    const { dtick, mmMargin, mmToInches, ppiBase } = PLOT_CONSTANTS;
+    const { dtick, mmToInches, ppiBase } = PLOT_CONSTANTS;
     const {
       plotSizePx,
       plotSizePoints,
@@ -653,10 +730,10 @@ export class PlotService {
                 ? [...annotations, ...arrows]
                 : arrows,
             margin: {
-              t: mmMargin.t * mmToInches * ppiBase,
-              b: mmMargin.b * mmToInches * ppiBase,
-              l: mmMargin.l * mmToInches * ppiBase,
-              r: mmMargin.r * mmToInches * ppiBase,
+              t: margin.t * mmToInches * ppiBase,
+              b: margin.b * mmToInches * ppiBase,
+              l: margin.l * mmToInches * ppiBase,
+              r: margin.r * mmToInches * ppiBase,
             },
             xaxis: {
               range: [xValueMin, xValueMax],
@@ -728,7 +805,8 @@ export class PlotService {
   }
 
   calculatePlotSizeMm(plot: Plot): PlotSizeMm {
-    const { dtick, mmPerTick, mmMargin } = PLOT_CONSTANTS;
+    const { dtick, mmPerTick } = PLOT_CONSTANTS;
+    const margin = this.calculateEffectiveMargin(plot);
     const xRange = plot.range.x.max - plot.range.x.min;
     const yRange = plot.range.y.max - plot.range.y.min;
 
@@ -739,9 +817,8 @@ export class PlotService {
       ? Math.max(xRange, yRange) / dtick
       : yRange / dtick;
 
-    const marginTotal = (mmMargin.l + mmMargin.r + mmMargin.t + mmMargin.b) / 2;
-    const width = tickSquaresX * mmPerTick + marginTotal;
-    const height = tickSquaresY * mmPerTick + marginTotal;
+    const width = tickSquaresX * mmPerTick + margin.l + margin.r;
+    const height = tickSquaresY * mmPerTick + margin.t + margin.b;
 
     const exceedsWidth = width > A4_USABLE_WIDTH_MM;
     const exceedsHeight = height > A4_USABLE_HEIGHT_MM;
@@ -752,6 +829,36 @@ export class PlotService {
       exceedsA4: exceedsWidth || exceedsHeight,
       exceedsWidth,
       exceedsHeight,
+    };
+  }
+
+  private calculateEffectiveMargin(plot: Plot): PlotMarginMm {
+    const base = PLOT_CONSTANTS.mmMargin;
+    let extraLeft = 0;
+    let extraRight = 0;
+
+    const pxPerChar = 6;
+    const xshiftPx = 5;
+    const pxToMm = 25.4 / PLOT_CONSTANTS.ppiBase;
+
+    for (const fn of plot.fnx) {
+      if (fn.legendPosition === 'none') continue;
+
+      const textWidthMm = (fn.fnx.length * pxPerChar + xshiftPx) * pxToMm;
+      const extraNeeded = Math.max(0, textWidthMm - base.l);
+
+      if (fn.legendPosition === 'start') {
+        extraLeft = Math.max(extraLeft, extraNeeded);
+      } else {
+        extraRight = Math.max(extraRight, extraNeeded);
+      }
+    }
+
+    return {
+      t: base.t,
+      b: base.b,
+      l: base.l + extraLeft,
+      r: base.r + extraRight,
     };
   }
 
