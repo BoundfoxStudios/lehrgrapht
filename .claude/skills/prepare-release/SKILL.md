@@ -27,7 +27,7 @@ This updates both `package.json` and `package-lock.json` atomically.
 
 ### 3. Rename migration files (only if migrate-to-latest.ts exists)
 
-If `projects/addin/src/app/models/migrations/migrate-to-latest.ts` does not exist, skip to step 7.
+If `projects/addin/src/app/models/migrations/migrate-to-latest.ts` does not exist, skip to step 7 (changelog).
 
 Use `git mv` to preserve history:
 
@@ -66,7 +66,24 @@ In `projects/addin/src/app/models/migration.ts`:
 
 **Do NOT** create new empty `migrate-to-latest.ts` or `migrate-to-latest.spec.ts` files. The absence of `migrate-to-latest.ts` signals no pending migrations (see migrations skill).
 
-### 7. Verify
+### 7. Update changelog
+
+Add a new entry at the **top** of the `changelogData` array in `projects/shared/src/lib/changelog-data.ts`:
+
+```typescript
+{
+  version: '<new-version>',
+  changes: [
+    // user-facing changes only, in German
+  ],
+},
+```
+
+**Only include user-facing changes.** Review the git log since the previous version to identify them. Exclude pure technical changes (refactors, build config, dependency updates, test fixes, CI changes). The entries are written in German.
+
+Ask the user to confirm or adjust the changelog entries before proceeding.
+
+### 8. Verify
 
 Run tests to confirm nothing is broken:
 
@@ -84,10 +101,12 @@ npx ng test addin --no-watch
 | 4    | Update version + export name             | `migrations/migrate-to-<prev>.ts`        |
 | 5    | Update import + describe + variable      | `migrations/migrate-to-<prev>.spec.ts`   |
 | 6    | Update import + array                    | `migration.ts`                           |
-| 7    | Run tests                                | —                                        |
+| 7    | Update changelog (user-facing only)      | `shared/src/lib/changelog-data.ts`       |
+| 8    | Run tests                                | —                                        |
 
 ## Common Mistakes
 
 - **Creating new empty migrate-to-latest files** — Do NOT. Its absence is intentional and signals no unreleased model changes.
 - **Forgetting to update migration.ts** — The import path, import name, and migrations array all need updating.
 - **Editing package-lock.json manually** — Use `npm version` instead; it handles both files.
+- **Including technical changes in changelog** — Only user-facing changes. No refactors, build config, dependency updates, or CI changes.
