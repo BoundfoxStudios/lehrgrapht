@@ -58,3 +58,4 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 
 - Make small, independent commits — each commit should represent a single logical change
 - Do NOT bundle unrelated changes into one commit
+- When an issue number is available, reference it in the commit body (not the title) using GitHub keywords (e.g., `Closes #26`, `Fixes #42`)
