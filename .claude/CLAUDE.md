@@ -53,3 +53,8 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Design services around a single responsibility
 - Use the `providedIn: 'root'` option for singleton services
 - Use the `inject()` function instead of constructor injection
+
+## Git
+
+- Make small, independent commits — each commit should represent a single logical change
+- Do NOT bundle unrelated changes into one commit
