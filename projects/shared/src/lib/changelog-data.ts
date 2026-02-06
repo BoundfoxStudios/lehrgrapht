@@ -5,6 +5,14 @@ export interface ChangelogEntry {
 
 export const changelogData: ChangelogEntry[] = [
   {
+    version: '1.5.0',
+    changes: [
+      'Vorschaubilder der Plots in der Plot-Liste.',
+      'Schnelleres Laden der Plot-Liste.',
+      'Fehler behoben, bei dem ein Plot nicht korrekt ersetzt wurde.',
+    ],
+  },
+  {
     version: '1.4.1',
     changes: [
       'Fehler behoben, bei dem Plots aus Version 1.3.0 nicht korrekt geladen werden konnten.',
