@@ -168,7 +168,6 @@ export class PlotEditor {
     automaticallyAdjustLimitsToValueRange: false,
     axisLabelX: 'x',
     axisLabelY: 'y',
-    showLegend: false,
   });
 
   protected readonly squareCount = computed(
