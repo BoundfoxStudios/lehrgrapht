@@ -1,6 +1,7 @@
 {
   "name": "@boundfoxstudios/lehrgrapht",
   "version": "1.4.1",
+  "repository": "github:boundfoxstudios/lehrgrapht",
   "scripts": {
     "ng": "ng",
     "start": "dotenvx run --ignore=MISSING_ENV_FILE -f .env.local -f .env -- npm run start:addin",
