@@ -145,6 +145,13 @@ export class PlotService {
       margin,
     );
     const annotations = this.buildAnnotations(plot, plotSettings);
+    const functionLabelImages = await this.buildFunctionLabelImages(
+      plot,
+      cleanedValues.xValuesArray,
+      cleanedValues.yValuesArray,
+      sizeCalc,
+      margin,
+    );
     const arrows = this.buildArrows(
       plot,
       plotSettings,
@@ -158,7 +165,7 @@ export class PlotService {
       cleanedValues.yValuesArray,
     );
 
-    const result = await this.renderPlot(
+    return this.renderPlot(
       plot,
       plotSettings,
       sizeCalc,
@@ -166,24 +173,9 @@ export class PlotService {
       annotations,
       arrows,
       data,
+      functionLabelImages,
       options.applyScaleFactor,
     );
-
-    if (plotHasErrorCode(result)) {
-      return result;
-    }
-
-    const composited = await this.compositeFunctionLabels(
-      result.base64,
-      plot,
-      cleanedValues.xValuesArray,
-      cleanedValues.yValuesArray,
-      sizeCalc,
-      margin,
-      options.applyScaleFactor,
-    );
-
-    return { ...result, base64: composited };
   }
 
   private cleanUpValues(
@@ -428,131 +420,82 @@ export class PlotService {
     return arrows;
   }
 
-  private async compositeFunctionLabels(
-    plotBase64: string,
+  private async buildFunctionLabelImages(
     plot: Plot,
     xValuesArray: number[],
     yValuesArray: number[][],
     sizeCalc: PlotSizeCalculation,
     margin: PlotMarginMm,
-    applyScaleFactor: boolean,
-  ): Promise<string> {
-    if (typeof MathJax === 'undefined') return plotBase64;
+  ): Promise<Partial<Plotly.Image>[]> {
+    if (typeof MathJax === 'undefined') return [];
 
-    const labels = this.collectFunctionLabels(
-      plot,
-      xValuesArray,
-      yValuesArray,
-      sizeCalc,
-    );
-    if (labels.length === 0) return plotBase64;
-
-    const plotImg = await this.loadImage(plotBase64);
-    const canvas = document.createElement('canvas');
-    canvas.width = plotImg.naturalWidth;
-    canvas.height = plotImg.naturalHeight;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return plotBase64;
-
-    ctx.drawImage(plotImg, 0, 0);
-
-    const scale = applyScaleFactor ? scaleFactor : 1;
     const { mmToInches, ppiBase } = PLOT_CONSTANTS;
-    const marginLPx = margin.l * mmToInches * ppiBase * scale;
-    const marginTPx = margin.t * mmToInches * ppiBase * scale;
-    const plotAreaW =
-      canvas.width - (margin.l + margin.r) * mmToInches * ppiBase * scale;
-    const plotAreaH =
-      canvas.height - (margin.t + margin.b) * mmToInches * ppiBase * scale;
+    const marginLPx = margin.l * mmToInches * ppiBase;
+    const marginRPx = margin.r * mmToInches * ppiBase;
+    const marginTPx = margin.t * mmToInches * ppiBase;
+    const marginBPx = margin.b * mmToInches * ppiBase;
+    const plotAreaW = sizeCalc.plotSizePx.width - marginLPx - marginRPx;
+    const plotAreaH = sizeCalc.plotSizePx.height - marginTPx - marginBPx;
     const dataRangeX = sizeCalc.xValueMax - sizeCalc.xValueMin;
     const dataRangeY = sizeCalc.yValueMax - sizeCalc.yValueMin;
+    const pxPerUnitX = plotAreaW / dataRangeX;
+    const pxPerUnitY = plotAreaH / dataRangeY;
 
-    const gapPx = 5 * scale;
+    const gapPx = 5;
+    const gapX = gapPx / pxPerUnitX;
+    const gapY = gapPx / pxPerUnitY;
 
-    for (const label of labels) {
-      const mathSvg = this.renderMathSvgElement(label.expression, label.color);
-      if (!mathSvg) continue;
-
-      const labelImg = await this.svgElementToImage(mathSvg.svg, scale);
-      if (!labelImg) continue;
-
-      // Convert data coordinates to canvas pixel coordinates
-      const canvasX =
-        marginLPx + ((label.x - sizeCalc.xValueMin) / dataRangeX) * plotAreaW;
-      const canvasY =
-        marginTPx + ((sizeCalc.yValueMax - label.y) / dataRangeY) * plotAreaH;
-
-      let drawX: number;
-      if (label.isStart) {
-        drawX = canvasX - gapPx - labelImg.width;
-      } else {
-        drawX = canvasX + gapPx;
-      }
-
-      let drawY: number;
-      if (label.isTop) {
-        drawY = canvasY - gapPx - labelImg.height;
-      } else {
-        drawY = canvasY + gapPx;
-      }
-
-      ctx.drawImage(labelImg, drawX, drawY);
-    }
-
-    return canvas.toDataURL('image/png');
-  }
-
-  private collectFunctionLabels(
-    plot: Plot,
-    xValuesArray: number[],
-    yValuesArray: number[][],
-    sizeCalc: PlotSizeCalculation,
-  ): {
-    expression: string;
-    color: string;
-    x: number;
-    y: number;
-    isStart: boolean;
-    isTop: boolean;
-  }[] {
-    const labels: {
-      expression: string;
-      color: string;
-      x: number;
-      y: number;
-      isStart: boolean;
-      isTop: boolean;
-    }[] = [];
-    const yMid = (sizeCalc.yValueMin + sizeCalc.yValueMax) / 2;
+    const images: Partial<Plotly.Image>[] = [];
 
     for (let i = 0; i < plot.fnx.length; i++) {
       const fn = plot.fnx[i];
       if (fn.legendPosition === 'none') continue;
 
-      const yValues = yValuesArray[i];
-      if (yValues.length === 0) continue;
-
-      const isStart = fn.legendPosition === 'start';
+      const fromStart = fn.legendPosition === 'start';
       const pos = this.findLabelPosition(
         xValuesArray,
-        yValues,
+        yValuesArray[i],
         sizeCalc.yValueMin,
         sizeCalc.yValueMax,
-        isStart,
+        fromStart,
       );
+
       if (!pos) continue;
 
-      labels.push({
-        expression: fn.fnx,
-        color: fn.color,
-        x: pos.x,
-        y: pos.y,
-        isStart,
-        isTop: pos.y >= yMid,
+      const rendered = await this.renderMathPng(fn.fnx, fn.color);
+      if (!rendered) continue;
+
+      const labelWidthData = rendered.widthPx / pxPerUnitX;
+      const labelHeightData = rendered.heightPx / pxPerUnitY;
+
+      // Convert data coordinates to paper coordinates (0–1 = plot area, outside = margins)
+      const paperX = (pos.x - sizeCalc.xValueMin) / dataRangeX;
+      const paperY = (pos.y - sizeCalc.yValueMin) / dataRangeY;
+      const paperSizeX = labelWidthData / dataRangeX;
+      const paperSizeY = labelHeightData / dataRangeY;
+      const paperGapX = gapX / dataRangeX;
+      const paperGapY = gapY / dataRangeY;
+
+      const x = fromStart ? paperX - paperGapX : paperX + paperGapX;
+      const y = paperY + paperGapY;
+      const xanchor = fromStart ? 'right' : 'left';
+
+      images.push({
+        source: rendered.dataUrl,
+        x,
+        y,
+        xref: 'paper',
+        yref: 'paper',
+        sizex: paperSizeX,
+        sizey: paperSizeY,
+        xanchor,
+        yanchor: 'bottom',
+        sizing: 'contain',
+        layer: 'above',
       });
     }
 
-    return labels;
+    return images;
   }
 
   private findLabelPosition(
@@ -783,6 +726,7 @@ export class PlotService {
     annotations: Partial<Annotations>[],
     arrows: Partial<Annotations>[],
     data: Partial<PlotData>[],
+    functionLabelImages: Partial<Plotly.Image>[],
     applyScaleFactor: boolean,
   ): Promise<
     | {
@@ -817,6 +761,7 @@ export class PlotService {
           showlegend: false,
           width: plotSizePx.width,
           height: plotSizePx.height,
+          images: functionLabelImages.length ? functionLabelImages : undefined,
           annotations: !plot.showAxis
             ? undefined
             : plot.showAxisLabels && plot.placeAxisLabelsInside
@@ -957,10 +902,12 @@ export class PlotService {
     };
   }
 
-  private renderMathSvgElement(
+  private async renderMathPng(
     expression: string,
     color: string,
-  ): { svg: SVGSVGElement; widthPx: number; heightPx: number } | undefined {
+  ): Promise<
+    { dataUrl: string; widthPx: number; heightPx: number } | undefined
+  > {
     try {
       const node = mathjs.parse(expression);
       if (node.type === 'ConstantNode') return undefined;
@@ -980,71 +927,47 @@ export class PlotService {
       }
 
       const rect = svg.getBoundingClientRect();
-      if (rect.width === 0 || rect.height === 0) {
+      const widthPx = rect.width;
+      const heightPx = rect.height;
+
+      if (widthPx === 0 || heightPx === 0) {
         document.body.removeChild(tempDiv);
         return undefined;
       }
 
-      // Set the fill color directly on the SVG while it's still in the DOM
-      svg.style.color = color;
-
-      return { svg, widthPx: rect.width, heightPx: rect.height };
-    } catch {
-      return undefined;
-    }
-  }
-
-  private async svgElementToImage(
-    svg: SVGSVGElement,
-    scale: number,
-  ): Promise<HTMLImageElement | undefined> {
-    const tempDiv = svg.closest('div');
-
-    try {
-      const widthPx = svg.getBoundingClientRect().width;
-      const heightPx = svg.getBoundingClientRect().height;
-      const canvasWidth = Math.ceil(widthPx * scale);
-      const canvasHeight = Math.ceil(heightPx * scale);
-
-      // Use XMLSerializer on the live DOM SVG (references still resolvable)
-      // We need to inline external defs before serializing
-      const svgClone = svg.cloneNode(true) as SVGSVGElement;
+      // Serialize SVG (self-contained thanks to fontCache: 'none' in MathJax config)
+      const svgClone = svg.cloneNode(true) as SVGElement;
       svgClone.setAttribute('width', `${widthPx}`);
       svgClone.setAttribute('height', `${heightPx}`);
-      if (!svgClone.hasAttribute('xmlns')) {
-        svgClone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-      }
-      this.inlineSvgDefs(svgClone);
 
       let svgString = new XMLSerializer().serializeToString(svgClone);
-      svgString = svgString.replace(/currentColor/g, svg.style.color);
+      svgString = svgString.replace(/currentColor/g, color);
 
+      document.body.removeChild(tempDiv);
+
+      // Convert SVG to PNG via canvas
+      const renderScale = 4;
       const blob = new Blob([svgString], { type: 'image/svg+xml' });
       const url = URL.createObjectURL(blob);
 
       try {
         const img = await this.loadImage(url);
-
-        // Rasterize to canvas at the desired scale
         const canvas = document.createElement('canvas');
-        canvas.width = canvasWidth;
-        canvas.height = canvasHeight;
+        canvas.width = Math.ceil(widthPx * renderScale);
+        canvas.height = Math.ceil(heightPx * renderScale);
         const ctx = canvas.getContext('2d');
         if (!ctx) return undefined;
-        ctx.drawImage(img, 0, 0, canvasWidth, canvasHeight);
-
-        // Convert canvas to a new image
-        const pngUrl = canvas.toDataURL('image/png');
-        return await this.loadImage(pngUrl);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        return {
+          dataUrl: canvas.toDataURL('image/png'),
+          widthPx,
+          heightPx,
+        };
       } finally {
         URL.revokeObjectURL(url);
       }
     } catch {
       return undefined;
-    } finally {
-      if (tempDiv) {
-        document.body.removeChild(tempDiv);
-      }
     }
   }
 
@@ -1055,40 +978,10 @@ export class PlotService {
         resolve(img);
       };
       img.onerror = (): void => {
-        reject(new Error(`Failed to load image: ${src.substring(0, 100)}`));
+        reject(new Error('Failed to load image'));
       };
       img.src = src;
     });
-  }
-
-  private inlineSvgDefs(svgClone: SVGElement): void {
-    const uses = svgClone.querySelectorAll('use');
-    if (uses.length === 0) return;
-
-    let defs = svgClone.querySelector('defs');
-    if (!defs) {
-      defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-      svgClone.insertBefore(defs, svgClone.firstChild);
-    }
-
-    const inlinedIds = new Set<string>();
-    for (const use of Array.from(uses)) {
-      const href = use.getAttribute('href') ?? use.getAttribute('xlink:href');
-      if (!href?.startsWith('#')) continue;
-
-      const id = href.substring(1);
-      if (inlinedIds.has(id)) continue;
-      if (svgClone.querySelector(`[id="${id}"]`)) {
-        inlinedIds.add(id);
-        continue;
-      }
-
-      const referencedEl = document.getElementById(id);
-      if (referencedEl) {
-        defs.appendChild(referencedEl.cloneNode(true));
-        inlinedIds.add(id);
-      }
-    }
   }
 
   private createRanges(plot: Plot): ValueRanges {
