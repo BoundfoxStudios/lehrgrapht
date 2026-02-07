@@ -7,7 +7,8 @@ import {
 } from './word.service';
 import { inject, Injectable } from '@angular/core';
 import { DocumentStorageService } from '../document-storage.service';
-import { plotHasErrorCode, PlotService } from '../plot.service';
+import { PlotService } from '../plot/plot.service';
+import { plotHasErrorCode } from '../plot/plot.types';
 import { PlotSettingsService } from '../plot-settings.service';
 
 @Injectable()

@@ -9,7 +9,8 @@ import { toObservable } from '@angular/core/rxjs-interop';
 import { AsyncPipe } from '@angular/common';
 import { switchMap } from 'rxjs';
 import { Plot } from '../../models/plot';
-import { plotHasErrorCode, PlotService } from '../../services/plot.service';
+import { PlotService } from '../../services/plot/plot.service';
+import { plotHasErrorCode } from '../../services/plot/plot.types';
 import { PlotSettingsService } from '../../services/plot-settings.service';
 
 @Component({

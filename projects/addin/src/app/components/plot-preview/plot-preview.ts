@@ -7,11 +7,11 @@ import {
   signal,
 } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
+import { PlotService } from '../../services/plot/plot.service';
 import {
   PlotGenerateErrorCode,
   plotHasErrorCode,
-  PlotService,
-} from '../../services/plot.service';
+} from '../../services/plot/plot.types';
 import { switchMap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { Plot, PlotSettings } from '../../models/plot';
