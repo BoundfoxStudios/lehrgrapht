@@ -9,11 +9,8 @@ import {
 import { Header } from '../header/header';
 import { Field, form, SchemaPath, validate } from '@angular/forms/signals';
 import { PlotClickEvent, PlotPreview } from '../plot-preview/plot-preview';
-import {
-  plotHasErrorCode,
-  PlotService,
-  PlotSizeMm,
-} from '../../services/plot.service';
+import { PlotService } from '../../services/plot/plot.service';
+import { plotHasErrorCode, PlotSizeMm } from '../../services/plot/plot.types';
 import { DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ContentContainer } from '../content-container/content-container';
