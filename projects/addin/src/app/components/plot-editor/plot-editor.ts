@@ -22,7 +22,12 @@ import {
   faTrashCan,
 } from '@fortawesome/free-solid-svg-icons';
 import { MathDisplay } from '../math-display/math-display';
-import { FunctionLegendPosition, Plot, PlotSettings } from '../../models/plot';
+import {
+  FunctionLegendPosition,
+  LegendLabelFormat,
+  Plot,
+  PlotSettings,
+} from '../../models/plot';
 import { lehrgraphtVersion } from '../../../version';
 import { MarkerNamingService } from '../../services/marker-naming.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -118,6 +123,13 @@ export class PlotEditor {
       { value: 'end', label: 'Ende' },
     ];
 
+  protected readonly legendLabelFormatOptions: DropdownOption<LegendLabelFormat>[] =
+    [
+      { value: 'none', label: 'Keine' },
+      { value: 'f(x)=', label: 'f(x)=' },
+      { value: 'y=', label: 'y=' },
+    ];
+
   private readonly plotService = inject(PlotService);
   protected readonly markerNamingService = inject(MarkerNamingService);
   private readonly plotSettingsService = inject(PlotSettingsService);
@@ -172,6 +184,7 @@ export class PlotEditor {
     automaticallyAdjustLimitsToValueRange: false,
     axisLabelX: 'x',
     axisLabelY: 'y',
+    legendLabelFormat: 'none',
   });
 
   protected readonly squareCount = computed(
@@ -306,7 +319,12 @@ export class PlotEditor {
   });
 
   constructor() {
-    this.plotSettings.set(this.plotSettingsService.get());
+    const settings = this.plotSettingsService.get();
+    this.plotSettings.set(settings);
+    this.editorModel.update(model => ({
+      ...model,
+      legendLabelFormat: settings.legendLabelFormat,
+    }));
 
     effect(() => {
       const existingPlot = this.existingPlot.value();
