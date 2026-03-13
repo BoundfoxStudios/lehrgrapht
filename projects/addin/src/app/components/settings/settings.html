@@ -101,6 +101,25 @@
   </lg-accordion-panel>
   <lg-accordion-panel
     [isExpanded]="true"
+    title="Legende"
+    persistenceId="settings-legend"
+  >
+    <lg-content-container class="flex flex-col space-y-4">
+      <div class="flex flex-1 flex-col">
+        <label
+          class="app-label"
+          for="legend-label-format"
+          >Legendenformat</label
+        >
+        <lg-dropdown
+          [field]="editorForm.legendLabelFormat"
+          [options]="legendLabelFormatOptions"
+        />
+      </div>
+    </lg-content-container>
+  </lg-accordion-panel>
+  <lg-accordion-panel
+    [isExpanded]="true"
     persistenceId="settings-preview"
     title="Vorschau"
   >

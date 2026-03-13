@@ -1,6 +1,11 @@
 import { Component, effect, inject, signal } from '@angular/core';
 import { Header } from '../header/header';
-import { MarkerNamingScheme, Plot, PlotSettings } from '../../models/plot';
+import {
+  LegendLabelFormat,
+  MarkerNamingScheme,
+  Plot,
+  PlotSettings,
+} from '../../models/plot';
 import { Field, form, min } from '@angular/forms/signals';
 import { Accordion } from '../accordion/accordion';
 import { AccordionPanel } from '../accordion/accordion-panel/accordion-panel';
@@ -34,6 +39,13 @@ export class Settings {
     [
       { value: 'alphabetic', label: 'Alphabetisch (A, B, C, ...)' },
       { value: 'numeric', label: 'Numerisch (P1, P2, P3, ...)' },
+    ];
+
+  protected readonly legendLabelFormatOptions: DropdownOption<LegendLabelFormat>[] =
+    [
+      { value: 'none', label: 'Keine' },
+      { value: 'f(x)=', label: 'f(x)=' },
+      { value: 'y=', label: 'y=' },
     ];
 
   protected readonly editorModel = signal<PlotSettings>(defaultPlotSettings);
@@ -79,6 +91,7 @@ export class Settings {
     automaticallyAdjustLimitsToValueRange: false,
     axisLabelX: 'x',
     axisLabelY: 'y',
+    legendLabelFormat: 'none',
   };
 
   protected readonly examplePlot2: Plot = {
@@ -116,6 +129,7 @@ export class Settings {
     automaticallyAdjustLimitsToValueRange: false,
     axisLabelX: 'x',
     axisLabelY: 'y',
+    legendLabelFormat: 'none',
   };
 
   constructor() {
