@@ -79,7 +79,14 @@ export class PlotSizeService {
     for (const fn of plot.fnx) {
       if (fn.legendPosition === 'none') continue;
 
-      const textWidthMm = (fn.fnx.length * pxPerChar + xshiftPx) * pxToMm;
+      let prefixChars = 0;
+      if (plot.legendLabelFormat === 'f(x)=') {
+        prefixChars = 5;
+      } else if (plot.legendLabelFormat === 'y=') {
+        prefixChars = 2;
+      }
+      const textWidthMm =
+        ((fn.fnx.length + prefixChars) * pxPerChar + xshiftPx) * pxToMm;
       const extraNeeded = Math.max(0, textWidthMm - base.l);
 
       if (fn.legendPosition === 'start') {
