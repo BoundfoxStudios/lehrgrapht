@@ -2,6 +2,8 @@ import { PlotRange } from './plot-range';
 
 export type FunctionLegendPosition = 'none' | 'start' | 'end';
 
+export type LegendLabelFormat = 'none' | 'f(x)=' | 'y=';
+
 export interface MathFunction {
   fnx: string;
   color: string;
@@ -35,6 +37,7 @@ export interface PlotSettings {
   gridLineColor: string;
   plotLineWidth: number;
   markerNamingScheme: MarkerNamingScheme;
+  legendLabelFormat: LegendLabelFormat;
 }
 
 export interface Plot {
@@ -66,4 +69,5 @@ export interface Plot {
   automaticallyAdjustLimitsToValueRange: boolean;
   axisLabelX: string;
   axisLabelY: string;
+  legendLabelFormat: LegendLabelFormat;
 }
