@@ -14,6 +14,7 @@ export const migrateToLatest: Migration = {
     return {
       ...plot,
       fnx: migratedFnx,
+      legendLabelFormat: plot['legendLabelFormat'] ?? 'none',
     };
   },
 };

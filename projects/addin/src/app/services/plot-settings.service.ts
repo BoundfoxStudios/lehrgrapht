@@ -8,6 +8,7 @@ export const defaultPlotSettings: PlotSettings = {
   gridLineWidth: 1.5,
   gridLineColor: '#a6a6a6',
   markerNamingScheme: 'alphabetic',
+  legendLabelFormat: 'none',
 };
 
 const plotSettingsKey = 'plot-settings';
