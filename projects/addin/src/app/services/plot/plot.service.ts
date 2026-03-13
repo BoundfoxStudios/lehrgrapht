@@ -1,7 +1,7 @@
 import * as mathjs from 'mathjs';
 import { inject, Injectable } from '@angular/core';
 import Plotly, { Annotations, PlotData } from 'plotly.js-dist-min';
-import { Plot, PlotSettings } from '../../models/plot';
+import { LegendLabelFormat, Plot, PlotSettings } from '../../models/plot';
 import { modelIdPrefix } from '../word/word.service';
 import { v7 } from 'uuid';
 import {
@@ -144,7 +144,11 @@ export class PlotService {
 
       if (!pos) continue;
 
-      const rendered = await this.renderMathPng(fn.fnx, fn.color);
+      const rendered = await this.renderMathPng(
+        fn.fnx,
+        fn.color,
+        plot.legendLabelFormat,
+      );
       if (!rendered) continue;
 
       const coords = this.plotLabelsService.calculateLabelImageCoordinates(
@@ -295,13 +299,20 @@ export class PlotService {
   private async renderMathPng(
     expression: string,
     color: string,
+    legendLabelFormat: LegendLabelFormat,
   ): Promise<
     { dataUrl: string; widthPx: number; heightPx: number } | undefined
   > {
     try {
       const node = mathjs.parse(expression);
       if (node.type === 'ConstantNode') return undefined;
-      const tex = node.toTex({ parenthesis: 'keep' });
+      let tex = node.toTex({ parenthesis: 'keep' });
+
+      if (legendLabelFormat === 'f(x)=') {
+        tex = `f(x) = ${tex}`;
+      } else if (legendLabelFormat === 'y=') {
+        tex = `y = ${tex}`;
+      }
 
       const container = MathJax.tex2svg(tex) as Element;
       const tempDiv = document.createElement('div');
