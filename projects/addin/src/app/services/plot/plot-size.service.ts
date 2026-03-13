@@ -81,9 +81,9 @@ export class PlotSizeService {
 
       let prefixChars = 0;
       if (plot.legendLabelFormat === 'f(x)=') {
-        prefixChars = 5;
+        prefixChars = 8; // 5 characters + 3 spaces
       } else if (plot.legendLabelFormat === 'y=') {
-        prefixChars = 2;
+        prefixChars = 4; // 2 characters + 2 spaces
       }
       const textWidthMm =
         ((fn.fnx.length + prefixChars) * pxPerChar + xshiftPx) * pxToMm;
