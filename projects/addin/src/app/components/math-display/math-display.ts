@@ -1,4 +1,11 @@
-import { Component, effect, ElementRef, inject, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  effect,
+  ElementRef,
+  inject,
+  input,
+} from '@angular/core';
 import * as mathjs from 'mathjs';
 import { ConstantNode } from 'mathjs';
 
@@ -7,11 +14,13 @@ import { ConstantNode } from 'mathjs';
   imports: [],
   templateUrl: './math-display.html',
   styleUrl: './math-display.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MathDisplay {
   private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
   math = input.required<string>();
+  prefix = input<string>();
 
   constructor() {
     effect(() => {
@@ -26,7 +35,11 @@ export class MathDisplay {
           return;
         }
 
-        const tex = parsedMath.toTex({ parenthesis: 'keep' });
+        let tex = parsedMath.toTex({ parenthesis: 'keep' });
+        const prefixValue = this.prefix();
+        if (prefixValue) {
+          tex = `${prefixValue} ${tex}`;
+        }
 
         this.elementRef.nativeElement.appendChild(MathJax.tex2svg(tex));
       } catch {

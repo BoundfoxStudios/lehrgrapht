@@ -306,9 +306,6 @@
               </div>
             </div>
             <div class="flex items-center gap-2">
-              @if (editorModel().legendLabelFormat !== 'none') {
-                <span class="text-sm text-gray-600">{{ editorModel().legendLabelFormat }}</span>
-              }
               <input
                 class="app-input flex-1"
                 [field]="control.fnx"
@@ -321,7 +318,10 @@
                 placeholder="z.B. x^2, sin(x), ..."
               />
             </div>
-            <lg-math-display [math]="control.fnx().value()" />
+            <lg-math-display
+              [math]="control.fnx().value()"
+              [prefix]="editorModel().legendLabelFormat === 'none' ? undefined : editorModel().legendLabelFormat"
+            />
           </div>
         }
 
