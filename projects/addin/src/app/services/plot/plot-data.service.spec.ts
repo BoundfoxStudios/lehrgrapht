@@ -45,8 +45,18 @@ describe('PlotDataService', () => {
       const plot: Plot = {
         ...basePlot,
         fnx: [
-          { fnx: 'x^2', color: '#ff0000', legendPosition: 'end' },
-          { fnx: 'sin(x)', color: '#00ff00', legendPosition: 'start' },
+          {
+            fnx: 'x^2',
+            color: '#ff0000',
+            legendPosition: 'end',
+            lineStyle: 'solid',
+          },
+          {
+            fnx: 'sin(x)',
+            color: '#00ff00',
+            legendPosition: 'start',
+            lineStyle: 'solid',
+          },
         ],
       };
       const xValues = [0, 1, 2];
@@ -63,6 +73,48 @@ describe('PlotDataService', () => {
       expect(result.length).toBe(2);
       expect(result[0].line?.color).toBe('#ff0000');
       expect(result[1].line?.color).toBe('#00ff00');
+    });
+
+    it('should use solid dash for solid lineStyle', () => {
+      const plot: Plot = {
+        ...basePlot,
+        fnx: [
+          {
+            fnx: 'x',
+            color: '#000',
+            legendPosition: 'none',
+            lineStyle: 'solid',
+          },
+        ],
+      };
+      const result = service.buildFunctionTraces(
+        plot,
+        plotSettings,
+        [0, 1],
+        [[0, 1]],
+      );
+      expect(result[0].line?.dash).toBe('solid');
+    });
+
+    it('should use dash for dashed lineStyle', () => {
+      const plot: Plot = {
+        ...basePlot,
+        fnx: [
+          {
+            fnx: 'x',
+            color: '#000',
+            legendPosition: 'none',
+            lineStyle: 'dashed',
+          },
+        ],
+      };
+      const result = service.buildFunctionTraces(
+        plot,
+        plotSettings,
+        [0, 1],
+        [[0, 1]],
+      );
+      expect(result[0].line?.dash).toBe('dash');
     });
   });
 
@@ -163,7 +215,14 @@ describe('PlotDataService', () => {
     it('should combine all trace types', () => {
       const plot: Plot = {
         ...basePlot,
-        fnx: [{ fnx: 'x', color: '#000', legendPosition: 'end' }],
+        fnx: [
+          {
+            fnx: 'x',
+            color: '#000',
+            legendPosition: 'end',
+            lineStyle: 'solid',
+          },
+        ],
         markers: [{ x: 1, y: 1, text: 'P' }],
         lines: [{ x1: 0, y1: 0, x2: 1, y2: 1, color: '#000' }],
       };

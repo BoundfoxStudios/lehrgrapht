@@ -44,6 +44,7 @@ export class PlotDataService {
       line: {
         color: plot.fnx[i].color,
         width: plotSettings.plotLineWidth,
+        dash: plot.fnx[i].lineStyle === 'dashed' ? 'dash' : 'solid',
       },
     }));
   }

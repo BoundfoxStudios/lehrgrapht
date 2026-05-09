@@ -26,7 +26,12 @@ describe('PlotMathService', () => {
   describe('compileExpressions', () => {
     it('should compile valid expressions', () => {
       const result = service.compileExpressions([
-        { fnx: 'x^2', color: '#000', legendPosition: 'end' },
+        {
+          fnx: 'x^2',
+          color: '#000',
+          legendPosition: 'end',
+          lineStyle: 'solid',
+        },
       ]);
       expect(Array.isArray(result)).toBe(true);
       expect((result as unknown[]).length).toBe(1);
@@ -34,8 +39,18 @@ describe('PlotMathService', () => {
 
     it('should compile multiple expressions', () => {
       const result = service.compileExpressions([
-        { fnx: 'x^2', color: '#000', legendPosition: 'end' },
-        { fnx: 'sin(x)', color: '#f00', legendPosition: 'start' },
+        {
+          fnx: 'x^2',
+          color: '#000',
+          legendPosition: 'end',
+          lineStyle: 'solid',
+        },
+        {
+          fnx: 'sin(x)',
+          color: '#f00',
+          legendPosition: 'start',
+          lineStyle: 'solid',
+        },
       ]);
       expect(Array.isArray(result)).toBe(true);
       expect((result as unknown[]).length).toBe(2);
@@ -43,7 +58,12 @@ describe('PlotMathService', () => {
 
     it('should return compile error for invalid expressions', () => {
       const result = service.compileExpressions([
-        { fnx: '???invalid', color: '#000', legendPosition: 'end' },
+        {
+          fnx: '???invalid',
+          color: '#000',
+          legendPosition: 'end',
+          lineStyle: 'solid',
+        },
       ]);
       expect(result).toBe(PlotGenerateErrorCode.compile);
     });
@@ -58,13 +78,25 @@ describe('PlotMathService', () => {
   describe('evaluateExpressions', () => {
     it('should evaluate compiled expressions over a range', () => {
       const compiled = service.compileExpressions([
-        { fnx: 'x^2', color: '#000', legendPosition: 'end' },
+        {
+          fnx: 'x^2',
+          color: '#000',
+          legendPosition: 'end',
+          lineStyle: 'solid',
+        },
       ]);
       expect(Array.isArray(compiled)).toBe(true);
 
       const ranges = service.createRanges({
         ...basePlot,
-        fnx: [{ fnx: 'x^2', color: '#000', legendPosition: 'end' }],
+        fnx: [
+          {
+            fnx: 'x^2',
+            color: '#000',
+            legendPosition: 'end',
+            lineStyle: 'solid',
+          },
+        ],
       });
       const result = service.evaluateExpressions(
         compiled as mathjs.EvalFunction[],
@@ -88,7 +120,7 @@ describe('PlotMathService', () => {
 
     it('should return evaluate error for expressions that fail at runtime', () => {
       const compiled = service.compileExpressions([
-        { fnx: 'x', color: '#000', legendPosition: 'end' },
+        { fnx: 'x', color: '#000', legendPosition: 'end', lineStyle: 'solid' },
       ]);
       expect(Array.isArray(compiled)).toBe(true);
 
@@ -139,7 +171,14 @@ describe('PlotMathService', () => {
       const plot: Plot = {
         ...basePlot,
         range: { x: { min: -2, max: 2 }, y: { min: 0, max: 4 } },
-        fnx: [{ fnx: 'x^2', color: '#000', legendPosition: 'end' }],
+        fnx: [
+          {
+            fnx: 'x^2',
+            color: '#000',
+            legendPosition: 'end',
+            lineStyle: 'solid',
+          },
+        ],
       };
       const ranges = service.createRanges(plot);
       const compiled = service.compileExpressions(plot.fnx);
