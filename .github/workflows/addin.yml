@@ -28,6 +28,17 @@ jobs:
           verbose: 'true'
           fail-on: 'high'
 
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/read-node-version-from-nvmrc
+        id: node-version
+      - uses: ./.github/actions/prepare-node
+        with:
+          version: ${{ steps.node-version.outputs.version }}
+      - run: npm run lint:addin
+
   build-and-deploy-addin:
     name: Build & Deploy AddIn
     runs-on: ubuntu-latest
