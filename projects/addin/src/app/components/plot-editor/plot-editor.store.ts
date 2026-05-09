@@ -122,6 +122,7 @@ export const PlotEditorStore = signalStore(
     const plotService = inject(PlotService);
     const wordService = inject(WordService);
     const router = inject(Router);
+    const route = inject(ActivatedRoute);
 
     const model = signal<Plot>(buildInitialPlot());
     const plotSettings = signal<PlotSettings>(defaultPlotSettings);
@@ -166,7 +167,13 @@ export const PlotEditorStore = signalStore(
               width: plot.widthInPoints,
             });
 
-            void router.navigate(['/plot/editor', id]);
+            if (!existingId) {
+              const section = route.firstChild?.snapshot.url[0]?.path;
+              const command: unknown[] = section
+                ? ['/plot/editor', id, section]
+                : ['/plot/editor', id];
+              void router.navigate(command);
+            }
             return undefined;
           },
         },
