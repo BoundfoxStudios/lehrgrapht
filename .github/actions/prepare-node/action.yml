@@ -1,0 +1,23 @@
+name: Prepare node
+description: Prepares node.js, caching, package-lock.json.
+inputs:
+  version:
+    description: The Node.js version to setup.
+    required: true
+  run-install:
+    default: 'true'
+    description: Whether to run npm ci or not.
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Node ${{ inputs.version }}
+      uses: actions/setup-node@v6
+      with:
+        node-version: ${{ inputs.version }}
+        cache: npm
+        cache-dependency-path: package-lock.json
+
+    - run: npm ci
+      if: inputs.run-install == 'true'
+      shell: sh

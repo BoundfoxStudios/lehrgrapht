@@ -1,0 +1,15 @@
+name: Node.js version
+description: Reads the Node.js version from .nvmrc
+outputs:
+  version:
+    description: The Node.js version
+    value: ${{ steps.version.outputs.version }}
+
+runs:
+  using: composite
+  steps:
+    - name: get node version from .nvmrc
+      id: version
+      run: |
+        echo "version=$(cat .nvmrc | tr -cd [:digit:].)" >> "$GITHUB_OUTPUT"
+      shell: sh
