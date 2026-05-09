@@ -21,14 +21,13 @@ import {
   faSquareRootVariable,
 } from '@fortawesome/free-solid-svg-icons';
 import { Header } from '../header/header';
-import { Section } from '../section/section';
-import { PlotPreview } from '../plot-preview/plot-preview';
+import { PreviewDock } from '../preview-dock/preview-dock';
 import { TabStrip, TabStripItem } from '../tab-strip/tab-strip';
 import { PlotEditorStore } from './plot-editor.store';
 
 @Component({
   selector: 'lg-plot-editor',
-  imports: [Header, PlotPreview, Section, TabStrip, RouterOutlet],
+  imports: [Header, PreviewDock, TabStrip, RouterOutlet],
   templateUrl: './plot-editor.html',
   styleUrl: './plot-editor.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -52,6 +51,10 @@ export class PlotEditor {
     this.currentSection() === null
       ? ['/plot/list']
       : ['/plot/editor', this.store.routeId()],
+  );
+
+  protected readonly showErrorDock = computed(
+    () => this.currentSection() === null && this.store.hasErrors(),
   );
 
   protected readonly sectionTabs = computed<TabStripItem[]>(() => {

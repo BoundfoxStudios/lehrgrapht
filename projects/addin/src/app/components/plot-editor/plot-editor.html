@@ -19,36 +19,5 @@
     <router-outlet />
   </div>
 
-  <div class="sticky bottom-0 border-t border-gray-200 bg-gray-50">
-    <div class="p-3">
-      <button
-        class="app-button w-full"
-        type="submit"
-      >
-        @if (store.isEditMode()) {
-          Plot aktualisieren
-        } @else {
-          In Word einfügen
-        }
-      </button>
-    </div>
-    <lg-section
-      [title]="
-        store.isAnyInteractiveMode()
-          ? 'Vorschau - Klicke um Punkte hinzuzufügen'
-          : 'Vorschau'
-      "
-      [subtitle]="
-        store.isAnyInteractiveMode()
-          ? 'Punkte werden auf 0.5 gerundet'
-          : 'Die Vorschau entspricht nicht der Größe des Bildes, das in Word eingefügt wird.'
-      "
-    />
-    <lg-plot-preview
-      [plot]="store.previewModel()"
-      [plotSettings]="store.plotSettings()"
-      [interactive]="store.isAnyInteractiveMode()"
-      (plotClick)="store.onPlotClick($event)"
-    />
-  </div>
+  <lg-preview-dock [errorVariant]="showErrorDock()" />
 </form>
