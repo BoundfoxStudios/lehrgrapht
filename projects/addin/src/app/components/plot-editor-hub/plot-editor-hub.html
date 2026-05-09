@@ -1,0 +1,214 @@
+@let form = editorForm();
+
+<div class="flex flex-col gap-2.5 p-2.5">
+  <!-- Plot name (inline rename) -->
+  <div class="border-default-medium rounded-base border bg-white p-2.5">
+    <label
+      class="text-2xs text-body-subtle mb-0.5 block font-semibold uppercase"
+      for="plot-name"
+      >Name</label
+    >
+    <input
+      class="text-heading focus:border-default-medium w-full border-0 border-b border-transparent bg-transparent py-1 text-base font-semibold transition-colors focus:outline-none"
+      id="plot-name"
+      [formField]="form.name"
+      type="text"
+      placeholder="z.B. Parabel, Sinus, ..."
+    />
+  </div>
+
+  <!-- Range / Achsen card -->
+  <button
+    class="border-default-medium rounded-base hover:border-brand-medium flex items-center gap-2.5 border bg-white p-2.5 text-left transition-colors"
+    (click)="select('range')"
+    type="button"
+  >
+    <span
+      class="bg-brand-soft text-brand grid h-9 w-9 shrink-0 place-items-center rounded-md"
+      aria-hidden="true"
+    >
+      <fa-icon [icon]="faExpand" />
+    </span>
+    <span class="min-w-0 flex-1">
+      <span class="text-heading block text-sm font-bold"
+        >Grenzen &amp; Achsen</span
+      >
+      <span class="text-body-subtle block text-xs tabular-nums">{{
+        rangeSummary()
+      }}</span>
+    </span>
+    <fa-icon
+      class="text-body-subtle"
+      [icon]="faChevronRight"
+    />
+  </button>
+
+  <!-- OBJEKTE -->
+  <h3
+    class="text-2xs text-body-subtle px-0.5 pt-1 font-bold tracking-wider uppercase"
+  >
+    Objekte
+  </h3>
+  <div class="grid grid-cols-2 gap-2">
+    <button
+      class="border-default-medium rounded-base hover:border-brand-medium flex min-h-[78px] flex-col gap-1.5 border bg-white p-2.5 text-left transition-colors"
+      (click)="select('fnx')"
+      type="button"
+    >
+      <div class="flex items-center justify-between">
+        <span
+          class="bg-brand-soft text-brand grid h-7 w-7 place-items-center rounded-md"
+          aria-hidden="true"
+        >
+          <fa-icon [icon]="faSquareRootVariable" />
+        </span>
+        @if (fnxCount() > 0) {
+          <span
+            class="bg-brand text-2xs inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 font-bold text-white"
+            >{{ fnxCount() }}</span
+          >
+        }
+      </div>
+      <div>
+        <div class="text-heading text-sm font-semibold">Funktionen</div>
+        <div class="text-body-subtle text-2xs mt-0.5">
+          @if (fnxCount() === 0) {
+            + hinzufügen
+          } @else if (fnxCount() === 1) {
+            1 Funktion
+          } @else {
+            {{ fnxCount() }} Funktionen
+          }
+        </div>
+      </div>
+    </button>
+
+    <button
+      class="border-default-medium rounded-base hover:border-brand-medium flex min-h-[78px] flex-col gap-1.5 border bg-white p-2.5 text-left transition-colors"
+      (click)="select('markers')"
+      type="button"
+    >
+      <div class="flex items-center justify-between">
+        <span
+          class="bg-brand-soft text-brand grid h-7 w-7 place-items-center rounded-md"
+          aria-hidden="true"
+        >
+          <fa-icon [icon]="faLocationDot" />
+        </span>
+        @if (markersCount() > 0) {
+          <span
+            class="bg-brand text-2xs inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 font-bold text-white"
+            >{{ markersCount() }}</span
+          >
+        }
+      </div>
+      <div>
+        <div class="text-heading text-sm font-semibold">Punkte</div>
+        <div class="text-body-subtle text-2xs mt-0.5">
+          @if (markersCount() === 0) {
+            + hinzufügen
+          } @else if (markersCount() === 1) {
+            1 Punkt
+          } @else {
+            {{ markersCount() }} Punkte
+          }
+        </div>
+      </div>
+    </button>
+
+    <button
+      class="border-default-medium rounded-base hover:border-brand-medium flex min-h-[78px] flex-col gap-1.5 border bg-white p-2.5 text-left transition-colors"
+      (click)="select('lines')"
+      type="button"
+    >
+      <div class="flex items-center justify-between">
+        <span
+          class="bg-brand-soft text-brand grid h-7 w-7 place-items-center rounded-md"
+          aria-hidden="true"
+        >
+          <fa-icon [icon]="faMinus" />
+        </span>
+        @if (linesCount() > 0) {
+          <span
+            class="bg-brand text-2xs inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 font-bold text-white"
+            >{{ linesCount() }}</span
+          >
+        }
+      </div>
+      <div>
+        <div class="text-heading text-sm font-semibold">Linien</div>
+        <div class="text-body-subtle text-2xs mt-0.5">
+          @if (linesCount() === 0) {
+            + hinzufügen
+          } @else if (linesCount() === 1) {
+            1 Linie
+          } @else {
+            {{ linesCount() }} Linien
+          }
+        </div>
+      </div>
+    </button>
+
+    <button
+      class="border-default-medium rounded-base hover:border-brand-medium flex min-h-[78px] flex-col gap-1.5 border bg-white p-2.5 text-left transition-colors"
+      (click)="select('areas')"
+      type="button"
+    >
+      <div class="flex items-center justify-between">
+        <span
+          class="bg-brand-soft text-brand grid h-7 w-7 place-items-center rounded-md"
+          aria-hidden="true"
+        >
+          <fa-icon [icon]="faDrawPolygon" />
+        </span>
+        @if (areasCount() > 0) {
+          <span
+            class="bg-brand text-2xs inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 font-bold text-white"
+            >{{ areasCount() }}</span
+          >
+        }
+      </div>
+      <div>
+        <div class="text-heading text-sm font-semibold">Flächen</div>
+        <div class="text-body-subtle text-2xs mt-0.5">
+          @if (areasCount() === 0) {
+            + hinzufügen
+          } @else if (areasCount() === 1) {
+            1 Fläche
+          } @else {
+            {{ areasCount() }} Flächen
+          }
+        </div>
+      </div>
+    </button>
+  </div>
+
+  <!-- WEITERE -->
+  <h3
+    class="text-2xs text-body-subtle px-0.5 pt-1 font-bold tracking-wider uppercase"
+  >
+    Weitere
+  </h3>
+  <button
+    class="border-default-medium rounded-base hover:border-brand-medium flex items-center gap-2.5 border bg-white p-2.5 text-left transition-colors"
+    (click)="select('settings')"
+    type="button"
+  >
+    <span
+      class="bg-brand-soft text-brand grid h-9 w-9 shrink-0 place-items-center rounded-md"
+      aria-hidden="true"
+    >
+      <fa-icon [icon]="faSliders" />
+    </span>
+    <span class="flex-1">
+      <span class="text-heading block text-sm font-bold">Darstellung</span>
+      <span class="text-body-subtle block text-xs"
+        >Achsen, Beschriftung, Format</span
+      >
+    </span>
+    <fa-icon
+      class="text-body-subtle"
+      [icon]="faChevronRight"
+    />
+  </button>
+</div>
