@@ -1,4 +1,5 @@
-import { nextColor, removeAt } from './plot-editor.store';
+import { MarkerNamingService } from '../../services/marker-naming.service';
+import { nameAreaPoints, nextColor, removeAt } from './plot-editor.store';
 
 describe('nextColor', () => {
   it('returns palette color for index within range', () => {
@@ -42,5 +43,35 @@ describe('removeAt', () => {
     const result = removeAt(input, 1);
     expect(result).not.toBe(input);
     expect(input).toEqual([1, 2, 3]);
+  });
+});
+
+describe('nameAreaPoints', () => {
+  const namer = new MarkerNamingService();
+
+  it('maps each point to a labeled AreaPoint with auto labelPosition', () => {
+    const points = [
+      { x: 0, y: 0 },
+      { x: 1, y: 1 },
+    ];
+    const result = nameAreaPoints(points, 'numeric', namer, 0);
+    expect(result).toEqual([
+      { x: 0, y: 0, labelPosition: 'auto', labelText: 'P1' },
+      { x: 1, y: 1, labelPosition: 'auto', labelText: 'P2' },
+    ]);
+  });
+
+  it('starts naming at startIndex', () => {
+    const points = [{ x: 0, y: 0 }];
+    const result = nameAreaPoints(points, 'numeric', namer, 4);
+    expect(result[0].labelText).toBe('P5');
+  });
+
+  it('respects scheme', () => {
+    const points = [{ x: 0, y: 0 }];
+    expect(nameAreaPoints(points, 'alphabetic', namer, 0)[0].labelText).toBe(
+      'A',
+    );
+    expect(nameAreaPoints(points, 'numeric', namer, 0)[0].labelText).toBe('P1');
   });
 });

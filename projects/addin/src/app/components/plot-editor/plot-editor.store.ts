@@ -13,7 +13,12 @@ import { form, SchemaPath, validate } from '@angular/forms/signals';
 import { ActivatedRoute, Router } from '@angular/router';
 import { map } from 'rxjs';
 import { lehrgraphtVersion } from '../../../version';
-import { Plot, PlotSettings } from '../../models/plot';
+import {
+  AreaPoint,
+  MarkerNamingScheme,
+  Plot,
+  PlotSettings,
+} from '../../models/plot';
 import { MarkerNamingService } from '../../services/marker-naming.service';
 import {
   defaultPlotSettings,
@@ -35,6 +40,20 @@ export function removeAt<T>(arr: readonly T[], index: number): T[] {
   const next = [...arr];
   next.splice(index, 1);
   return next;
+}
+
+export function nameAreaPoints(
+  points: readonly { x: number; y: number }[],
+  scheme: MarkerNamingScheme,
+  service: MarkerNamingService,
+  startIndex: number,
+): AreaPoint[] {
+  return points.map((p, i) => ({
+    x: p.x,
+    y: p.y,
+    labelPosition: 'auto',
+    labelText: service.generateName(startIndex + i, scheme),
+  }));
 }
 
 export const NEW_PLOT_ID = 'new';
