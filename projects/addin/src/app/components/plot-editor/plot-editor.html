@@ -21,7 +21,7 @@
       <input
         class="app-input"
         id="name"
-        [field]="editorForm.name"
+        [formField]="editorForm.name"
         type="text"
         placeholder="z.B. Parabel, Sinus, ..."
       />
@@ -46,7 +46,7 @@
               <input
                 class="app-input"
                 id="min-x"
-                [field]="editorForm.range.x.min"
+                [formField]="editorForm.range.x.min"
                 type="number"
                 step="1"
               />
@@ -60,7 +60,7 @@
               <input
                 class="app-input"
                 id="max-x"
-                [field]="editorForm.range.x.max"
+                [formField]="editorForm.range.x.max"
                 type="number"
                 step="1"
               />
@@ -87,7 +87,7 @@
               <input
                 class="app-input"
                 id="min-y"
-                [field]="editorForm.range.y.min"
+                [formField]="editorForm.range.y.min"
                 type="number"
                 step="1"
               />
@@ -101,7 +101,7 @@
               <input
                 class="app-input"
                 id="max-y"
-                [field]="editorForm.range.y.max"
+                [formField]="editorForm.range.y.max"
                 type="number"
                 step="1"
               />
@@ -165,7 +165,7 @@
           <input
             class="app-checkbox"
             id="show-axis"
-            [field]="editorForm.showAxis"
+            [formField]="editorForm.showAxis"
             type="checkbox"
           />
           <span class="text-sm text-gray-700">Achsen anzeigen</span>
@@ -178,7 +178,7 @@
             <input
               class="app-checkbox"
               id="show-axis-labels"
-              [field]="editorForm.showAxisLabels"
+              [formField]="editorForm.showAxisLabels"
               type="checkbox"
             />
             <span class="text-sm text-gray-700">Achsenbeschriftung</span>
@@ -191,7 +191,7 @@
               <input
                 class="app-checkbox"
                 id="place-axis-labels-inside"
-                [field]="editorForm.placeAxisLabelsInside"
+                [formField]="editorForm.placeAxisLabelsInside"
                 type="checkbox"
               />
               <span class="text-sm text-gray-700">An 0-Linie anzeigen</span>
@@ -211,7 +211,7 @@
                   <input
                     class="app-input"
                     id="axis-label-x"
-                    [field]="editorForm.axisLabelX"
+                    [formField]="editorForm.axisLabelX"
                     type="text"
                     placeholder="x"
                   />
@@ -225,7 +225,7 @@
                   <input
                     class="app-input"
                     id="axis-label-y"
-                    [field]="editorForm.axisLabelY"
+                    [formField]="editorForm.axisLabelY"
                     type="text"
                     placeholder="y"
                   />
@@ -238,7 +238,7 @@
                   >Legendenformat</label
                 >
                 <lg-dropdown
-                  [field]="editorForm.legendLabelFormat"
+                  [formField]="editorForm.legendLabelFormat"
                   [options]="legendLabelFormatOptions"
                 />
               </div>
@@ -252,7 +252,7 @@
           <input
             class="app-checkbox"
             id="square-plots"
-            [field]="editorForm.squarePlots"
+            [formField]="editorForm.squarePlots"
             type="checkbox"
           />
           <span class="text-sm text-gray-700">Plot quadratisch generieren</span>
@@ -264,7 +264,7 @@
           <input
             class="app-checkbox"
             id="limit-equals-value-range"
-            [field]="editorForm.automaticallyAdjustLimitsToValueRange"
+            [formField]="editorForm.automaticallyAdjustLimitsToValueRange"
             type="checkbox"
           />
           <span class="text-sm text-gray-700"
@@ -285,17 +285,9 @@
                 >Funktion {{ index + 1 }}</span
               >
               <div class="flex items-center gap-2">
-                <lg-dropdown
-                  [field]="control.lineStyle"
-                  [options]="lineStyleOptions"
-                />
-                <lg-dropdown
-                  [field]="control.legendPosition"
-                  [options]="legendPositionOptions"
-                />
                 <input
                   class="h-7 w-7 cursor-pointer rounded border-none"
-                  [field]="control.color"
+                  [formField]="control.color"
                   type="color"
                   title="Farbe wählen"
                 />
@@ -309,10 +301,24 @@
                 </button>
               </div>
             </div>
+            <div
+              class="mb-2 grid grid-cols-[auto_1fr] items-center gap-x-3 gap-y-2"
+            >
+              <span class="text-xs text-gray-600">Linie</span>
+              <lg-dropdown
+                [formField]="control.lineStyle"
+                [options]="lineStyleOptions"
+              />
+              <span class="text-xs text-gray-600">Legende</span>
+              <lg-dropdown
+                [formField]="control.legendPosition"
+                [options]="legendPositionOptions"
+              />
+            </div>
             <div class="flex items-center gap-2">
               <input
                 class="app-input flex-1"
-                [field]="control.fnx"
+                [formField]="control.fnx"
                 [id]="'fnx-' + $index"
                 type="text"
                 spellcheck="false"
@@ -431,7 +437,7 @@
               >
               <input
                 class="app-input"
-                [field]="control.text"
+                [formField]="control.text"
                 [id]="'marker-text-' + $index"
                 type="text"
                 spellcheck="false"
@@ -450,7 +456,7 @@
                 >
                 <input
                   class="app-input"
-                  [field]="control.x"
+                  [formField]="control.x"
                   [id]="'marker-x-' + $index"
                   type="number"
                 />
@@ -463,7 +469,7 @@
                 >
                 <input
                   class="app-input"
-                  [field]="control.y"
+                  [formField]="control.y"
                   [id]="'marker-y-' + $index"
                   type="number"
                 />
@@ -586,7 +592,7 @@
                 >
                   <input
                     class="h-4 w-4 cursor-pointer rounded border-gray-300"
-                    [field]="control.showPoints"
+                    [formField]="control.showPoints"
                     [id]="'area-' + areaIndex + '-show-points'"
                     type="checkbox"
                   />
@@ -594,7 +600,7 @@
                 </label>
                 <input
                   class="h-7 w-7 cursor-pointer rounded border-none"
-                  [field]="control.color"
+                  [formField]="control.color"
                   type="color"
                   title="Farbe wählen"
                 />
@@ -625,7 +631,7 @@
                       >
                       <input
                         class="app-input"
-                        [field]="point.x"
+                        [formField]="point.x"
                         [id]="'area-' + areaIndex + '-x-' + pointIndex"
                         type="number"
                       />
@@ -638,7 +644,7 @@
                       >
                       <input
                         class="app-input"
-                        [field]="point.y"
+                        [formField]="point.y"
                         [id]="'area-' + areaIndex + '-y-' + pointIndex"
                         type="number"
                       />
@@ -664,7 +670,7 @@
                         >
                         <input
                           class="app-input"
-                          [field]="point.labelText"
+                          [formField]="point.labelText"
                           [id]="
                             'area-' + areaIndex + '-labeltext-' + pointIndex
                           "
@@ -678,7 +684,7 @@
                           >Position</label
                         >
                         <lg-dropdown
-                          [field]="point.labelPosition"
+                          [formField]="point.labelPosition"
                           [options]="labelPositionOptions"
                         />
                       </div>
@@ -801,7 +807,7 @@
               <div class="flex items-center gap-2">
                 <input
                   class="h-7 w-7 cursor-pointer rounded border-none"
-                  [field]="control.color"
+                  [formField]="control.color"
                   type="color"
                   title="Farbe wählen"
                 />
@@ -830,7 +836,7 @@
                     >
                     <input
                       class="app-input"
-                      [field]="control.x1"
+                      [formField]="control.x1"
                       [id]="'line-x1-' + $index"
                       type="number"
                     />
@@ -843,7 +849,7 @@
                     >
                     <input
                       class="app-input"
-                      [field]="control.y1"
+                      [formField]="control.y1"
                       [id]="'line-y1-' + $index"
                       type="number"
                     />
@@ -863,7 +869,7 @@
                     >
                     <input
                       class="app-input"
-                      [field]="control.x2"
+                      [formField]="control.x2"
                       [id]="'line-x2-' + $index"
                       type="number"
                     />
@@ -876,7 +882,7 @@
                     >
                     <input
                       class="app-input"
-                      [field]="control.y2"
+                      [formField]="control.y2"
                       [id]="'line-y2-' + $index"
                       type="number"
                     />
