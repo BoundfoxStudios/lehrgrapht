@@ -17,6 +17,8 @@
     "validate": "office-addin-manifest validate manifest.xml",
     "test": "ng test",
     "lint": "ng lint",
+    "lint:website": "ng lint website",
+    "lint:addin": "ng lint addin",
     "postinstall": "lefthook install"
   },
   "config": {

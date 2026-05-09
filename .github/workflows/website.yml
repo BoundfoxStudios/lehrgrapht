@@ -27,6 +27,17 @@ jobs:
           verbose: 'true'
           fail-on: 'high'
 
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/read-node-version-from-nvmrc
+        id: node-version
+      - uses: ./.github/actions/prepare-node
+        with:
+          version: ${{ steps.node-version.outputs.version }}
+      - run: npm run lint:website
+
   build-and-deploy-website:
     name: Build & Deploy Website
     runs-on: ubuntu-latest
