@@ -16,8 +16,7 @@
     "watch": "ng build addin --watch --configuration development",
     "validate": "office-addin-manifest validate manifest.xml",
     "test": "ng test",
-    "lint": "ng lint",
-    "prepare": "husky"
+    "lint": "ng lint"
   },
   "config": {
     "app_to_debug": "word",
@@ -67,9 +66,7 @@
     "eslint-config-prettier": "~10.1.8",
     "gulp": "~5.0.1",
     "gulp-replace": "~1.1.4",
-    "husky": "~9.1.7",
     "jsdom": "^29.1.1",
-    "lint-staged": "~17.0.3",
     "ng-packagr": "^21.2.3",
     "postcss": "^8.5.14",
     "prettier": "~3.8.3",
@@ -80,9 +77,5 @@
     "typescript": "~5.9.3",
     "typescript-eslint": "8.59.2",
     "vitest": "^4.1.5"
-  },
-  "lint-staged": {
-    "*.ts": "eslint --fix",
-    "*.*": "prettier --write --ignore-unknown"
   }
 }
