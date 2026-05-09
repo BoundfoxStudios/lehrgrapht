@@ -9,6 +9,7 @@ export const migrateToLatest: Migration = {
     const migratedFnx = (fnx ?? []).map(fn => ({
       ...fn,
       legendPosition: fn['legendPosition'] ?? 'none',
+      lineStyle: fn['lineStyle'] ?? 'solid',
     }));
 
     return {

@@ -35,7 +35,14 @@ describe('PlotSizeService', () => {
     it('should return base margins when legend position is none', () => {
       const plot: Plot = {
         ...basePlot,
-        fnx: [{ fnx: 'x^2', color: '#000', legendPosition: 'none' }],
+        fnx: [
+          {
+            fnx: 'x^2',
+            color: '#000',
+            legendPosition: 'none',
+            lineStyle: 'solid',
+          },
+        ],
       };
       const margin = service.calculateEffectiveMargin(plot);
       expect(margin.l).toBe(PLOT_CONSTANTS.mmMargin.l);
@@ -50,6 +57,7 @@ describe('PlotSizeService', () => {
             fnx: 'sin(x) + cos(x) * 2',
             color: '#000',
             legendPosition: 'start',
+            lineStyle: 'solid',
           },
         ],
       };
@@ -66,6 +74,7 @@ describe('PlotSizeService', () => {
             fnx: 'sin(x) + cos(x) * 2',
             color: '#000',
             legendPosition: 'end',
+            lineStyle: 'solid',
           },
         ],
       };
@@ -77,7 +86,14 @@ describe('PlotSizeService', () => {
     it('should not reduce margins below base for short expressions', () => {
       const plot: Plot = {
         ...basePlot,
-        fnx: [{ fnx: 'x', color: '#000', legendPosition: 'start' }],
+        fnx: [
+          {
+            fnx: 'x',
+            color: '#000',
+            legendPosition: 'start',
+            lineStyle: 'solid',
+          },
+        ],
       };
       const margin = service.calculateEffectiveMargin(plot);
       expect(margin.l).toBeGreaterThanOrEqual(PLOT_CONSTANTS.mmMargin.l);

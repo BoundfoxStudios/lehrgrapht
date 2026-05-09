@@ -286,6 +286,10 @@
               >
               <div class="flex items-center gap-2">
                 <lg-dropdown
+                  [field]="control.lineStyle"
+                  [options]="lineStyleOptions"
+                />
+                <lg-dropdown
                   [field]="control.legendPosition"
                   [options]="legendPositionOptions"
                 />

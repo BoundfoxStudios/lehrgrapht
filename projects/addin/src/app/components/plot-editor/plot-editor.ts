@@ -24,6 +24,7 @@ import {
 import { MathDisplay } from '../math-display/math-display';
 import {
   FunctionLegendPosition,
+  FunctionLineStyle,
   LabelPosition,
   LegendLabelFormat,
   Plot,
@@ -121,6 +122,11 @@ export class PlotEditor {
       { value: 'end', label: 'Ende' },
     ];
 
+  protected readonly lineStyleOptions: DropdownOption<FunctionLineStyle>[] = [
+    { value: 'solid', label: 'Durchgezogen' },
+    { value: 'dashed', label: 'Gestrichelt' },
+  ];
+
   protected readonly legendLabelFormatOptions: DropdownOption<LegendLabelFormat>[] =
     [
       { value: 'none', label: 'Keine' },
@@ -170,6 +176,7 @@ export class PlotEditor {
         fnx: 'x',
         color: colors[0],
         legendPosition: 'none',
+        lineStyle: 'solid',
       },
     ],
     markers: [],
@@ -265,6 +272,7 @@ export class PlotEditor {
             fnx: fnxString,
             color: colors[fnx.length % colors.length],
             legendPosition: 'none',
+            lineStyle: 'solid',
           },
         ];
       }
@@ -376,6 +384,7 @@ export class PlotEditor {
           fnx: 'x',
           color: colors[model.fnx.length % colors.length],
           legendPosition: 'none',
+          lineStyle: 'solid',
         },
       ],
     }));
@@ -656,6 +665,7 @@ export class PlotEditor {
                   fnx: fnxString,
                   color: colors[model.fnx.length % colors.length],
                   legendPosition: 'none',
+                  lineStyle: 'solid',
                 },
               ],
             }));

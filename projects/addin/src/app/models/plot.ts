@@ -4,10 +4,13 @@ export type FunctionLegendPosition = 'none' | 'start' | 'end';
 
 export type LegendLabelFormat = 'none' | 'f(x)=' | 'y=';
 
+export type FunctionLineStyle = 'solid' | 'dashed';
+
 export interface MathFunction {
   fnx: string;
   color: string;
   legendPosition: FunctionLegendPosition;
+  lineStyle: FunctionLineStyle;
 }
 
 export type MarkerNamingScheme = 'alphabetic' | 'numeric';
