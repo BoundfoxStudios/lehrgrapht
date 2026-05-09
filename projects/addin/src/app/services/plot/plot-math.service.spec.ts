@@ -18,6 +18,7 @@ const basePlot: Plot = {
   automaticallyAdjustLimitsToValueRange: false,
   axisLabelX: 'x',
   axisLabelY: 'y',
+  legendLabelFormat: 'none',
 };
 
 describe('PlotMathService', () => {

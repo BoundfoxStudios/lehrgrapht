@@ -8,6 +8,7 @@ const plotSettings: PlotSettings = {
   gridLineColor: '#cccccc',
   plotLineWidth: 1.5,
   markerNamingScheme: 'alphabetic',
+  legendLabelFormat: 'none',
 };
 
 const basePlot: Plot = {
@@ -25,6 +26,7 @@ const basePlot: Plot = {
   automaticallyAdjustLimitsToValueRange: false,
   axisLabelX: 'x',
   axisLabelY: 'y',
+  legendLabelFormat: 'none',
 };
 
 describe('PlotAnnotationsService', () => {
