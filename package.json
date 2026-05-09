@@ -16,7 +16,8 @@
     "watch": "ng build addin --watch --configuration development",
     "validate": "office-addin-manifest validate manifest.xml",
     "test": "ng test",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "postinstall": "lefthook install"
   },
   "config": {
     "app_to_debug": "word",
@@ -67,6 +68,7 @@
     "gulp": "~5.0.1",
     "gulp-replace": "~1.1.4",
     "jsdom": "^29.1.1",
+    "lefthook": "^2.1.6",
     "ng-packagr": "^21.2.3",
     "postcss": "^8.5.14",
     "prettier": "~3.8.3",

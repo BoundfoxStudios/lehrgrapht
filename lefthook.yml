@@ -1,0 +1,11 @@
+pre-commit:
+  parallel: true
+  jobs:
+    - name: Format staged files
+      run: npx prettier --write --ignore-unknown {staged_files}
+      stage_fixed: true
+
+    - name: Lint
+      run: npx eslint --fix {staged_files}
+      stage_fixed: true
+      glob: '*.ts'
