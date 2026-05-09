@@ -48,6 +48,12 @@ export class PlotEditor {
     { initialValue: null as string | null },
   );
 
+  protected readonly backLink = computed<unknown[]>(() =>
+    this.currentSection() === null
+      ? ['/plot/list']
+      : ['/plot/editor', this.store.routeId()],
+  );
+
   protected readonly sectionTabs = computed<TabStripItem[]>(() => {
     const model = this.store.model();
     return [
