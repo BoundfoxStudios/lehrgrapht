@@ -6,7 +6,7 @@ import {
   Plot,
   PlotSettings,
 } from '../../models/plot';
-import { Field, form, min } from '@angular/forms/signals';
+import { form, FormField, min } from '@angular/forms/signals';
 import { Accordion } from '../accordion/accordion';
 import { AccordionPanel } from '../accordion/accordion-panel/accordion-panel';
 import { ContentContainer } from '../content-container/content-container';
@@ -25,9 +25,9 @@ import { lehrgraphtVersion } from '../../../version';
     Accordion,
     AccordionPanel,
     ContentContainer,
-    Field,
     PlotPreview,
     Dropdown,
+    FormField,
   ],
   templateUrl: './settings.html',
   styleUrl: './settings.css',
