@@ -31,6 +31,12 @@ export function nextColor(count: number): string {
   return colors[count % colors.length];
 }
 
+export function removeAt<T>(arr: readonly T[], index: number): T[] {
+  const next = [...arr];
+  next.splice(index, 1);
+  return next;
+}
+
 export const NEW_PLOT_ID = 'new';
 
 const buildInitialPlot = (): Plot => ({

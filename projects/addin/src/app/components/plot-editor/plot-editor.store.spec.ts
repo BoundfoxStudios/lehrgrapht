@@ -1,4 +1,4 @@
-import { nextColor } from './plot-editor.store';
+import { nextColor, removeAt } from './plot-editor.store';
 
 describe('nextColor', () => {
   it('returns palette color for index within range', () => {
@@ -21,5 +21,26 @@ describe('nextColor', () => {
       nextColor(3),
     ]);
     expect(distinct.size).toBe(4);
+  });
+});
+
+describe('removeAt', () => {
+  it('removes element at given index', () => {
+    expect(removeAt([1, 2, 3, 4], 1)).toEqual([1, 3, 4]);
+  });
+
+  it('handles first index', () => {
+    expect(removeAt([1, 2, 3], 0)).toEqual([2, 3]);
+  });
+
+  it('handles last index', () => {
+    expect(removeAt([1, 2, 3], 2)).toEqual([1, 2]);
+  });
+
+  it('returns a new array, leaves input untouched', () => {
+    const input = [1, 2, 3];
+    const result = removeAt(input, 1);
+    expect(result).not.toBe(input);
+    expect(input).toEqual([1, 2, 3]);
   });
 });
