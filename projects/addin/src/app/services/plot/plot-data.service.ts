@@ -1,12 +1,15 @@
 import { Injectable } from '@angular/core';
-import { PlotData } from 'plotly.js-dist-min';
+import { Dash, PlotData } from 'plotly.js-dist-min';
 import {
   AreaPoint,
   LabelPosition,
   Plot,
   PlotSettings,
 } from '../../models/plot';
-import { hexToRgba } from './plot.types';
+import { hexToRgba, PLOT_CONSTANTS } from './plot.types';
+
+const DASH_TARGET_PERIOD_UNITS = 0.5;
+const DASH_RATIO = 0.6;
 
 @Injectable({ providedIn: 'root' })
 export class PlotDataService {
@@ -85,9 +88,38 @@ export class PlotDataService {
       line: {
         color: line.color,
         width: plotSettings.plotLineWidth,
-        dash: line.lineStyle === 'dashed' ? 'dash' : 'solid',
+        dash:
+          line.lineStyle === 'dashed'
+            ? this.calculateDashPattern(line)
+            : 'solid',
       },
     }));
+  }
+
+  private calculateDashPattern(line: {
+    x1: number;
+    y1: number;
+    x2: number;
+    y2: number;
+  }): Dash {
+    const dx = line.x2 - line.x1;
+    const dy = line.y2 - line.y1;
+    const lengthUnits = Math.sqrt(dx * dx + dy * dy);
+
+    if (lengthUnits === 0) return 'dash';
+
+    const numPeriods = Math.max(
+      1,
+      Math.round(lengthUnits / DASH_TARGET_PERIOD_UNITS),
+    );
+    const periodUnits = lengthUnits / numPeriods;
+
+    const { dtick, mmPerTick, mmToInches, ppiBase } = PLOT_CONSTANTS;
+    const pxPerUnit = (mmPerTick / dtick) * mmToInches * ppiBase;
+    const dashPx = periodUnits * DASH_RATIO * pxPerUnit;
+    const gapPx = periodUnits * (1 - DASH_RATIO) * pxPerUnit;
+
+    return `${dashPx}px,${gapPx}px` as Dash;
   }
 
   buildAreaTraces(plot: Plot, plotSettings: PlotSettings): Partial<PlotData>[] {

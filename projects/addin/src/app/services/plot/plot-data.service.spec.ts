@@ -1,5 +1,6 @@
 import { AreaPoint, Plot, PlotSettings } from '../../models/plot';
 import { PlotDataService } from './plot-data.service';
+import { PLOT_CONSTANTS } from './plot.types';
 
 const plotSettings: PlotSettings = {
   zeroLineWidth: 1,
@@ -195,13 +196,44 @@ describe('PlotDataService', () => {
       expect(result[0].line?.dash).toBe('solid');
     });
 
-    it('should use dash for dashed lineStyle', () => {
+    it('should use a custom px pattern for dashed lineStyle that divides the line length evenly', () => {
       const plot: Plot = {
         ...basePlot,
         lines: [
           {
             x1: 0,
             y1: 0,
+            x2: 4,
+            y2: 0,
+            color: '#000',
+            lineStyle: 'dashed',
+          },
+        ],
+      };
+      const result = service.buildLineTraces(plot, plotSettings);
+      const dash = result[0].line?.dash as string;
+      const match = /^([\d.]+)px,([\d.]+)px$/.exec(dash);
+      if (!match) throw new Error(`Unexpected dash pattern: ${dash}`);
+
+      const dashPx = parseFloat(match[1]);
+      const gapPx = parseFloat(match[2]);
+      const period = dashPx + gapPx;
+
+      const { dtick, mmPerTick, mmToInches, ppiBase } = PLOT_CONSTANTS;
+      const pxPerUnit = (mmPerTick / dtick) * mmToInches * ppiBase;
+      const lineLengthPx = 4 * pxPerUnit;
+      const numPeriods = lineLengthPx / period;
+
+      expect(numPeriods).toBeCloseTo(Math.round(numPeriods), 5);
+    });
+
+    it('should fall back to "dash" for zero-length dashed lines', () => {
+      const plot: Plot = {
+        ...basePlot,
+        lines: [
+          {
+            x1: 1,
+            y1: 1,
             x2: 1,
             y2: 1,
             color: '#000',
