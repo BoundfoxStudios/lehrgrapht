@@ -45,7 +45,7 @@ export class PlotDataService {
         color: plot.fnx[i].color,
         width: plotSettings.plotLineWidth,
       },
-    })) as Partial<PlotData>[];
+    }));
   }
 
   buildMarkerTraces(plot: Plot): Partial<PlotData>[] {
