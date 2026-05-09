@@ -94,7 +94,8 @@ export class PlotEditor {
     void this.router.navigate([section], { relativeTo: this.activatedRoute });
   }
 
-  protected submit(): void {
-    void this.store.sendToWord();
+  protected onSubmit(event: Event): void {
+    event.preventDefault();
+    void this.store.submitForm();
   }
 }

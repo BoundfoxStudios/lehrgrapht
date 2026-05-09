@@ -6,7 +6,7 @@
 
 <form
   class="flex flex-1 flex-col"
-  (ngSubmit)="submit()"
+  (submit)="onSubmit($event)"
 >
   <div class="flex flex-1 flex-col">
     @if (currentSection()) {

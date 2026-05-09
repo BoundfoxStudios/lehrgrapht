@@ -9,7 +9,7 @@ import {
   withProps,
   withState,
 } from '@ngrx/signals';
-import { form, SchemaPath, validate } from '@angular/forms/signals';
+import { form, SchemaPath, submit, validate } from '@angular/forms/signals';
 import { ActivatedRoute, Router } from '@angular/router';
 import { map } from 'rxjs';
 import { lehrgraphtVersion } from '../../../version';
@@ -638,29 +638,33 @@ export const PlotEditorStore = signalStore(
         }
       },
 
-      async sendToWord(): Promise<void> {
-        const model = store.model();
-        const plot = await plotService.generate(model, store.plotSettings(), {
-          applyScaleFactor: wordService.plotGenerationSettings.applyScaleFactor,
+      submitForm(): Promise<boolean> {
+        return submit(store.editorForm, async () => {
+          const model = store.model();
+          const plot = await plotService.generate(model, store.plotSettings(), {
+            applyScaleFactor:
+              wordService.plotGenerationSettings.applyScaleFactor,
+          });
+
+          if (plotHasErrorCode(plot)) {
+            return undefined;
+          }
+
+          const existingId = store.activeId();
+          const id = existingId ?? plotService.generateId();
+
+          await wordService.upsertPicture({
+            model,
+            id,
+            base64Picture: plot.base64,
+            existingId: existingId ?? undefined,
+            height: plot.heightInPoints,
+            width: plot.widthInPoints,
+          });
+
+          void router.navigate(['/plot/editor', id]);
+          return undefined;
         });
-
-        if (plotHasErrorCode(plot)) {
-          return;
-        }
-
-        const existingId = store.activeId();
-        const id = existingId ?? plotService.generateId();
-
-        await wordService.upsertPicture({
-          model,
-          id,
-          base64Picture: plot.base64,
-          existingId: existingId ?? undefined,
-          height: plot.heightInPoints,
-          width: plot.widthInPoints,
-        });
-
-        void router.navigate(['/plot/editor', id]);
       },
     };
   }),
