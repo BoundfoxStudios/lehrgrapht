@@ -11,10 +11,18 @@ import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faRefresh, faWarning } from '@fortawesome/free-solid-svg-icons';
 import { JsonPipe } from '@angular/common';
 import { DocumentStorageService } from '../../services/document-storage.service';
+import { ButtonDirective } from '../../ui/button/button.directive';
 
 @Component({
   selector: 'lg-debug-info',
-  imports: [Header, ContentContainer, Section, FaIconComponent, JsonPipe],
+  imports: [
+    Header,
+    ContentContainer,
+    Section,
+    FaIconComponent,
+    JsonPipe,
+    ButtonDirective,
+  ],
   templateUrl: './debug-info.html',
   styleUrl: './debug-info.css',
 })

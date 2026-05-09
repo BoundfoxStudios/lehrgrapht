@@ -12,10 +12,11 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { PlotEditorStore } from '../plot-editor/plot-editor.store';
 import { PlotPreview } from '../plot-preview/plot-preview';
+import { ButtonDirective } from '../../ui/button/button.directive';
 
 @Component({
   selector: 'lg-preview-dock',
-  imports: [FaIconComponent, PlotPreview],
+  imports: [FaIconComponent, PlotPreview, ButtonDirective],
   templateUrl: './preview-dock.html',
   styleUrl: './preview-dock.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

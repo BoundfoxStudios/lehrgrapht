@@ -11,7 +11,6 @@ import {
   faTrashCan,
 } from '@fortawesome/free-solid-svg-icons';
 import { FormField } from '@angular/forms/signals';
-import { AutofocusDirective } from '../../../../directives/autofocus.directive';
 import { Dropdown } from '../../../dropdown/dropdown';
 import { MathDisplay } from '../../../math-display/math-display';
 import { InteractiveMode } from '../../interactive-mode';
@@ -20,6 +19,8 @@ import {
   legendPositionOptions,
   lineStyleOptions,
 } from '../../dropdown-options';
+import { ButtonDirective } from '../../../../ui/button/button.directive';
+import { Input } from '../../../../ui/input/input';
 
 @Component({
   selector: 'lg-section-fnx',
@@ -28,7 +29,8 @@ import {
     FormField,
     Dropdown,
     MathDisplay,
-    AutofocusDirective,
+    ButtonDirective,
+    Input,
   ],
   templateUrl: './section-fnx.html',
   styleUrl: './section-fnx.css',

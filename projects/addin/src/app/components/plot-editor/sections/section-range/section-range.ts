@@ -5,12 +5,13 @@ import {
   inject,
 } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
-import { FormField } from '@angular/forms/signals';
 import { PlotEditorStore } from '../../plot-editor.store';
+import { ButtonDirective } from '../../../../ui/button/button.directive';
+import { Input } from '../../../../ui/input/input';
 
 @Component({
   selector: 'lg-section-range',
-  imports: [DecimalPipe, FormField],
+  imports: [DecimalPipe, ButtonDirective, Input],
   templateUrl: './section-range.html',
   styleUrl: './section-range.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

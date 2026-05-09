@@ -20,6 +20,7 @@ import {
   PlotSettingsService,
 } from '../../services/plot-settings.service';
 import { lehrgraphtVersion } from '../../../version';
+import { Input } from '../../ui/input/input';
 
 interface SegmentOption<T> {
   value: T;
@@ -28,7 +29,7 @@ interface SegmentOption<T> {
 
 @Component({
   selector: 'lg-settings',
-  imports: [Header, ContentContainer, PlotPreview, FormField],
+  imports: [Header, ContentContainer, PlotPreview, FormField, Input],
   templateUrl: './settings.html',
   styleUrl: './settings.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

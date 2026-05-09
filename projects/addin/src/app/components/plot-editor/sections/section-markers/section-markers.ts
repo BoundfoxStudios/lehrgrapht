@@ -11,15 +11,15 @@ import {
   faPlusCircle,
   faTrashCan,
 } from '@fortawesome/free-solid-svg-icons';
-import { FormField } from '@angular/forms/signals';
-import { AutofocusDirective } from '../../../../directives/autofocus.directive';
 import { MarkerNamingService } from '../../../../services/marker-naming.service';
 import { InteractiveMode } from '../../interactive-mode';
 import { PlotEditorStore } from '../../plot-editor.store';
+import { ButtonDirective } from '../../../../ui/button/button.directive';
+import { Input } from '../../../../ui/input/input';
 
 @Component({
   selector: 'lg-section-markers',
-  imports: [FaIconComponent, FormField, AutofocusDirective],
+  imports: [FaIconComponent, ButtonDirective, Input],
   templateUrl: './section-markers.html',
   styleUrl: './section-markers.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

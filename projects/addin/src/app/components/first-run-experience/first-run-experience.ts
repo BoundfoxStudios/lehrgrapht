@@ -10,10 +10,11 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { Router } from '@angular/router';
 import { UserExperienceService } from '../../services/user-experience.service';
+import { ButtonDirective } from '../../ui/button/button.directive';
 
 @Component({
   selector: 'lg-first-run-experience',
-  imports: [Header, ContentContainer, FaIconComponent],
+  imports: [Header, ContentContainer, FaIconComponent, ButtonDirective],
   templateUrl: './first-run-experience.html',
   styleUrl: './first-run-experience.css',
 })

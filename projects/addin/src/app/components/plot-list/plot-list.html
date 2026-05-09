@@ -10,14 +10,16 @@
   <div class="flex flex-1 flex-col gap-2 lg:flex-row lg:justify-between">
     <div class="flex flex-1 gap-2 lg:flex-none">
       <a
-        class="app-button flex-1 text-center"
+        class="flex-1"
         [routerLink]="'/plot/editor'"
+        lgButton
       >
         Neuer Plot
       </a>
       <button
-        class="app-button icon-only"
         (click)="plots.reload()"
+        lgButton
+        iconOnly
         title="Plots neuladen"
       >
         <fa-icon [icon]="faRefresh" />
@@ -25,22 +27,28 @@
     </div>
     <div class="ml-auto flex flex-1 gap-1.5 lg:flex-none">
       <a
-        class="app-button secondary icon-only"
         [routerLink]="['/plot/settings']"
+        lgButton
+        variant="secondary"
+        iconOnly
         title="Einstellungen"
       >
         <fa-icon [icon]="faGear" />
       </a>
       <a
-        class="app-button secondary icon-only"
         [routerLink]="['/plot/info']"
+        lgButton
+        variant="secondary"
+        iconOnly
         title="Info"
       >
         <fa-icon [icon]="faInfoCircle" />
       </a>
       <a
-        class="app-button secondary icon-only"
         [routerLink]="['/plot/debug']"
+        lgButton
+        variant="secondary"
+        iconOnly
         title="Entwicklerinformationen"
       >
         <fa-icon [icon]="faBug" />
@@ -126,8 +134,9 @@
         </div>
       </div>
       <a
-        class="app-button mt-2 inline-flex items-center gap-1.5"
+        class="mt-2"
         [routerLink]="'/plot/editor'"
+        lgButton
       >
         <fa-icon [icon]="faPlus" />
         <span>Neuer Plot</span>
@@ -188,22 +197,25 @@
             </button>
             <div class="flex gap-1">
               <a
-                class="app-button small"
                 [routerLink]="['/plot/editor', plot.id]"
+                lgButton
+                size="small"
                 title="Plot editieren"
               >
                 <fa-icon [icon]="faPen" />
               </a>
               <button
-                class="app-button small"
                 (click)="clonePlot(plot.id)"
+                lgButton
+                size="small"
                 title="Plot klonen"
               >
                 <fa-icon [icon]="faCopy" />
               </button>
               <button
-                class="app-button small"
                 (click)="deletePlot(plot)"
+                lgButton
+                size="small"
                 title="Plot löschen"
               >
                 <fa-icon [icon]="faTrashCan" />

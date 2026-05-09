@@ -24,15 +24,15 @@
 
     <div class="flex flex-col gap-2">
       <label
-        class="app-label"
+        class="text-heading mb-1 block text-sm font-medium"
         for="zero-line-width"
         >0-Linie · Breite &amp; Farbe</label
       >
       <div class="flex items-center gap-2">
-        <input
-          class="app-input"
+        <lg-input
+          class="flex-1"
           id="zero-line-width"
-          [formField]="editorForm.zeroLineWidth"
+          [field]="editorForm.zeroLineWidth"
           type="number"
           step="0.5"
         />
@@ -47,15 +47,15 @@
 
     <div class="flex flex-col gap-2">
       <label
-        class="app-label"
+        class="text-heading mb-1 block text-sm font-medium"
         for="grid-line-width"
         >Kästchen-Linie · Breite &amp; Farbe</label
       >
       <div class="flex items-center gap-2">
-        <input
-          class="app-input"
+        <lg-input
+          class="flex-1"
           id="grid-line-width"
-          [formField]="editorForm.gridLineWidth"
+          [field]="editorForm.gridLineWidth"
           type="number"
           step="0.5"
         />
@@ -70,14 +70,13 @@
 
     <div class="flex flex-col gap-2">
       <label
-        class="app-label"
+        class="text-heading mb-1 block text-sm font-medium"
         for="plot-line-width"
         >Graph-Linie · Breite</label
       >
-      <input
-        class="app-input"
+      <lg-input
         id="plot-line-width"
-        [formField]="editorForm.plotLineWidth"
+        [field]="editorForm.plotLineWidth"
         type="number"
         step="0.5"
       />
@@ -92,7 +91,9 @@
       Punkte
     </div>
     <div class="flex flex-col gap-2">
-      <span class="app-label">Namensschema</span>
+      <span class="text-heading mb-1 block text-sm font-medium"
+        >Namensschema</span
+      >
       <div
         class="flex gap-1.5"
         role="radiogroup"
@@ -126,7 +127,7 @@
       Legende
     </div>
     <div class="flex flex-col gap-2">
-      <span class="app-label">Format</span>
+      <span class="text-heading mb-1 block text-sm font-medium">Format</span>
       <div
         class="flex gap-1.5"
         role="radiogroup"

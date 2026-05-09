@@ -22,6 +22,7 @@ import {
 import { ContentContainer } from '../content-container/content-container';
 import { WordPlot, WordService } from '../../services/word/word.service';
 import { PlotMiniPreview } from '../plot-mini-preview/plot-mini-preview';
+import { ButtonDirective } from '../../ui/button/button.directive';
 
 const UNDO_DELAY_MS = 5000;
 
@@ -38,6 +39,7 @@ interface PendingDelete {
     FaIconComponent,
     ContentContainer,
     PlotMiniPreview,
+    ButtonDirective,
   ],
   templateUrl: './plot-list.html',
   styleUrl: './plot-list.css',

@@ -6,8 +6,9 @@
 <lg-content-container class="flex flex-col space-y-4">
   <div class="flex flex-1 justify-end">
     <button
-      class="app-button icon-only"
       (click)="plots.reload(); models.reload()"
+      lgButton
+      iconOnly
     >
       <fa-icon [icon]="faRefresh" />
     </button>

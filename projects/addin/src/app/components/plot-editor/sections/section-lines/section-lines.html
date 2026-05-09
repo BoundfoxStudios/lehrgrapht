@@ -66,16 +66,21 @@
     </div>
     <div class="flex gap-1.5">
       <button
-        class="bg-brand hover:bg-brand-strong rounded-base flex flex-[1.4] cursor-pointer items-center justify-center gap-1.5 px-2.5 py-2.5 text-xs font-semibold text-white shadow-sm transition-colors"
+        class="flex-[1.4]"
         (click)="store.startInteractiveLine()"
+        lgButton
+        size="cta"
         type="button"
       >
         <fa-icon [icon]="faMousePointer" />
         <span>Im Plot ziehen</span>
       </button>
       <button
-        class="border-default-medium text-body hover:border-brand hover:text-brand rounded-base flex flex-1 cursor-pointer items-center justify-center gap-1.5 border bg-white px-2.5 py-2.5 text-xs font-medium transition-colors"
+        class="flex-1"
         (click)="addManual()"
+        lgButton
+        variant="outline"
+        size="cta"
         type="button"
       >
         <fa-icon [icon]="faPlusCircle" />
@@ -143,11 +148,10 @@
                   [for]="'line-x1-' + index"
                   >X</label
                 >
-                <input
-                  class="app-input"
-                  [formField]="control.x1"
+                <lg-input
+                  [field]="control.x1"
                   [id]="'line-x1-' + index"
-                  [lgAutofocus]="isNew"
+                  [autofocus]="isNew"
                   type="number"
                 />
               </div>
@@ -157,9 +161,8 @@
                   [for]="'line-y1-' + index"
                   >Y</label
                 >
-                <input
-                  class="app-input"
-                  [formField]="control.y1"
+                <lg-input
+                  [field]="control.y1"
                   [id]="'line-y1-' + index"
                   type="number"
                 />
@@ -175,9 +178,8 @@
                   [for]="'line-x2-' + index"
                   >X</label
                 >
-                <input
-                  class="app-input"
-                  [formField]="control.x2"
+                <lg-input
+                  [field]="control.x2"
                   [id]="'line-x2-' + index"
                   type="number"
                 />
@@ -188,9 +190,8 @@
                   [for]="'line-y2-' + index"
                   >Y</label
                 >
-                <input
-                  class="app-input"
-                  [formField]="control.y2"
+                <lg-input
+                  [field]="control.y2"
                   [id]="'line-y2-' + index"
                   type="number"
                 />
@@ -246,30 +247,38 @@
         </div>
 
         <button
-          class="app-button small secondary w-full"
+          class="w-full"
           (click)="store.cancelInteractiveLine()"
+          lgButton
+          variant="secondary"
+          size="small"
           type="button"
         >
           Abbrechen
         </button>
       </div>
     } @else if (lines.length > 0) {
-      <div class="flex gap-2">
+      <div class="flex gap-1.5">
         <button
-          class="hover:border-brand hover:bg-brand/5 hover:text-brand flex flex-1 items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-white py-3 text-sm text-gray-600 transition-colors"
-          (click)="addManual()"
-          type="button"
-        >
-          <fa-icon [icon]="faPlusCircle" />
-          <span>Manuell</span>
-        </button>
-        <button
-          class="hover:border-brand hover:bg-brand/5 hover:text-brand flex flex-1 items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-white py-3 text-sm text-gray-600 transition-colors"
+          class="flex-[1.4]"
           (click)="store.startInteractiveLine()"
+          lgButton
+          size="cta"
           type="button"
         >
           <fa-icon [icon]="faMousePointer" />
           <span>Interaktiv</span>
+        </button>
+        <button
+          class="flex-1"
+          (click)="addManual()"
+          lgButton
+          variant="outline"
+          size="cta"
+          type="button"
+        >
+          <fa-icon [icon]="faPlusCircle" />
+          <span>Manuell</span>
         </button>
       </div>
     }

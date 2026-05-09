@@ -11,10 +11,9 @@
           for="min-x"
           >Min</label
         >
-        <input
-          class="app-input"
+        <lg-input
           id="min-x"
-          [formField]="form.range.x.min"
+          [field]="form.range.x.min"
           type="number"
           step="1"
         />
@@ -25,22 +24,14 @@
           for="max-x"
           >Max</label
         >
-        <input
-          class="app-input"
+        <lg-input
           id="max-x"
-          [formField]="form.range.x.max"
+          [field]="form.range.x.max"
           type="number"
           step="1"
         />
       </div>
     </div>
-    @if (form.range.x.min().errors().length) {
-      <ul class="mt-2 text-xs text-red-600">
-        @for (error of form.range.x.min().errors(); track error) {
-          <li>{{ error.message }}</li>
-        }
-      </ul>
-    }
   </div>
 
   <div class="rounded-lg border border-gray-200 bg-white p-3">
@@ -52,10 +43,9 @@
           for="min-y"
           >Min</label
         >
-        <input
-          class="app-input"
+        <lg-input
           id="min-y"
-          [formField]="form.range.y.min"
+          [field]="form.range.y.min"
           type="number"
           step="1"
         />
@@ -66,22 +56,14 @@
           for="max-y"
           >Max</label
         >
-        <input
-          class="app-input"
+        <lg-input
           id="max-y"
-          [formField]="form.range.y.max"
+          [field]="form.range.y.max"
           type="number"
           step="1"
         />
       </div>
     </div>
-    @if (form.range.y.min().errors().length) {
-      <ul class="mt-2 text-xs text-red-600">
-        @for (error of form.range.y.min().errors(); track error) {
-          <li>{{ error.message }}</li>
-        }
-      </ul>
-    }
   </div>
 
   <div
@@ -112,8 +94,9 @@
   }
 
   <button
-    class="app-button w-full text-sm"
+    class="w-full"
     (click)="store.autoAdjustLimits()"
+    lgButton
     type="button"
   >
     Grenzen automatisch anpassen

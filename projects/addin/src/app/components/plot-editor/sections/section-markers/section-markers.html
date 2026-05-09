@@ -73,16 +73,21 @@
     </div>
     <div class="flex gap-1.5">
       <button
-        class="bg-brand hover:bg-brand-strong rounded-base flex flex-[1.4] cursor-pointer items-center justify-center gap-1.5 px-2.5 py-2.5 text-xs font-semibold text-white shadow-sm transition-colors"
+        class="flex-[1.4]"
         (click)="store.startInteractiveMarker()"
+        lgButton
+        size="cta"
         type="button"
       >
         <fa-icon [icon]="faMousePointer" />
         <span>Im Plot tippen</span>
       </button>
       <button
-        class="border-default-medium text-body hover:border-brand hover:text-brand rounded-base flex flex-1 cursor-pointer items-center justify-center gap-1.5 border bg-white px-2.5 py-2.5 text-xs font-medium transition-colors"
+        class="flex-1"
         (click)="addManual()"
+        lgButton
+        variant="outline"
+        size="cta"
         type="button"
       >
         <fa-icon [icon]="faPlusCircle" />
@@ -127,13 +132,12 @@
             [for]="'marker-text-' + index"
             >Beschriftung</label
           >
-          <input
-            class="app-input"
-            [formField]="control.text"
+          <lg-input
+            [field]="control.text"
             [id]="'marker-text-' + index"
-            [lgAutofocus]="isNew"
+            [autofocus]="isNew"
+            [spellcheck]="false"
             type="text"
-            spellcheck="false"
             autocorrect="off"
             autocomplete="off"
             autocapitalize="off"
@@ -147,9 +151,8 @@
               [for]="'marker-x-' + index"
               >X</label
             >
-            <input
-              class="app-input"
-              [formField]="control.x"
+            <lg-input
+              [field]="control.x"
               [id]="'marker-x-' + index"
               type="number"
             />
@@ -160,9 +163,8 @@
               [for]="'marker-y-' + index"
               >Y</label
             >
-            <input
-              class="app-input"
-              [formField]="control.y"
+            <lg-input
+              [field]="control.y"
               [id]="'marker-y-' + index"
               type="number"
             />
@@ -221,9 +223,11 @@
 
         <div class="flex gap-2">
           <button
-            class="app-button small flex-1"
+            class="flex-1"
             [disabled]="store.interactivePoints().length < 1"
             (click)="store.finishInteractiveMarker()"
+            lgButton
+            size="small"
             type="button"
           >
             <fa-icon
@@ -233,8 +237,10 @@
             Fertig
           </button>
           <button
-            class="app-button small secondary"
             (click)="store.cancelInteractiveMarker()"
+            lgButton
+            variant="secondary"
+            size="small"
             type="button"
           >
             Abbrechen
@@ -242,22 +248,27 @@
         </div>
       </div>
     } @else if (markers.length > 0) {
-      <div class="flex gap-2">
+      <div class="flex gap-1.5">
         <button
-          class="hover:border-brand hover:bg-brand/5 hover:text-brand flex flex-1 items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-white py-3 text-sm text-gray-600 transition-colors"
-          (click)="addManual()"
-          type="button"
-        >
-          <fa-icon [icon]="faPlusCircle" />
-          <span>Manuell</span>
-        </button>
-        <button
-          class="hover:border-brand hover:bg-brand/5 hover:text-brand flex flex-1 items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-white py-3 text-sm text-gray-600 transition-colors"
+          class="flex-[1.4]"
           (click)="store.startInteractiveMarker()"
+          lgButton
+          size="cta"
           type="button"
         >
           <fa-icon [icon]="faMousePointer" />
           <span>Interaktiv</span>
+        </button>
+        <button
+          class="flex-1"
+          (click)="addManual()"
+          lgButton
+          variant="outline"
+          size="cta"
+          type="button"
+        >
+          <fa-icon [icon]="faPlusCircle" />
+          <span>Manuell</span>
         </button>
       </div>
     }

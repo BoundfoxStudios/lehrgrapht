@@ -50,16 +50,21 @@
     </div>
     <div class="flex gap-1.5">
       <button
-        class="bg-brand hover:bg-brand-strong rounded-base flex flex-[1.4] cursor-pointer items-center justify-center gap-1.5 px-2.5 py-2.5 text-xs font-semibold text-white shadow-sm transition-colors"
+        class="flex-[1.4]"
         (click)="store.startInteractiveArea()"
+        lgButton
+        size="cta"
         type="button"
       >
         <fa-icon [icon]="faMousePointer" />
         <span>Eckpunkte tippen</span>
       </button>
       <button
-        class="border-default-medium text-body hover:border-brand hover:text-brand rounded-base flex flex-1 cursor-pointer items-center justify-center gap-1.5 border bg-white px-2.5 py-2.5 text-xs font-medium transition-colors"
+        class="flex-1"
         (click)="addManual()"
+        lgButton
+        variant="outline"
+        size="cta"
         type="button"
       >
         <fa-icon [icon]="faPlusCircle" />
@@ -133,11 +138,10 @@
                     [for]="'area-' + areaIndex + '-x-' + pointIndex"
                     >X{{ pointIndex + 1 }}</label
                   >
-                  <input
-                    class="app-input"
-                    [formField]="point.x"
+                  <lg-input
+                    [field]="point.x"
                     [id]="'area-' + areaIndex + '-x-' + pointIndex"
-                    [lgAutofocus]="isNew && pointIndex === 0"
+                    [autofocus]="isNew && pointIndex === 0"
                     type="number"
                   />
                 </div>
@@ -147,9 +151,8 @@
                     [for]="'area-' + areaIndex + '-y-' + pointIndex"
                     >Y{{ pointIndex + 1 }}</label
                   >
-                  <input
-                    class="app-input"
-                    [formField]="point.y"
+                  <lg-input
+                    [field]="point.y"
                     [id]="'area-' + areaIndex + '-y-' + pointIndex"
                     type="number"
                   />
@@ -171,9 +174,8 @@
                       [for]="'area-' + areaIndex + '-labeltext-' + pointIndex"
                       >Label</label
                     >
-                    <input
-                      class="app-input"
-                      [formField]="point.labelText"
+                    <lg-input
+                      [field]="point.labelText"
                       [id]="'area-' + areaIndex + '-labeltext-' + pointIndex"
                       type="text"
                     />
@@ -251,9 +253,11 @@
 
         <div class="flex gap-2">
           <button
-            class="app-button small flex-1"
+            class="flex-1"
             [disabled]="store.interactivePoints().length < 3"
             (click)="store.finishInteractiveArea()"
+            lgButton
+            size="small"
             type="button"
           >
             <fa-icon
@@ -263,8 +267,10 @@
             Fertig
           </button>
           <button
-            class="app-button small secondary"
             (click)="store.cancelInteractiveArea()"
+            lgButton
+            variant="secondary"
+            size="small"
             type="button"
           >
             Abbrechen
@@ -272,23 +278,27 @@
         </div>
       </div>
     } @else if (areas.length > 0) {
-      <div class="flex gap-2">
+      <div class="flex gap-1.5">
         <button
-          class="hover:border-brand hover:bg-brand/5 hover:text-brand flex flex-1 items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-white py-3 text-sm text-gray-600 transition-colors"
-          (click)="addManual()"
-          type="button"
-        >
-          <fa-icon [icon]="faPlusCircle" />
-          <span>Manuell</span>
-        </button>
-
-        <button
-          class="hover:border-brand hover:bg-brand/5 hover:text-brand flex flex-1 items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-white py-3 text-sm text-gray-600 transition-colors"
+          class="flex-[1.4]"
           (click)="store.startInteractiveArea()"
+          lgButton
+          size="cta"
           type="button"
         >
           <fa-icon [icon]="faMousePointer" />
           <span>Interaktiv</span>
+        </button>
+        <button
+          class="flex-1"
+          (click)="addManual()"
+          lgButton
+          variant="outline"
+          size="cta"
+          type="button"
+        >
+          <fa-icon [icon]="faPlusCircle" />
+          <span>Manuell</span>
         </button>
       </div>
     }

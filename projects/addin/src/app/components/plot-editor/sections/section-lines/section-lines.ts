@@ -11,15 +11,16 @@ import {
   faTrashCan,
 } from '@fortawesome/free-solid-svg-icons';
 import { FormField } from '@angular/forms/signals';
-import { AutofocusDirective } from '../../../../directives/autofocus.directive';
 import { Dropdown } from '../../../dropdown/dropdown';
 import { InteractiveMode } from '../../interactive-mode';
 import { PlotEditorStore } from '../../plot-editor.store';
 import { lineStyleOptions } from '../../dropdown-options';
+import { ButtonDirective } from '../../../../ui/button/button.directive';
+import { Input } from '../../../../ui/input/input';
 
 @Component({
   selector: 'lg-section-lines',
-  imports: [FaIconComponent, FormField, Dropdown, AutofocusDirective],
+  imports: [FaIconComponent, FormField, Dropdown, ButtonDirective, Input],
   templateUrl: './section-lines.html',
   styleUrl: './section-lines.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
