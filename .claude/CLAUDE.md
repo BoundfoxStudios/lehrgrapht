@@ -59,3 +59,8 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Make small, independent commits — each commit should represent a single logical change
 - Do NOT bundle unrelated changes into one commit
 - When an issue number is available, reference it in the commit body (not the title) using GitHub keywords (e.g., `closes #26`, `fixes #42`)
+
+## Local Workflow
+
+- NEVER start the app or dev server (e.g., `ng serve`, `npm start`). The user runs the app themselves.
+- You MAY build (`ng build`) and lint (`ng lint`) for verification.
