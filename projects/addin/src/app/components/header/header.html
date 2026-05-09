@@ -1,22 +1,46 @@
 <header
-  class="from-brand to-brand-strong relative flex bg-gradient-to-r p-3 text-white shadow-md"
+  class="from-brand to-brand-strong flex items-center gap-2.5 bg-gradient-to-r px-3 py-2.5 text-white shadow-md"
 >
   @if (backLink(); as backLink) {
-    <div class="flex items-center">
-      <a
-        class="absolute left-3 flex h-8 w-8 items-center justify-center rounded-full bg-white/10 transition-all duration-200 hover:scale-105 hover:bg-white/20"
-        [routerLink]="backLink"
-        ><fa-icon [icon]="faArrowCircleLeft"
-      /></a>
-    </div>
+    <a
+      class="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-white/15 transition-colors hover:bg-white/25"
+      [routerLink]="backLink"
+      aria-label="Zurück"
+    >
+      <fa-icon [icon]="faArrowLeft" />
+    </a>
   }
 
-  <div class="flex flex-1 flex-col">
-    <h1 class="flex-1 text-center text-xl font-semibold tracking-wide">
+  <div class="min-w-0 flex-1">
+    <h1 class="truncate text-base font-semibold tracking-wide">
       {{ title() }}
     </h1>
     @if (subtitle(); as subtitle) {
-      <h2 class="text-center text-xs text-white/80">{{ subtitle }}</h2>
+      <h2 class="text-2xs truncate text-white/80">{{ subtitle }}</h2>
     }
   </div>
+
+  @switch (saveState()) {
+    @case ('saving') {
+      <span
+        class="text-2xs flex shrink-0 items-center gap-1.5 text-white/85"
+        aria-live="polite"
+      >
+        <fa-icon
+          class="animate-spin"
+          [icon]="faCircleNotch"
+        />
+        <span>Wird gespeichert …</span>
+      </span>
+    }
+    @case ('saved') {
+      <span
+        class="text-2xs flex shrink-0 items-center gap-1.5 text-white/85"
+        aria-live="polite"
+      >
+        <fa-icon [icon]="faCheck" />
+        <span>Gespeichert</span>
+      </span>
+    }
+  }
 </header>
