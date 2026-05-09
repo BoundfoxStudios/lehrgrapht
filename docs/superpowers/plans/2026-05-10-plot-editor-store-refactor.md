@@ -6,7 +6,7 @@
 
 **Architecture:** Introduce a `Record<InteractiveMode, InteractiveStrategy>` table (`INTERACTIVE_STRATEGIES`) used by both `previewModel` and the commit paths so they share a single code path. Replace the per-mode methods with four generic ones (`startInteractive(mode)`, `cancelInteractive()`, `finishInteractive()`, `onPlotClick(event)`). Extract three small pure helpers (`nextColor`, `removeAt`, `nameAreaPoints`) used inside the strategies and the surviving `add*`/`remove*` methods. Everything stays in `plot-editor.store.ts`; helpers and strategies are exported top-level functions tested in a new spec file.
 
-**Tech Stack:** Angular 21, NgRx Signals (`signalStore`), TypeScript strict, Karma + Jasmine, signal forms.
+**Tech Stack:** Angular 21, NgRx Signals (`signalStore`), TypeScript strict, Vitest (via `@angular/build:unit-test`, jsdom env), signal forms.
 
 **Reference spec:** `docs/superpowers/specs/2026-05-10-plot-editor-store-refactor-design.md`
 
