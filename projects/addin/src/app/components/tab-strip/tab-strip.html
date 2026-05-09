@@ -1,0 +1,32 @@
+@for (tab of tabs(); track tab.id) {
+  @let isActive = tab.id === active();
+  <button
+    class="text-body hover:text-brand data-[active=true]:border-brand data-[active=true]:text-brand flex h-11 shrink-0 cursor-pointer items-center gap-1.5 border-b-2 border-transparent bg-transparent px-3 py-2 text-xs font-medium whitespace-nowrap transition-colors duration-150 data-[active=true]:font-semibold"
+    [attr.aria-selected]="isActive"
+    [attr.data-active]="isActive"
+    [attr.data-tab-id]="tab.id"
+    (click)="select(tab.id)"
+    role="tab"
+    type="button"
+  >
+    @if (tab.icon) {
+      <span class="relative inline-flex">
+        <fa-icon [icon]="tab.icon" />
+        @if (tab.hasError) {
+          <span
+            class="absolute -top-0.5 -right-1 h-1.5 w-1.5 rounded-full bg-rose-600"
+            aria-hidden="true"
+          ></span>
+        }
+      </span>
+    }
+    <span>{{ tab.label }}</span>
+    @if (tab.count && tab.count > 0) {
+      <span
+        class="text-body data-[active=true]:bg-brand text-2xs inline-flex h-5 min-w-5 items-center justify-center rounded-full px-2 font-bold tracking-wide uppercase data-[active=true]:text-white"
+        [attr.data-active]="isActive"
+        >{{ tab.count }}</span
+      >
+    }
+  </button>
+}
