@@ -12,9 +12,17 @@ export const migrateToLatest: Migration = {
       lineStyle: fn['lineStyle'] ?? 'solid',
     }));
 
+    const lines = plot['lines'] as Record<string, unknown>[] | undefined;
+
+    const migratedLines = (lines ?? []).map(line => ({
+      ...line,
+      lineStyle: line['lineStyle'] ?? 'solid',
+    }));
+
     return {
       ...plot,
       fnx: migratedFnx,
+      lines: migratedLines,
       legendLabelFormat: plot['legendLabelFormat'] ?? 'none',
     };
   },

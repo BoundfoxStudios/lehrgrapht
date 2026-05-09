@@ -64,6 +64,7 @@ export interface Plot {
     y1: number;
     y2: number;
     color: string;
+    lineStyle: FunctionLineStyle;
   }[];
   showAxisLabels: boolean;
   showAxis: boolean;

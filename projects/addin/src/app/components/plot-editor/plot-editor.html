@@ -330,7 +330,11 @@
             </div>
             <lg-math-display
               [math]="control.fnx().value()"
-              [prefix]="editorModel().legendLabelFormat === 'none' ? undefined : editorModel().legendLabelFormat"
+              [prefix]="
+                editorModel().legendLabelFormat === 'none'
+                  ? undefined
+                  : editorModel().legendLabelFormat
+              "
             />
           </div>
         }
@@ -820,6 +824,16 @@
                   <fa-icon [icon]="faTrashCan" />
                 </button>
               </div>
+            </div>
+
+            <div
+              class="mb-2 grid grid-cols-[auto_1fr] items-center gap-x-3 gap-y-2"
+            >
+              <span class="text-xs text-gray-600">Linie</span>
+              <lg-dropdown
+                [formField]="control.lineStyle"
+                [options]="lineStyleOptions"
+              />
             </div>
 
             <div class="space-y-2">

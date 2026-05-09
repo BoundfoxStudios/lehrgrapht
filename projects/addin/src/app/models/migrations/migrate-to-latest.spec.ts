@@ -35,6 +35,32 @@ describe('migrate-to-latest', () => {
     expect(fnx[0]['lineStyle']).toBe('dashed');
   });
 
+  it('should backfill lines lineStyle to solid', () => {
+    const result = migrate({
+      lines: [{ x1: 0, y1: 0, x2: 1, y2: 1, color: '#000' }],
+    });
+
+    const lines = result['lines'] as Record<string, unknown>[];
+    expect(lines[0]['lineStyle']).toBe('solid');
+  });
+
+  it('should preserve existing lines lineStyle', () => {
+    const result = migrate({
+      lines: [
+        { x1: 0, y1: 0, x2: 1, y2: 1, color: '#000', lineStyle: 'dashed' },
+      ],
+    });
+
+    const lines = result['lines'] as Record<string, unknown>[];
+    expect(lines[0]['lineStyle']).toBe('dashed');
+  });
+
+  it('should handle missing lines gracefully', () => {
+    const result = migrate({});
+
+    expect(result['lines']).toEqual([]);
+  });
+
   it('should backfill legendLabelFormat', () => {
     const result = migrate({});
 

@@ -257,6 +257,7 @@ export class PlotEditor {
           x2: pts[1].x,
           y2: pts[1].y,
           color: colors[lines.length % colors.length],
+          lineStyle: 'solid',
         },
       ];
     }
@@ -427,6 +428,7 @@ export class PlotEditor {
           x2: 1,
           y2: 1,
           color: colors[model.lines.length % colors.length],
+          lineStyle: 'solid',
         },
       ],
     }));
@@ -638,6 +640,7 @@ export class PlotEditor {
                 x2: newPoints[1].x,
                 y2: newPoints[1].y,
                 color: colors[model.lines.length % colors.length],
+                lineStyle: 'solid',
               },
             ],
           }));

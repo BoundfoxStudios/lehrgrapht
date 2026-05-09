@@ -85,6 +85,7 @@ export class PlotDataService {
       line: {
         color: line.color,
         width: plotSettings.plotLineWidth,
+        dash: line.lineStyle === 'dashed' ? 'dash' : 'solid',
       },
     }));
   }
