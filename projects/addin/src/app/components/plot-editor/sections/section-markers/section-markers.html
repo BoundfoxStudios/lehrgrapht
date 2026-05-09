@@ -1,0 +1,154 @@
+@let form = editorForm();
+
+<div class="flex flex-col space-y-3 p-2">
+  @for (control of form.markers; let index = $index; track index) {
+    <div class="rounded-lg border border-gray-200 bg-white p-3 shadow-xs">
+      <div class="mb-2 flex items-center justify-between">
+        <span class="text-xs font-medium text-gray-500"
+          >Punkt {{ index + 1 }}</span
+        >
+        <button
+          class="flex h-7 w-7 items-center justify-center rounded text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
+          (click)="removeMarker.emit(index)"
+          type="button"
+          title="Punkt entfernen"
+        >
+          <fa-icon [icon]="faTrashCan" />
+        </button>
+      </div>
+      <div class="mb-2">
+        <label
+          class="mb-1 block text-xs text-gray-600"
+          [for]="'marker-text-' + index"
+          >Beschriftung</label
+        >
+        <input
+          class="app-input"
+          [formField]="control.text"
+          [id]="'marker-text-' + index"
+          type="text"
+          spellcheck="false"
+          autocorrect="off"
+          autocomplete="off"
+          autocapitalize="off"
+          placeholder="z.B. P, A, ..."
+        />
+      </div>
+      <div class="flex gap-3">
+        <div class="flex-1">
+          <label
+            class="mb-1 block text-xs text-gray-600"
+            [for]="'marker-x-' + index"
+            >X</label
+          >
+          <input
+            class="app-input"
+            [formField]="control.x"
+            [id]="'marker-x-' + index"
+            type="number"
+          />
+        </div>
+        <div class="flex-1">
+          <label
+            class="mb-1 block text-xs text-gray-600"
+            [for]="'marker-y-' + index"
+            >Y</label
+          >
+          <input
+            class="app-input"
+            [formField]="control.y"
+            [id]="'marker-y-' + index"
+            type="number"
+          />
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (interactiveMode() === InteractiveMode.Marker) {
+    <div class="border-brand bg-brand/5 rounded-lg border-2 p-3">
+      <div class="mb-2 flex items-center justify-between">
+        <span class="text-brand text-sm font-medium">Interaktive Punkte</span>
+        <span class="bg-brand rounded-full px-2 py-0.5 text-xs text-white">
+          {{ interactivePoints().length }} Punkte
+        </span>
+      </div>
+
+      <div class="mb-3 h-21 overflow-y-auto">
+        @if (interactivePoints().length > 0) {
+          <div class="space-y-1">
+            @for (point of interactivePoints(); let i = $index; track i) {
+              <div
+                class="flex items-center justify-between rounded bg-white px-2 py-1 text-sm"
+              >
+                <span class="text-gray-600"
+                  >{{
+                    markerNamingService.generateName(
+                      editorModel().markers.length + i,
+                      plotSettings().markerNamingScheme
+                    )
+                  }}: ({{ point.x }}, {{ point.y }})</span
+                >
+                <button
+                  class="text-gray-400 hover:text-red-500"
+                  (click)="removeInteractivePoint.emit(i)"
+                  type="button"
+                >
+                  <fa-icon
+                    [icon]="faTrashCan"
+                    size="sm"
+                  />
+                </button>
+              </div>
+            }
+          </div>
+        } @else {
+          <p class="text-xs text-gray-600">
+            Klicke auf die Vorschau unten, um Punkte hinzuzufügen.
+          </p>
+        }
+      </div>
+
+      <div class="flex gap-2">
+        <button
+          class="app-button small flex-1"
+          [disabled]="interactivePoints().length < 1"
+          (click)="finishInteractive.emit()"
+          type="button"
+        >
+          <fa-icon
+            class="mr-1"
+            [icon]="faCheck"
+          />
+          Fertig
+        </button>
+        <button
+          class="app-button small secondary"
+          (click)="cancelInteractive.emit()"
+          type="button"
+        >
+          Abbrechen
+        </button>
+      </div>
+    </div>
+  } @else {
+    <div class="flex gap-2">
+      <button
+        class="hover:border-brand hover:bg-brand/5 hover:text-brand flex flex-1 items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-white py-3 text-sm text-gray-600 transition-colors"
+        (click)="addMarker.emit()"
+        type="button"
+      >
+        <fa-icon [icon]="faPlusCircle" />
+        <span>Manuell</span>
+      </button>
+      <button
+        class="hover:border-brand hover:bg-brand/5 hover:text-brand flex flex-1 items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-white py-3 text-sm text-gray-600 transition-colors"
+        (click)="startInteractive.emit()"
+        type="button"
+      >
+        <fa-icon [icon]="faMousePointer" />
+        <span>Interaktiv</span>
+      </button>
+    </div>
+  }
+</div>

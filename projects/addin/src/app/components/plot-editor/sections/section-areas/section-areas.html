@@ -1,0 +1,208 @@
+@let form = editorForm();
+
+<div class="flex flex-col space-y-3 p-2">
+  @for (control of form.areas; let areaIndex = $index; track areaIndex) {
+    <div class="rounded-lg border border-gray-200 bg-white p-3 shadow-xs">
+      <div class="mb-3 flex items-center justify-between">
+        <span class="text-xs font-medium text-gray-500"
+          >Fläche {{ areaIndex + 1 }}</span
+        >
+        <div class="flex items-center gap-2">
+          <label
+            class="flex cursor-pointer items-center gap-1 text-xs text-gray-500"
+            [for]="'area-' + areaIndex + '-show-points'"
+          >
+            <input
+              class="h-4 w-4 cursor-pointer rounded border-gray-300"
+              [formField]="control.showPoints"
+              [id]="'area-' + areaIndex + '-show-points'"
+              type="checkbox"
+            />
+            Punkte
+          </label>
+          <input
+            class="h-7 w-7 cursor-pointer rounded border-none"
+            [formField]="control.color"
+            type="color"
+            title="Farbe wählen"
+          />
+          <button
+            class="flex h-7 w-7 items-center justify-center rounded text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
+            (click)="removeArea.emit(areaIndex)"
+            type="button"
+            title="Fläche entfernen"
+          >
+            <fa-icon [icon]="faTrashCan" />
+          </button>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        @for (
+          point of control.points;
+          let pointIndex = $index;
+          track pointIndex
+        ) {
+          <div class="rounded-md bg-gray-50 p-2">
+            <div class="flex items-end gap-2">
+              <div class="flex-1">
+                <label
+                  class="mb-1 block text-xs text-gray-500"
+                  [for]="'area-' + areaIndex + '-x-' + pointIndex"
+                  >X{{ pointIndex + 1 }}</label
+                >
+                <input
+                  class="app-input"
+                  [formField]="point.x"
+                  [id]="'area-' + areaIndex + '-x-' + pointIndex"
+                  type="number"
+                />
+              </div>
+              <div class="flex-1">
+                <label
+                  class="mb-1 block text-xs text-gray-500"
+                  [for]="'area-' + areaIndex + '-y-' + pointIndex"
+                  >Y{{ pointIndex + 1 }}</label
+                >
+                <input
+                  class="app-input"
+                  [formField]="point.y"
+                  [id]="'area-' + areaIndex + '-y-' + pointIndex"
+                  type="number"
+                />
+              </div>
+              <button
+                class="mb-1 flex h-8 w-8 shrink-0 items-center justify-center rounded text-gray-400 transition-colors hover:bg-red-100 hover:text-red-500"
+                (click)="removeAreaPoint.emit({ areaIndex, pointIndex })"
+                type="button"
+                title="Punkt entfernen"
+              >
+                <fa-icon [icon]="faTrashCan" />
+              </button>
+            </div>
+            @if (control.showPoints().value()) {
+              <div class="mt-2 flex gap-2">
+                <div class="flex-1">
+                  <label
+                    class="mb-1 block text-xs text-gray-500"
+                    [for]="'area-' + areaIndex + '-labeltext-' + pointIndex"
+                    >Label</label
+                  >
+                  <input
+                    class="app-input"
+                    [formField]="point.labelText"
+                    [id]="'area-' + areaIndex + '-labeltext-' + pointIndex"
+                    type="text"
+                  />
+                </div>
+                <div class="flex-1">
+                  <label
+                    class="mb-1 block text-xs text-gray-500"
+                    [for]="'area-' + areaIndex + '-label-' + pointIndex"
+                    >Position</label
+                  >
+                  <lg-dropdown
+                    [formField]="point.labelPosition"
+                    [options]="labelPositionOptions"
+                  />
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <button
+        class="hover:border-brand hover:text-brand mt-2 flex w-full items-center justify-center gap-1 rounded-md border border-dashed border-gray-300 py-2 text-xs text-gray-500 transition-colors"
+        (click)="addAreaPoint.emit(areaIndex)"
+        type="button"
+      >
+        <fa-icon [icon]="faPlusCircle" />
+        <span>Punkt hinzufügen</span>
+      </button>
+    </div>
+  }
+
+  @if (interactiveMode() === InteractiveMode.Area) {
+    <div class="border-brand bg-brand/5 rounded-lg border-2 p-3">
+      <div class="mb-2 flex items-center justify-between">
+        <span class="text-brand text-sm font-medium">Interaktive Fläche</span>
+        <span class="bg-brand rounded-full px-2 py-0.5 text-xs text-white">
+          {{ interactivePoints().length }} Punkte
+        </span>
+      </div>
+
+      <div class="mb-3 h-21 overflow-y-auto">
+        @if (interactivePoints().length > 0) {
+          <div class="space-y-1">
+            @for (point of interactivePoints(); let i = $index; track i) {
+              <div
+                class="flex items-center justify-between rounded bg-white px-2 py-1 text-sm"
+              >
+                <span class="text-gray-600"
+                  >P{{ i + 1 }}: ({{ point.x }}, {{ point.y }})</span
+                >
+                <button
+                  class="text-gray-400 hover:text-red-500"
+                  (click)="removeInteractivePoint.emit(i)"
+                  type="button"
+                >
+                  <fa-icon
+                    [icon]="faTrashCan"
+                    size="sm"
+                  />
+                </button>
+              </div>
+            }
+          </div>
+        } @else {
+          <p class="text-xs text-gray-600">
+            Klicke auf die Vorschau unten, um Punkte hinzuzufügen.
+          </p>
+        }
+      </div>
+
+      <div class="flex gap-2">
+        <button
+          class="app-button small flex-1"
+          [disabled]="interactivePoints().length < 3"
+          (click)="finishInteractive.emit()"
+          type="button"
+        >
+          <fa-icon
+            class="mr-1"
+            [icon]="faCheck"
+          />
+          Fertig
+        </button>
+        <button
+          class="app-button small secondary"
+          (click)="cancelInteractive.emit()"
+          type="button"
+        >
+          Abbrechen
+        </button>
+      </div>
+    </div>
+  } @else {
+    <div class="flex gap-2">
+      <button
+        class="hover:border-brand hover:bg-brand/5 hover:text-brand flex flex-1 items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-white py-3 text-sm text-gray-600 transition-colors"
+        (click)="addArea.emit()"
+        type="button"
+      >
+        <fa-icon [icon]="faPlusCircle" />
+        <span>Manuell</span>
+      </button>
+
+      <button
+        class="hover:border-brand hover:bg-brand/5 hover:text-brand flex flex-1 items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-white py-3 text-sm text-gray-600 transition-colors"
+        (click)="startInteractive.emit()"
+        type="button"
+      >
+        <fa-icon [icon]="faMousePointer" />
+        <span>Interaktiv</span>
+      </button>
+    </div>
+  }
+</div>

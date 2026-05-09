@@ -1,0 +1,171 @@
+@let form = editorForm();
+
+<div class="flex flex-col space-y-3 p-2">
+  @for (control of form.lines; let index = $index; track index) {
+    <div class="rounded-lg border border-gray-200 bg-white p-3 shadow-xs">
+      <div class="mb-3 flex items-center justify-between">
+        <span class="text-xs font-medium text-gray-500"
+          >Linie {{ index + 1 }}</span
+        >
+        <div class="flex items-center gap-2">
+          <input
+            class="h-7 w-7 cursor-pointer rounded border-none"
+            [formField]="control.color"
+            type="color"
+            title="Farbe wählen"
+          />
+          <button
+            class="flex h-7 w-7 items-center justify-center rounded text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
+            (click)="removeLine.emit(index)"
+            type="button"
+            title="Linie entfernen"
+          >
+            <fa-icon [icon]="faTrashCan" />
+          </button>
+        </div>
+      </div>
+
+      <div class="mb-2 grid grid-cols-[auto_1fr] items-center gap-x-3 gap-y-2">
+        <span class="text-xs text-gray-600">Linie</span>
+        <lg-dropdown
+          [formField]="control.lineStyle"
+          [options]="lineStyleOptions"
+        />
+      </div>
+
+      <div class="space-y-2">
+        <div class="rounded-md bg-gray-50 p-2">
+          <div class="mb-1 text-xs font-medium text-gray-500">Startpunkt</div>
+          <div class="flex gap-3">
+            <div class="flex-1">
+              <label
+                class="mb-1 block text-xs text-gray-500"
+                [for]="'line-x1-' + index"
+                >X</label
+              >
+              <input
+                class="app-input"
+                [formField]="control.x1"
+                [id]="'line-x1-' + index"
+                type="number"
+              />
+            </div>
+            <div class="flex-1">
+              <label
+                class="mb-1 block text-xs text-gray-500"
+                [for]="'line-y1-' + index"
+                >Y</label
+              >
+              <input
+                class="app-input"
+                [formField]="control.y1"
+                [id]="'line-y1-' + index"
+                type="number"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="rounded-md bg-gray-50 p-2">
+          <div class="mb-1 text-xs font-medium text-gray-500">Endpunkt</div>
+          <div class="flex gap-3">
+            <div class="flex-1">
+              <label
+                class="mb-1 block text-xs text-gray-500"
+                [for]="'line-x2-' + index"
+                >X</label
+              >
+              <input
+                class="app-input"
+                [formField]="control.x2"
+                [id]="'line-x2-' + index"
+                type="number"
+              />
+            </div>
+            <div class="flex-1">
+              <label
+                class="mb-1 block text-xs text-gray-500"
+                [for]="'line-y2-' + index"
+                >Y</label
+              >
+              <input
+                class="app-input"
+                [formField]="control.y2"
+                [id]="'line-y2-' + index"
+                type="number"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (interactiveMode() === InteractiveMode.Line) {
+    <div class="border-brand bg-brand/5 rounded-lg border-2 p-3">
+      <div class="mb-2 flex items-center justify-between">
+        <span class="text-brand text-sm font-medium">Interaktive Linie</span>
+        <span class="bg-brand rounded-full px-2 py-0.5 text-xs text-white">
+          {{ interactivePoints().length }}/2 Punkte
+        </span>
+      </div>
+
+      <div class="mb-3 h-14 overflow-y-auto">
+        @if (interactivePoints().length > 0) {
+          <div class="space-y-1">
+            @for (point of interactivePoints(); let i = $index; track i) {
+              <div
+                class="flex items-center justify-between rounded bg-white px-2 py-1 text-sm"
+              >
+                <span class="text-gray-600"
+                  >{{ i === 0 ? 'Start' : 'Ende' }}: ({{ point.x }},
+                  {{ point.y }})</span
+                >
+                <button
+                  class="text-gray-400 hover:text-red-500"
+                  (click)="removeInteractivePoint.emit(i)"
+                  type="button"
+                >
+                  <fa-icon
+                    [icon]="faTrashCan"
+                    size="sm"
+                  />
+                </button>
+              </div>
+            }
+          </div>
+        } @else {
+          <p class="text-xs text-gray-600">
+            Klicke auf die Vorschau, um Start- und Endpunkt zu setzen.
+          </p>
+        }
+      </div>
+
+      <button
+        class="app-button small secondary w-full"
+        (click)="cancelInteractive.emit()"
+        type="button"
+      >
+        Abbrechen
+      </button>
+    </div>
+  } @else {
+    <div class="flex gap-2">
+      <button
+        class="hover:border-brand hover:bg-brand/5 hover:text-brand flex flex-1 items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-white py-3 text-sm text-gray-600 transition-colors"
+        (click)="addLine.emit()"
+        type="button"
+      >
+        <fa-icon [icon]="faPlusCircle" />
+        <span>Manuell</span>
+      </button>
+      <button
+        class="hover:border-brand hover:bg-brand/5 hover:text-brand flex flex-1 items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-white py-3 text-sm text-gray-600 transition-colors"
+        (click)="startInteractive.emit()"
+        type="button"
+      >
+        <fa-icon [icon]="faMousePointer" />
+        <span>Interaktiv</span>
+      </button>
+    </div>
+  }
+</div>

@@ -1,0 +1,115 @@
+@let form = editorForm();
+@let model = editorModel();
+
+<div class="flex flex-col space-y-2 p-2">
+  <label
+    class="flex cursor-pointer items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-colors hover:bg-gray-50"
+  >
+    <input
+      class="app-checkbox"
+      id="show-axis"
+      [formField]="form.showAxis"
+      type="checkbox"
+    />
+    <span class="text-sm text-gray-700">Achsen anzeigen</span>
+  </label>
+
+  @if (model.showAxis) {
+    <label
+      class="ml-4 flex cursor-pointer items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-colors hover:bg-gray-50"
+    >
+      <input
+        class="app-checkbox"
+        id="show-axis-labels"
+        [formField]="form.showAxisLabels"
+        type="checkbox"
+      />
+      <span class="text-sm text-gray-700">Achsenbeschriftung</span>
+    </label>
+
+    @if (model.showAxisLabels) {
+      <label
+        class="ml-8 flex cursor-pointer items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-colors hover:bg-gray-50"
+      >
+        <input
+          class="app-checkbox"
+          id="place-axis-labels-inside"
+          [formField]="form.placeAxisLabelsInside"
+          type="checkbox"
+        />
+        <span class="text-sm text-gray-700">An 0-Linie anzeigen</span>
+      </label>
+
+      <div class="ml-8 rounded-lg border border-gray-200 bg-white p-3">
+        <div class="mb-2 text-xs font-medium text-gray-500">
+          Achsenbeschriftung
+        </div>
+        <div class="flex gap-3">
+          <div class="flex-1">
+            <label
+              class="mb-1 block text-xs text-gray-600"
+              for="axis-label-x"
+              >X-Achse</label
+            >
+            <input
+              class="app-input"
+              id="axis-label-x"
+              [formField]="form.axisLabelX"
+              type="text"
+              placeholder="x"
+            />
+          </div>
+          <div class="flex-1">
+            <label
+              class="mb-1 block text-xs text-gray-600"
+              for="axis-label-y"
+              >Y-Achse</label
+            >
+            <input
+              class="app-input"
+              id="axis-label-y"
+              [formField]="form.axisLabelY"
+              type="text"
+              placeholder="y"
+            />
+          </div>
+        </div>
+        <div class="mt-3">
+          <label
+            class="mb-1 block text-xs text-gray-600"
+            for="legend-label-format"
+            >Legendenformat</label
+          >
+          <lg-dropdown
+            [formField]="form.legendLabelFormat"
+            [options]="legendLabelFormatOptions"
+          />
+        </div>
+      </div>
+    }
+  }
+
+  <label
+    class="flex cursor-pointer items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-colors hover:bg-gray-50"
+  >
+    <input
+      class="app-checkbox"
+      id="square-plots"
+      [formField]="form.squarePlots"
+      type="checkbox"
+    />
+    <span class="text-sm text-gray-700">Plot quadratisch generieren</span>
+  </label>
+
+  <label
+    class="flex cursor-pointer items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-colors hover:bg-gray-50"
+  >
+    <input
+      class="app-checkbox"
+      id="limit-equals-value-range"
+      [formField]="form.automaticallyAdjustLimitsToValueRange"
+      type="checkbox"
+    />
+    <span class="text-sm text-gray-700">Grenzen automatisch anpassen</span>
+  </label>
+</div>

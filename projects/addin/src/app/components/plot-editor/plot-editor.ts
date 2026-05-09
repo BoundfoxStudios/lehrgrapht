@@ -7,29 +7,20 @@ import {
   signal,
 } from '@angular/core';
 import { Header } from '../header/header';
-import { form, FormField, SchemaPath, validate } from '@angular/forms/signals';
+import { form, SchemaPath, validate } from '@angular/forms/signals';
 import { PlotClickEvent, PlotPreview } from '../plot-preview/plot-preview';
 import { PlotService } from '../../services/plot/plot.service';
 import { plotHasErrorCode, PlotSizeMm } from '../../services/plot/plot.types';
-import { DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ContentContainer } from '../content-container/content-container';
-import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import {
-  faCheck,
-  faMousePointer,
-  faPlusCircle,
-  faTrashCan,
+  faDrawPolygon,
+  faExpand,
+  faLocationDot,
+  faMinus,
+  faSliders,
+  faSquareRootVariable,
 } from '@fortawesome/free-solid-svg-icons';
-import { MathDisplay } from '../math-display/math-display';
-import {
-  FunctionLegendPosition,
-  FunctionLineStyle,
-  LabelPosition,
-  LegendLabelFormat,
-  Plot,
-  PlotSettings,
-} from '../../models/plot';
+import { Plot, PlotSettings } from '../../models/plot';
 import { lehrgraphtVersion } from '../../../version';
 import { MarkerNamingService } from '../../services/marker-naming.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -37,23 +28,35 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { WordService } from '../../services/word/word.service';
 import { Section } from '../section/section';
-import { Accordion } from '../accordion/accordion';
-import { AccordionPanel } from '../accordion/accordion-panel/accordion-panel';
 import {
   defaultPlotSettings,
   PlotSettingsService,
 } from '../../services/plot-settings.service';
-import { Dropdown, DropdownOption } from '../dropdown/dropdown';
+import { HubSection, PlotEditorHub } from '../plot-editor-hub/plot-editor-hub';
+import { TabStrip, TabStripItem } from '../tab-strip/tab-strip';
+import { SectionRange } from './sections/section-range/section-range';
+import { SectionFnx } from './sections/section-fnx/section-fnx';
+import { SectionMarkers } from './sections/section-markers/section-markers';
+import { SectionLines } from './sections/section-lines/section-lines';
+import {
+  RemoveAreaPointEvent,
+  SectionAreas,
+} from './sections/section-areas/section-areas';
+import { SectionSettings } from './sections/section-settings/section-settings';
+import { InteractiveMode } from './interactive-mode';
 
 const colors = ['#3737d0', '#af2c2c', '#2a8c1a', '#f18238'];
 
-enum InteractiveMode {
-  Off = 'off',
-  Area = 'area',
-  Marker = 'marker',
-  Line = 'line',
-  StraightLine = 'straightLine',
-}
+type EditorView = 'hub' | HubSection;
+
+const SECTION_VIEWS: readonly HubSection[] = [
+  'fnx',
+  'markers',
+  'lines',
+  'areas',
+  'range',
+  'settings',
+];
 
 const lessThanValidator = (
   fieldA: SchemaPath<number>,
@@ -83,56 +86,21 @@ const lessThanValidator = (
     Header,
     PlotPreview,
     FormsModule,
-    ContentContainer,
-    FaIconComponent,
-    MathDisplay,
     Section,
-    Accordion,
-    AccordionPanel,
-    Dropdown,
-    DecimalPipe,
-    FormField,
+    PlotEditorHub,
+    TabStrip,
+    SectionRange,
+    SectionFnx,
+    SectionMarkers,
+    SectionLines,
+    SectionAreas,
+    SectionSettings,
   ],
   templateUrl: './plot-editor.html',
   styleUrl: './plot-editor.css',
 })
 export class PlotEditor {
   protected readonly InteractiveMode = InteractiveMode;
-  protected readonly faPlusCircle = faPlusCircle;
-  protected readonly faTrashCan = faTrashCan;
-  protected readonly faMousePointer = faMousePointer;
-  protected readonly faCheck = faCheck;
-
-  protected readonly labelPositionOptions: DropdownOption<LabelPosition>[] = [
-    { value: 'auto', label: 'Auto' },
-    { value: 'top left', label: 'Oben links' },
-    { value: 'top center', label: 'Oben' },
-    { value: 'top right', label: 'Oben rechts' },
-    { value: 'middle left', label: 'Links' },
-    { value: 'middle right', label: 'Rechts' },
-    { value: 'bottom left', label: 'Unten links' },
-    { value: 'bottom center', label: 'Unten' },
-    { value: 'bottom right', label: 'Unten rechts' },
-  ];
-
-  protected readonly legendPositionOptions: DropdownOption<FunctionLegendPosition>[] =
-    [
-      { value: 'none', label: 'Keine' },
-      { value: 'start', label: 'Anfang' },
-      { value: 'end', label: 'Ende' },
-    ];
-
-  protected readonly lineStyleOptions: DropdownOption<FunctionLineStyle>[] = [
-    { value: 'solid', label: 'Durchgezogen' },
-    { value: 'dashed', label: 'Gestrichelt' },
-  ];
-
-  protected readonly legendLabelFormatOptions: DropdownOption<LegendLabelFormat>[] =
-    [
-      { value: 'none', label: 'Keine' },
-      { value: 'f(x)=', label: 'f(x)=' },
-      { value: 'y=', label: 'y=' },
-    ];
 
   private readonly plotService = inject(PlotService);
   protected readonly markerNamingService = inject(MarkerNamingService);
@@ -157,6 +125,19 @@ export class PlotEditor {
     loader: ({ params }) =>
       params ? this.wordService.get(params) : Promise.resolve(undefined),
   });
+
+  protected readonly view = toSignal(
+    this.activatedRoute.queryParamMap.pipe(
+      map((params): EditorView => {
+        const section = params.get('section');
+        if (section && (SECTION_VIEWS as readonly string[]).includes(section)) {
+          return section as HubSection;
+        }
+        return 'hub';
+      }),
+    ),
+    { initialValue: 'hub' },
+  );
 
   protected readonly editorModel = signal<Plot>({
     version: lehrgraphtVersion,
@@ -191,11 +172,6 @@ export class PlotEditor {
     axisLabelY: 'y',
     legendLabelFormat: 'none',
   });
-
-  protected readonly squareCount = computed(
-    () =>
-      `${(this.editorModel().range.x.max - this.editorModel().range.x.min) * 2} / ${(this.editorModel().range.y.max - this.editorModel().range.y.min) * 2}`,
-  );
 
   protected readonly plotSizeMm = computed<PlotSizeMm>(() =>
     this.plotService.calculatePlotSizeMm(this.editorModel()),
@@ -282,36 +258,6 @@ export class PlotEditor {
     return { ...model, areas, markers, lines, fnx };
   });
 
-  protected readonly rangeTitle = computed(() => {
-    const range = this.editorModel().range;
-
-    return `Grenzen (x: ${range.x.min}/${range.x.max}, y: ${range.y.min}/${range.y.max}) (K: ${this.squareCount()})`;
-  });
-
-  protected readonly functionsTitle = computed(() => {
-    const fnx = this.editorModel().fnx;
-
-    return `Funktionen (Anzahl: ${fnx.length})`;
-  });
-
-  protected readonly markersTitle = computed(() => {
-    const markers = this.editorModel().markers;
-
-    return `Punkte (x/y) (Anzahl: ${markers.length})`;
-  });
-
-  protected readonly areasTitle = computed(() => {
-    const areas = this.editorModel().areas;
-
-    return `Flächen (Anzahl: ${areas.length})`;
-  });
-
-  protected readonly linesTitle = computed(() => {
-    const lines = this.editorModel().lines;
-
-    return `Linien (Anzahl: ${lines.length})`;
-  });
-
   protected readonly editorForm = form(this.editorModel, schema => {
     lessThanValidator(
       schema.range.x.min,
@@ -323,6 +269,38 @@ export class PlotEditor {
       schema.range.y.max,
       'Y Min muss kleiner sein als Y Max',
     );
+  });
+
+  protected readonly sectionTabs = computed<TabStripItem[]>(() => {
+    const model = this.editorModel();
+    return [
+      {
+        id: 'fnx',
+        label: 'Funktionen',
+        icon: faSquareRootVariable,
+        count: model.fnx.length,
+      },
+      {
+        id: 'markers',
+        label: 'Punkte',
+        icon: faLocationDot,
+        count: model.markers.length,
+      },
+      {
+        id: 'lines',
+        label: 'Linien',
+        icon: faMinus,
+        count: model.lines.length,
+      },
+      {
+        id: 'areas',
+        label: 'Flächen',
+        icon: faDrawPolygon,
+        count: model.areas.length,
+      },
+      { id: 'range', label: 'Grenzen', icon: faExpand },
+      { id: 'settings', label: 'Darstellung', icon: faSliders },
+    ];
   });
 
   constructor() {
@@ -339,6 +317,15 @@ export class PlotEditor {
       if (existingPlot) {
         this.editorModel.set(existingPlot.model);
       }
+    });
+  }
+
+  protected goTo(view: EditorView): void {
+    this.cancelInteractiveIfActive();
+    void this.router.navigate([], {
+      relativeTo: this.activatedRoute,
+      queryParams: { section: view === 'hub' ? null : view },
+      queryParamsHandling: 'merge',
     });
   }
 
@@ -521,12 +508,12 @@ export class PlotEditor {
     });
   }
 
-  protected removeAreaPoint(areaIndex: number, pointIndex: number): void {
+  protected removeAreaPoint(event: RemoveAreaPointEvent): void {
     this.editorModel.update(model => {
       const areas = model.areas.map((area, i) => {
-        if (i !== areaIndex) return area;
+        if (i !== event.areaIndex) return area;
         const points = [...area.points];
-        points.splice(pointIndex, 1);
+        points.splice(event.pointIndex, 1);
         return { ...area, points };
       });
       return { ...model, areas };
@@ -743,6 +730,13 @@ export class PlotEditor {
   protected cancelInteractiveStraightLine(): void {
     this.interactiveMode.set(InteractiveMode.Off);
     this.interactivePoints.set([]);
+  }
+
+  private cancelInteractiveIfActive(): void {
+    if (this.interactiveMode() !== InteractiveMode.Off) {
+      this.interactiveMode.set(InteractiveMode.Off);
+      this.interactivePoints.set([]);
+    }
   }
 
   private calculateStraightLineFunction(
