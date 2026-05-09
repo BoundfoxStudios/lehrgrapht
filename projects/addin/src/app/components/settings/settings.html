@@ -30,13 +30,13 @@
           <input
             class="app-input"
             id="zero-line-width"
-            [field]="editorForm.zeroLineWidth"
+            [formField]="editorForm.zeroLineWidth"
             type="number"
             step="0.5"
           />
           <input
             class="h-8 w-8 shrink-0 border-none"
-            [field]="editorForm.zeroLineColor"
+            [formField]="editorForm.zeroLineColor"
             type="color"
           />
         </div>
@@ -51,13 +51,13 @@
           <input
             class="app-input"
             id="grid-line-width"
-            [field]="editorForm.gridLineWidth"
+            [formField]="editorForm.gridLineWidth"
             type="number"
             step="0.5"
           />
           <input
             class="h-8 w-8 shrink-0 border-none"
-            [field]="editorForm.gridLineColor"
+            [formField]="editorForm.gridLineColor"
             type="color"
           />
         </div>
@@ -72,7 +72,7 @@
           <input
             class="app-input"
             id="plot-line-width"
-            [field]="editorForm.plotLineWidth"
+            [formField]="editorForm.plotLineWidth"
             type="number"
             step="0.5"
           />
@@ -93,7 +93,7 @@
           >Namensschema</label
         >
         <lg-dropdown
-          [field]="editorForm.markerNamingScheme"
+          [formField]="editorForm.markerNamingScheme"
           [options]="markerNamingSchemeOptions"
         />
       </div>
@@ -112,7 +112,7 @@
           >Legendenformat</label
         >
         <lg-dropdown
-          [field]="editorForm.legendLabelFormat"
+          [formField]="editorForm.legendLabelFormat"
           [options]="legendLabelFormatOptions"
         />
       </div>

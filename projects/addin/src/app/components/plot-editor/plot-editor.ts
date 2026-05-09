@@ -7,7 +7,7 @@ import {
   signal,
 } from '@angular/core';
 import { Header } from '../header/header';
-import { Field, form, SchemaPath, validate } from '@angular/forms/signals';
+import { form, FormField, SchemaPath, validate } from '@angular/forms/signals';
 import { PlotClickEvent, PlotPreview } from '../plot-preview/plot-preview';
 import { PlotService } from '../../services/plot/plot.service';
 import { plotHasErrorCode, PlotSizeMm } from '../../services/plot/plot.types';
@@ -24,6 +24,7 @@ import {
 import { MathDisplay } from '../math-display/math-display';
 import {
   FunctionLegendPosition,
+  LabelPosition,
   LegendLabelFormat,
   Plot,
   PlotSettings,
@@ -42,7 +43,6 @@ import {
   PlotSettingsService,
 } from '../../services/plot-settings.service';
 import { Dropdown, DropdownOption } from '../dropdown/dropdown';
-import { LabelPosition } from '../../models/plot';
 
 const colors = ['#3737d0', '#af2c2c', '#2a8c1a', '#f18238'];
 
@@ -59,8 +59,6 @@ const lessThanValidator = (
   fieldB: SchemaPath<number>,
   message: string,
 ): void => {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-expect-error
   // eslint-disable-next-line @typescript-eslint/unbound-method
   validate(fieldA, ({ value, valueOf }) => {
     const fieldAValue = value();
@@ -82,7 +80,6 @@ const lessThanValidator = (
   selector: 'lg-plot-editor',
   imports: [
     Header,
-    Field,
     PlotPreview,
     FormsModule,
     ContentContainer,
@@ -93,6 +90,7 @@ const lessThanValidator = (
     AccordionPanel,
     Dropdown,
     DecimalPipe,
+    FormField,
   ],
   templateUrl: './plot-editor.html',
   styleUrl: './plot-editor.css',
