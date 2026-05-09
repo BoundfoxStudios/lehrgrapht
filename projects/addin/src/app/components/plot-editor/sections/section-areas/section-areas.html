@@ -1,4 +1,4 @@
-@let form = editorForm();
+@let form = store.editorForm;
 
 <div class="flex flex-col space-y-3 p-2">
   @for (control of form.areas; let areaIndex = $index; track areaIndex) {
@@ -28,7 +28,7 @@
           />
           <button
             class="flex h-7 w-7 items-center justify-center rounded text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
-            (click)="removeArea.emit(areaIndex)"
+            (click)="store.removeArea(areaIndex)"
             type="button"
             title="Fläche entfernen"
           >
@@ -73,7 +73,7 @@
               </div>
               <button
                 class="mb-1 flex h-8 w-8 shrink-0 items-center justify-center rounded text-gray-400 transition-colors hover:bg-red-100 hover:text-red-500"
-                (click)="removeAreaPoint.emit({ areaIndex, pointIndex })"
+                (click)="store.removeAreaPoint({ areaIndex, pointIndex })"
                 type="button"
                 title="Punkt entfernen"
               >
@@ -114,7 +114,7 @@
 
       <button
         class="hover:border-brand hover:text-brand mt-2 flex w-full items-center justify-center gap-1 rounded-md border border-dashed border-gray-300 py-2 text-xs text-gray-500 transition-colors"
-        (click)="addAreaPoint.emit(areaIndex)"
+        (click)="store.addAreaPoint(areaIndex)"
         type="button"
       >
         <fa-icon [icon]="faPlusCircle" />
@@ -123,19 +123,19 @@
     </div>
   }
 
-  @if (interactiveMode() === InteractiveMode.Area) {
+  @if (store.interactiveMode() === InteractiveMode.Area) {
     <div class="border-brand bg-brand/5 rounded-lg border-2 p-3">
       <div class="mb-2 flex items-center justify-between">
         <span class="text-brand text-sm font-medium">Interaktive Fläche</span>
         <span class="bg-brand rounded-full px-2 py-0.5 text-xs text-white">
-          {{ interactivePoints().length }} Punkte
+          {{ store.interactivePoints().length }} Punkte
         </span>
       </div>
 
       <div class="mb-3 h-21 overflow-y-auto">
-        @if (interactivePoints().length > 0) {
+        @if (store.interactivePoints().length > 0) {
           <div class="space-y-1">
-            @for (point of interactivePoints(); let i = $index; track i) {
+            @for (point of store.interactivePoints(); let i = $index; track i) {
               <div
                 class="flex items-center justify-between rounded bg-white px-2 py-1 text-sm"
               >
@@ -144,7 +144,7 @@
                 >
                 <button
                   class="text-gray-400 hover:text-red-500"
-                  (click)="removeInteractivePoint.emit(i)"
+                  (click)="store.removeInteractivePoint(i)"
                   type="button"
                 >
                   <fa-icon
@@ -165,8 +165,8 @@
       <div class="flex gap-2">
         <button
           class="app-button small flex-1"
-          [disabled]="interactivePoints().length < 3"
-          (click)="finishInteractive.emit()"
+          [disabled]="store.interactivePoints().length < 3"
+          (click)="store.finishInteractiveArea()"
           type="button"
         >
           <fa-icon
@@ -177,7 +177,7 @@
         </button>
         <button
           class="app-button small secondary"
-          (click)="cancelInteractive.emit()"
+          (click)="store.cancelInteractiveArea()"
           type="button"
         >
           Abbrechen
@@ -188,7 +188,7 @@
     <div class="flex gap-2">
       <button
         class="hover:border-brand hover:bg-brand/5 hover:text-brand flex flex-1 items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-white py-3 text-sm text-gray-600 transition-colors"
-        (click)="addArea.emit()"
+        (click)="store.addArea()"
         type="button"
       >
         <fa-icon [icon]="faPlusCircle" />
@@ -197,7 +197,7 @@
 
       <button
         class="hover:border-brand hover:bg-brand/5 hover:text-brand flex flex-1 items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-white py-3 text-sm text-gray-600 transition-colors"
-        (click)="startInteractive.emit()"
+        (click)="store.startInteractiveArea()"
         type="button"
       >
         <fa-icon [icon]="faMousePointer" />

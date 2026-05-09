@@ -1,6 +1,13 @@
 import { Routes } from '@angular/router';
 import { PlotList } from './components/plot-list/plot-list';
 import { PlotEditor } from './components/plot-editor/plot-editor';
+import { PlotEditorHub } from './components/plot-editor-hub/plot-editor-hub';
+import { SectionAreas } from './components/plot-editor/sections/section-areas/section-areas';
+import { SectionFnx } from './components/plot-editor/sections/section-fnx/section-fnx';
+import { SectionLines } from './components/plot-editor/sections/section-lines/section-lines';
+import { SectionMarkers } from './components/plot-editor/sections/section-markers/section-markers';
+import { SectionRange } from './components/plot-editor/sections/section-range/section-range';
+import { SectionSettings } from './components/plot-editor/sections/section-settings/section-settings';
 import { Info } from './components/info/info';
 import { FirstRunExperience } from './components/first-run-experience/first-run-experience';
 import { redirectToFirstRunExperience } from './components/first-run-experience/redirect-to-first-run-experience';
@@ -35,12 +42,44 @@ export const routes: Routes = [
         component: PlotList,
       },
       {
-        path: 'editor/:id',
-        component: PlotEditor,
+        path: 'editor',
+        pathMatch: 'full',
+        redirectTo: 'editor/new',
       },
       {
-        path: 'editor',
+        path: 'editor/:id',
         component: PlotEditor,
+        children: [
+          {
+            path: '',
+            pathMatch: 'full',
+            component: PlotEditorHub,
+          },
+          {
+            path: 'fnx',
+            component: SectionFnx,
+          },
+          {
+            path: 'markers',
+            component: SectionMarkers,
+          },
+          {
+            path: 'lines',
+            component: SectionLines,
+          },
+          {
+            path: 'areas',
+            component: SectionAreas,
+          },
+          {
+            path: 'range',
+            component: SectionRange,
+          },
+          {
+            path: 'settings',
+            component: SectionSettings,
+          },
+        ],
       },
       {
         path: 'info',

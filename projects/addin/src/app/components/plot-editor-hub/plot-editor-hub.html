@@ -1,4 +1,4 @@
-@let form = editorForm();
+@let model = store.model();
 
 <div class="flex flex-col gap-2.5 p-2.5">
   <!-- Plot name (inline rename) -->
@@ -11,17 +11,16 @@
     <input
       class="text-heading focus:border-default-medium w-full border-0 border-b border-transparent bg-transparent py-1 text-base font-semibold transition-colors focus:outline-none"
       id="plot-name"
-      [formField]="form.name"
+      [formField]="store.editorForm.name"
       type="text"
       placeholder="z.B. Parabel, Sinus, ..."
     />
   </div>
 
   <!-- Range / Achsen card -->
-  <button
+  <a
     class="border-default-medium rounded-base hover:border-brand-medium flex items-center gap-2.5 border bg-white p-2.5 text-left transition-colors"
-    (click)="select('range')"
-    type="button"
+    [routerLink]="['/plot/editor', store.routeId(), 'range']"
   >
     <span
       class="bg-brand-soft text-brand grid h-9 w-9 shrink-0 place-items-center rounded-md"
@@ -33,15 +32,16 @@
       <span class="text-heading block text-sm font-bold"
         >Grenzen &amp; Achsen</span
       >
-      <span class="text-body-subtle block text-xs tabular-nums">{{
-        rangeSummary()
-      }}</span>
+      <span class="text-body-subtle block text-xs tabular-nums">
+        x: {{ model.range.x.min }} / {{ model.range.x.max }} · y:
+        {{ model.range.y.min }} / {{ model.range.y.max }}
+      </span>
     </span>
     <fa-icon
       class="text-body-subtle"
       [icon]="faChevronRight"
     />
-  </button>
+  </a>
 
   <!-- OBJEKTE -->
   <h3
@@ -50,10 +50,9 @@
     Objekte
   </h3>
   <div class="grid grid-cols-2 gap-2">
-    <button
+    <a
       class="border-default-medium rounded-base hover:border-brand-medium flex min-h-[78px] flex-col gap-1.5 border bg-white p-2.5 text-left transition-colors"
-      (click)="select('fnx')"
-      type="button"
+      [routerLink]="['/plot/editor', store.routeId(), 'fnx']"
     >
       <div class="flex items-center justify-between">
         <span
@@ -62,31 +61,30 @@
         >
           <fa-icon [icon]="faSquareRootVariable" />
         </span>
-        @if (fnxCount() > 0) {
+        @if (model.fnx.length > 0) {
           <span
             class="bg-brand text-2xs inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 font-bold text-white"
-            >{{ fnxCount() }}</span
+            >{{ model.fnx.length }}</span
           >
         }
       </div>
       <div>
         <div class="text-heading text-sm font-semibold">Funktionen</div>
         <div class="text-body-subtle text-2xs mt-0.5">
-          @if (fnxCount() === 0) {
+          @if (model.fnx.length === 0) {
             + hinzufügen
-          } @else if (fnxCount() === 1) {
+          } @else if (model.fnx.length === 1) {
             1 Funktion
           } @else {
-            {{ fnxCount() }} Funktionen
+            {{ model.fnx.length }} Funktionen
           }
         </div>
       </div>
-    </button>
+    </a>
 
-    <button
+    <a
       class="border-default-medium rounded-base hover:border-brand-medium flex min-h-[78px] flex-col gap-1.5 border bg-white p-2.5 text-left transition-colors"
-      (click)="select('markers')"
-      type="button"
+      [routerLink]="['/plot/editor', store.routeId(), 'markers']"
     >
       <div class="flex items-center justify-between">
         <span
@@ -95,31 +93,30 @@
         >
           <fa-icon [icon]="faLocationDot" />
         </span>
-        @if (markersCount() > 0) {
+        @if (model.markers.length > 0) {
           <span
             class="bg-brand text-2xs inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 font-bold text-white"
-            >{{ markersCount() }}</span
+            >{{ model.markers.length }}</span
           >
         }
       </div>
       <div>
         <div class="text-heading text-sm font-semibold">Punkte</div>
         <div class="text-body-subtle text-2xs mt-0.5">
-          @if (markersCount() === 0) {
+          @if (model.markers.length === 0) {
             + hinzufügen
-          } @else if (markersCount() === 1) {
+          } @else if (model.markers.length === 1) {
             1 Punkt
           } @else {
-            {{ markersCount() }} Punkte
+            {{ model.markers.length }} Punkte
           }
         </div>
       </div>
-    </button>
+    </a>
 
-    <button
+    <a
       class="border-default-medium rounded-base hover:border-brand-medium flex min-h-[78px] flex-col gap-1.5 border bg-white p-2.5 text-left transition-colors"
-      (click)="select('lines')"
-      type="button"
+      [routerLink]="['/plot/editor', store.routeId(), 'lines']"
     >
       <div class="flex items-center justify-between">
         <span
@@ -128,31 +125,30 @@
         >
           <fa-icon [icon]="faMinus" />
         </span>
-        @if (linesCount() > 0) {
+        @if (model.lines.length > 0) {
           <span
             class="bg-brand text-2xs inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 font-bold text-white"
-            >{{ linesCount() }}</span
+            >{{ model.lines.length }}</span
           >
         }
       </div>
       <div>
         <div class="text-heading text-sm font-semibold">Linien</div>
         <div class="text-body-subtle text-2xs mt-0.5">
-          @if (linesCount() === 0) {
+          @if (model.lines.length === 0) {
             + hinzufügen
-          } @else if (linesCount() === 1) {
+          } @else if (model.lines.length === 1) {
             1 Linie
           } @else {
-            {{ linesCount() }} Linien
+            {{ model.lines.length }} Linien
           }
         </div>
       </div>
-    </button>
+    </a>
 
-    <button
+    <a
       class="border-default-medium rounded-base hover:border-brand-medium flex min-h-[78px] flex-col gap-1.5 border bg-white p-2.5 text-left transition-colors"
-      (click)="select('areas')"
-      type="button"
+      [routerLink]="['/plot/editor', store.routeId(), 'areas']"
     >
       <div class="flex items-center justify-between">
         <span
@@ -161,26 +157,26 @@
         >
           <fa-icon [icon]="faDrawPolygon" />
         </span>
-        @if (areasCount() > 0) {
+        @if (model.areas.length > 0) {
           <span
             class="bg-brand text-2xs inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 font-bold text-white"
-            >{{ areasCount() }}</span
+            >{{ model.areas.length }}</span
           >
         }
       </div>
       <div>
         <div class="text-heading text-sm font-semibold">Flächen</div>
         <div class="text-body-subtle text-2xs mt-0.5">
-          @if (areasCount() === 0) {
+          @if (model.areas.length === 0) {
             + hinzufügen
-          } @else if (areasCount() === 1) {
+          } @else if (model.areas.length === 1) {
             1 Fläche
           } @else {
-            {{ areasCount() }} Flächen
+            {{ model.areas.length }} Flächen
           }
         </div>
       </div>
-    </button>
+    </a>
   </div>
 
   <!-- WEITERE -->
@@ -189,10 +185,9 @@
   >
     Weitere
   </h3>
-  <button
+  <a
     class="border-default-medium rounded-base hover:border-brand-medium flex items-center gap-2.5 border bg-white p-2.5 text-left transition-colors"
-    (click)="select('settings')"
-    type="button"
+    [routerLink]="['/plot/editor', store.routeId(), 'settings']"
   >
     <span
       class="bg-brand-soft text-brand grid h-9 w-9 shrink-0 place-items-center rounded-md"
@@ -210,5 +205,5 @@
       class="text-body-subtle"
       [icon]="faChevronRight"
     />
-  </button>
+  </a>
 </div>

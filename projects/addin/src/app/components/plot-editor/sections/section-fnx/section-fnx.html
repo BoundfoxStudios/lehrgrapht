@@ -1,4 +1,4 @@
-@let form = editorForm();
+@let form = store.editorForm;
 
 <div class="flex flex-col space-y-3 p-2">
   @for (control of form.fnx; let index = $index; track index) {
@@ -16,7 +16,7 @@
           />
           <button
             class="flex h-7 w-7 items-center justify-center rounded text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
-            (click)="removeFx.emit(index)"
+            (click)="store.removeFx(index)"
             type="button"
             title="Funktion entfernen"
           >
@@ -52,27 +52,27 @@
       <lg-math-display
         [math]="control.fnx().value()"
         [prefix]="
-          editorModel().legendLabelFormat === 'none'
+          store.model().legendLabelFormat === 'none'
             ? undefined
-            : editorModel().legendLabelFormat
+            : store.model().legendLabelFormat
         "
       />
     </div>
   }
 
-  @if (interactiveMode() === InteractiveMode.StraightLine) {
+  @if (store.interactiveMode() === InteractiveMode.StraightLine) {
     <div class="border-brand bg-brand/5 rounded-lg border-2 p-3">
       <div class="mb-2 flex items-center justify-between">
         <span class="text-brand text-sm font-medium">Gerade Interaktiv</span>
         <span class="bg-brand rounded-full px-2 py-0.5 text-xs text-white">
-          {{ interactivePoints().length }}/2 Punkte
+          {{ store.interactivePoints().length }}/2 Punkte
         </span>
       </div>
 
       <div class="mb-3 h-14 overflow-y-auto">
-        @if (interactivePoints().length > 0) {
+        @if (store.interactivePoints().length > 0) {
           <div class="space-y-1">
-            @for (point of interactivePoints(); let i = $index; track i) {
+            @for (point of store.interactivePoints(); let i = $index; track i) {
               <div
                 class="flex items-center justify-between rounded bg-white px-2 py-1 text-sm"
               >
@@ -81,7 +81,7 @@
                 >
                 <button
                   class="text-gray-400 hover:text-red-500"
-                  (click)="removeInteractivePoint.emit(i)"
+                  (click)="store.removeInteractivePoint(i)"
                   type="button"
                 >
                   <fa-icon
@@ -101,7 +101,7 @@
 
       <button
         class="app-button small secondary w-full"
-        (click)="cancelInteractive.emit()"
+        (click)="store.cancelInteractiveStraightLine()"
         type="button"
       >
         Abbrechen
@@ -111,7 +111,7 @@
     <div class="flex gap-2">
       <button
         class="hover:border-brand hover:bg-brand/5 hover:text-brand flex flex-1 items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-white py-3 text-sm text-gray-600 transition-colors"
-        (click)="addFx.emit()"
+        (click)="store.addFx()"
         type="button"
       >
         <fa-icon [icon]="faPlusCircle" />
@@ -119,7 +119,7 @@
       </button>
       <button
         class="hover:border-brand hover:bg-brand/5 hover:text-brand flex flex-1 items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-white py-3 text-sm text-gray-600 transition-colors"
-        (click)="startInteractive.emit()"
+        (click)="store.startInteractiveStraightLine()"
         type="button"
       >
         <fa-icon [icon]="faMousePointer" />

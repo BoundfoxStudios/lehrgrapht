@@ -1,137 +1,54 @@
-@let activePlot = existingPlot.value();
-@let isEditMode = !!activePlot;
-@let currentView = view();
-
 <lg-header
   [backLink]="['/']"
-  [subtitle]="'Plot: ' + editorModel().name"
+  [subtitle]="'Plot: ' + store.model().name"
   title="Plot Editor"
 />
 
 <form
   class="flex flex-1 flex-col"
-  (ngSubmit)="sendToWord()"
+  (ngSubmit)="submit()"
 >
   <div class="flex flex-1 flex-col">
-    @if (currentView === 'hub') {
-      <lg-plot-editor-hub
-        [editorForm]="editorForm"
-        (sectionSelect)="goTo($event)"
-      />
-    } @else {
+    @if (currentSection()) {
       <lg-tab-strip
         [tabs]="sectionTabs()"
-        [active]="currentView"
-        (tabChange)="goTo($any($event))"
+        [active]="currentSection()!"
+        (tabChange)="goToSection($event)"
       />
-
-      @switch (currentView) {
-        @case ('range') {
-          <lg-section-range
-            [editorForm]="editorForm"
-            [editorModel]="editorModel()"
-            [plotSizeMm]="plotSizeMm()"
-            (autoAdjust)="autoAdjustLimits()"
-          />
-        }
-        @case ('fnx') {
-          <lg-section-fnx
-            [editorForm]="editorForm"
-            [editorModel]="editorModel()"
-            [interactiveMode]="interactiveMode()"
-            [interactivePoints]="interactivePoints()"
-            (addFx)="addFx()"
-            (removeFx)="removeFx($event)"
-            (startInteractive)="startInteractiveStraightLine()"
-            (cancelInteractive)="cancelInteractiveStraightLine()"
-            (removeInteractivePoint)="removeInteractivePoint($event)"
-          />
-        }
-        @case ('markers') {
-          <lg-section-markers
-            [editorForm]="editorForm"
-            [editorModel]="editorModel()"
-            [plotSettings]="plotSettings()"
-            [interactiveMode]="interactiveMode()"
-            [interactivePoints]="interactivePoints()"
-            (addMarker)="addMarker()"
-            (removeMarker)="removeMarker($event)"
-            (startInteractive)="startInteractiveMarker()"
-            (cancelInteractive)="cancelInteractiveMarker()"
-            (finishInteractive)="finishInteractiveMarker()"
-            (removeInteractivePoint)="removeInteractivePoint($event)"
-          />
-        }
-        @case ('lines') {
-          <lg-section-lines
-            [editorForm]="editorForm"
-            [interactiveMode]="interactiveMode()"
-            [interactivePoints]="interactivePoints()"
-            (addLine)="addLine()"
-            (removeLine)="removeLine($event)"
-            (startInteractive)="startInteractiveLine()"
-            (cancelInteractive)="cancelInteractiveLine()"
-            (removeInteractivePoint)="removeInteractivePoint($event)"
-          />
-        }
-        @case ('areas') {
-          <lg-section-areas
-            [editorForm]="editorForm"
-            [interactiveMode]="interactiveMode()"
-            [interactivePoints]="interactivePoints()"
-            (addArea)="addArea()"
-            (removeArea)="removeArea($event)"
-            (addAreaPoint)="addAreaPoint($event)"
-            (removeAreaPoint)="removeAreaPoint($event)"
-            (startInteractive)="startInteractiveArea()"
-            (cancelInteractive)="cancelInteractiveArea()"
-            (finishInteractive)="finishInteractiveArea()"
-            (removeInteractivePoint)="removeInteractivePoint($event)"
-          />
-        }
-        @case ('settings') {
-          <lg-section-settings
-            [editorForm]="editorForm"
-            [editorModel]="editorModel()"
-          />
-        }
-      }
     }
+    <router-outlet />
   </div>
 
-  @let fnx = editorForm().value().fnx;
   <div class="sticky bottom-0 border-t border-gray-200 bg-gray-50">
     <div class="p-3">
       <button
         class="app-button w-full"
         type="submit"
       >
-        @if (isEditMode) {
+        @if (store.isEditMode()) {
           Plot aktualisieren
         } @else {
           In Word einfügen
         }
       </button>
     </div>
-    @if (fnx) {
-      <lg-section
-        [title]="
-          isAnyInteractiveMode()
-            ? 'Vorschau - Klicke um Punkte hinzuzufügen'
-            : 'Vorschau'
-        "
-        [subtitle]="
-          isAnyInteractiveMode()
-            ? 'Punkte werden auf 0.5 gerundet'
-            : 'Die Vorschau entspricht nicht der Größe des Bildes, das in Word eingefügt wird.'
-        "
-      />
-      <lg-plot-preview
-        [plot]="previewModel()"
-        [plotSettings]="plotSettings()"
-        [interactive]="isAnyInteractiveMode()"
-        (plotClick)="onPlotClick($event)"
-      />
-    }
+    <lg-section
+      [title]="
+        store.isAnyInteractiveMode()
+          ? 'Vorschau - Klicke um Punkte hinzuzufügen'
+          : 'Vorschau'
+      "
+      [subtitle]="
+        store.isAnyInteractiveMode()
+          ? 'Punkte werden auf 0.5 gerundet'
+          : 'Die Vorschau entspricht nicht der Größe des Bildes, das in Word eingefügt wird.'
+      "
+    />
+    <lg-plot-preview
+      [plot]="store.previewModel()"
+      [plotSettings]="store.plotSettings()"
+      [interactive]="store.isAnyInteractiveMode()"
+      (plotClick)="store.onPlotClick($event)"
+    />
   </div>
 </form>

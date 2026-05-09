@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { FieldTree, FormField } from '@angular/forms/signals';
-import { Plot } from '../../../../models/plot';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { FormField } from '@angular/forms/signals';
 import { Dropdown } from '../../../dropdown/dropdown';
+import { PlotEditorStore } from '../../plot-editor.store';
 import { legendLabelFormatOptions } from '../../dropdown-options';
 
 @Component({
@@ -13,7 +13,5 @@ import { legendLabelFormatOptions } from '../../dropdown-options';
 })
 export class SectionSettings {
   protected readonly legendLabelFormatOptions = legendLabelFormatOptions;
-
-  readonly editorForm = input.required<FieldTree<Plot>>();
-  readonly editorModel = input.required<Plot>();
+  protected readonly store = inject(PlotEditorStore);
 }

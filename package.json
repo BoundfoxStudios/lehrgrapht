@@ -41,6 +41,7 @@
     "@fortawesome/free-brands-svg-icons": "^7.2.0",
     "@fortawesome/free-regular-svg-icons": "^7.2.0",
     "@fortawesome/free-solid-svg-icons": "^7.2.0",
+    "@ngrx/signals": "^21.1.0",
     "express": "^5.2.1",
     "flowbite": "~4.0.1",
     "mathjs": "~15.2.0",

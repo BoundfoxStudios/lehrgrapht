@@ -1,20 +1,15 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  input,
-  output,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import {
   faMousePointer,
   faPlusCircle,
   faTrashCan,
 } from '@fortawesome/free-solid-svg-icons';
-import { FieldTree, FormField } from '@angular/forms/signals';
-import { Plot } from '../../../../models/plot';
+import { FormField } from '@angular/forms/signals';
 import { Dropdown } from '../../../dropdown/dropdown';
 import { MathDisplay } from '../../../math-display/math-display';
 import { InteractiveMode } from '../../interactive-mode';
+import { PlotEditorStore } from '../../plot-editor.store';
 import {
   legendPositionOptions,
   lineStyleOptions,
@@ -35,14 +30,5 @@ export class SectionFnx {
   protected readonly lineStyleOptions = lineStyleOptions;
   protected readonly legendPositionOptions = legendPositionOptions;
 
-  readonly editorForm = input.required<FieldTree<Plot>>();
-  readonly editorModel = input.required<Plot>();
-  readonly interactiveMode = input.required<InteractiveMode>();
-  readonly interactivePoints = input.required<{ x: number; y: number }[]>();
-
-  readonly addFx = output();
-  readonly removeFx = output<number>();
-  readonly startInteractive = output();
-  readonly cancelInteractive = output();
-  readonly removeInteractivePoint = output<number>();
+  protected readonly store = inject(PlotEditorStore);
 }
