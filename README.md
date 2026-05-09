@@ -24,7 +24,7 @@ If you're developing on the Word integration, you need to run the add-in in Word
 Word requires SSL to load the add-in.
 
 Microsoft provides a way to generate a certificate using `office-addin-dev-certs`.
-Run `npx office-addin-dev-certs install --machine` to install the office add-in dev certificates.
+Run `npx office-addin-dev-certs install --machine --domains localhost` to install the office add-in dev certificates.
 
 Then, create a file `.env.local` (you can just copy `.env` and rename it) and change the following variables:
 

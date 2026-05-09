@@ -5,7 +5,7 @@
   "scripts": {
     "ng": "ng",
     "start": "dotenvx run --ignore=MISSING_ENV_FILE -f .env.local -f .env -- npm run start:addin",
-    "start:addin": "npx ng serve addin --ssl=\"${LEHRGRAPHT_SSL}\" --ssl-key=\"${LEHRGRAPHT_SSL_KEY}\" --ssl-cert=\"${LEHRGRAPHT_SSL_CERT}\"",
+    "start:addin": "npx ng serve addin --ssl=\"${LEHRGRAPHT_SSL}\" --ssl-key=\"${LEHRGRAPHT_SSL_KEY}\" --ssl-cert=\"${LEHRGRAPHT_SSL_CERTIFICATE}\"",
     "start:website": "dotenvx run --ignore=MISSING_ENV_FILE -f .env.local -f .env -- ng serve website",
     "start:office": "office-addin-debugging start manifest.xml",
     "stop:office": "office-addin-debugging stop manifest.xml",
