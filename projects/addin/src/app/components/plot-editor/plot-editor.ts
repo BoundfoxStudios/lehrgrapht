@@ -20,6 +20,7 @@ import {
   faSliders,
   faSquareRootVariable,
 } from '@fortawesome/free-solid-svg-icons';
+import { FormRoot } from '@angular/forms/signals';
 import { Header } from '../header/header';
 import { PreviewDock } from '../preview-dock/preview-dock';
 import { TabStrip, TabStripItem } from '../tab-strip/tab-strip';
@@ -27,7 +28,7 @@ import { PlotEditorStore } from './plot-editor.store';
 
 @Component({
   selector: 'lg-plot-editor',
-  imports: [Header, PreviewDock, TabStrip, RouterOutlet],
+  imports: [FormRoot, Header, PreviewDock, TabStrip, RouterOutlet],
   templateUrl: './plot-editor.html',
   styleUrl: './plot-editor.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -92,10 +93,5 @@ export class PlotEditor {
   protected goToSection(section: string): void {
     this.store.cancelInteractiveIfActive();
     void this.router.navigate([section], { relativeTo: this.activatedRoute });
-  }
-
-  protected onSubmit(event: Event): void {
-    event.preventDefault();
-    void this.store.submitForm();
   }
 }

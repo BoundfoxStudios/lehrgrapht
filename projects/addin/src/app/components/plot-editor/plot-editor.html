@@ -6,7 +6,7 @@
 
 <form
   class="flex flex-1 flex-col"
-  (submit)="onSubmit($event)"
+  [formRoot]="store.editorForm"
 >
   <div class="flex flex-1 flex-col">
     @if (currentSection()) {

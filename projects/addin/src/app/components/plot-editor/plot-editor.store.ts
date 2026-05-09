@@ -9,11 +9,11 @@ import {
   withProps,
   withState,
 } from '@ngrx/signals';
-import { form, SchemaPath, submit, validate } from '@angular/forms/signals';
+import { form, SchemaPath, validate } from '@angular/forms/signals';
 import { ActivatedRoute, Router } from '@angular/router';
 import { map } from 'rxjs';
 import { lehrgraphtVersion } from '../../../version';
-import { Plot } from '../../models/plot';
+import { Plot, PlotSettings } from '../../models/plot';
 import { MarkerNamingService } from '../../services/marker-naming.service';
 import {
   defaultPlotSettings,
@@ -119,26 +119,65 @@ const getNextLabelIndex = (model: Plot): number => {
 
 export const PlotEditorStore = signalStore(
   withProps(() => {
+    const plotService = inject(PlotService);
+    const wordService = inject(WordService);
+    const router = inject(Router);
+
     const model = signal<Plot>(buildInitialPlot());
-    const editorForm = form(model, schema => {
-      lessThanValidator(
-        schema.range.x.min,
-        schema.range.x.max,
-        'X Min muss kleiner sein als X Max',
-      );
-      lessThanValidator(
-        schema.range.y.min,
-        schema.range.y.max,
-        'Y Min muss kleiner sein als Y Max',
-      );
-    });
-    return { model, editorForm };
+    const plotSettings = signal<PlotSettings>(defaultPlotSettings);
+    const activeId = signal<string | null>(null);
+
+    const editorForm = form(
+      model,
+      schema => {
+        lessThanValidator(
+          schema.range.x.min,
+          schema.range.x.max,
+          'X Min muss kleiner sein als X Max',
+        );
+        lessThanValidator(
+          schema.range.y.min,
+          schema.range.y.max,
+          'Y Min muss kleiner sein als Y Max',
+        );
+      },
+      {
+        submission: {
+          action: async field => {
+            const m = field().value();
+            const plot = await plotService.generate(m, plotSettings(), {
+              applyScaleFactor:
+                wordService.plotGenerationSettings.applyScaleFactor,
+            });
+
+            if (plotHasErrorCode(plot)) {
+              return undefined;
+            }
+
+            const existingId = activeId();
+            const id = existingId ?? plotService.generateId();
+
+            await wordService.upsertPicture({
+              model: m,
+              id,
+              base64Picture: plot.base64,
+              existingId: existingId ?? undefined,
+              height: plot.heightInPoints,
+              width: plot.widthInPoints,
+            });
+
+            void router.navigate(['/plot/editor', id]);
+            return undefined;
+          },
+        },
+      },
+    );
+
+    return { model, editorForm, plotSettings, activeId };
   }),
   withState({
-    plotSettings: defaultPlotSettings,
     interactiveMode: InteractiveMode.Off,
     interactivePoints: [] as { x: number; y: number }[],
-    activeId: null as string | null,
   }),
   withComputed(store => {
     const plotService = inject(PlotService);
@@ -233,9 +272,6 @@ export const PlotEditorStore = signalStore(
   }),
   withMethods(store => {
     const markerNamingService = inject(MarkerNamingService);
-    const plotService = inject(PlotService);
-    const wordService = inject(WordService);
-    const router = inject(Router);
 
     return {
       addFx(): void {
@@ -637,35 +673,6 @@ export const PlotEditorStore = signalStore(
           return;
         }
       },
-
-      submitForm(): Promise<boolean> {
-        return submit(store.editorForm, async () => {
-          const model = store.model();
-          const plot = await plotService.generate(model, store.plotSettings(), {
-            applyScaleFactor:
-              wordService.plotGenerationSettings.applyScaleFactor,
-          });
-
-          if (plotHasErrorCode(plot)) {
-            return undefined;
-          }
-
-          const existingId = store.activeId();
-          const id = existingId ?? plotService.generateId();
-
-          await wordService.upsertPicture({
-            model,
-            id,
-            base64Picture: plot.base64,
-            existingId: existingId ?? undefined,
-            height: plot.heightInPoints,
-            width: plot.widthInPoints,
-          });
-
-          void router.navigate(['/plot/editor', id]);
-          return undefined;
-        });
-      },
     };
   }),
   withHooks({
@@ -675,7 +682,7 @@ export const PlotEditorStore = signalStore(
       const plotSettingsService = inject(PlotSettingsService);
 
       const settings = plotSettingsService.get();
-      patchState(store, { plotSettings: settings });
+      store.plotSettings.set(settings);
       store.model.update(m => ({
         ...m,
         legendLabelFormat: settings.legendLabelFormat,
@@ -688,10 +695,10 @@ export const PlotEditorStore = signalStore(
       effect(() => {
         const id = idSignal();
         if (!id || id === NEW_PLOT_ID) {
-          patchState(store, { activeId: null });
+          store.activeId.set(null);
           return;
         }
-        patchState(store, { activeId: id });
+        store.activeId.set(id);
         void wordService.get(id).then(loaded => {
           if (loaded) {
             store.model.set(loaded.model);
