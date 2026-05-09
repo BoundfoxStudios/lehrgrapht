@@ -152,8 +152,22 @@ describe('PlotDataService', () => {
       const plot: Plot = {
         ...basePlot,
         lines: [
-          { x1: 0, y1: 0, x2: 1, y2: 1, color: '#ff0000' },
-          { x1: 2, y1: 2, x2: 3, y2: 3, color: '#00ff00' },
+          {
+            x1: 0,
+            y1: 0,
+            x2: 1,
+            y2: 1,
+            color: '#ff0000',
+            lineStyle: 'solid',
+          },
+          {
+            x1: 2,
+            y1: 2,
+            x2: 3,
+            y2: 3,
+            color: '#00ff00',
+            lineStyle: 'solid',
+          },
         ],
       };
       const result = service.buildLineTraces(plot, plotSettings);
@@ -161,6 +175,42 @@ describe('PlotDataService', () => {
       expect(result[0].x).toEqual([0, 1]);
       expect(result[0].y).toEqual([0, 1]);
       expect(result[0].line?.color).toBe('#ff0000');
+    });
+
+    it('should use solid dash for solid lineStyle', () => {
+      const plot: Plot = {
+        ...basePlot,
+        lines: [
+          {
+            x1: 0,
+            y1: 0,
+            x2: 1,
+            y2: 1,
+            color: '#000',
+            lineStyle: 'solid',
+          },
+        ],
+      };
+      const result = service.buildLineTraces(plot, plotSettings);
+      expect(result[0].line?.dash).toBe('solid');
+    });
+
+    it('should use dash for dashed lineStyle', () => {
+      const plot: Plot = {
+        ...basePlot,
+        lines: [
+          {
+            x1: 0,
+            y1: 0,
+            x2: 1,
+            y2: 1,
+            color: '#000',
+            lineStyle: 'dashed',
+          },
+        ],
+      };
+      const result = service.buildLineTraces(plot, plotSettings);
+      expect(result[0].line?.dash).toBe('dash');
     });
   });
 
@@ -226,7 +276,16 @@ describe('PlotDataService', () => {
           },
         ],
         markers: [{ x: 1, y: 1, text: 'P' }],
-        lines: [{ x1: 0, y1: 0, x2: 1, y2: 1, color: '#000' }],
+        lines: [
+          {
+            x1: 0,
+            y1: 0,
+            x2: 1,
+            y2: 1,
+            color: '#000',
+            lineStyle: 'solid',
+          },
+        ],
       };
       const result = service.buildPlotData(
         plot,
