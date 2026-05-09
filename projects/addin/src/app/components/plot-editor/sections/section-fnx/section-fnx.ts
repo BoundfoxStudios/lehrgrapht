@@ -1,4 +1,9 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  signal,
+} from '@angular/core';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import {
   faMousePointer,
@@ -6,6 +11,7 @@ import {
   faTrashCan,
 } from '@fortawesome/free-solid-svg-icons';
 import { FormField } from '@angular/forms/signals';
+import { AutofocusDirective } from '../../../../directives/autofocus.directive';
 import { Dropdown } from '../../../dropdown/dropdown';
 import { MathDisplay } from '../../../math-display/math-display';
 import { InteractiveMode } from '../../interactive-mode';
@@ -17,7 +23,13 @@ import {
 
 @Component({
   selector: 'lg-section-fnx',
-  imports: [FaIconComponent, FormField, Dropdown, MathDisplay],
+  imports: [
+    FaIconComponent,
+    FormField,
+    Dropdown,
+    MathDisplay,
+    AutofocusDirective,
+  ],
   templateUrl: './section-fnx.html',
   styleUrl: './section-fnx.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -31,4 +43,19 @@ export class SectionFnx {
   protected readonly legendPositionOptions = legendPositionOptions;
 
   protected readonly store = inject(PlotEditorStore);
+  protected readonly newItemIndex = signal<number | null>(null);
+
+  protected addManual(): void {
+    this.store.addFx();
+    this.newItemIndex.set(this.store.model().fnx.length - 1);
+  }
+
+  protected onCardFocusout(event: FocusEvent): void {
+    const card = event.currentTarget as HTMLElement;
+    const next = event.relatedTarget as HTMLElement | null;
+    if (next && card.contains(next)) {
+      return;
+    }
+    this.newItemIndex.set(null);
+  }
 }

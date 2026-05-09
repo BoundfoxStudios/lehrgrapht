@@ -1,171 +1,277 @@
 @let form = store.editorForm;
+@let lines = store.model().lines;
 
 <div class="flex flex-col space-y-3 p-2">
-  @for (control of form.lines; let index = $index; track index) {
-    <div class="rounded-lg border border-gray-200 bg-white p-3 shadow-xs">
-      <div class="mb-3 flex items-center justify-between">
-        <span class="text-xs font-medium text-gray-500"
-          >Linie {{ index + 1 }}</span
-        >
-        <div class="flex items-center gap-2">
-          <input
-            class="h-7 w-7 cursor-pointer rounded border-none"
-            [formField]="control.color"
-            type="color"
-            title="Farbe wählen"
-          />
-          <button
-            class="flex h-7 w-7 items-center justify-center rounded text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
-            (click)="store.removeLine(index)"
-            type="button"
-            title="Linie entfernen"
-          >
-            <fa-icon [icon]="faTrashCan" />
-          </button>
-        </div>
-      </div>
-
-      <div class="mb-2 grid grid-cols-[auto_1fr] items-center gap-x-3 gap-y-2">
-        <span class="text-xs text-gray-600">Linie</span>
-        <lg-dropdown
-          [formField]="control.lineStyle"
-          [options]="lineStyleOptions"
+  @if (lines.length === 0 && store.interactiveMode() !== InteractiveMode.Line) {
+    <div
+      class="border-default-medium rounded-base flex flex-col items-center gap-2.5 border bg-white px-4 py-5 text-center"
+    >
+      <svg
+        class="text-brand"
+        width="120"
+        height="64"
+        viewBox="0 0 120 64"
+        aria-hidden="true"
+      >
+        <line
+          x1="10"
+          y1="32"
+          x2="110"
+          y2="32"
+          stroke="#e4e6ef"
+          stroke-width="1"
         />
-      </div>
-
-      <div class="space-y-2">
-        <div class="rounded-md bg-gray-50 p-2">
-          <div class="mb-1 text-xs font-medium text-gray-500">Startpunkt</div>
-          <div class="flex gap-3">
-            <div class="flex-1">
-              <label
-                class="mb-1 block text-xs text-gray-500"
-                [for]="'line-x1-' + index"
-                >X</label
-              >
-              <input
-                class="app-input"
-                [formField]="control.x1"
-                [id]="'line-x1-' + index"
-                type="number"
-              />
-            </div>
-            <div class="flex-1">
-              <label
-                class="mb-1 block text-xs text-gray-500"
-                [for]="'line-y1-' + index"
-                >Y</label
-              >
-              <input
-                class="app-input"
-                [formField]="control.y1"
-                [id]="'line-y1-' + index"
-                type="number"
-              />
-            </div>
-          </div>
-        </div>
-        <div class="rounded-md bg-gray-50 p-2">
-          <div class="mb-1 text-xs font-medium text-gray-500">Endpunkt</div>
-          <div class="flex gap-3">
-            <div class="flex-1">
-              <label
-                class="mb-1 block text-xs text-gray-500"
-                [for]="'line-x2-' + index"
-                >X</label
-              >
-              <input
-                class="app-input"
-                [formField]="control.x2"
-                [id]="'line-x2-' + index"
-                type="number"
-              />
-            </div>
-            <div class="flex-1">
-              <label
-                class="mb-1 block text-xs text-gray-500"
-                [for]="'line-y2-' + index"
-                >Y</label
-              >
-              <input
-                class="app-input"
-                [formField]="control.y2"
-                [id]="'line-y2-' + index"
-                type="number"
-              />
-            </div>
-          </div>
+        <line
+          x1="60"
+          y1="6"
+          x2="60"
+          y2="58"
+          stroke="#e4e6ef"
+          stroke-width="1"
+        />
+        <line
+          x1="28"
+          y1="50"
+          x2="92"
+          y2="14"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-dasharray="3 3"
+          opacity="0.55"
+        />
+        <circle
+          cx="28"
+          cy="50"
+          r="3"
+          fill="currentColor"
+          opacity="0.55"
+        />
+        <circle
+          cx="92"
+          cy="14"
+          r="3"
+          fill="currentColor"
+          opacity="0.55"
+        />
+      </svg>
+      <div>
+        <div class="text-heading text-sm font-bold">Noch keine Linien</div>
+        <div
+          class="text-body mx-auto mt-1 max-w-[270px] text-xs leading-relaxed"
+        >
+          Verbinde zwei Punkte zu einer Strecke. Praktisch für Hilfslinien oder
+          gezeichnete Geraden.
         </div>
       </div>
     </div>
-  }
-
-  @if (store.interactiveMode() === InteractiveMode.Line) {
-    <div class="border-brand bg-brand/5 rounded-lg border-2 p-3">
-      <div class="mb-2 flex items-center justify-between">
-        <span class="text-brand text-sm font-medium">Interaktive Linie</span>
-        <span class="bg-brand rounded-full px-2 py-0.5 text-xs text-white">
-          {{ store.interactivePoints().length }}/2 Punkte
-        </span>
-      </div>
-
-      <div class="mb-3 h-14 overflow-y-auto">
-        @if (store.interactivePoints().length > 0) {
-          <div class="space-y-1">
-            @for (point of store.interactivePoints(); let i = $index; track i) {
-              <div
-                class="flex items-center justify-between rounded bg-white px-2 py-1 text-sm"
-              >
-                <span class="text-gray-600"
-                  >{{ i === 0 ? 'Start' : 'Ende' }}: ({{ point.x }},
-                  {{ point.y }})</span
-                >
-                <button
-                  class="text-gray-400 hover:text-red-500"
-                  (click)="store.removeInteractivePoint(i)"
-                  type="button"
-                >
-                  <fa-icon
-                    [icon]="faTrashCan"
-                    size="sm"
-                  />
-                </button>
-              </div>
-            }
-          </div>
-        } @else {
-          <p class="text-xs text-gray-600">
-            Klicke auf die Vorschau, um Start- und Endpunkt zu setzen.
-          </p>
-        }
-      </div>
-
+    <div class="flex gap-1.5">
       <button
-        class="app-button small secondary w-full"
-        (click)="store.cancelInteractiveLine()"
-        type="button"
-      >
-        Abbrechen
-      </button>
-    </div>
-  } @else {
-    <div class="flex gap-2">
-      <button
-        class="hover:border-brand hover:bg-brand/5 hover:text-brand flex flex-1 items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-white py-3 text-sm text-gray-600 transition-colors"
-        (click)="store.addLine()"
-        type="button"
-      >
-        <fa-icon [icon]="faPlusCircle" />
-        <span>Manuell</span>
-      </button>
-      <button
-        class="hover:border-brand hover:bg-brand/5 hover:text-brand flex flex-1 items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-white py-3 text-sm text-gray-600 transition-colors"
+        class="bg-brand hover:bg-brand-strong rounded-base flex flex-[1.4] cursor-pointer items-center justify-center gap-1.5 px-2.5 py-2.5 text-xs font-semibold text-white shadow-sm transition-colors"
         (click)="store.startInteractiveLine()"
         type="button"
       >
         <fa-icon [icon]="faMousePointer" />
-        <span>Interaktiv</span>
+        <span>Im Plot ziehen</span>
+      </button>
+      <button
+        class="border-default-medium text-body hover:border-brand hover:text-brand rounded-base flex flex-1 cursor-pointer items-center justify-center gap-1.5 border bg-white px-2.5 py-2.5 text-xs font-medium transition-colors"
+        (click)="addManual()"
+        type="button"
+      >
+        <fa-icon [icon]="faPlusCircle" />
+        <span>Strecke</span>
       </button>
     </div>
+  } @else {
+    @for (control of form.lines; let index = $index; track index) {
+      @let isNew = newItemIndex() === index;
+      <div
+        class="rounded-lg bg-white p-3 shadow-xs transition-shadow"
+        [class.border-2]="isNew"
+        [class.border-brand]="isNew"
+        [class.shadow-md]="isNew"
+        [class.relative]="isNew"
+        [class.border]="!isNew"
+        [class.border-gray-200]="!isNew"
+        (focusout)="onCardFocusout($event)"
+      >
+        @if (isNew) {
+          <span
+            class="bg-brand absolute -top-2.5 left-3 rounded-full px-2 py-0.5 text-[9px] font-bold tracking-wider text-white uppercase"
+            >NEU</span
+          >
+        }
+        <div class="mb-3 flex items-center justify-between">
+          <span class="text-xs font-medium text-gray-500"
+            >Linie {{ index + 1 }}</span
+          >
+          <div class="flex items-center gap-2">
+            <input
+              class="h-7 w-7 cursor-pointer rounded border-none"
+              [formField]="control.color"
+              type="color"
+              title="Farbe wählen"
+            />
+            <button
+              class="flex h-7 w-7 items-center justify-center rounded text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
+              (click)="store.removeLine(index)"
+              type="button"
+              title="Linie entfernen"
+            >
+              <fa-icon [icon]="faTrashCan" />
+            </button>
+          </div>
+        </div>
+
+        <div
+          class="mb-2 grid grid-cols-[auto_1fr] items-center gap-x-3 gap-y-2"
+        >
+          <span class="text-xs text-gray-600">Linie</span>
+          <lg-dropdown
+            [formField]="control.lineStyle"
+            [options]="lineStyleOptions"
+          />
+        </div>
+
+        <div class="space-y-2">
+          <div class="rounded-md bg-gray-50 p-2">
+            <div class="mb-1 text-xs font-medium text-gray-500">Startpunkt</div>
+            <div class="flex gap-3">
+              <div class="flex-1">
+                <label
+                  class="mb-1 block text-xs text-gray-500"
+                  [for]="'line-x1-' + index"
+                  >X</label
+                >
+                <input
+                  class="app-input"
+                  [formField]="control.x1"
+                  [id]="'line-x1-' + index"
+                  [lgAutofocus]="isNew"
+                  type="number"
+                />
+              </div>
+              <div class="flex-1">
+                <label
+                  class="mb-1 block text-xs text-gray-500"
+                  [for]="'line-y1-' + index"
+                  >Y</label
+                >
+                <input
+                  class="app-input"
+                  [formField]="control.y1"
+                  [id]="'line-y1-' + index"
+                  type="number"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="rounded-md bg-gray-50 p-2">
+            <div class="mb-1 text-xs font-medium text-gray-500">Endpunkt</div>
+            <div class="flex gap-3">
+              <div class="flex-1">
+                <label
+                  class="mb-1 block text-xs text-gray-500"
+                  [for]="'line-x2-' + index"
+                  >X</label
+                >
+                <input
+                  class="app-input"
+                  [formField]="control.x2"
+                  [id]="'line-x2-' + index"
+                  type="number"
+                />
+              </div>
+              <div class="flex-1">
+                <label
+                  class="mb-1 block text-xs text-gray-500"
+                  [for]="'line-y2-' + index"
+                  >Y</label
+                >
+                <input
+                  class="app-input"
+                  [formField]="control.y2"
+                  [id]="'line-y2-' + index"
+                  type="number"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (store.interactiveMode() === InteractiveMode.Line) {
+      <div class="border-brand bg-brand/5 rounded-lg border-2 p-3">
+        <div class="mb-2 flex items-center justify-between">
+          <span class="text-brand text-sm font-medium">Interaktive Linie</span>
+          <span class="bg-brand rounded-full px-2 py-0.5 text-xs text-white">
+            {{ store.interactivePoints().length }}/2 Punkte
+          </span>
+        </div>
+
+        <div class="mb-3 h-14 overflow-y-auto">
+          @if (store.interactivePoints().length > 0) {
+            <div class="space-y-1">
+              @for (
+                point of store.interactivePoints();
+                let i = $index;
+                track i
+              ) {
+                <div
+                  class="flex items-center justify-between rounded bg-white px-2 py-1 text-sm"
+                >
+                  <span class="text-gray-600"
+                    >{{ i === 0 ? 'Start' : 'Ende' }}: ({{ point.x }},
+                    {{ point.y }})</span
+                  >
+                  <button
+                    class="text-gray-400 hover:text-red-500"
+                    (click)="store.removeInteractivePoint(i)"
+                    type="button"
+                  >
+                    <fa-icon
+                      [icon]="faTrashCan"
+                      size="sm"
+                    />
+                  </button>
+                </div>
+              }
+            </div>
+          } @else {
+            <p class="text-xs text-gray-600">
+              Klicke auf die Vorschau, um Start- und Endpunkt zu setzen.
+            </p>
+          }
+        </div>
+
+        <button
+          class="app-button small secondary w-full"
+          (click)="store.cancelInteractiveLine()"
+          type="button"
+        >
+          Abbrechen
+        </button>
+      </div>
+    } @else if (lines.length > 0) {
+      <div class="flex gap-2">
+        <button
+          class="hover:border-brand hover:bg-brand/5 hover:text-brand flex flex-1 items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-white py-3 text-sm text-gray-600 transition-colors"
+          (click)="addManual()"
+          type="button"
+        >
+          <fa-icon [icon]="faPlusCircle" />
+          <span>Manuell</span>
+        </button>
+        <button
+          class="hover:border-brand hover:bg-brand/5 hover:text-brand flex flex-1 items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-white py-3 text-sm text-gray-600 transition-colors"
+          (click)="store.startInteractiveLine()"
+          type="button"
+        >
+          <fa-icon [icon]="faMousePointer" />
+          <span>Interaktiv</span>
+        </button>
+      </div>
+    }
   }
 </div>

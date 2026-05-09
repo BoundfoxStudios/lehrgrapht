@@ -1,4 +1,9 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  signal,
+} from '@angular/core';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import {
   faCheck,
@@ -7,13 +12,14 @@ import {
   faTrashCan,
 } from '@fortawesome/free-solid-svg-icons';
 import { FormField } from '@angular/forms/signals';
+import { AutofocusDirective } from '../../../../directives/autofocus.directive';
 import { MarkerNamingService } from '../../../../services/marker-naming.service';
 import { InteractiveMode } from '../../interactive-mode';
 import { PlotEditorStore } from '../../plot-editor.store';
 
 @Component({
   selector: 'lg-section-markers',
-  imports: [FaIconComponent, FormField],
+  imports: [FaIconComponent, FormField, AutofocusDirective],
   templateUrl: './section-markers.html',
   styleUrl: './section-markers.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -26,4 +32,19 @@ export class SectionMarkers {
   protected readonly InteractiveMode = InteractiveMode;
   protected readonly markerNamingService = inject(MarkerNamingService);
   protected readonly store = inject(PlotEditorStore);
+  protected readonly newItemIndex = signal<number | null>(null);
+
+  protected addManual(): void {
+    this.store.addMarker();
+    this.newItemIndex.set(this.store.model().markers.length - 1);
+  }
+
+  protected onCardFocusout(event: FocusEvent): void {
+    const card = event.currentTarget as HTMLElement;
+    const next = event.relatedTarget as HTMLElement | null;
+    if (next && card.contains(next)) {
+      return;
+    }
+    this.newItemIndex.set(null);
+  }
 }

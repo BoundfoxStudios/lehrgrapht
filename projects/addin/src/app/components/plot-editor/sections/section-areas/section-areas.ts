@@ -1,4 +1,9 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  signal,
+} from '@angular/core';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import {
   faCheck,
@@ -7,6 +12,7 @@ import {
   faTrashCan,
 } from '@fortawesome/free-solid-svg-icons';
 import { FormField } from '@angular/forms/signals';
+import { AutofocusDirective } from '../../../../directives/autofocus.directive';
 import { Dropdown } from '../../../dropdown/dropdown';
 import { InteractiveMode } from '../../interactive-mode';
 import { PlotEditorStore } from '../../plot-editor.store';
@@ -14,7 +20,7 @@ import { labelPositionOptions } from '../../dropdown-options';
 
 @Component({
   selector: 'lg-section-areas',
-  imports: [FaIconComponent, FormField, Dropdown],
+  imports: [FaIconComponent, FormField, Dropdown, AutofocusDirective],
   templateUrl: './section-areas.html',
   styleUrl: './section-areas.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -27,4 +33,19 @@ export class SectionAreas {
   protected readonly InteractiveMode = InteractiveMode;
   protected readonly labelPositionOptions = labelPositionOptions;
   protected readonly store = inject(PlotEditorStore);
+  protected readonly newItemIndex = signal<number | null>(null);
+
+  protected addManual(): void {
+    this.store.addArea();
+    this.newItemIndex.set(this.store.model().areas.length - 1);
+  }
+
+  protected onCardFocusout(event: FocusEvent): void {
+    const card = event.currentTarget as HTMLElement;
+    const next = event.relatedTarget as HTMLElement | null;
+    if (next && card.contains(next)) {
+      return;
+    }
+    this.newItemIndex.set(null);
+  }
 }

@@ -1,130 +1,222 @@
 @let form = store.editorForm;
+@let fnx = store.model().fnx;
 
 <div class="flex flex-col space-y-3 p-2">
-  @for (control of form.fnx; let index = $index; track index) {
-    <div class="rounded-lg border border-gray-200 bg-white p-3 shadow-xs">
-      <div class="mb-2 flex items-center justify-between">
-        <span class="text-xs font-medium text-gray-500"
-          >Funktion {{ index + 1 }}</span
+  @if (
+    fnx.length === 0 && store.interactiveMode() !== InteractiveMode.StraightLine
+  ) {
+    <div
+      class="border-default-medium rounded-base flex flex-col items-center gap-2.5 border bg-white px-4 py-5 text-center"
+    >
+      <svg
+        class="text-brand"
+        width="120"
+        height="64"
+        viewBox="0 0 120 64"
+        aria-hidden="true"
+      >
+        <line
+          x1="10"
+          y1="32"
+          x2="110"
+          y2="32"
+          stroke="#e4e6ef"
+          stroke-width="1"
+        />
+        <line
+          x1="60"
+          y1="6"
+          x2="60"
+          y2="58"
+          stroke="#e4e6ef"
+          stroke-width="1"
+        />
+        <path
+          d="M 10 56 Q 60 -20 110 56"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-dasharray="3 3"
+          opacity="0.5"
+        />
+      </svg>
+      <div>
+        <div class="text-heading text-sm font-bold">Noch keine Funktionen</div>
+        <div
+          class="text-body mx-auto mt-1 max-w-[270px] text-xs leading-relaxed"
         >
-        <div class="flex items-center gap-2">
-          <input
-            class="h-7 w-7 cursor-pointer rounded border-none"
-            [formField]="control.color"
-            type="color"
-            title="Farbe wählen"
-          />
-          <button
-            class="flex h-7 w-7 items-center justify-center rounded text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
-            (click)="store.removeFx(index)"
-            type="button"
-            title="Funktion entfernen"
-          >
-            <fa-icon [icon]="faTrashCan" />
-          </button>
+          Definiere Funktionen wie x², sin(x) oder 2x+1. Bis zu 4 Funktionen
+          werden in unterschiedlichen Farben gezeichnet.
         </div>
       </div>
-      <div class="mb-2 grid grid-cols-[auto_1fr] items-center gap-x-3 gap-y-2">
-        <span class="text-xs text-gray-600">Linie</span>
-        <lg-dropdown
-          [formField]="control.lineStyle"
-          [options]="lineStyleOptions"
-        />
-        <span class="text-xs text-gray-600">Legende</span>
-        <lg-dropdown
-          [formField]="control.legendPosition"
-          [options]="legendPositionOptions"
-        />
-      </div>
-      <div class="flex items-center gap-2">
-        <input
-          class="app-input flex-1"
-          [formField]="control.fnx"
-          [id]="'fnx-' + index"
-          type="text"
-          spellcheck="false"
-          autocorrect="off"
-          autocomplete="off"
-          autocapitalize="off"
-          placeholder="z.B. x^2, sin(x), ..."
-        />
-      </div>
-      <lg-math-display
-        [math]="control.fnx().value()"
-        [prefix]="
-          store.model().legendLabelFormat === 'none'
-            ? undefined
-            : store.model().legendLabelFormat
-        "
-      />
     </div>
-  }
-
-  @if (store.interactiveMode() === InteractiveMode.StraightLine) {
-    <div class="border-brand bg-brand/5 rounded-lg border-2 p-3">
-      <div class="mb-2 flex items-center justify-between">
-        <span class="text-brand text-sm font-medium">Gerade Interaktiv</span>
-        <span class="bg-brand rounded-full px-2 py-0.5 text-xs text-white">
-          {{ store.interactivePoints().length }}/2 Punkte
-        </span>
-      </div>
-
-      <div class="mb-3 h-14 overflow-y-auto">
-        @if (store.interactivePoints().length > 0) {
-          <div class="space-y-1">
-            @for (point of store.interactivePoints(); let i = $index; track i) {
-              <div
-                class="flex items-center justify-between rounded bg-white px-2 py-1 text-sm"
-              >
-                <span class="text-gray-600"
-                  >P{{ i + 1 }}: ({{ point.x }}, {{ point.y }})</span
-                >
-                <button
-                  class="text-gray-400 hover:text-red-500"
-                  (click)="store.removeInteractivePoint(i)"
-                  type="button"
-                >
-                  <fa-icon
-                    [icon]="faTrashCan"
-                    size="sm"
-                  />
-                </button>
-              </div>
-            }
-          </div>
-        } @else {
-          <p class="text-xs text-gray-600">
-            Klicke auf die Vorschau, um zwei Punkte für die Gerade zu setzen.
-          </p>
-        }
-      </div>
-
+    <div class="flex gap-1.5">
       <button
-        class="app-button small secondary w-full"
-        (click)="store.cancelInteractiveStraightLine()"
-        type="button"
-      >
-        Abbrechen
-      </button>
-    </div>
-  } @else {
-    <div class="flex gap-2">
-      <button
-        class="hover:border-brand hover:bg-brand/5 hover:text-brand flex flex-1 items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-white py-3 text-sm text-gray-600 transition-colors"
-        (click)="store.addFx()"
-        type="button"
-      >
-        <fa-icon [icon]="faPlusCircle" />
-        <span>Manuell</span>
-      </button>
-      <button
-        class="hover:border-brand hover:bg-brand/5 hover:text-brand flex flex-1 items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-white py-3 text-sm text-gray-600 transition-colors"
+        class="bg-brand hover:bg-brand-strong rounded-base flex flex-[1.4] cursor-pointer items-center justify-center gap-1.5 px-2.5 py-2.5 text-xs font-semibold text-white shadow-sm transition-colors"
         (click)="store.startInteractiveStraightLine()"
         type="button"
       >
         <fa-icon [icon]="faMousePointer" />
-        <span>Gerade Interaktiv</span>
+        <span>Gerade interaktiv</span>
+      </button>
+      <button
+        class="border-default-medium text-body hover:border-brand hover:text-brand rounded-base flex flex-1 cursor-pointer items-center justify-center gap-1.5 border bg-white px-2.5 py-2.5 text-xs font-medium transition-colors"
+        (click)="addManual()"
+        type="button"
+      >
+        <fa-icon [icon]="faPlusCircle" />
+        <span>Funktion</span>
       </button>
     </div>
+  } @else {
+    @for (control of form.fnx; let index = $index; track index) {
+      @let isNew = newItemIndex() === index;
+      <div
+        class="rounded-lg bg-white p-3 shadow-xs transition-shadow"
+        [class.border-2]="isNew"
+        [class.border-brand]="isNew"
+        [class.shadow-md]="isNew"
+        [class.relative]="isNew"
+        [class.border]="!isNew"
+        [class.border-gray-200]="!isNew"
+        (focusout)="onCardFocusout($event)"
+      >
+        @if (isNew) {
+          <span
+            class="bg-brand absolute -top-2.5 left-3 rounded-full px-2 py-0.5 text-[9px] font-bold tracking-wider text-white uppercase"
+            >NEU</span
+          >
+        }
+        <div class="mb-2 flex items-center justify-between">
+          <span class="text-xs font-medium text-gray-500"
+            >Funktion {{ index + 1 }}</span
+          >
+          <div class="flex items-center gap-2">
+            <input
+              class="h-7 w-7 cursor-pointer rounded border-none"
+              [formField]="control.color"
+              type="color"
+              title="Farbe wählen"
+            />
+            <button
+              class="flex h-7 w-7 items-center justify-center rounded text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
+              (click)="store.removeFx(index)"
+              type="button"
+              title="Funktion entfernen"
+            >
+              <fa-icon [icon]="faTrashCan" />
+            </button>
+          </div>
+        </div>
+        <div
+          class="mb-2 grid grid-cols-[auto_1fr] items-center gap-x-3 gap-y-2"
+        >
+          <span class="text-xs text-gray-600">Linie</span>
+          <lg-dropdown
+            [formField]="control.lineStyle"
+            [options]="lineStyleOptions"
+          />
+          <span class="text-xs text-gray-600">Legende</span>
+          <lg-dropdown
+            [formField]="control.legendPosition"
+            [options]="legendPositionOptions"
+          />
+        </div>
+        <div class="flex items-center gap-2">
+          <input
+            class="app-input flex-1"
+            [formField]="control.fnx"
+            [id]="'fnx-' + index"
+            [lgAutofocus]="isNew"
+            type="text"
+            spellcheck="false"
+            autocorrect="off"
+            autocomplete="off"
+            autocapitalize="off"
+            placeholder="z.B. x^2, sin(x), ..."
+          />
+        </div>
+        <lg-math-display
+          [math]="control.fnx().value()"
+          [prefix]="
+            store.model().legendLabelFormat === 'none'
+              ? undefined
+              : store.model().legendLabelFormat
+          "
+        />
+      </div>
+    }
+
+    @if (store.interactiveMode() === InteractiveMode.StraightLine) {
+      <div class="border-brand bg-brand/5 rounded-lg border-2 p-3">
+        <div class="mb-2 flex items-center justify-between">
+          <span class="text-brand text-sm font-medium">Gerade Interaktiv</span>
+          <span class="bg-brand rounded-full px-2 py-0.5 text-xs text-white">
+            {{ store.interactivePoints().length }}/2 Punkte
+          </span>
+        </div>
+
+        <div class="mb-3 h-14 overflow-y-auto">
+          @if (store.interactivePoints().length > 0) {
+            <div class="space-y-1">
+              @for (
+                point of store.interactivePoints();
+                let i = $index;
+                track i
+              ) {
+                <div
+                  class="flex items-center justify-between rounded bg-white px-2 py-1 text-sm"
+                >
+                  <span class="text-gray-600"
+                    >P{{ i + 1 }}: ({{ point.x }}, {{ point.y }})</span
+                  >
+                  <button
+                    class="text-gray-400 hover:text-red-500"
+                    (click)="store.removeInteractivePoint(i)"
+                    type="button"
+                  >
+                    <fa-icon
+                      [icon]="faTrashCan"
+                      size="sm"
+                    />
+                  </button>
+                </div>
+              }
+            </div>
+          } @else {
+            <p class="text-xs text-gray-600">
+              Klicke auf die Vorschau, um zwei Punkte für die Gerade zu setzen.
+            </p>
+          }
+        </div>
+
+        <button
+          class="app-button small secondary w-full"
+          (click)="store.cancelInteractiveStraightLine()"
+          type="button"
+        >
+          Abbrechen
+        </button>
+      </div>
+    } @else if (fnx.length > 0) {
+      <div class="flex gap-2">
+        <button
+          class="hover:border-brand hover:bg-brand/5 hover:text-brand flex flex-1 items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-white py-3 text-sm text-gray-600 transition-colors"
+          (click)="addManual()"
+          type="button"
+        >
+          <fa-icon [icon]="faPlusCircle" />
+          <span>Manuell</span>
+        </button>
+        <button
+          class="hover:border-brand hover:bg-brand/5 hover:text-brand flex flex-1 items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-white py-3 text-sm text-gray-600 transition-colors"
+          (click)="store.startInteractiveStraightLine()"
+          type="button"
+        >
+          <fa-icon [icon]="faMousePointer" />
+          <span>Gerade Interaktiv</span>
+        </button>
+      </div>
+    }
   }
 </div>
