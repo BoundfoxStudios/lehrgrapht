@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   inject,
   signal,
 } from '@angular/core';
@@ -13,6 +14,7 @@ import {
 import { InteractiveMode } from '../../interactive-mode';
 import { PlotEditorStore } from '../../plot-editor.store';
 import { ButtonDirective } from '../../../../ui/button/button.directive';
+import { Card } from '../../../../ui/card/card';
 import { Input } from '../../../../ui/input/input';
 import { SectionEmptyState } from '../section-empty-state/section-empty-state';
 import { SectionMarkersImage } from './section-markers-image';
@@ -22,6 +24,7 @@ import { SectionMarkersImage } from './section-markers-image';
   imports: [
     FaIconComponent,
     ButtonDirective,
+    Card,
     Input,
     SectionEmptyState,
     SectionMarkersImage,
@@ -38,17 +41,24 @@ export class SectionMarkers {
   protected readonly store = inject(PlotEditorStore);
   protected readonly newItemIndex = signal<number | null>(null);
 
+  protected readonly expandedSet = computed(
+    () => new Set(this.store.expandedItems().markers),
+  );
+
+  protected readonly allCollapsed = computed(
+    () => this.store.expandedItems().markers.length === 0,
+  );
+
   protected addManual(): void {
     this.store.addMarker();
     this.newItemIndex.set(this.store.model().markers.length - 1);
   }
 
-  protected onCardFocusout(event: FocusEvent): void {
-    const card = event.currentTarget as HTMLElement;
-    const next = event.relatedTarget as HTMLElement | null;
-    if (next && card.contains(next)) {
-      return;
+  protected toggleAll(): void {
+    if (this.allCollapsed()) {
+      this.store.expandAllCards('markers');
+    } else {
+      this.store.collapseAllCards('markers');
     }
-    this.newItemIndex.set(null);
   }
 }

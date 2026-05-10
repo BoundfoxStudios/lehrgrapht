@@ -12,28 +12,31 @@
       <lg-section-markers-image />
     </lg-section-empty-state>
   } @else {
+    @if (markers.length >= 2) {
+      <div class="flex justify-end">
+        <button
+          (click)="toggleAll()"
+          lgButton
+          variant="outline"
+          size="small"
+          type="button"
+        >
+          {{ allCollapsed() ? 'Alle ausklappen' : 'Alle einklappen' }}
+        </button>
+      </div>
+    }
     @for (control of form.markers; let index = $index; track index) {
-      @let isNew = newItemIndex() === index;
-      <div
-        class="rounded-lg bg-white p-3 shadow-xs transition-shadow"
-        [class.border-2]="isNew"
-        [class.border-brand]="isNew"
-        [class.shadow-md]="isNew"
-        [class.relative]="isNew"
-        [class.border]="!isNew"
-        [class.border-gray-200]="!isNew"
-        (focusout)="onCardFocusout($event)"
+      <lg-card
+        [title]="'Punkt ' + (index + 1)"
+        [expanded]="expandedSet().has(index)"
+        [isNew]="newItemIndex() === index"
+        (expandedChange)="store.toggleCardExpanded('markers', index)"
+        (cardFocusOut)="newItemIndex.set(null)"
       >
-        @if (isNew) {
-          <span
-            class="bg-brand absolute -top-2.5 left-3 rounded-full px-2 py-0.5 text-[9px] font-bold tracking-wider text-white uppercase"
-            >NEU</span
-          >
-        }
-        <div class="mb-2 flex items-center justify-between">
-          <span class="text-xs font-medium text-gray-500"
-            >Punkt {{ index + 1 }}</span
-          >
+        <div
+          class="flex items-center gap-2"
+          card-actions
+        >
           <button
             class="flex h-7 w-7 items-center justify-center rounded text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
             (click)="store.removeMarker(index)"
@@ -43,6 +46,7 @@
             <fa-icon [icon]="faTrashCan" />
           </button>
         </div>
+
         <div class="mb-2">
           <label
             class="mb-1 block text-xs text-gray-600"
@@ -52,7 +56,7 @@
           <lg-input
             [field]="control.text"
             [id]="'marker-text-' + index"
-            [autofocus]="isNew"
+            [autofocus]="newItemIndex() === index"
             [spellcheck]="false"
             type="text"
             autocorrect="off"
@@ -87,7 +91,7 @@
             />
           </div>
         </div>
-      </div>
+      </lg-card>
     }
 
     <div class="flex gap-1.5">
