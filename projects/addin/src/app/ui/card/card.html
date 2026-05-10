@@ -20,7 +20,7 @@
     <button
       class="flex flex-1 items-center gap-2 text-left"
       [attr.aria-expanded]="expanded()"
-      [attr.aria-controls]="bodyId"
+      [attr.aria-controls]="expanded() ? bodyId : null"
       (click)="toggle()"
       type="button"
     >
