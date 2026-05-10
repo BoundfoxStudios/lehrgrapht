@@ -1,6 +1,8 @@
 <lg-header
   [backLink]="backLink()"
-  [subtitle]="'Plot: ' + store.model().name"
+  [subtitle]="
+    store.isLoading() ? 'Plot wird geladen…' : 'Plot: ' + store.model().name
+  "
   title="Plot Editor"
 />
 
@@ -8,16 +10,29 @@
   class="flex flex-1 flex-col"
   [formRoot]="store.editorForm"
 >
-  <div class="flex flex-1 flex-col">
-    @if (currentSection()) {
-      <lg-tab-strip
-        [tabs]="sectionTabs()"
-        [active]="currentSection()!"
-        (tabChange)="goToSection($event)"
+  @if (store.isLoading()) {
+    <div
+      class="flex flex-1 items-center justify-center"
+      aria-live="polite"
+    >
+      <fa-icon
+        class="text-brand animate-spin text-3xl"
+        [icon]="faCircleNotch"
+        aria-label="Plot wird geladen"
       />
-    }
-    <router-outlet />
-  </div>
+    </div>
+  } @else {
+    <div class="flex flex-1 flex-col">
+      @if (currentSection()) {
+        <lg-tab-strip
+          [tabs]="sectionTabs()"
+          [active]="currentSection()!"
+          (tabChange)="goToSection($event)"
+        />
+      }
+      <router-outlet />
+    </div>
 
-  <lg-preview-dock [errorVariant]="showErrorDock()" />
+    <lg-preview-dock [errorVariant]="showErrorDock()" />
+  }
 </form>

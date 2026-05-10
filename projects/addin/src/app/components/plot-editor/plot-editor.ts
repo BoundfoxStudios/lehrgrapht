@@ -13,6 +13,7 @@ import {
 } from '@angular/router';
 import { filter, firstValueFrom, map, startWith } from 'rxjs';
 import {
+  faCircleNotch,
   faDrawPolygon,
   faExpand,
   faLocationDot,
@@ -20,6 +21,7 @@ import {
   faSliders,
   faSquareRootVariable,
 } from '@fortawesome/free-solid-svg-icons';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { FormRoot } from '@angular/forms/signals';
 import { Dialog } from '@angular/cdk/dialog';
 import { Header } from '../header/header';
@@ -34,13 +36,22 @@ import {
 
 @Component({
   selector: 'lg-plot-editor',
-  imports: [FormRoot, Header, PreviewDock, TabStrip, RouterOutlet],
+  imports: [
+    FormRoot,
+    Header,
+    PreviewDock,
+    TabStrip,
+    RouterOutlet,
+    FaIconComponent,
+  ],
   templateUrl: './plot-editor.html',
   styleUrl: './plot-editor.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [PlotEditorStore],
 })
 export class PlotEditor {
+  protected readonly faCircleNotch = faCircleNotch;
+
   protected readonly store = inject(PlotEditorStore);
   private readonly router = inject(Router);
   private readonly activatedRoute = inject(ActivatedRoute);

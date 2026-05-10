@@ -280,6 +280,7 @@ export const PlotEditorStore = signalStore(
     const model = signal<Plot>(buildInitialPlot());
     const plotSettings = signal<PlotSettings>(defaultPlotSettings);
     const activeId = signal<string | null>(null);
+    const isLoading = signal(false);
 
     const saveToDocument = async (): Promise<boolean> => {
       const m = model();
@@ -343,7 +344,14 @@ export const PlotEditorStore = signalStore(
       },
     );
 
-    return { model, editorForm, plotSettings, activeId, saveToDocument };
+    return {
+      model,
+      editorForm,
+      plotSettings,
+      activeId,
+      isLoading,
+      saveToDocument,
+    };
   }),
   withState({
     interactiveMode: InteractiveMode.Off,
@@ -650,10 +658,12 @@ export const PlotEditorStore = signalStore(
           return;
         }
         store.activeId.set(id);
+        store.isLoading.set(true);
         void wordService.get(id).then(loaded => {
           if (loaded) {
             store.editorForm().reset(loaded.model);
           }
+          store.isLoading.set(false);
         });
       });
     },
