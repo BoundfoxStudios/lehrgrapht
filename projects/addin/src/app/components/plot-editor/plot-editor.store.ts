@@ -256,6 +256,20 @@ export function applyStraightLine(
   };
 }
 
+export const INTERACTIVE_STRATEGIES: Record<
+  Exclude<InteractiveMode, InteractiveMode.Off>,
+  InteractiveStrategy
+> = {
+  [InteractiveMode.Area]: { minPoints: 3, apply: applyArea },
+  [InteractiveMode.Marker]: { minPoints: 1, apply: applyMarker },
+  [InteractiveMode.Line]: { minPoints: 2, autoFinishAt: 2, apply: applyLine },
+  [InteractiveMode.StraightLine]: {
+    minPoints: 2,
+    autoFinishAt: 2,
+    apply: applyStraightLine,
+  },
+};
+
 export const PlotEditorStore = signalStore(
   withProps(() => {
     const plotService = inject(PlotService);
@@ -343,76 +357,15 @@ export const PlotEditorStore = signalStore(
       previewModel: computed<Plot>(() => {
         const model = store.model();
         const mode = store.interactiveMode();
-        const scheme = store.plotSettings().markerNamingScheme;
-        const pts = store.interactivePoints();
-
-        let areas = model.areas;
-        let markers = model.markers;
-        let lines = model.lines;
-        let fnx = model.fnx;
-
-        if (mode === InteractiveMode.Area && pts.length > 0) {
-          const startIndex = getNextLabelIndex(model);
-          areas = [
-            ...areas,
-            {
-              points: pts.map((p, i) => ({
-                ...p,
-                labelPosition: 'auto' as const,
-                labelText: markerNamingService.generateName(
-                  startIndex + i,
-                  scheme,
-                ),
-              })),
-              color: colors[areas.length % colors.length],
-              showPoints: false,
-            },
-          ];
-        }
-
-        if (mode === InteractiveMode.Marker && pts.length > 0) {
-          markers = [
-            ...markers,
-            ...pts.map((p, i) => ({
-              ...p,
-              text: markerNamingService.generateName(
-                markers.length + i,
-                scheme,
-              ),
-            })),
-          ];
-        }
-
-        if (mode === InteractiveMode.Line && pts.length === 2) {
-          lines = [
-            ...lines,
-            {
-              x1: pts[0].x,
-              y1: pts[0].y,
-              x2: pts[1].x,
-              y2: pts[1].y,
-              color: colors[lines.length % colors.length],
-              lineStyle: 'solid',
-            },
-          ];
-        }
-
-        if (mode === InteractiveMode.StraightLine && pts.length === 2) {
-          const fnxString = calculateStraightLineFunction(pts[0], pts[1]);
-          if (fnxString) {
-            fnx = [
-              ...fnx,
-              {
-                fnx: fnxString,
-                color: colors[fnx.length % colors.length],
-                legendPosition: 'none',
-                lineStyle: 'solid',
-              },
-            ];
-          }
-        }
-
-        return { ...model, areas, markers, lines, fnx };
+        if (mode === InteractiveMode.Off) return model;
+        return INTERACTIVE_STRATEGIES[mode].apply(
+          model,
+          store.interactivePoints(),
+          {
+            scheme: store.plotSettings().markerNamingScheme,
+            markerNamingService,
+          },
+        );
       }),
     };
   }),
