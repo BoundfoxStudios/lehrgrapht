@@ -28,7 +28,7 @@ export class Card {
   readonly expanded = input(false, { transform: booleanAttribute });
   readonly isNew = input(false, { transform: booleanAttribute });
 
-  readonly expandedChange = output<boolean>();
+  readonly expandedChange = output();
   readonly cardFocusOut = output<FocusEvent>();
 
   protected readonly faChevronDown = faChevronDown;
@@ -36,7 +36,7 @@ export class Card {
   protected readonly bodyId = `lg-card-body-${++cardIdCounter}`;
 
   protected toggle(): void {
-    this.expandedChange.emit(!this.expanded());
+    this.expandedChange.emit();
   }
 
   protected onFocusout(event: FocusEvent): void {
