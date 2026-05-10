@@ -91,7 +91,7 @@ export class PlotEditor {
   });
 
   protected goToSection(section: string): void {
-    this.store.cancelInteractiveIfActive();
+    this.store.cancelInteractive();
     void this.router.navigate([section], { relativeTo: this.activatedRoute });
   }
 }
