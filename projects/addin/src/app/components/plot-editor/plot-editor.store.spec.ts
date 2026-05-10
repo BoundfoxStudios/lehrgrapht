@@ -4,6 +4,7 @@ import {
   applyArea,
   applyLine,
   applyMarker,
+  applyStraightLine,
   ApplyContext,
   calculateStraightLineFunction,
   nameAreaPoints,
@@ -259,5 +260,42 @@ describe('applyLine', () => {
       ctx,
     );
     expect(JSON.stringify(basePlot)).toBe(before);
+  });
+});
+
+describe('applyStraightLine', () => {
+  it('returns model unchanged with <2 points', () => {
+    expect(applyStraightLine(basePlot, [], ctx)).toBe(basePlot);
+    expect(applyStraightLine(basePlot, [{ x: 0, y: 0 }], ctx)).toBe(basePlot);
+  });
+
+  it('returns model unchanged for vertical line (calculateStraightLineFunction returns null)', () => {
+    const result = applyStraightLine(
+      basePlot,
+      [
+        { x: 1, y: 0 },
+        { x: 1, y: 5 },
+      ],
+      ctx,
+    );
+    expect(result).toBe(basePlot);
+  });
+
+  it('appends fnx with computed expression, cycled color, none legend', () => {
+    const result = applyStraightLine(
+      basePlot,
+      [
+        { x: 0, y: 1 },
+        { x: 1, y: 2 },
+      ],
+      ctx,
+    );
+    expect(result.fnx.length).toBe(1);
+    expect(result.fnx[0]).toEqual({
+      fnx: 'x+1',
+      color: nextColor(0),
+      legendPosition: 'none',
+      lineStyle: 'solid',
+    });
   });
 });

@@ -234,6 +234,28 @@ export function applyLine(
   };
 }
 
+export function applyStraightLine(
+  model: Plot,
+  points: readonly { x: number; y: number }[],
+  _ctx: ApplyContext,
+): Plot {
+  if (points.length < 2) return model;
+  const fnxString = calculateStraightLineFunction(points[0], points[1]);
+  if (fnxString === null) return model;
+  return {
+    ...model,
+    fnx: [
+      ...model.fnx,
+      {
+        fnx: fnxString,
+        color: nextColor(model.fnx.length),
+        legendPosition: 'none',
+        lineStyle: 'solid',
+      },
+    ],
+  };
+}
+
 export const PlotEditorStore = signalStore(
   withProps(() => {
     const plotService = inject(PlotService);
