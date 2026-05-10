@@ -18,10 +18,20 @@ import { PlotEditorStore } from '../../plot-editor.store';
 import { labelPositionOptions } from '../../dropdown-options';
 import { ButtonDirective } from '../../../../ui/button/button.directive';
 import { Input } from '../../../../ui/input/input';
+import { SectionEmptyState } from '../section-empty-state/section-empty-state';
+import { SectionAreasImage } from './section-areas-image';
 
 @Component({
   selector: 'lg-section-areas',
-  imports: [FaIconComponent, FormField, Dropdown, ButtonDirective, Input],
+  imports: [
+    FaIconComponent,
+    FormField,
+    Dropdown,
+    ButtonDirective,
+    Input,
+    SectionEmptyState,
+    SectionAreasImage,
+  ],
   templateUrl: './section-areas.html',
   styleUrl: './section-areas.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -16,10 +16,18 @@ import { InteractiveMode } from '../../interactive-mode';
 import { PlotEditorStore } from '../../plot-editor.store';
 import { ButtonDirective } from '../../../../ui/button/button.directive';
 import { Input } from '../../../../ui/input/input';
+import { SectionEmptyState } from '../section-empty-state/section-empty-state';
+import { SectionMarkersImage } from './section-markers-image';
 
 @Component({
   selector: 'lg-section-markers',
-  imports: [FaIconComponent, ButtonDirective, Input],
+  imports: [
+    FaIconComponent,
+    ButtonDirective,
+    Input,
+    SectionEmptyState,
+    SectionMarkersImage,
+  ],
   templateUrl: './section-markers.html',
   styleUrl: './section-markers.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -17,10 +17,20 @@ import { PlotEditorStore } from '../../plot-editor.store';
 import { lineStyleOptions } from '../../dropdown-options';
 import { ButtonDirective } from '../../../../ui/button/button.directive';
 import { Input } from '../../../../ui/input/input';
+import { SectionEmptyState } from '../section-empty-state/section-empty-state';
+import { SectionLinesImage } from './section-lines-image';
 
 @Component({
   selector: 'lg-section-lines',
-  imports: [FaIconComponent, FormField, Dropdown, ButtonDirective, Input],
+  imports: [
+    FaIconComponent,
+    FormField,
+    Dropdown,
+    ButtonDirective,
+    Input,
+    SectionEmptyState,
+    SectionLinesImage,
+  ],
   templateUrl: './section-lines.html',
   styleUrl: './section-lines.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

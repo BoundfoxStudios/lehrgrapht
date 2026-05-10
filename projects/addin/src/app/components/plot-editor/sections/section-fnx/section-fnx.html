@@ -5,74 +5,14 @@
   @if (
     fnx.length === 0 && store.interactiveMode() !== InteractiveMode.StraightLine
   ) {
-    <div
-      class="border-default-medium rounded-base flex flex-col items-center gap-2.5 border bg-white px-4 py-5 text-center"
+    <lg-section-empty-state
+      [interactiveMode]="InteractiveMode.StraightLine"
+      (manualClick)="addManual()"
+      heading="Noch keine Funktionen"
+      text="Definiere Funktionen wie x², sin(x) oder 2x+1. Bis zu 4 Funktionen werden in unterschiedlichen Farben gezeichnet."
     >
-      <svg
-        class="text-brand"
-        width="120"
-        height="64"
-        viewBox="0 0 120 64"
-        aria-hidden="true"
-      >
-        <line
-          x1="10"
-          y1="32"
-          x2="110"
-          y2="32"
-          stroke="#e4e6ef"
-          stroke-width="1"
-        />
-        <line
-          x1="60"
-          y1="6"
-          x2="60"
-          y2="58"
-          stroke="#e4e6ef"
-          stroke-width="1"
-        />
-        <path
-          d="M 10 56 Q 60 -20 110 56"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2.5"
-          stroke-dasharray="3 3"
-          opacity="0.5"
-        />
-      </svg>
-      <div>
-        <div class="text-heading text-sm font-bold">Noch keine Funktionen</div>
-        <div
-          class="text-body mx-auto mt-1 max-w-[270px] text-xs leading-relaxed"
-        >
-          Definiere Funktionen wie x², sin(x) oder 2x+1. Bis zu 4 Funktionen
-          werden in unterschiedlichen Farben gezeichnet.
-        </div>
-      </div>
-    </div>
-    <div class="flex gap-1.5">
-      <button
-        class="flex-[1.4]"
-        (click)="store.startInteractive(InteractiveMode.StraightLine)"
-        lgButton
-        size="cta"
-        type="button"
-      >
-        <fa-icon [icon]="faMousePointer" />
-        <span>Interaktiv</span>
-      </button>
-      <button
-        class="flex-1"
-        (click)="addManual()"
-        lgButton
-        variant="outline"
-        size="cta"
-        type="button"
-      >
-        <fa-icon [icon]="faPlusCircle" />
-        <span>Manuell</span>
-      </button>
-    </div>
+      <lg-section-fnx-image />
+    </lg-section-empty-state>
   } @else {
     @for (control of form.fnx; let index = $index; track index) {
       @let isNew = newItemIndex() === index;

@@ -5,95 +5,14 @@
   @if (
     markers.length === 0 && store.interactiveMode() !== InteractiveMode.Marker
   ) {
-    <div
-      class="border-default-medium rounded-base flex flex-col items-center gap-2.5 border bg-white px-4 py-5 text-center"
+    <lg-section-empty-state
+      [interactiveMode]="InteractiveMode.Marker"
+      (manualClick)="addManual()"
+      heading="Noch keine Punkte"
+      text="Markiere Punkte im Koordinatensystem — z. B. Schnittpunkte oder Nullstellen — und beschrifte sie mit A, B, C."
     >
-      <svg
-        class="text-brand"
-        width="120"
-        height="64"
-        viewBox="0 0 120 64"
-        aria-hidden="true"
-      >
-        <line
-          x1="10"
-          y1="32"
-          x2="110"
-          y2="32"
-          stroke="#e4e6ef"
-          stroke-width="1"
-        />
-        <line
-          x1="60"
-          y1="6"
-          x2="60"
-          y2="58"
-          stroke="#e4e6ef"
-          stroke-width="1"
-        />
-        <circle
-          cx="40"
-          cy="42"
-          r="3.5"
-          fill="currentColor"
-          opacity="0.25"
-        />
-        <circle
-          cx="78"
-          cy="22"
-          r="3.5"
-          fill="currentColor"
-          opacity="0.25"
-        />
-        <circle
-          cx="60"
-          cy="32"
-          r="4"
-          fill="currentColor"
-        />
-        <text
-          x="68"
-          y="30"
-          font-size="10"
-          fill="currentColor"
-          font-weight="600"
-        >
-          A
-        </text>
-      </svg>
-      <div>
-        <div class="text-heading text-sm font-bold">Noch keine Punkte</div>
-        <div
-          class="text-body mx-auto mt-1 max-w-[270px] text-xs leading-relaxed"
-        >
-          Markiere Punkte im Koordinatensystem — z. B. Schnittpunkte oder
-          Nullstellen — und beschrifte sie mit A, B, C.
-        </div>
-      </div>
-    </div>
-    <div class="flex gap-1.5">
-      <button
-        class="flex-[1.4]"
-        (click)="store.startInteractive(InteractiveMode.Marker)"
-        lgButton
-        size="cta"
-        type="button"
-      >
-        <fa-icon [icon]="faMousePointer" />
-        <span>Interaktiv</span>
-      </button>
-      <button
-        class="flex-1"
-        (click)="addManual()"
-        lgButton
-        variant="outline"
-        size="cta"
-        type="button"
-      >
-        <fa-icon [icon]="faPlusCircle" />
-        <span>Manuell</span>
-      </button>
-    </div>
+      <lg-section-markers-image />
+    </lg-section-empty-state>
   } @else {
     @for (control of form.markers; let index = $index; track index) {
       @let isNew = newItemIndex() === index;

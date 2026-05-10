@@ -21,6 +21,8 @@ import {
 } from '../../dropdown-options';
 import { ButtonDirective } from '../../../../ui/button/button.directive';
 import { Input } from '../../../../ui/input/input';
+import { SectionEmptyState } from '../section-empty-state/section-empty-state';
+import { SectionFnxImage } from './section-fnx-image';
 
 @Component({
   selector: 'lg-section-fnx',
@@ -31,6 +33,8 @@ import { Input } from '../../../../ui/input/input';
     MathDisplay,
     ButtonDirective,
     Input,
+    SectionEmptyState,
+    SectionFnxImage,
   ],
   templateUrl: './section-fnx.html',
   styleUrl: './section-fnx.css',
