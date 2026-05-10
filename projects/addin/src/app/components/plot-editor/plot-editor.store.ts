@@ -628,7 +628,7 @@ export const PlotEditorStore = signalStore(
         store.activeId.set(id);
         void wordService.get(id).then(loaded => {
           if (loaded) {
-            store.model.set(loaded.model);
+            store.editorForm().reset(loaded.model);
           }
         });
       });
