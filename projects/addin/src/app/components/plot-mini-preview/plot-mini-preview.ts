@@ -18,6 +18,9 @@ import { PlotSettingsService } from '../../services/plot-settings.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [AsyncPipe],
   templateUrl: './plot-mini-preview.html',
+  host: {
+    class: 'inline-flex items-center justify-center',
+  },
 })
 export class PlotMiniPreview {
   private readonly plotService = inject(PlotService);

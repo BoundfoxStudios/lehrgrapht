@@ -20,6 +20,8 @@
     }
   </div>
 
+  <ng-content select="[headerActions]" />
+
   @switch (saveState()) {
     @case ('saving') {
       <span
