@@ -11,7 +11,7 @@ import {
   Router,
   RouterOutlet,
 } from '@angular/router';
-import { filter, map, startWith } from 'rxjs';
+import { filter, firstValueFrom, map, startWith } from 'rxjs';
 import {
   faDrawPolygon,
   faExpand,
@@ -21,10 +21,16 @@ import {
   faSquareRootVariable,
 } from '@fortawesome/free-solid-svg-icons';
 import { FormRoot } from '@angular/forms/signals';
+import { Dialog } from '@angular/cdk/dialog';
 import { Header } from '../header/header';
 import { PreviewDock } from '../preview-dock/preview-dock';
 import { TabStrip, TabStripItem } from '../tab-strip/tab-strip';
 import { PlotEditorStore } from './plot-editor.store';
+import {
+  UnsavedChangesData,
+  UnsavedChangesDialog,
+  UnsavedChangesResult,
+} from './unsaved-changes-dialog/unsaved-changes-dialog';
 
 @Component({
   selector: 'lg-plot-editor',
@@ -38,6 +44,7 @@ export class PlotEditor {
   protected readonly store = inject(PlotEditorStore);
   private readonly router = inject(Router);
   private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly dialog = inject(Dialog);
 
   protected readonly currentSection = toSignal(
     this.router.events.pipe(
@@ -93,5 +100,30 @@ export class PlotEditor {
   protected goToSection(section: string): void {
     this.store.cancelInteractive();
     void this.router.navigate([section], { relativeTo: this.activatedRoute });
+  }
+
+  async canDeactivate(): Promise<boolean> {
+    if (!this.store.isDirty()) {
+      return true;
+    }
+    this.store.cancelInteractive();
+
+    const ref = this.dialog.open<UnsavedChangesResult, UnsavedChangesData>(
+      UnsavedChangesDialog,
+      {
+        data: {
+          hasErrors: this.store.hasErrors,
+          errorCount: this.store.errorCount,
+          save: () => this.store.saveToDocument(),
+        },
+        hasBackdrop: true,
+        disableClose: false,
+        role: 'alertdialog',
+        ariaLabelledBy: 'unsaved-changes-title',
+      },
+    );
+
+    const result = await firstValueFrom(ref.closed);
+    return result === 'discard' || result === 'save';
   }
 }
