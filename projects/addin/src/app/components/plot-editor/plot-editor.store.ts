@@ -189,6 +189,28 @@ export function applyArea(
   };
 }
 
+export function applyMarker(
+  model: Plot,
+  points: readonly { x: number; y: number }[],
+  ctx: ApplyContext,
+): Plot {
+  if (points.length === 0) return model;
+  return {
+    ...model,
+    markers: [
+      ...model.markers,
+      ...points.map((p, i) => ({
+        x: p.x,
+        y: p.y,
+        text: ctx.markerNamingService.generateName(
+          model.markers.length + i,
+          ctx.scheme,
+        ),
+      })),
+    ],
+  };
+}
+
 export const PlotEditorStore = signalStore(
   withProps(() => {
     const plotService = inject(PlotService);

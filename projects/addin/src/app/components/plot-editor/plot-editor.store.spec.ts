@@ -2,6 +2,7 @@ import { Plot } from '../../models/plot';
 import { MarkerNamingService } from '../../services/marker-naming.service';
 import {
   applyArea,
+  applyMarker,
   ApplyContext,
   calculateStraightLineFunction,
   nameAreaPoints,
@@ -189,6 +190,33 @@ describe('applyArea', () => {
   it('does not mutate the input model', () => {
     const before = JSON.stringify(basePlot);
     applyArea(basePlot, [{ x: 0, y: 0 }], ctx);
+    expect(JSON.stringify(basePlot)).toBe(before);
+  });
+});
+
+describe('applyMarker', () => {
+  it('returns model unchanged with 0 points', () => {
+    expect(applyMarker(basePlot, [], ctx)).toBe(basePlot);
+  });
+
+  it('appends one marker per point with names continuing from existing count', () => {
+    const seed = { ...basePlot, markers: [{ x: 9, y: 9, text: 'P1' }] };
+    const result = applyMarker(
+      seed,
+      [
+        { x: 0, y: 0 },
+        { x: 1, y: 1 },
+      ],
+      ctx,
+    );
+    expect(result.markers.length).toBe(3);
+    expect(result.markers[1].text).toBe('P2');
+    expect(result.markers[2].text).toBe('P3');
+  });
+
+  it('does not mutate input', () => {
+    const before = JSON.stringify(basePlot);
+    applyMarker(basePlot, [{ x: 0, y: 0 }], ctx);
     expect(JSON.stringify(basePlot)).toBe(before);
   });
 });
