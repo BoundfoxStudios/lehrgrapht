@@ -1,0 +1,73 @@
+<div
+  class="rounded-base flex w-[20rem] max-w-full flex-col gap-3 bg-white p-4 shadow-xl"
+>
+  <h2
+    class="text-heading text-base font-semibold"
+    id="unsaved-changes-title"
+  >
+    Ungespeicherte Änderungen
+  </h2>
+
+  <p class="text-body text-sm">
+    Du hast Änderungen am Plot vorgenommen, die noch nicht im Dokument
+    aktualisiert wurden.
+  </p>
+
+  @if (data.hasErrors()) {
+    <div
+      class="text-2xs flex items-center gap-1.5 rounded-md bg-rose-50 px-2.5 py-2 text-rose-700"
+      role="alert"
+    >
+      <fa-icon [icon]="faCircleExclamation" />
+      @let count = data.errorCount();
+      @if (count === 1) {
+        <span>1 Fehler verhindert das Speichern.</span>
+      } @else {
+        <span>{{ count }} Fehler verhindern das Speichern.</span>
+      }
+    </div>
+  }
+
+  @if (saveFailed()) {
+    <div
+      class="text-2xs flex items-center gap-1.5 rounded-md bg-rose-50 px-2.5 py-2 text-rose-700"
+      role="alert"
+    >
+      <fa-icon [icon]="faCircleExclamation" />
+      <span>Speichern fehlgeschlagen. Bitte erneut versuchen.</span>
+    </div>
+  }
+
+  <div class="flex flex-wrap justify-end gap-2 pt-1">
+    <button
+      (click)="discard()"
+      lgButton
+      variant="outline"
+      type="button"
+    >
+      Verwerfen
+    </button>
+    <button
+      (click)="cancel()"
+      lgButton
+      variant="outline"
+      type="button"
+    >
+      Abbrechen
+    </button>
+    <button
+      [disabled]="data.hasErrors() || isSaving()"
+      (click)="save()"
+      lgButton
+      type="button"
+    >
+      @if (isSaving()) {
+        <fa-icon
+          class="animate-spin"
+          [icon]="faCircleNotch"
+        />
+      }
+      <span>Im Dokument aktualisieren</span>
+    </button>
+  </div>
+</div>
