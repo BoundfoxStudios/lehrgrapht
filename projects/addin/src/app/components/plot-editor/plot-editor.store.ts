@@ -698,6 +698,37 @@ export const PlotEditorStore = signalStore(
         }
       },
 
+      startInteractive(
+        mode: Exclude<InteractiveMode, InteractiveMode.Off>,
+      ): void {
+        patchState(store, { interactiveMode: mode, interactivePoints: [] });
+      },
+
+      cancelInteractive(): void {
+        patchState(store, {
+          interactiveMode: InteractiveMode.Off,
+          interactivePoints: [],
+        });
+      },
+
+      finishInteractive(): void {
+        const mode = store.interactiveMode();
+        if (mode === InteractiveMode.Off) return;
+        const strategy = INTERACTIVE_STRATEGIES[mode];
+        const points = store.interactivePoints();
+        if (points.length >= strategy.minPoints) {
+          const ctx: ApplyContext = {
+            scheme: store.plotSettings().markerNamingScheme,
+            markerNamingService,
+          };
+          store.model.update(m => strategy.apply(m, points, ctx));
+        }
+        patchState(store, {
+          interactiveMode: InteractiveMode.Off,
+          interactivePoints: [],
+        });
+      },
+
       removeInteractivePoint(index: number): void {
         patchState(store, {
           interactivePoints: store
@@ -708,68 +739,21 @@ export const PlotEditorStore = signalStore(
 
       onPlotClick(event: PlotClickEvent): void {
         const mode = store.interactiveMode();
-
-        if (mode === InteractiveMode.Area || mode === InteractiveMode.Marker) {
+        if (mode === InteractiveMode.Off) return;
+        const strategy = INTERACTIVE_STRATEGIES[mode];
+        const points = [...store.interactivePoints(), event];
+        if (strategy.autoFinishAt && points.length >= strategy.autoFinishAt) {
+          const ctx: ApplyContext = {
+            scheme: store.plotSettings().markerNamingScheme,
+            markerNamingService,
+          };
+          store.model.update(m => strategy.apply(m, points, ctx));
           patchState(store, {
-            interactivePoints: [...store.interactivePoints(), event],
+            interactiveMode: InteractiveMode.Off,
+            interactivePoints: [],
           });
-          return;
-        }
-
-        if (mode === InteractiveMode.Line) {
-          const newPoints = [...store.interactivePoints(), event];
-          if (newPoints.length === 2) {
-            store.model.update(m => ({
-              ...m,
-              lines: [
-                ...m.lines,
-                {
-                  x1: newPoints[0].x,
-                  y1: newPoints[0].y,
-                  x2: newPoints[1].x,
-                  y2: newPoints[1].y,
-                  color: colors[m.lines.length % colors.length],
-                  lineStyle: 'solid',
-                },
-              ],
-            }));
-            patchState(store, {
-              interactiveMode: InteractiveMode.Off,
-              interactivePoints: [],
-            });
-          } else {
-            patchState(store, { interactivePoints: newPoints });
-          }
-          return;
-        }
-
-        if (mode === InteractiveMode.StraightLine) {
-          const newPoints = [...store.interactivePoints(), event];
-          if (newPoints.length === 2) {
-            const [p1, p2] = newPoints;
-            const fnxString = calculateStraightLineFunction(p1, p2);
-            if (fnxString) {
-              store.model.update(m => ({
-                ...m,
-                fnx: [
-                  ...m.fnx,
-                  {
-                    fnx: fnxString,
-                    color: colors[m.fnx.length % colors.length],
-                    legendPosition: 'none',
-                    lineStyle: 'solid',
-                  },
-                ],
-              }));
-            }
-            patchState(store, {
-              interactiveMode: InteractiveMode.Off,
-              interactivePoints: [],
-            });
-          } else {
-            patchState(store, { interactivePoints: newPoints });
-          }
-          return;
+        } else {
+          patchState(store, { interactivePoints: points });
         }
       },
     };
