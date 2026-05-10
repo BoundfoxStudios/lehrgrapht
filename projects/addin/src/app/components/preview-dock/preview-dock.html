@@ -40,9 +40,7 @@
   >
     <div class="flex items-center gap-1.5 font-semibold">
       <span>Vorschau</span>
-      @if (store.isAnyInteractiveMode()) {
-        <span class="text-brand">· Klicke um Punkte zu setzen</span>
-      } @else if (store.isEditMode()) {
+      @if (store.isEditMode()) {
         <span>· liegt im Dokument</span>
       }
     </div>
@@ -51,8 +49,6 @@
     <lg-plot-preview
       [plot]="store.previewModel()"
       [plotSettings]="store.plotSettings()"
-      [interactive]="store.isAnyInteractiveMode()"
-      (plotClick)="store.onPlotClick($event)"
     />
   </div>
   <div class="px-2.5 pt-1.5 pb-2.5">
