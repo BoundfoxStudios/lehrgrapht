@@ -362,6 +362,7 @@ export const PlotEditorStore = signalStore(
       ),
       isEditMode: computed(() => store.activeId() !== null),
       routeId: computed(() => store.activeId() ?? NEW_PLOT_ID),
+      isDirty: computed(() => store.editorForm().dirty()),
       hasErrors: computed(() => store.editorForm().errorSummary().length > 0),
       errorCount: computed(() => store.editorForm().errorSummary().length),
       previewModel: computed<Plot>(() => {
