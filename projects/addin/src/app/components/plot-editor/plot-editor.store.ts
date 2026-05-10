@@ -434,6 +434,13 @@ export const PlotEditorStore = signalStore(
             },
           ],
         }));
+        const newIndex = store.model().fnx.length - 1;
+        patchState(store, {
+          expandedItems: {
+            ...store.expandedItems(),
+            fnx: [...store.expandedItems().fnx, newIndex],
+          },
+        });
       },
 
       removeFx(index: number): void {
@@ -456,6 +463,13 @@ export const PlotEditorStore = signalStore(
             },
           ],
         }));
+        const newIndex = store.model().markers.length - 1;
+        patchState(store, {
+          expandedItems: {
+            ...store.expandedItems(),
+            markers: [...store.expandedItems().markers, newIndex],
+          },
+        });
       },
 
       removeMarker(index: number): void {
@@ -480,6 +494,13 @@ export const PlotEditorStore = signalStore(
             },
           ],
         }));
+        const newIndex = store.model().lines.length - 1;
+        patchState(store, {
+          expandedItems: {
+            ...store.expandedItems(),
+            lines: [...store.expandedItems().lines, newIndex],
+          },
+        });
       },
 
       removeLine(index: number): void {
@@ -514,6 +535,13 @@ export const PlotEditorStore = signalStore(
               },
             ],
           };
+        });
+        const newIndex = store.model().areas.length - 1;
+        patchState(store, {
+          expandedItems: {
+            ...store.expandedItems(),
+            areas: [...store.expandedItems().areas, newIndex],
+          },
         });
       },
 
