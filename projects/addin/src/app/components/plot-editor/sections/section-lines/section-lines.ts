@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   inject,
   signal,
 } from '@angular/core';
@@ -16,6 +17,7 @@ import { InteractiveMode } from '../../interactive-mode';
 import { PlotEditorStore } from '../../plot-editor.store';
 import { lineStyleOptions } from '../../dropdown-options';
 import { ButtonDirective } from '../../../../ui/button/button.directive';
+import { Card } from '../../../../ui/card/card';
 import { Input } from '../../../../ui/input/input';
 import { SectionEmptyState } from '../section-empty-state/section-empty-state';
 import { SectionLinesImage } from './section-lines-image';
@@ -27,6 +29,7 @@ import { SectionLinesImage } from './section-lines-image';
     FormField,
     Dropdown,
     ButtonDirective,
+    Card,
     Input,
     SectionEmptyState,
     SectionLinesImage,
@@ -44,17 +47,24 @@ export class SectionLines {
   protected readonly store = inject(PlotEditorStore);
   protected readonly newItemIndex = signal<number | null>(null);
 
+  protected readonly expandedSet = computed(
+    () => new Set(this.store.expandedItems().lines),
+  );
+
+  protected readonly allCollapsed = computed(
+    () => this.store.expandedItems().lines.length === 0,
+  );
+
   protected addManual(): void {
     this.store.addLine();
     this.newItemIndex.set(this.store.model().lines.length - 1);
   }
 
-  protected onCardFocusout(event: FocusEvent): void {
-    const card = event.currentTarget as HTMLElement;
-    const next = event.relatedTarget as HTMLElement | null;
-    if (next && card.contains(next)) {
-      return;
+  protected toggleAll(): void {
+    if (this.allCollapsed()) {
+      this.store.expandAllCards('lines');
+    } else {
+      this.store.collapseAllCards('lines');
     }
-    this.newItemIndex.set(null);
   }
 }
