@@ -14,7 +14,7 @@ const VARIANT_CLASSES: Record<ButtonVariant, string> = {
   outline:
     'rounded-base border-default-medium text-body hover:border-brand hover:text-brand bg-white',
   ghost:
-    'rounded-full bg-white/15 text-white hover:bg-white/25 focus:ring-white/30 disabled:hover:bg-white/15',
+    'rounded-full h-8 w-8 bg-white/15 text-white hover:bg-white/25 focus:ring-white/30 disabled:hover:bg-white/15',
 };
 
 @Directive({
