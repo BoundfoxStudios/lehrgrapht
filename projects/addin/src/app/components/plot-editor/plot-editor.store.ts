@@ -380,7 +380,7 @@ export const PlotEditorStore = signalStore(
             ...m.fnx,
             {
               fnx: 'x',
-              color: colors[m.fnx.length % colors.length],
+              color: nextColor(m.fnx.length),
               legendPosition: 'none',
               lineStyle: 'solid',
             },
@@ -389,11 +389,7 @@ export const PlotEditorStore = signalStore(
       },
 
       removeFx(index: number): void {
-        store.model.update(m => {
-          const fnx = [...m.fnx];
-          fnx.splice(index, 1);
-          return { ...m, fnx };
-        });
+        store.model.update(m => ({ ...m, fnx: removeAt(m.fnx, index) }));
       },
 
       addMarker(): void {
@@ -412,11 +408,10 @@ export const PlotEditorStore = signalStore(
       },
 
       removeMarker(index: number): void {
-        store.model.update(m => {
-          const markers = [...m.markers];
-          markers.splice(index, 1);
-          return { ...m, markers };
-        });
+        store.model.update(m => ({
+          ...m,
+          markers: removeAt(m.markers, index),
+        }));
       },
 
       addLine(): void {
@@ -429,7 +424,7 @@ export const PlotEditorStore = signalStore(
               y1: 0,
               x2: 1,
               y2: 1,
-              color: colors[m.lines.length % colors.length],
+              color: nextColor(m.lines.length),
               lineStyle: 'solid',
             },
           ],
@@ -437,52 +432,30 @@ export const PlotEditorStore = signalStore(
       },
 
       removeLine(index: number): void {
-        store.model.update(m => {
-          const lines = [...m.lines];
-          lines.splice(index, 1);
-          return { ...m, lines };
-        });
+        store.model.update(m => ({ ...m, lines: removeAt(m.lines, index) }));
       },
 
       addArea(): void {
         const scheme = store.plotSettings().markerNamingScheme;
         store.model.update(m => {
           const startIndex = getNextLabelIndex(m);
+          const rawPoints = [
+            { x: 0, y: 0 },
+            { x: 1, y: 0 },
+            { x: 1, y: 1 },
+          ];
           return {
             ...m,
             areas: [
               ...m.areas,
               {
-                points: [
-                  {
-                    x: 0,
-                    y: 0,
-                    labelPosition: 'auto',
-                    labelText: markerNamingService.generateName(
-                      startIndex,
-                      scheme,
-                    ),
-                  },
-                  {
-                    x: 1,
-                    y: 0,
-                    labelPosition: 'auto',
-                    labelText: markerNamingService.generateName(
-                      startIndex + 1,
-                      scheme,
-                    ),
-                  },
-                  {
-                    x: 1,
-                    y: 1,
-                    labelPosition: 'auto',
-                    labelText: markerNamingService.generateName(
-                      startIndex + 2,
-                      scheme,
-                    ),
-                  },
-                ],
-                color: colors[m.areas.length % colors.length],
+                points: nameAreaPoints(
+                  rawPoints,
+                  scheme,
+                  markerNamingService,
+                  startIndex,
+                ),
+                color: nextColor(m.areas.length),
                 showPoints: false,
               },
             ],
@@ -491,11 +464,7 @@ export const PlotEditorStore = signalStore(
       },
 
       removeArea(index: number): void {
-        store.model.update(m => {
-          const areas = [...m.areas];
-          areas.splice(index, 1);
-          return { ...m, areas };
-        });
+        store.model.update(m => ({ ...m, areas: removeAt(m.areas, index) }));
       },
 
       addAreaPoint(areaIndex: number): void {
@@ -508,15 +477,12 @@ export const PlotEditorStore = signalStore(
                   ...area,
                   points: [
                     ...area.points,
-                    {
-                      x: 0,
-                      y: 0,
-                      labelPosition: 'auto' as const,
-                      labelText: markerNamingService.generateName(
-                        nextIndex,
-                        scheme,
-                      ),
-                    },
+                    ...nameAreaPoints(
+                      [{ x: 0, y: 0 }],
+                      scheme,
+                      markerNamingService,
+                      nextIndex,
+                    ),
                   ],
                 }
               : area,
@@ -526,15 +492,14 @@ export const PlotEditorStore = signalStore(
       },
 
       removeAreaPoint(event: { areaIndex: number; pointIndex: number }): void {
-        store.model.update(m => {
-          const areas = m.areas.map((area, i) => {
-            if (i !== event.areaIndex) return area;
-            const points = [...area.points];
-            points.splice(event.pointIndex, 1);
-            return { ...area, points };
-          });
-          return { ...m, areas };
-        });
+        store.model.update(m => ({
+          ...m,
+          areas: m.areas.map((area, i) =>
+            i === event.areaIndex
+              ? { ...area, points: removeAt(area.points, event.pointIndex) }
+              : area,
+          ),
+        }));
       },
 
       autoAdjustLimits(): void {
