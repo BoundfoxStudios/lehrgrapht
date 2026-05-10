@@ -2,9 +2,7 @@
 @let fnx = store.model().fnx;
 
 <div class="flex flex-col space-y-3 p-2">
-  @if (
-    fnx.length === 0 && store.interactiveMode() !== InteractiveMode.StraightLine
-  ) {
+  @if (fnx.length === 0) {
     <lg-section-empty-state
       [interactiveMode]="InteractiveMode.StraightLine"
       (manualClick)="addManual()"
@@ -92,84 +90,28 @@
       </div>
     }
 
-    @if (store.interactiveMode() === InteractiveMode.StraightLine) {
-      <div class="border-brand bg-brand/5 rounded-lg border-2 p-3">
-        <div class="mb-2 flex items-center justify-between">
-          <span class="text-brand text-sm font-medium">Gerade Interaktiv</span>
-          <span class="bg-brand rounded-full px-2 py-0.5 text-xs text-white">
-            {{ store.interactivePoints().length }}/2 Punkte
-          </span>
-        </div>
-
-        <div class="mb-3 h-14 overflow-y-auto">
-          @if (store.interactivePoints().length > 0) {
-            <div class="space-y-1">
-              @for (
-                point of store.interactivePoints();
-                let i = $index;
-                track i
-              ) {
-                <div
-                  class="flex items-center justify-between rounded bg-white px-2 py-1 text-sm"
-                >
-                  <span class="text-gray-600"
-                    >P{{ i + 1 }}: ({{ point.x }}, {{ point.y }})</span
-                  >
-                  <button
-                    class="text-gray-400 hover:text-red-500"
-                    (click)="store.removeInteractivePoint(i)"
-                    type="button"
-                  >
-                    <fa-icon
-                      [icon]="faTrashCan"
-                      size="sm"
-                    />
-                  </button>
-                </div>
-              }
-            </div>
-          } @else {
-            <p class="text-xs text-gray-600">
-              Klicke auf die Vorschau, um zwei Punkte für die Gerade zu setzen.
-            </p>
-          }
-        </div>
-
-        <button
-          class="w-full"
-          (click)="store.cancelInteractive()"
-          lgButton
-          variant="secondary"
-          size="small"
-          type="button"
-        >
-          Abbrechen
-        </button>
-      </div>
-    } @else if (fnx.length > 0) {
-      <div class="flex gap-1.5">
-        <button
-          class="flex-[1.4]"
-          (click)="store.startInteractive(InteractiveMode.StraightLine)"
-          lgButton
-          size="cta"
-          type="button"
-        >
-          <fa-icon [icon]="faMousePointer" />
-          <span>Interaktiv</span>
-        </button>
-        <button
-          class="flex-1"
-          (click)="addManual()"
-          lgButton
-          variant="outline"
-          size="cta"
-          type="button"
-        >
-          <fa-icon [icon]="faPlusCircle" />
-          <span>Manuell</span>
-        </button>
-      </div>
-    }
+    <div class="flex gap-1.5">
+      <button
+        class="flex-[1.4]"
+        (click)="store.startInteractive(InteractiveMode.StraightLine)"
+        lgButton
+        size="cta"
+        type="button"
+      >
+        <fa-icon [icon]="faMousePointer" />
+        <span>Interaktiv</span>
+      </button>
+      <button
+        class="flex-1"
+        (click)="addManual()"
+        lgButton
+        variant="outline"
+        size="cta"
+        type="button"
+      >
+        <fa-icon [icon]="faPlusCircle" />
+        <span>Manuell</span>
+      </button>
+    </div>
   }
 </div>
