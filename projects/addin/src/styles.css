@@ -2,6 +2,7 @@
 
 @import 'tailwindcss';
 @import 'flowbite/src/themes/default.css';
+@import '@angular/cdk/overlay-prebuilt.css';
 
 @theme {
   --breakpoint-*: initial;
