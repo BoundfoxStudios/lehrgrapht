@@ -12,56 +12,57 @@
       <lg-section-areas-image />
     </lg-section-empty-state>
   } @else {
+    @if (areas.length >= 2) {
+      <div class="flex justify-end">
+        <button
+          (click)="toggleAll()"
+          lgButton
+          variant="outline"
+          size="small"
+          type="button"
+        >
+          {{ allCollapsed() ? 'Alle ausklappen' : 'Alle einklappen' }}
+        </button>
+      </div>
+    }
     @for (control of form.areas; let areaIndex = $index; track areaIndex) {
-      @let isNew = newItemIndex() === areaIndex;
-      <div
-        class="rounded-lg bg-white p-3 shadow-xs transition-shadow"
-        [class.border-2]="isNew"
-        [class.border-brand]="isNew"
-        [class.shadow-md]="isNew"
-        [class.relative]="isNew"
-        [class.border]="!isNew"
-        [class.border-gray-200]="!isNew"
-        (focusout)="onCardFocusout($event)"
+      <lg-card
+        [title]="'Fläche ' + (areaIndex + 1)"
+        [expanded]="expandedSet().has(areaIndex)"
+        [isNew]="newItemIndex() === areaIndex"
+        (expandedChange)="store.toggleCardExpanded('areas', areaIndex)"
+        (cardFocusOut)="newItemIndex.set(null)"
       >
-        @if (isNew) {
-          <span
-            class="bg-brand absolute -top-2.5 left-3 rounded-full px-2 py-0.5 text-[9px] font-bold tracking-wider text-white uppercase"
-            >NEU</span
+        <div
+          class="flex items-center gap-2"
+          card-actions
+        >
+          <label
+            class="flex cursor-pointer items-center gap-1 text-xs text-gray-500"
+            [for]="'area-' + areaIndex + '-show-points'"
           >
-        }
-        <div class="mb-3 flex items-center justify-between">
-          <span class="text-xs font-medium text-gray-500"
-            >Fläche {{ areaIndex + 1 }}</span
-          >
-          <div class="flex items-center gap-2">
-            <label
-              class="flex cursor-pointer items-center gap-1 text-xs text-gray-500"
-              [for]="'area-' + areaIndex + '-show-points'"
-            >
-              <input
-                class="h-4 w-4 cursor-pointer rounded border-gray-300"
-                [formField]="control.showPoints"
-                [id]="'area-' + areaIndex + '-show-points'"
-                type="checkbox"
-              />
-              Punkte
-            </label>
             <input
-              class="h-7 w-7 cursor-pointer rounded border-none"
-              [formField]="control.color"
-              type="color"
-              title="Farbe wählen"
+              class="h-4 w-4 cursor-pointer rounded border-gray-300"
+              [formField]="control.showPoints"
+              [id]="'area-' + areaIndex + '-show-points'"
+              type="checkbox"
             />
-            <button
-              class="flex h-7 w-7 items-center justify-center rounded text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
-              (click)="store.removeArea(areaIndex)"
-              type="button"
-              title="Fläche entfernen"
-            >
-              <fa-icon [icon]="faTrashCan" />
-            </button>
-          </div>
+            Punkte
+          </label>
+          <input
+            class="h-7 w-7 cursor-pointer rounded border-none"
+            [formField]="control.color"
+            type="color"
+            title="Farbe wählen"
+          />
+          <button
+            class="flex h-7 w-7 items-center justify-center rounded text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
+            (click)="store.removeArea(areaIndex)"
+            type="button"
+            title="Fläche entfernen"
+          >
+            <fa-icon [icon]="faTrashCan" />
+          </button>
         </div>
 
         <div class="space-y-2">
@@ -81,7 +82,9 @@
                   <lg-input
                     [field]="point.x"
                     [id]="'area-' + areaIndex + '-x-' + pointIndex"
-                    [autofocus]="isNew && pointIndex === 0"
+                    [autofocus]="
+                      newItemIndex() === areaIndex && pointIndex === 0
+                    "
                     type="number"
                   />
                 </div>
@@ -145,7 +148,7 @@
           <fa-icon [icon]="faPlusCircle" />
           <span>Punkt hinzufügen</span>
         </button>
-      </div>
+      </lg-card>
     }
 
     <div class="flex gap-1.5">
