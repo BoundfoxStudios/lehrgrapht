@@ -16,6 +16,7 @@ import {
   faInfoCircle,
   faPen,
   faPlus,
+  faRotate,
   faRotateLeft,
   faTrashCan,
 } from '@fortawesome/free-solid-svg-icons';
@@ -51,6 +52,7 @@ export class PlotList {
   protected readonly faCopy = faCopy;
   protected readonly faGear = faGear;
   protected readonly faPlus = faPlus;
+  protected readonly faRotate = faRotate;
   protected readonly faRotateLeft = faRotateLeft;
 
   protected readonly wordService = inject(WordService);
@@ -130,6 +132,10 @@ export class PlotList {
 
   protected select(id: string): Promise<void> {
     return this.wordService.select(id);
+  }
+
+  protected refresh(): void {
+    this.plots.reload();
   }
 
   private async commitPendingDelete(pending: PendingDelete): Promise<void> {

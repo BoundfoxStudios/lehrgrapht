@@ -6,6 +6,19 @@
     class="flex shrink-0 items-center gap-1"
     headerActions
   >
+    <button
+      class="grid h-7 w-7 place-items-center rounded-full bg-white/15 text-white transition-colors hover:bg-white/25 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-white/15"
+      [disabled]="plots.isLoading()"
+      (click)="refresh()"
+      type="button"
+      title="Aktualisieren"
+      aria-label="Aktualisieren"
+    >
+      <fa-icon
+        [class.animate-spin]="plots.isLoading()"
+        [icon]="faRotate"
+      />
+    </button>
     <a
       class="grid h-7 w-7 place-items-center rounded-full bg-white/15 text-white transition-colors hover:bg-white/25"
       [routerLink]="['/plot/settings']"
