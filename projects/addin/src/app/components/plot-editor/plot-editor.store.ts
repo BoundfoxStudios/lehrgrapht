@@ -136,6 +136,24 @@ export const calculateStraightLineFunction = (
   return `${mStr}x${bStr}`;
 };
 
+export interface ApplyContext {
+  scheme: MarkerNamingScheme;
+  markerNamingService: MarkerNamingService;
+}
+
+export interface InteractiveStrategy {
+  /** Minimum points required for `finishInteractive()` to commit. */
+  minPoints: number;
+  /** If set, `onPlotClick` auto-commits when click count reaches this. */
+  autoFinishAt?: number;
+  /** Pure: produces a new Plot with the interactive points applied. */
+  apply(
+    model: Plot,
+    points: readonly { x: number; y: number }[],
+    ctx: ApplyContext,
+  ): Plot;
+}
+
 const getNextLabelIndex = (model: Plot): number => {
   let index = 0;
   for (const area of model.areas) {
@@ -145,6 +163,31 @@ const getNextLabelIndex = (model: Plot): number => {
   }
   return index;
 };
+
+export function applyArea(
+  model: Plot,
+  points: readonly { x: number; y: number }[],
+  ctx: ApplyContext,
+): Plot {
+  if (points.length === 0) return model;
+  const startIndex = getNextLabelIndex(model);
+  return {
+    ...model,
+    areas: [
+      ...model.areas,
+      {
+        points: nameAreaPoints(
+          points,
+          ctx.scheme,
+          ctx.markerNamingService,
+          startIndex,
+        ),
+        color: nextColor(model.areas.length),
+        showPoints: false,
+      },
+    ],
+  };
+}
 
 export const PlotEditorStore = signalStore(
   withProps(() => {
