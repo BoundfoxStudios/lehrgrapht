@@ -448,6 +448,12 @@ export const PlotEditorStore = signalStore(
           ...m,
           fnx: removeAt(m.fnx, index),
         }));
+        patchState(store, {
+          expandedItems: {
+            ...store.expandedItems(),
+            fnx: shiftIndicesAfterRemove(store.expandedItems().fnx, index),
+          },
+        });
       },
 
       addMarker(): void {
@@ -477,6 +483,15 @@ export const PlotEditorStore = signalStore(
           ...m,
           markers: removeAt(m.markers, index),
         }));
+        patchState(store, {
+          expandedItems: {
+            ...store.expandedItems(),
+            markers: shiftIndicesAfterRemove(
+              store.expandedItems().markers,
+              index,
+            ),
+          },
+        });
       },
 
       addLine(): void {
@@ -508,6 +523,12 @@ export const PlotEditorStore = signalStore(
           ...m,
           lines: removeAt(m.lines, index),
         }));
+        patchState(store, {
+          expandedItems: {
+            ...store.expandedItems(),
+            lines: shiftIndicesAfterRemove(store.expandedItems().lines, index),
+          },
+        });
       },
 
       addArea(): void {
@@ -550,6 +571,12 @@ export const PlotEditorStore = signalStore(
           ...m,
           areas: removeAt(m.areas, index),
         }));
+        patchState(store, {
+          expandedItems: {
+            ...store.expandedItems(),
+            areas: shiftIndicesAfterRemove(store.expandedItems().areas, index),
+          },
+        });
       },
 
       addAreaPoint(areaIndex: number): void {
@@ -743,6 +770,7 @@ export const PlotEditorStore = signalStore(
         void wordService.get(id).then(loaded => {
           if (loaded) {
             store.editorForm().reset(loaded.model);
+            patchState(store, { expandedItems: emptyExpandedItems() });
           }
           store.isLoading.set(false);
         });
