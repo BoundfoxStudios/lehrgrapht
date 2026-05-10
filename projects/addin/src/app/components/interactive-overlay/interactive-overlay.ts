@@ -40,7 +40,6 @@ export class InteractiveOverlay {
   protected readonly faTrashCan = faTrashCan;
   protected readonly faChevronUp = faChevronUp;
   protected readonly faChevronDown = faChevronDown;
-  protected readonly InteractiveMode = InteractiveMode;
 
   protected readonly store = inject(PlotEditorStore);
   private readonly markerNamingService = inject(MarkerNamingService);
