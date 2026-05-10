@@ -1,6 +1,6 @@
 import { booleanAttribute, computed, Directive, input } from '@angular/core';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'outline';
+export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost';
 export type ButtonSize = 'default' | 'small' | 'cta';
 
 const BASE_CLASSES =
@@ -13,6 +13,8 @@ const VARIANT_CLASSES: Record<ButtonVariant, string> = {
     'border-gray-300 bg-gray-100 text-gray-700 hover:bg-gray-200 focus:ring-gray-200 shadow-sm',
   outline:
     'border-default-medium text-body hover:border-brand hover:text-brand bg-white',
+  ghost:
+    'rounded-full bg-white/15 text-white hover:bg-white/25 focus:ring-white/30 disabled:hover:bg-white/15',
 };
 
 @Directive({
