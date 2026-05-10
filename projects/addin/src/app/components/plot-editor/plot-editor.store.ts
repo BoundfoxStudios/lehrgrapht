@@ -281,6 +281,35 @@ export const PlotEditorStore = signalStore(
     const plotSettings = signal<PlotSettings>(defaultPlotSettings);
     const activeId = signal<string | null>(null);
 
+    const saveToDocument = async (): Promise<boolean> => {
+      const m = model();
+      const plot = await plotService.generate(m, plotSettings(), {
+        applyScaleFactor: wordService.plotGenerationSettings.applyScaleFactor,
+      });
+
+      if (plotHasErrorCode(plot)) {
+        return false;
+      }
+
+      const existingId = activeId();
+      const id = existingId ?? plotService.generateId();
+
+      await wordService.upsertPicture({
+        model: m,
+        id,
+        base64Picture: plot.base64,
+        existingId: existingId ?? undefined,
+        height: plot.heightInPoints,
+        width: plot.widthInPoints,
+      });
+
+      if (!existingId) {
+        activeId.set(id);
+      }
+      editorForm().reset();
+      return true;
+    };
+
     const editorForm = form(
       model,
       schema => {
@@ -297,30 +326,11 @@ export const PlotEditorStore = signalStore(
       },
       {
         submission: {
-          action: async field => {
-            const m = field().value();
-            const plot = await plotService.generate(m, plotSettings(), {
-              applyScaleFactor:
-                wordService.plotGenerationSettings.applyScaleFactor,
-            });
-
-            if (plotHasErrorCode(plot)) {
-              return undefined;
-            }
-
-            const existingId = activeId();
-            const id = existingId ?? plotService.generateId();
-
-            await wordService.upsertPicture({
-              model: m,
-              id,
-              base64Picture: plot.base64,
-              existingId: existingId ?? undefined,
-              height: plot.heightInPoints,
-              width: plot.widthInPoints,
-            });
-
-            if (!existingId) {
+          action: async () => {
+            const wasNew = activeId() === null;
+            const success = await saveToDocument();
+            if (success && wasNew) {
+              const id = activeId();
               const section = route.firstChild?.snapshot.url[0]?.path;
               const command: unknown[] = section
                 ? ['/plot/editor', id, section]
@@ -333,7 +343,7 @@ export const PlotEditorStore = signalStore(
       },
     );
 
-    return { model, editorForm, plotSettings, activeId };
+    return { model, editorForm, plotSettings, activeId, saveToDocument };
   }),
   withState({
     interactiveMode: InteractiveMode.Off,
