@@ -58,10 +58,7 @@
   </div>
 </lg-header>
 
-@let plotList = plots.value();
-@let pending = pendingDelete();
-@let visibleList =
-  pending ? plotList.filter(p => p.id !== pending.plot.id) : plotList;
+@let visibleList = plots.value();
 @let isLoading = plots.isLoading();
 
 <div class="px-3 py-2.5">
@@ -89,7 +86,7 @@
         </div>
       </div>
     }
-  } @else if (visibleList.length === 0 && !pending) {
+  } @else if (visibleList.length === 0) {
     <div
       class="border-default-medium rounded-base flex flex-col items-center gap-3 border bg-white px-4 py-6 text-center"
     >
@@ -241,23 +238,3 @@
     }
   }
 </div>
-
-@if (pending) {
-  <div
-    class="text-heading rounded-base fixed right-3 bottom-3 left-3 z-50 flex items-center gap-2.5 bg-gray-900 px-3 py-2.5 text-white shadow-lg"
-    role="status"
-  >
-    <fa-icon [icon]="faTrashCan" />
-    <span class="flex-1 text-xs">
-      „{{ pending.plot.model?.name ?? 'Plot' }}" gelöscht
-    </span>
-    <button
-      class="text-brand-medium inline-flex items-center gap-1 px-1.5 py-0.5 text-xs font-bold transition-colors hover:text-white"
-      (click)="undoDelete()"
-      type="button"
-    >
-      <fa-icon [icon]="faRotateLeft" />
-      <span>Rückgängig</span>
-    </button>
-  </div>
-}

@@ -4,9 +4,10 @@ import {
   computed,
   inject,
   resource,
-  signal,
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
+import { Dialog } from '@angular/cdk/dialog';
+import { firstValueFrom } from 'rxjs';
 import { Header } from '../header/header';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import {
@@ -17,19 +18,16 @@ import {
   faPen,
   faPlus,
   faRotate,
-  faRotateLeft,
   faTrashCan,
 } from '@fortawesome/free-solid-svg-icons';
 import { WordPlot, WordService } from '../../services/word/word.service';
 import { PlotMiniPreview } from '../plot-mini-preview/plot-mini-preview';
 import { ButtonDirective } from '../../ui/button/button.directive';
-
-const UNDO_DELAY_MS = 5000;
-
-interface PendingDelete {
-  plot: WordPlot;
-  timer: ReturnType<typeof setTimeout>;
-}
+import {
+  ConfirmDeleteData,
+  ConfirmDeleteDialog,
+  ConfirmDeleteResult,
+} from './confirm-delete-dialog/confirm-delete-dialog';
 
 @Component({
   selector: 'lg-plot-list',
@@ -53,25 +51,22 @@ export class PlotList {
   protected readonly faGear = faGear;
   protected readonly faPlus = faPlus;
   protected readonly faRotate = faRotate;
-  protected readonly faRotateLeft = faRotateLeft;
 
   protected readonly wordService = inject(WordService);
   private readonly router = inject(Router);
+  private readonly dialog = inject(Dialog);
 
   protected plots = resource<WordPlot[], undefined>({
     loader: () => this.wordService.list(),
     defaultValue: [],
   });
 
-  protected readonly pendingDelete = signal<PendingDelete | null>(null);
-
   protected readonly headerSubtitle = computed(() => {
     if (this.plots.isLoading()) {
       return 'Plots aus Dokument lesen…';
     }
 
-    const pending = this.pendingDelete();
-    const total = this.plots.value().length - (pending ? 1 : 0);
+    const total = this.plots.value().length;
 
     if (total === 0) {
       return 'Noch keine Plots im Dokument';
@@ -100,26 +95,25 @@ export class PlotList {
     return parts.length > 0 ? parts.join(', ') : null;
   }
 
-  protected deletePlot(plot: WordPlot): void {
-    const pending = this.pendingDelete();
-    if (pending) {
-      void this.commitPendingDelete(pending);
-    }
+  protected async deletePlot(plot: WordPlot): Promise<void> {
+    const ref = this.dialog.open<
+      ConfirmDeleteResult,
+      ConfirmDeleteData,
+      ConfirmDeleteDialog
+    >(ConfirmDeleteDialog, {
+      data: { plotName: plot.model?.name ?? 'Plot' },
+      hasBackdrop: true,
+      role: 'alertdialog',
+      ariaLabelledBy: 'confirm-delete-title',
+    });
 
-    const timer = setTimeout(() => {
-      void this.commitPendingDelete({ plot, timer });
-    }, UNDO_DELAY_MS);
-
-    this.pendingDelete.set({ plot, timer });
-  }
-
-  protected undoDelete(): void {
-    const pending = this.pendingDelete();
-    if (!pending) {
+    const result = await firstValueFrom(ref.closed);
+    if (result !== 'confirm') {
       return;
     }
-    clearTimeout(pending.timer);
-    this.pendingDelete.set(null);
+
+    await this.wordService.delete(plot.id);
+    this.plots.reload();
   }
 
   protected async clonePlot(id: string): Promise<void> {
@@ -135,15 +129,6 @@ export class PlotList {
   }
 
   protected refresh(): void {
-    this.plots.reload();
-  }
-
-  private async commitPendingDelete(pending: PendingDelete): Promise<void> {
-    clearTimeout(pending.timer);
-    if (this.pendingDelete()?.plot.id === pending.plot.id) {
-      this.pendingDelete.set(null);
-    }
-    await this.wordService.delete(pending.plot.id);
     this.plots.reload();
   }
 }
