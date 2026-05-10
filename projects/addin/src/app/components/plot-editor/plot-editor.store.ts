@@ -374,7 +374,7 @@ export const PlotEditorStore = signalStore(
 
     return {
       addFx(): void {
-        store.model.update(m => ({
+        store.editorForm().controlValue.update(m => ({
           ...m,
           fnx: [
             ...m.fnx,
@@ -389,12 +389,15 @@ export const PlotEditorStore = signalStore(
       },
 
       removeFx(index: number): void {
-        store.model.update(m => ({ ...m, fnx: removeAt(m.fnx, index) }));
+        store.editorForm().controlValue.update(m => ({
+          ...m,
+          fnx: removeAt(m.fnx, index),
+        }));
       },
 
       addMarker(): void {
         const scheme = store.plotSettings().markerNamingScheme;
-        store.model.update(m => ({
+        store.editorForm().controlValue.update(m => ({
           ...m,
           markers: [
             ...m.markers,
@@ -408,14 +411,14 @@ export const PlotEditorStore = signalStore(
       },
 
       removeMarker(index: number): void {
-        store.model.update(m => ({
+        store.editorForm().controlValue.update(m => ({
           ...m,
           markers: removeAt(m.markers, index),
         }));
       },
 
       addLine(): void {
-        store.model.update(m => ({
+        store.editorForm().controlValue.update(m => ({
           ...m,
           lines: [
             ...m.lines,
@@ -432,12 +435,15 @@ export const PlotEditorStore = signalStore(
       },
 
       removeLine(index: number): void {
-        store.model.update(m => ({ ...m, lines: removeAt(m.lines, index) }));
+        store.editorForm().controlValue.update(m => ({
+          ...m,
+          lines: removeAt(m.lines, index),
+        }));
       },
 
       addArea(): void {
         const scheme = store.plotSettings().markerNamingScheme;
-        store.model.update(m => {
+        store.editorForm().controlValue.update(m => {
           const startIndex = getNextLabelIndex(m);
           const rawPoints = [
             { x: 0, y: 0 },
@@ -464,12 +470,15 @@ export const PlotEditorStore = signalStore(
       },
 
       removeArea(index: number): void {
-        store.model.update(m => ({ ...m, areas: removeAt(m.areas, index) }));
+        store.editorForm().controlValue.update(m => ({
+          ...m,
+          areas: removeAt(m.areas, index),
+        }));
       },
 
       addAreaPoint(areaIndex: number): void {
         const scheme = store.plotSettings().markerNamingScheme;
-        store.model.update(m => {
+        store.editorForm().controlValue.update(m => {
           const nextIndex = getNextLabelIndex(m);
           const areas = m.areas.map((area, i) =>
             i === areaIndex
@@ -492,7 +501,7 @@ export const PlotEditorStore = signalStore(
       },
 
       removeAreaPoint(event: { areaIndex: number; pointIndex: number }): void {
-        store.model.update(m => ({
+        store.editorForm().controlValue.update(m => ({
           ...m,
           areas: m.areas.map((area, i) =>
             i === event.areaIndex
@@ -533,7 +542,7 @@ export const PlotEditorStore = signalStore(
           if (point.y > maxY) maxY = point.y;
         }
 
-        store.model.update(model => ({
+        store.editorForm().controlValue.update(model => ({
           ...model,
           range: {
             x: { min: minX - 1, max: maxX + 1 },
@@ -565,7 +574,9 @@ export const PlotEditorStore = signalStore(
             scheme: store.plotSettings().markerNamingScheme,
             markerNamingService,
           };
-          store.model.update(m => strategy.apply(m, points, ctx));
+          store
+            .editorForm()
+            .controlValue.update(m => strategy.apply(m, points, ctx));
         }
         patchState(store, {
           interactiveMode: InteractiveMode.Off,
@@ -591,7 +602,9 @@ export const PlotEditorStore = signalStore(
             scheme: store.plotSettings().markerNamingScheme,
             markerNamingService,
           };
-          store.model.update(m => strategy.apply(m, points, ctx));
+          store
+            .editorForm()
+            .controlValue.update(m => strategy.apply(m, points, ctx));
           patchState(store, {
             interactiveMode: InteractiveMode.Off,
             interactivePoints: [],
