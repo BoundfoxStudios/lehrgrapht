@@ -6,7 +6,6 @@ import {
 } from '@angular/core';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import {
-  faCheck,
   faMousePointer,
   faPlusCircle,
   faTrashCan,
@@ -40,7 +39,6 @@ export class SectionAreas {
   protected readonly faPlusCircle = faPlusCircle;
   protected readonly faTrashCan = faTrashCan;
   protected readonly faMousePointer = faMousePointer;
-  protected readonly faCheck = faCheck;
   protected readonly InteractiveMode = InteractiveMode;
   protected readonly labelPositionOptions = labelPositionOptions;
   protected readonly store = inject(PlotEditorStore);
