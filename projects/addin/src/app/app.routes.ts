@@ -8,6 +8,7 @@ import { SectionLines } from './components/plot-editor/sections/section-lines/se
 import { SectionMarkers } from './components/plot-editor/sections/section-markers/section-markers';
 import { SectionRange } from './components/plot-editor/sections/section-range/section-range';
 import { SectionSettings } from './components/plot-editor/sections/section-settings/section-settings';
+import { unsavedChangesGuard } from './components/plot-editor/unsaved-changes.guard';
 import { Info } from './components/info/info';
 import { FirstRunExperience } from './components/first-run-experience/first-run-experience';
 import { redirectToFirstRunExperience } from './components/first-run-experience/redirect-to-first-run-experience';
@@ -49,6 +50,7 @@ export const routes: Routes = [
       {
         path: 'editor/:id',
         component: PlotEditor,
+        canDeactivate: [unsavedChangesGuard],
         children: [
           {
             path: '',
