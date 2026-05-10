@@ -67,7 +67,7 @@
     <div class="flex gap-1.5">
       <button
         class="flex-[1.4]"
-        (click)="store.startInteractiveLine()"
+        (click)="store.startInteractive(InteractiveMode.Line)"
         lgButton
         size="cta"
         type="button"
@@ -248,7 +248,7 @@
 
         <button
           class="w-full"
-          (click)="store.cancelInteractiveLine()"
+          (click)="store.cancelInteractive()"
           lgButton
           variant="secondary"
           size="small"
@@ -261,7 +261,7 @@
       <div class="flex gap-1.5">
         <button
           class="flex-[1.4]"
-          (click)="store.startInteractiveLine()"
+          (click)="store.startInteractive(InteractiveMode.Line)"
           lgButton
           size="cta"
           type="button"
