@@ -47,6 +47,7 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Use the async pipe to handle observables
 - Do not assume globals like (`new Date()`) are available.
 - Do not write arrow functions in templates (they are not supported).
+- For buttons (`<button>`) and anchor buttons (`<a [routerLink]>`), use the `lgButton` directive (`projects/addin/src/app/ui/button/button.directive.ts`) with the appropriate `variant`, `size`, and `iconOnly` inputs. Do NOT write ad-hoc Tailwind button styles. If no existing variant fits, extend the directive instead of bypassing it.
 
 ## Services
 
