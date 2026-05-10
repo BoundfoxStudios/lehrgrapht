@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   inject,
   signal,
 } from '@angular/core';
@@ -20,6 +21,7 @@ import {
   lineStyleOptions,
 } from '../../dropdown-options';
 import { ButtonDirective } from '../../../../ui/button/button.directive';
+import { Card } from '../../../../ui/card/card';
 import { Input } from '../../../../ui/input/input';
 import { SectionEmptyState } from '../section-empty-state/section-empty-state';
 import { SectionFnxImage } from './section-fnx-image';
@@ -32,6 +34,7 @@ import { SectionFnxImage } from './section-fnx-image';
     Dropdown,
     MathDisplay,
     ButtonDirective,
+    Card,
     Input,
     SectionEmptyState,
     SectionFnxImage,
@@ -47,21 +50,27 @@ export class SectionFnx {
   protected readonly InteractiveMode = InteractiveMode;
   protected readonly lineStyleOptions = lineStyleOptions;
   protected readonly legendPositionOptions = legendPositionOptions;
-
   protected readonly store = inject(PlotEditorStore);
   protected readonly newItemIndex = signal<number | null>(null);
+
+  protected readonly expandedSet = computed(
+    () => new Set(this.store.expandedItems().fnx),
+  );
+
+  protected readonly allCollapsed = computed(
+    () => this.store.expandedItems().fnx.length === 0,
+  );
 
   protected addManual(): void {
     this.store.addFx();
     this.newItemIndex.set(this.store.model().fnx.length - 1);
   }
 
-  protected onCardFocusout(event: FocusEvent): void {
-    const card = event.currentTarget as HTMLElement;
-    const next = event.relatedTarget as HTMLElement | null;
-    if (next && card.contains(next)) {
-      return;
+  protected toggleAll(): void {
+    if (this.allCollapsed()) {
+      this.store.expandAllCards('fnx');
+    } else {
+      this.store.collapseAllCards('fnx');
     }
-    this.newItemIndex.set(null);
   }
 }
