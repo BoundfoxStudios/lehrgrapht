@@ -51,7 +51,7 @@
     <div class="flex gap-1.5">
       <button
         class="flex-[1.4]"
-        (click)="store.startInteractiveArea()"
+        (click)="store.startInteractive(InteractiveMode.Area)"
         lgButton
         size="cta"
         type="button"
@@ -255,7 +255,7 @@
           <button
             class="flex-1"
             [disabled]="store.interactivePoints().length < 3"
-            (click)="store.finishInteractiveArea()"
+            (click)="store.finishInteractive()"
             lgButton
             size="small"
             type="button"
@@ -267,7 +267,7 @@
             Fertig
           </button>
           <button
-            (click)="store.cancelInteractiveArea()"
+            (click)="store.cancelInteractive()"
             lgButton
             variant="secondary"
             size="small"
@@ -281,7 +281,7 @@
       <div class="flex gap-1.5">
         <button
           class="flex-[1.4]"
-          (click)="store.startInteractiveArea()"
+          (click)="store.startInteractive(InteractiveMode.Area)"
           lgButton
           size="cta"
           type="button"
