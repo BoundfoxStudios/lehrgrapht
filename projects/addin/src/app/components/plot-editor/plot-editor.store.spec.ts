@@ -1,5 +1,10 @@
 import { MarkerNamingService } from '../../services/marker-naming.service';
-import { nameAreaPoints, nextColor, removeAt } from './plot-editor.store';
+import {
+  calculateStraightLineFunction,
+  nameAreaPoints,
+  nextColor,
+  removeAt,
+} from './plot-editor.store';
 
 describe('nextColor', () => {
   it('returns palette color for index within range', () => {
@@ -73,5 +78,37 @@ describe('nameAreaPoints', () => {
       'A',
     );
     expect(nameAreaPoints(points, 'numeric', namer, 0)[0].labelText).toBe('P1');
+  });
+});
+
+describe('calculateStraightLineFunction', () => {
+  it('returns null for vertical line', () => {
+    expect(
+      calculateStraightLineFunction({ x: 1, y: 0 }, { x: 1, y: 5 }),
+    ).toBeNull();
+  });
+
+  it('handles horizontal line (m === 0)', () => {
+    expect(calculateStraightLineFunction({ x: 0, y: 3 }, { x: 5, y: 3 })).toBe(
+      '3',
+    );
+  });
+
+  it('handles slope 1 with intercept', () => {
+    expect(calculateStraightLineFunction({ x: 0, y: 1 }, { x: 1, y: 2 })).toBe(
+      'x+1',
+    );
+  });
+
+  it('handles slope -1 with no intercept', () => {
+    expect(calculateStraightLineFunction({ x: 0, y: 0 }, { x: 1, y: -1 })).toBe(
+      '-x',
+    );
+  });
+
+  it('handles generic slope and negative intercept', () => {
+    expect(calculateStraightLineFunction({ x: 0, y: -2 }, { x: 1, y: 0 })).toBe(
+      '2*x-2',
+    );
   });
 });

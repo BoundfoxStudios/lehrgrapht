@@ -108,7 +108,7 @@ const lessThanValidator = (
   });
 };
 
-const calculateStraightLineFunction = (
+export const calculateStraightLineFunction = (
   p1: { x: number; y: number },
   p2: { x: number; y: number },
 ): string | null => {
