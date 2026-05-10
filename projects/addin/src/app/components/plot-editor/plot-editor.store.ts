@@ -211,6 +211,29 @@ export function applyMarker(
   };
 }
 
+export function applyLine(
+  model: Plot,
+  points: readonly { x: number; y: number }[],
+  _ctx: ApplyContext,
+): Plot {
+  if (points.length < 2) return model;
+  const [p1, p2] = points;
+  return {
+    ...model,
+    lines: [
+      ...model.lines,
+      {
+        x1: p1.x,
+        y1: p1.y,
+        x2: p2.x,
+        y2: p2.y,
+        color: nextColor(model.lines.length),
+        lineStyle: 'solid',
+      },
+    ],
+  };
+}
+
 export const PlotEditorStore = signalStore(
   withProps(() => {
     const plotService = inject(PlotService);

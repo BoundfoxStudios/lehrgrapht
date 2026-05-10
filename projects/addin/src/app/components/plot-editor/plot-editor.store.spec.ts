@@ -2,6 +2,7 @@ import { Plot } from '../../models/plot';
 import { MarkerNamingService } from '../../services/marker-naming.service';
 import {
   applyArea,
+  applyLine,
   applyMarker,
   ApplyContext,
   calculateStraightLineFunction,
@@ -217,6 +218,46 @@ describe('applyMarker', () => {
   it('does not mutate input', () => {
     const before = JSON.stringify(basePlot);
     applyMarker(basePlot, [{ x: 0, y: 0 }], ctx);
+    expect(JSON.stringify(basePlot)).toBe(before);
+  });
+});
+
+describe('applyLine', () => {
+  it('returns model unchanged with <2 points', () => {
+    expect(applyLine(basePlot, [], ctx)).toBe(basePlot);
+    expect(applyLine(basePlot, [{ x: 0, y: 0 }], ctx)).toBe(basePlot);
+  });
+
+  it('appends one line using p[0] and p[1] with cycled color and solid style', () => {
+    const result = applyLine(
+      basePlot,
+      [
+        { x: 0, y: 0 },
+        { x: 1, y: 1 },
+      ],
+      ctx,
+    );
+    expect(result.lines.length).toBe(1);
+    expect(result.lines[0]).toEqual({
+      x1: 0,
+      y1: 0,
+      x2: 1,
+      y2: 1,
+      color: nextColor(0),
+      lineStyle: 'solid',
+    });
+  });
+
+  it('does not mutate input', () => {
+    const before = JSON.stringify(basePlot);
+    applyLine(
+      basePlot,
+      [
+        { x: 0, y: 0 },
+        { x: 1, y: 1 },
+      ],
+      ctx,
+    );
     expect(JSON.stringify(basePlot)).toBe(before);
   });
 });
