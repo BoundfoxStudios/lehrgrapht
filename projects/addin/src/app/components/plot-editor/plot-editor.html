@@ -33,6 +33,12 @@
       <router-outlet />
     </div>
 
-    <lg-preview-dock [errorVariant]="showErrorDock()" />
+    @if (!store.isAnyInteractiveMode()) {
+      <lg-preview-dock [errorVariant]="showErrorDock()" />
+    }
   }
 </form>
+
+@if (store.isAnyInteractiveMode()) {
+  <lg-interactive-overlay />
+}

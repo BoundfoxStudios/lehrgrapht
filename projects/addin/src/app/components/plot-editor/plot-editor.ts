@@ -25,6 +25,7 @@ import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { FormRoot } from '@angular/forms/signals';
 import { Dialog } from '@angular/cdk/dialog';
 import { Header } from '../header/header';
+import { InteractiveOverlay } from '../interactive-overlay/interactive-overlay';
 import { PreviewDock } from '../preview-dock/preview-dock';
 import { TabStrip, TabStripItem } from '../tab-strip/tab-strip';
 import { PlotEditorStore } from './plot-editor.store';
@@ -39,6 +40,7 @@ import {
   imports: [
     FormRoot,
     Header,
+    InteractiveOverlay,
     PreviewDock,
     TabStrip,
     RouterOutlet,
