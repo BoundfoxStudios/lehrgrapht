@@ -285,6 +285,19 @@ export const INTERACTIVE_STRATEGIES: Record<
   },
 };
 
+export type CardSectionKey = 'fnx' | 'markers' | 'lines' | 'areas';
+
+export interface ExpandedItems {
+  fnx: number[];
+  markers: number[];
+  lines: number[];
+  areas: number[];
+}
+
+export function emptyExpandedItems(): ExpandedItems {
+  return { fnx: [], markers: [], lines: [], areas: [] };
+}
+
 export const PlotEditorStore = signalStore(
   withProps(() => {
     const plotService = inject(PlotService);
@@ -371,6 +384,7 @@ export const PlotEditorStore = signalStore(
   withState({
     interactiveMode: InteractiveMode.Off,
     interactivePoints: [] as { x: number; y: number }[],
+    expandedItems: emptyExpandedItems(),
   }),
   withComputed(store => {
     const plotService = inject(PlotService);
@@ -646,6 +660,30 @@ export const PlotEditorStore = signalStore(
         } else {
           patchState(store, { interactivePoints: points });
         }
+      },
+
+      toggleCardExpanded(section: CardSectionKey, index: number): void {
+        const current = store.expandedItems()[section];
+        const next = current.includes(index)
+          ? current.filter(i => i !== index)
+          : [...current, index];
+        patchState(store, {
+          expandedItems: { ...store.expandedItems(), [section]: next },
+        });
+      },
+
+      expandAllCards(section: CardSectionKey): void {
+        const length = store.model()[section].length;
+        const next = Array.from({ length }, (_, i) => i);
+        patchState(store, {
+          expandedItems: { ...store.expandedItems(), [section]: next },
+        });
+      },
+
+      collapseAllCards(section: CardSectionKey): void {
+        patchState(store, {
+          expandedItems: { ...store.expandedItems(), [section]: [] },
+        });
       },
     };
   }),
