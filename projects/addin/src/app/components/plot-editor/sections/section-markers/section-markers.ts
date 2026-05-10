@@ -6,12 +6,10 @@ import {
 } from '@angular/core';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import {
-  faCheck,
   faMousePointer,
   faPlusCircle,
   faTrashCan,
 } from '@fortawesome/free-solid-svg-icons';
-import { MarkerNamingService } from '../../../../services/marker-naming.service';
 import { InteractiveMode } from '../../interactive-mode';
 import { PlotEditorStore } from '../../plot-editor.store';
 import { ButtonDirective } from '../../../../ui/button/button.directive';
@@ -36,9 +34,7 @@ export class SectionMarkers {
   protected readonly faPlusCircle = faPlusCircle;
   protected readonly faTrashCan = faTrashCan;
   protected readonly faMousePointer = faMousePointer;
-  protected readonly faCheck = faCheck;
   protected readonly InteractiveMode = InteractiveMode;
-  protected readonly markerNamingService = inject(MarkerNamingService);
   protected readonly store = inject(PlotEditorStore);
   protected readonly newItemIndex = signal<number | null>(null);
 
