@@ -35,32 +35,6 @@ describe('migrate-to-latest', () => {
     expect(fnx[0]['lineStyle']).toBe('dashed');
   });
 
-  it('should backfill lines lineStyle to solid', () => {
-    const result = migrate({
-      lines: [{ x1: 0, y1: 0, x2: 1, y2: 1, color: '#000' }],
-    });
-
-    const lines = result['lines'] as Record<string, unknown>[];
-    expect(lines[0]['lineStyle']).toBe('solid');
-  });
-
-  it('should preserve existing lines lineStyle', () => {
-    const result = migrate({
-      lines: [
-        { x1: 0, y1: 0, x2: 1, y2: 1, color: '#000', lineStyle: 'dashed' },
-      ],
-    });
-
-    const lines = result['lines'] as Record<string, unknown>[];
-    expect(lines[0]['lineStyle']).toBe('dashed');
-  });
-
-  it('should handle missing lines gracefully', () => {
-    const result = migrate({});
-
-    expect(result['lines']).toEqual([]);
-  });
-
   it('should backfill legendLabelFormat', () => {
     const result = migrate({});
 
@@ -192,6 +166,54 @@ describe('migrate-to-latest', () => {
       expect(points).toEqual([
         { x: 0, y: 0, labelPosition: 'auto', labelText: '' },
       ]);
+    });
+
+    it('removes lines and areas from the output', () => {
+      const result = migrate({
+        lines: [
+          { x1: 0, y1: 0, x2: 1, y2: 1, color: '#ff0000', lineStyle: 'solid' },
+        ],
+        areas: [
+          {
+            points: [
+              { x: 0, y: 0 },
+              { x: 1, y: 0 },
+              { x: 0, y: 1 },
+            ],
+            color: '#00ff00',
+            showPoints: false,
+          },
+        ],
+      });
+
+      expect(result['lines']).toBeUndefined();
+      expect(result['areas']).toBeUndefined();
+    });
+
+    it('is idempotent — running on an already-migrated plot preserves polygons and emits no lines/areas', () => {
+      const alreadyMigrated = {
+        polygons: [
+          {
+            points: [
+              { x: 0, y: 0, labelPosition: 'auto', labelText: '' },
+              { x: 1, y: 1, labelPosition: 'auto', labelText: '' },
+            ],
+            connect: false,
+            lineColor: '#ff0000',
+            fillColor: null,
+            lineStyle: 'solid',
+            showPoints: false,
+          },
+        ],
+      };
+
+      const result = migrate(alreadyMigrated);
+
+      const polygons = result['polygons'] as Record<string, unknown>[];
+      expect(polygons.length).toBe(1);
+      expect(polygons[0]['lineColor']).toBe('#ff0000');
+      expect(result['lines']).toBeUndefined();
+      expect(result['areas']).toBeUndefined();
     });
   });
 });

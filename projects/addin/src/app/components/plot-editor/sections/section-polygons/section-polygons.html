@@ -82,6 +82,7 @@
             class="h-7 w-7 cursor-pointer rounded border-none disabled:opacity-30"
             [value]="polygons[polygonIndex].fillColor ?? '#000000'"
             [disabled]="polygons[polygonIndex].fillColor === null"
+            [attr.aria-disabled]="polygons[polygonIndex].fillColor === null"
             (input)="onFillColorChange(polygonIndex, $any($event.target).value)"
             type="color"
             title="Füllfarbe"

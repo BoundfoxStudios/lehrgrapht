@@ -26,13 +26,6 @@ export type LabelPosition =
   | 'bottom right'
   | 'auto';
 
-export interface AreaPoint {
-  x: number;
-  y: number;
-  labelPosition: LabelPosition;
-  labelText: string;
-}
-
 export interface PolygonPoint {
   x: number;
   y: number;
@@ -68,19 +61,6 @@ export interface Plot {
     x: number;
     y: number;
     text: string;
-  }[];
-  areas: {
-    points: AreaPoint[];
-    color: string;
-    showPoints: boolean;
-  }[];
-  lines: {
-    x1: number;
-    x2: number;
-    y1: number;
-    y2: number;
-    color: string;
-    lineStyle: FunctionLineStyle;
   }[];
   polygons: Polygon[];
   showAxisLabels: boolean;

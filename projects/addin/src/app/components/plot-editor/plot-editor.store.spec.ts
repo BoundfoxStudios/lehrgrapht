@@ -18,8 +18,6 @@ const basePlot: Plot = {
   range: { x: { min: -3, max: 3 }, y: { min: -3, max: 3 } },
   fnx: [],
   markers: [],
-  areas: [],
-  lines: [],
   polygons: [],
   showAxis: true,
   showAxisLabels: true,

@@ -80,8 +80,6 @@ export class Settings {
       },
     ],
     markers: [],
-    areas: [],
-    lines: [],
     polygons: [],
     showAxis: true,
     showAxisLabels: true,

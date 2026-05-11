@@ -9,8 +9,6 @@ const basePlot: Plot = {
   range: { x: { min: -5, max: 5 }, y: { min: -5, max: 5 } },
   fnx: [],
   markers: [],
-  areas: [],
-  lines: [],
   polygons: [],
   showAxisLabels: true,
   showAxis: true,

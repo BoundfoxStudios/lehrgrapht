@@ -15,15 +15,10 @@ export const migrateToLatest: Migration = {
     const lines =
       (plot['lines'] as Record<string, unknown>[] | undefined) ?? [];
 
-    const migratedLines: Record<string, unknown>[] = lines.map(line => ({
-      ...line,
-      lineStyle: line['lineStyle'] ?? 'solid',
-    }));
-
     const areas =
       (plot['areas'] as Record<string, unknown>[] | undefined) ?? [];
 
-    const polygonsFromLines = migratedLines.map(line => ({
+    const polygonsFromLines = lines.map(line => ({
       points: [
         {
           x: line['x1'],
@@ -41,7 +36,7 @@ export const migrateToLatest: Migration = {
       connect: false,
       lineColor: line['color'],
       fillColor: null,
-      lineStyle: line['lineStyle'],
+      lineStyle: line['lineStyle'] ?? 'solid',
       showPoints: false,
     }));
 
@@ -63,12 +58,20 @@ export const migrateToLatest: Migration = {
       };
     });
 
-    return {
+    const result: Record<string, unknown> = {
       ...plot,
       fnx: migratedFnx,
-      lines: migratedLines,
       legendLabelFormat: plot['legendLabelFormat'] ?? 'none',
-      polygons: [...polygonsFromLines, ...polygonsFromAreas],
+      polygons: [
+        ...((plot['polygons'] as Record<string, unknown>[] | undefined) ?? []),
+        ...polygonsFromLines,
+        ...polygonsFromAreas,
+      ],
     };
+
+    delete result['lines'];
+    delete result['areas'];
+
+    return result;
   },
 };
