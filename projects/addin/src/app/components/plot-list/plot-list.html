@@ -210,24 +210,35 @@
         </button>
         <div class="flex shrink-0 gap-0.5">
           <a
-            class="text-body-subtle hover:bg-neutral-secondary hover:text-body grid h-7 w-7 place-items-center rounded-md text-xs transition-colors"
             [routerLink]="['/plot/editor', plot.id]"
+            lgButton
+            iconOnly
+            size="small"
+            variant="ghost-light"
             title="Plot editieren"
             aria-label="Plot editieren"
           >
             <fa-icon [icon]="faPen" />
           </a>
           <button
-            class="text-body-subtle hover:bg-neutral-secondary hover:text-body grid h-7 w-7 place-items-center rounded-md text-xs transition-colors"
             (click)="clonePlot(plot.id)"
+            lgButton
+            iconOnly
+            size="small"
+            type="button"
+            variant="ghost-light"
             title="Plot klonen"
             aria-label="Plot klonen"
           >
             <fa-icon [icon]="faCopy" />
           </button>
           <button
-            class="text-body-subtle grid h-7 w-7 place-items-center rounded-md text-xs transition-colors hover:bg-rose-50 hover:text-rose-600"
             (click)="deletePlot(plot)"
+            lgButton
+            iconOnly
+            size="small"
+            type="button"
+            variant="ghost-danger"
             title="Plot löschen"
             aria-label="Plot löschen"
           >

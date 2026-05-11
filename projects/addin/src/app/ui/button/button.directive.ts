@@ -5,6 +5,8 @@ export type ButtonVariant =
   | 'secondary'
   | 'outline'
   | 'ghost'
+  | 'ghost-light'
+  | 'ghost-danger'
   | 'danger';
 export type ButtonSize = 'default' | 'small' | 'cta';
 
@@ -20,6 +22,10 @@ const VARIANT_CLASSES: Record<ButtonVariant, string> = {
     'rounded-base border-default-medium text-body hover:border-brand hover:text-brand bg-white',
   ghost:
     'rounded-full h-8 w-8 bg-white/15 text-white hover:bg-white/25 focus:ring-white/30 disabled:hover:bg-white/15',
+  'ghost-light':
+    'rounded-base text-body-subtle hover:bg-neutral-secondary hover:text-body focus:ring-gray-200',
+  'ghost-danger':
+    'rounded-base text-body-subtle hover:bg-rose-50 hover:text-rose-600 focus:ring-rose-200',
   danger:
     'rounded-base bg-rose-600 hover:bg-rose-700 focus:ring-rose-200 text-white shadow-sm disabled:hover:bg-rose-600',
 };
