@@ -78,4 +78,120 @@ describe('migrate-to-latest', () => {
 
     expect(result['fnx']).toEqual([]);
   });
+
+  describe('polygons migration', () => {
+    it('converts each legacy line to an open polygon with connect=false', () => {
+      const result = migrate({
+        lines: [
+          {
+            x1: 0,
+            y1: 0,
+            x2: 2,
+            y2: 3,
+            color: '#ff0000',
+            lineStyle: 'dashed',
+          },
+        ],
+      });
+
+      const polygons = result['polygons'] as Record<string, unknown>[];
+      expect(polygons.length).toBe(1);
+
+      const polygon = polygons[0];
+      expect(polygon['connect']).toBe(false);
+      expect(polygon['lineColor']).toBe('#ff0000');
+      expect(polygon['fillColor']).toBe(null);
+      expect(polygon['lineStyle']).toBe('dashed');
+      expect(polygon['showPoints']).toBe(false);
+
+      const points = polygon['points'] as Record<string, unknown>[];
+      expect(points).toEqual([
+        { x: 0, y: 0, labelPosition: 'auto', labelText: '' },
+        { x: 2, y: 3, labelPosition: 'auto', labelText: '' },
+      ]);
+    });
+
+    it('converts each legacy area to a closed polygon with black border', () => {
+      const result = migrate({
+        areas: [
+          {
+            points: [
+              { x: 0, y: 0, labelPosition: 'top right', labelText: 'A' },
+              { x: 1, y: 0, labelPosition: 'auto', labelText: '' },
+              { x: 0, y: 1, labelPosition: 'auto', labelText: '' },
+            ],
+            color: '#00ff00',
+            showPoints: true,
+          },
+        ],
+      });
+
+      const polygons = result['polygons'] as Record<string, unknown>[];
+      expect(polygons.length).toBe(1);
+
+      const polygon = polygons[0];
+      expect(polygon['connect']).toBe(true);
+      expect(polygon['lineColor']).toBe('#000000');
+      expect(polygon['fillColor']).toBe('#00ff00');
+      expect(polygon['lineStyle']).toBe('solid');
+      expect(polygon['showPoints']).toBe(true);
+
+      const points = polygon['points'] as Record<string, unknown>[];
+      expect(points).toEqual([
+        { x: 0, y: 0, labelPosition: 'top right', labelText: 'A' },
+        { x: 1, y: 0, labelPosition: 'auto', labelText: '' },
+        { x: 0, y: 1, labelPosition: 'auto', labelText: '' },
+      ]);
+    });
+
+    it('orders polygons: legacy lines first, then legacy areas', () => {
+      const result = migrate({
+        lines: [
+          { x1: 0, y1: 0, x2: 1, y2: 1, color: '#ff0000', lineStyle: 'solid' },
+        ],
+        areas: [
+          {
+            points: [
+              { x: 0, y: 0 },
+              { x: 1, y: 0 },
+              { x: 0, y: 1 },
+            ],
+            color: '#00ff00',
+            showPoints: false,
+          },
+        ],
+      });
+
+      const polygons = result['polygons'] as Record<string, unknown>[];
+      expect(polygons.length).toBe(2);
+      expect(polygons[0]['lineColor']).toBe('#ff0000');
+      expect(polygons[0]['connect']).toBe(false);
+      expect(polygons[1]['lineColor']).toBe('#000000');
+      expect(polygons[1]['connect']).toBe(true);
+    });
+
+    it('yields empty polygons array when there are no lines or areas', () => {
+      const result = migrate({});
+
+      expect(result['polygons']).toEqual([]);
+    });
+
+    it('defaults labelPosition and labelText for area points that lack them', () => {
+      const result = migrate({
+        areas: [
+          {
+            points: [{ x: 0, y: 0 }],
+            color: '#ff0000',
+            showPoints: false,
+          },
+        ],
+      });
+
+      const polygons = result['polygons'] as Record<string, unknown>[];
+      const points = polygons[0]['points'] as Record<string, unknown>[];
+      expect(points).toEqual([
+        { x: 0, y: 0, labelPosition: 'auto', labelText: '' },
+      ]);
+    });
+  });
 });
