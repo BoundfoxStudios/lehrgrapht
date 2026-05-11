@@ -33,6 +33,22 @@ export interface AreaPoint {
   labelText: string;
 }
 
+export interface PolygonPoint {
+  x: number;
+  y: number;
+  labelPosition: LabelPosition;
+  labelText: string;
+}
+
+export interface Polygon {
+  points: PolygonPoint[];
+  connect: boolean;
+  lineColor: string;
+  fillColor: string | null;
+  lineStyle: FunctionLineStyle;
+  showPoints: boolean;
+}
+
 export interface PlotSettings {
   zeroLineWidth: number;
   zeroLineColor: string;
@@ -66,6 +82,7 @@ export interface Plot {
     color: string;
     lineStyle: FunctionLineStyle;
   }[];
+  polygons: Polygon[];
   showAxisLabels: boolean;
   showAxis: boolean;
   placeAxisLabelsInside: boolean;

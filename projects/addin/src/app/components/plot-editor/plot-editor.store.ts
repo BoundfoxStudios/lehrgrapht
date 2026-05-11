@@ -90,6 +90,7 @@ const buildInitialPlot = (): Plot => ({
   ],
   markers: [],
   lines: [],
+  polygons: [],
   areas: [],
   showAxis: true,
   showAxisLabels: true,

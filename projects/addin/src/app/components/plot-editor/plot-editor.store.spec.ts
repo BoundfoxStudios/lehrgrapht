@@ -21,6 +21,7 @@ const basePlot: Plot = {
   markers: [],
   areas: [],
   lines: [],
+  polygons: [],
   showAxis: true,
   showAxisLabels: true,
   placeAxisLabelsInside: true,
