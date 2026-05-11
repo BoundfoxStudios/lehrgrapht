@@ -1,13 +1,12 @@
 import { Plot } from '../../models/plot';
 import { MarkerNamingService } from '../../services/marker-naming.service';
 import {
-  applyArea,
-  applyLine,
   applyMarker,
+  applyPolygon,
   applyStraightLine,
   ApplyContext,
   calculateStraightLineFunction,
-  nameAreaPoints,
+  namePolygonPoints,
   nextColor,
   removeAt,
   shiftIndicesAfterRemove,
@@ -82,15 +81,15 @@ describe('removeAt', () => {
   });
 });
 
-describe('nameAreaPoints', () => {
+describe('namePolygonPoints', () => {
   const namer = new MarkerNamingService();
 
-  it('maps each point to a labeled AreaPoint with auto labelPosition', () => {
+  it('maps each point to a labeled PolygonPoint with auto labelPosition', () => {
     const points = [
       { x: 0, y: 0 },
       { x: 1, y: 1 },
     ];
-    const result = nameAreaPoints(points, 'numeric', namer, 0);
+    const result = namePolygonPoints(points, 'numeric', namer, 0);
     expect(result).toEqual([
       { x: 0, y: 0, labelPosition: 'auto', labelText: 'P1' },
       { x: 1, y: 1, labelPosition: 'auto', labelText: 'P2' },
@@ -99,16 +98,18 @@ describe('nameAreaPoints', () => {
 
   it('starts naming at startIndex', () => {
     const points = [{ x: 0, y: 0 }];
-    const result = nameAreaPoints(points, 'numeric', namer, 4);
+    const result = namePolygonPoints(points, 'numeric', namer, 4);
     expect(result[0].labelText).toBe('P5');
   });
 
   it('respects scheme', () => {
     const points = [{ x: 0, y: 0 }];
-    expect(nameAreaPoints(points, 'alphabetic', namer, 0)[0].labelText).toBe(
+    expect(namePolygonPoints(points, 'alphabetic', namer, 0)[0].labelText).toBe(
       'A',
     );
-    expect(nameAreaPoints(points, 'numeric', namer, 0)[0].labelText).toBe('P1');
+    expect(namePolygonPoints(points, 'numeric', namer, 0)[0].labelText).toBe(
+      'P1',
+    );
   });
 });
 
@@ -144,60 +145,6 @@ describe('calculateStraightLineFunction', () => {
   });
 });
 
-describe('applyArea', () => {
-  it('returns model unchanged with 0 points', () => {
-    const result = applyArea(basePlot, [], ctx);
-    expect(result).toBe(basePlot);
-  });
-
-  it('appends one area with labeled points (preview path with 2 points)', () => {
-    const result = applyArea(
-      basePlot,
-      [
-        { x: 0, y: 0 },
-        { x: 1, y: 1 },
-      ],
-      ctx,
-    );
-    expect(result.areas.length).toBe(1);
-    expect(result.areas[0].points.map(p => p.labelText)).toEqual(['P1', 'P2']);
-    expect(result.areas[0].showPoints).toBe(false);
-  });
-
-  it('cycles color based on existing area count', () => {
-    const oneArea = {
-      ...basePlot,
-      areas: [{ points: [], color: '#000', showPoints: false }],
-    };
-    const result = applyArea(oneArea, [{ x: 0, y: 0 }], ctx);
-    expect(result.areas[1].color).toBe(nextColor(1));
-  });
-
-  it('continues label index from existing labeled points', () => {
-    const seed: Plot = {
-      ...basePlot,
-      areas: [
-        {
-          points: [
-            { x: 0, y: 0, labelPosition: 'auto', labelText: 'P1' },
-            { x: 1, y: 0, labelPosition: 'auto', labelText: 'P2' },
-          ],
-          color: '#000',
-          showPoints: true,
-        },
-      ],
-    };
-    const result = applyArea(seed, [{ x: 2, y: 0 }], ctx);
-    expect(result.areas[1].points[0].labelText).toBe('P3');
-  });
-
-  it('does not mutate the input model', () => {
-    const before = JSON.stringify(basePlot);
-    applyArea(basePlot, [{ x: 0, y: 0 }], ctx);
-    expect(JSON.stringify(basePlot)).toBe(before);
-  });
-});
-
 describe('applyMarker', () => {
   it('returns model unchanged with 0 points', () => {
     expect(applyMarker(basePlot, [], ctx)).toBe(basePlot);
@@ -221,46 +168,6 @@ describe('applyMarker', () => {
   it('does not mutate input', () => {
     const before = JSON.stringify(basePlot);
     applyMarker(basePlot, [{ x: 0, y: 0 }], ctx);
-    expect(JSON.stringify(basePlot)).toBe(before);
-  });
-});
-
-describe('applyLine', () => {
-  it('returns model unchanged with <2 points', () => {
-    expect(applyLine(basePlot, [], ctx)).toBe(basePlot);
-    expect(applyLine(basePlot, [{ x: 0, y: 0 }], ctx)).toBe(basePlot);
-  });
-
-  it('appends one line using p[0] and p[1] with cycled color and solid style', () => {
-    const result = applyLine(
-      basePlot,
-      [
-        { x: 0, y: 0 },
-        { x: 1, y: 1 },
-      ],
-      ctx,
-    );
-    expect(result.lines.length).toBe(1);
-    expect(result.lines[0]).toEqual({
-      x1: 0,
-      y1: 0,
-      x2: 1,
-      y2: 1,
-      color: nextColor(0),
-      lineStyle: 'solid',
-    });
-  });
-
-  it('does not mutate input', () => {
-    const before = JSON.stringify(basePlot);
-    applyLine(
-      basePlot,
-      [
-        { x: 0, y: 0 },
-        { x: 1, y: 1 },
-      ],
-      ctx,
-    );
     expect(JSON.stringify(basePlot)).toBe(before);
   });
 });
@@ -330,5 +237,81 @@ describe('shiftIndicesAfterRemove', () => {
     const result = shiftIndicesAfterRemove(input, 1);
     expect(result).not.toBe(input);
     expect(input).toEqual([0, 2, 3]);
+  });
+});
+
+describe('applyPolygon', () => {
+  it('returns the model unchanged when fewer than 2 points', () => {
+    const result = applyPolygon(basePlot, [{ x: 0, y: 0 }], ctx);
+    expect(result).toBe(basePlot);
+  });
+
+  it('appends an open 2-point polygon when given 2 points', () => {
+    const result = applyPolygon(
+      basePlot,
+      [
+        { x: 0, y: 0 },
+        { x: 1, y: 1 },
+      ],
+      ctx,
+    );
+    expect(result.polygons.length).toBe(1);
+    const polygon = result.polygons[0];
+    expect(polygon.connect).toBe(false);
+    expect(polygon.fillColor).toBe(null);
+    expect(polygon.lineStyle).toBe('solid');
+    expect(polygon.showPoints).toBe(false);
+    expect(polygon.points).toEqual([
+      { x: 0, y: 0, labelPosition: 'auto', labelText: '' },
+      { x: 1, y: 1, labelPosition: 'auto', labelText: '' },
+    ]);
+  });
+
+  it('assigns colors from the palette based on the polygon index', () => {
+    const r1 = applyPolygon(
+      basePlot,
+      [
+        { x: 0, y: 0 },
+        { x: 1, y: 1 },
+      ],
+      ctx,
+    );
+    expect(r1.polygons[0].lineColor).toBe(nextColor(0));
+
+    const r2 = applyPolygon(
+      r1,
+      [
+        { x: 2, y: 2 },
+        { x: 3, y: 3 },
+      ],
+      ctx,
+    );
+    expect(r2.polygons[1].lineColor).toBe(nextColor(1));
+  });
+
+  it('accepts polygons with more than 2 points', () => {
+    const result = applyPolygon(
+      basePlot,
+      [
+        { x: 0, y: 0 },
+        { x: 1, y: 0 },
+        { x: 0, y: 1 },
+      ],
+      ctx,
+    );
+    expect(result.polygons[0].points.length).toBe(3);
+  });
+
+  it('does not mutate the input model', () => {
+    const before = JSON.stringify(basePlot);
+    applyPolygon(
+      basePlot,
+      [
+        { x: 0, y: 0 },
+        { x: 1, y: 1 },
+      ],
+      ctx,
+    );
+    expect(JSON.stringify(basePlot)).toBe(before);
   });
 });

@@ -1,0 +1,108 @@
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import {
+  faMousePointer,
+  faPlusCircle,
+  faTrashCan,
+} from '@fortawesome/free-solid-svg-icons';
+import { FormField } from '@angular/forms/signals';
+import { Dropdown } from '../../../dropdown/dropdown';
+import { InteractiveMode } from '../../interactive-mode';
+import { PlotEditorStore } from '../../plot-editor.store';
+import { labelPositionOptions, lineStyleOptions } from '../../dropdown-options';
+import { ButtonDirective } from '../../../../ui/button/button.directive';
+import { Card } from '../../../../ui/card/card';
+import { Input } from '../../../../ui/input/input';
+import { SectionEmptyState } from '../section-empty-state/section-empty-state';
+import { SectionPolygonsImage } from './section-polygons-image';
+import { Polygon } from '../../../../models/plot';
+
+@Component({
+  selector: 'lg-section-polygons',
+  imports: [
+    FaIconComponent,
+    FormField,
+    Dropdown,
+    ButtonDirective,
+    Card,
+    Input,
+    SectionEmptyState,
+    SectionPolygonsImage,
+  ],
+  templateUrl: './section-polygons.html',
+  styleUrl: './section-polygons.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class SectionPolygons {
+  protected readonly faPlusCircle = faPlusCircle;
+  protected readonly faTrashCan = faTrashCan;
+  protected readonly faMousePointer = faMousePointer;
+  protected readonly InteractiveMode = InteractiveMode;
+  protected readonly lineStyleOptions = lineStyleOptions;
+  protected readonly labelPositionOptions = labelPositionOptions;
+  protected readonly store = inject(PlotEditorStore);
+  protected readonly newItemIndex = signal<number | null>(null);
+
+  protected readonly expandedSet = computed(
+    () => new Set(this.store.expandedItems().polygons),
+  );
+
+  protected readonly allCollapsed = computed(
+    () => this.store.expandedItems().polygons.length === 0,
+  );
+
+  protected addManual(): void {
+    this.store.addPolygon();
+    this.newItemIndex.set(this.store.model().polygons.length - 1);
+  }
+
+  protected toggleAll(): void {
+    if (this.allCollapsed()) {
+      this.store.expandAllCards('polygons');
+    } else {
+      this.store.collapseAllCards('polygons');
+    }
+  }
+
+  protected polygonTitle(polygon: Polygon, index: number): string {
+    const n = polygon.points.length;
+    if (n === 2) return `Linie ${index + 1}`;
+    if (n === 3 && polygon.connect) return `Dreieck ${index + 1}`;
+    if (n === 4 && polygon.connect) return `Viereck ${index + 1}`;
+    if (n >= 5 && polygon.connect) return `Fläche ${index + 1}`;
+    return `Polygon ${index + 1}`;
+  }
+
+  protected onFillNoneToggle(
+    polygonIndex: number,
+    noFill: boolean,
+    currentLineColor: string,
+  ): void {
+    this.store.editorForm().controlValue.update(m => ({
+      ...m,
+      polygons: m.polygons.map((polygon, i) =>
+        i === polygonIndex
+          ? {
+              ...polygon,
+              fillColor: noFill ? null : currentLineColor,
+            }
+          : polygon,
+      ),
+    }));
+  }
+
+  protected onFillColorChange(polygonIndex: number, color: string): void {
+    this.store.editorForm().controlValue.update(m => ({
+      ...m,
+      polygons: m.polygons.map((polygon, i) =>
+        i === polygonIndex ? { ...polygon, fillColor: color } : polygon,
+      ),
+    }));
+  }
+}

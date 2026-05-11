@@ -1,7 +1,6 @@
 export enum InteractiveMode {
   Off = 'off',
-  Area = 'area',
+  Polygon = 'polygon',
   Marker = 'marker',
-  Line = 'line',
   StraightLine = 'straightLine',
 }

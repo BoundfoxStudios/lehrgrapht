@@ -14,10 +14,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { map } from 'rxjs';
 import { lehrgraphtVersion } from '../../../version';
 import {
-  AreaPoint,
   MarkerNamingScheme,
   Plot,
   PlotSettings,
+  PolygonPoint,
 } from '../../models/plot';
 import { MarkerNamingService } from '../../services/marker-naming.service';
 import {
@@ -57,12 +57,12 @@ export function shiftIndicesAfterRemove(
   return result;
 }
 
-export function nameAreaPoints(
+export function namePolygonPoints(
   points: readonly { x: number; y: number }[],
   scheme: MarkerNamingScheme,
   service: MarkerNamingService,
   startIndex: number,
-): AreaPoint[] {
+): PolygonPoint[] {
   return points.map((p, i) => ({
     x: p.x,
     y: p.y,
@@ -170,35 +170,27 @@ export interface InteractiveStrategy {
   ): Plot;
 }
 
-const getNextLabelIndex = (model: Plot): number => {
-  let index = 0;
-  for (const area of model.areas) {
-    if (area.showPoints) {
-      index += area.points.length;
-    }
-  }
-  return index;
-};
-
-export function applyArea(
+export function applyPolygon(
   model: Plot,
   points: readonly { x: number; y: number }[],
-  ctx: ApplyContext,
+  _ctx: ApplyContext,
 ): Plot {
-  if (points.length === 0) return model;
-  const startIndex = getNextLabelIndex(model);
+  if (points.length < 2) return model;
   return {
     ...model,
-    areas: [
-      ...model.areas,
+    polygons: [
+      ...model.polygons,
       {
-        points: nameAreaPoints(
-          points,
-          ctx.scheme,
-          ctx.markerNamingService,
-          startIndex,
-        ),
-        color: nextColor(model.areas.length),
+        points: points.map(p => ({
+          x: p.x,
+          y: p.y,
+          labelPosition: 'auto',
+          labelText: '',
+        })),
+        connect: false,
+        lineColor: nextColor(model.polygons.length),
+        fillColor: null,
+        lineStyle: 'solid',
         showPoints: false,
       },
     ],
@@ -223,29 +215,6 @@ export function applyMarker(
           ctx.scheme,
         ),
       })),
-    ],
-  };
-}
-
-export function applyLine(
-  model: Plot,
-  points: readonly { x: number; y: number }[],
-  _ctx: ApplyContext,
-): Plot {
-  if (points.length < 2) return model;
-  const [p1, p2] = points;
-  return {
-    ...model,
-    lines: [
-      ...model.lines,
-      {
-        x1: p1.x,
-        y1: p1.y,
-        x2: p2.x,
-        y2: p2.y,
-        color: nextColor(model.lines.length),
-        lineStyle: 'solid',
-      },
     ],
   };
 }
@@ -276,9 +245,8 @@ export const INTERACTIVE_STRATEGIES: Record<
   Exclude<InteractiveMode, InteractiveMode.Off>,
   InteractiveStrategy
 > = {
-  [InteractiveMode.Area]: { minPoints: 3, apply: applyArea },
+  [InteractiveMode.Polygon]: { minPoints: 2, apply: applyPolygon },
   [InteractiveMode.Marker]: { minPoints: 1, apply: applyMarker },
-  [InteractiveMode.Line]: { minPoints: 2, autoFinishAt: 2, apply: applyLine },
   [InteractiveMode.StraightLine]: {
     minPoints: 2,
     autoFinishAt: 2,
@@ -286,17 +254,16 @@ export const INTERACTIVE_STRATEGIES: Record<
   },
 };
 
-export type CardSectionKey = 'fnx' | 'markers' | 'lines' | 'areas';
+export type CardSectionKey = 'fnx' | 'markers' | 'polygons';
 
 export interface ExpandedItems {
   fnx: number[];
   markers: number[];
-  lines: number[];
-  areas: number[];
+  polygons: number[];
 }
 
 export function emptyExpandedItems(): ExpandedItems {
-  return { fnx: [], markers: [], lines: [], areas: [] };
+  return { fnx: [], markers: [], polygons: [] };
 }
 
 export const PlotEditorStore = signalStore(
@@ -495,122 +462,79 @@ export const PlotEditorStore = signalStore(
         });
       },
 
-      addLine(): void {
+      addPolygon(): void {
         store.editorForm().controlValue.update(m => ({
           ...m,
-          lines: [
-            ...m.lines,
+          polygons: [
+            ...m.polygons,
             {
-              x1: 0,
-              y1: 0,
-              x2: 1,
-              y2: 1,
-              color: nextColor(m.lines.length),
+              points: [
+                { x: 0, y: 0, labelPosition: 'auto', labelText: '' },
+                { x: 1, y: 1, labelPosition: 'auto', labelText: '' },
+              ],
+              connect: false,
+              lineColor: nextColor(m.polygons.length),
+              fillColor: null,
               lineStyle: 'solid',
+              showPoints: false,
             },
           ],
         }));
-        const newIndex = store.model().lines.length - 1;
+        const newIndex = store.model().polygons.length - 1;
         patchState(store, {
           expandedItems: {
             ...store.expandedItems(),
-            lines: [...store.expandedItems().lines, newIndex],
+            polygons: [...store.expandedItems().polygons, newIndex],
           },
         });
       },
 
-      removeLine(index: number): void {
+      removePolygon(index: number): void {
         store.editorForm().controlValue.update(m => ({
           ...m,
-          lines: removeAt(m.lines, index),
+          polygons: removeAt(m.polygons, index),
         }));
         patchState(store, {
           expandedItems: {
             ...store.expandedItems(),
-            lines: shiftIndicesAfterRemove(store.expandedItems().lines, index),
+            polygons: shiftIndicesAfterRemove(
+              store.expandedItems().polygons,
+              index,
+            ),
           },
         });
       },
 
-      addArea(): void {
-        const scheme = store.plotSettings().markerNamingScheme;
-        store.editorForm().controlValue.update(m => {
-          const startIndex = getNextLabelIndex(m);
-          const rawPoints = [
-            { x: 0, y: 0 },
-            { x: 1, y: 0 },
-            { x: 1, y: 1 },
-          ];
-          return {
-            ...m,
-            areas: [
-              ...m.areas,
-              {
-                points: nameAreaPoints(
-                  rawPoints,
-                  scheme,
-                  markerNamingService,
-                  startIndex,
-                ),
-                color: nextColor(m.areas.length),
-                showPoints: false,
-              },
-            ],
-          };
-        });
-        const newIndex = store.model().areas.length - 1;
-        patchState(store, {
-          expandedItems: {
-            ...store.expandedItems(),
-            areas: [...store.expandedItems().areas, newIndex],
-          },
-        });
-      },
-
-      removeArea(index: number): void {
+      addPolygonPoint(polygonIndex: number): void {
         store.editorForm().controlValue.update(m => ({
           ...m,
-          areas: removeAt(m.areas, index),
-        }));
-        patchState(store, {
-          expandedItems: {
-            ...store.expandedItems(),
-            areas: shiftIndicesAfterRemove(store.expandedItems().areas, index),
-          },
-        });
-      },
-
-      addAreaPoint(areaIndex: number): void {
-        const scheme = store.plotSettings().markerNamingScheme;
-        store.editorForm().controlValue.update(m => {
-          const nextIndex = getNextLabelIndex(m);
-          const areas = m.areas.map((area, i) =>
-            i === areaIndex
+          polygons: m.polygons.map((polygon, i) =>
+            i === polygonIndex
               ? {
-                  ...area,
+                  ...polygon,
                   points: [
-                    ...area.points,
-                    ...nameAreaPoints(
-                      [{ x: 0, y: 0 }],
-                      scheme,
-                      markerNamingService,
-                      nextIndex,
-                    ),
+                    ...polygon.points,
+                    { x: 0, y: 0, labelPosition: 'auto', labelText: '' },
                   ],
                 }
-              : area,
-          );
-          return { ...m, areas };
-        });
+              : polygon,
+          ),
+        }));
       },
 
-      removeAreaPoint(event: { areaIndex: number; pointIndex: number }): void {
+      removePolygonPoint(event: {
+        polygonIndex: number;
+        pointIndex: number;
+      }): void {
         store.editorForm().controlValue.update(m => ({
           ...m,
-          areas: m.areas.map((area, i) =>
-            i === event.areaIndex
-              ? { ...area, points: removeAt(area.points, event.pointIndex) }
-              : area,
+          polygons: m.polygons.map((polygon, i) =>
+            i === event.polygonIndex
+              ? {
+                  ...polygon,
+                  points: removeAt(polygon.points, event.pointIndex),
+                }
+              : polygon,
           ),
         }));
       },
@@ -619,15 +543,11 @@ export const PlotEditorStore = signalStore(
         const m = store.model();
         const allPoints: { x: number; y: number }[] = [];
 
-        for (const line of m.lines) {
-          allPoints.push({ x: line.x1, y: line.y1 });
-          allPoints.push({ x: line.x2, y: line.y2 });
-        }
         for (const marker of m.markers) {
           allPoints.push({ x: marker.x, y: marker.y });
         }
-        for (const area of m.areas) {
-          allPoints.push(...area.points);
+        for (const polygon of m.polygons) {
+          allPoints.push(...polygon.points);
         }
 
         if (!allPoints.length) {

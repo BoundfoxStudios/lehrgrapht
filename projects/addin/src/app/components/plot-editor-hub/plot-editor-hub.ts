@@ -6,7 +6,6 @@ import {
   faDrawPolygon,
   faExpand,
   faLocationDot,
-  faMinus,
   faSliders,
   faSquareRootVariable,
 } from '@fortawesome/free-solid-svg-icons';
@@ -26,7 +25,6 @@ export class PlotEditorHub {
   protected readonly faChevronRight = faChevronRight;
   protected readonly faSquareRootVariable = faSquareRootVariable;
   protected readonly faLocationDot = faLocationDot;
-  protected readonly faMinus = faMinus;
   protected readonly faDrawPolygon = faDrawPolygon;
 
   protected readonly store = inject(PlotEditorStore);

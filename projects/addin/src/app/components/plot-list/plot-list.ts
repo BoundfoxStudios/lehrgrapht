@@ -89,8 +89,7 @@ export class PlotList {
     }
 
     parts.push(...countPart(model.markers.length, 'Punkt', 'Punkte'));
-    parts.push(...countPart(model.lines.length, 'Linie', 'Linien'));
-    parts.push(...countPart(model.areas.length, 'Fläche', 'Flächen'));
+    parts.push(...countPart(model.polygons.length, 'Polygon', 'Polygone'));
 
     return parts.length > 0 ? parts.join(', ') : null;
   }

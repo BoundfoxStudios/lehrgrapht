@@ -50,22 +50,16 @@ export class InteractiveOverlay {
     switch (this.store.interactiveMode()) {
       case InteractiveMode.Marker:
         return 'Punkte setzen';
-      case InteractiveMode.Line:
-        return 'Linie zeichnen';
       case InteractiveMode.StraightLine:
         return 'Gerade durch zwei Punkte';
-      case InteractiveMode.Area:
+      case InteractiveMode.Polygon:
         return 'Polygon zeichnen';
       default:
         return '';
     }
   });
 
-  protected readonly ctaLabel = computed(() =>
-    this.store.interactiveMode() === InteractiveMode.Area
-      ? 'Polygon schließen'
-      : 'Fertig',
-  );
+  protected readonly ctaLabel = 'Fertig';
 
   protected readonly minPoints = computed(() => {
     const mode = this.store.interactiveMode();
@@ -87,11 +81,10 @@ export class InteractiveOverlay {
     switch (this.store.interactiveMode()) {
       case InteractiveMode.Marker:
         return 'Tippe auf den Plot, um einen Punkt zu setzen';
-      case InteractiveMode.Line:
       case InteractiveMode.StraightLine:
         return 'Tippe zwei Punkte für die Linie';
-      case InteractiveMode.Area:
-        return 'Tippe mindestens 3 Eckpunkte, dann „Polygon schließen"';
+      case InteractiveMode.Polygon:
+        return 'Tippe mindestens 2 Punkte für ein Polygon';
       default:
         return '';
     }
@@ -105,10 +98,9 @@ export class InteractiveOverlay {
           this.store.model().markers.length + index,
           this.store.plotSettings().markerNamingScheme,
         );
-      case InteractiveMode.Line:
       case InteractiveMode.StraightLine:
         return index === 0 ? 'Start' : 'Ende';
-      case InteractiveMode.Area:
+      case InteractiveMode.Polygon:
         return `P${index + 1}`;
       default:
         return `${index + 1}`;

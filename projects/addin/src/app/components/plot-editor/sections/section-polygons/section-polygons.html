@@ -1,18 +1,18 @@
 @let form = store.editorForm;
-@let areas = store.model().areas;
+@let polygons = store.model().polygons;
 
 <div class="flex flex-col space-y-3 p-2">
-  @if (areas.length === 0) {
+  @if (polygons.length === 0) {
     <lg-section-empty-state
-      [interactiveMode]="InteractiveMode.Area"
+      [interactiveMode]="InteractiveMode.Polygon"
       (manualClick)="addManual()"
-      heading="Noch keine Flächen"
-      text="Definiere ein Polygon über drei oder mehr Eckpunkte. Die Reihenfolge der Punkte legt die Form fest."
+      heading="Noch keine Polygone"
+      text='Verbinde 2 oder mehr Punkte. Mit „Verbinden" wird daraus eine geschlossene Fläche.'
     >
-      <lg-section-areas-image />
+      <lg-section-polygons-image />
     </lg-section-empty-state>
   } @else {
-    @if (areas.length >= 2) {
+    @if (polygons.length >= 2) {
       <div class="flex justify-end">
         <button
           (click)="toggleAll()"
@@ -25,12 +25,16 @@
         </button>
       </div>
     }
-    @for (control of form.areas; let areaIndex = $index; track areaIndex) {
+    @for (
+      control of form.polygons;
+      let polygonIndex = $index;
+      track polygonIndex
+    ) {
       <lg-card
-        [title]="'Fläche ' + (areaIndex + 1)"
-        [expanded]="expandedSet().has(areaIndex)"
-        [isNew]="newItemIndex() === areaIndex"
-        (expandedChange)="store.toggleCardExpanded('areas', areaIndex)"
+        [title]="polygonTitle(polygons[polygonIndex], polygonIndex)"
+        [expanded]="expandedSet().has(polygonIndex)"
+        [isNew]="newItemIndex() === polygonIndex"
+        (expandedChange)="store.toggleCardExpanded('polygons', polygonIndex)"
         (cardFocusOut)="newItemIndex.set(null)"
       >
         <div
@@ -39,31 +43,85 @@
         >
           <label
             class="flex cursor-pointer items-center gap-1 text-xs text-gray-500"
-            [for]="'area-' + areaIndex + '-show-points'"
+            [for]="'polygon-' + polygonIndex + '-show-points'"
           >
             <input
               class="h-4 w-4 cursor-pointer rounded border-gray-300"
               [formField]="control.showPoints"
-              [id]="'area-' + areaIndex + '-show-points'"
+              [id]="'polygon-' + polygonIndex + '-show-points'"
               type="checkbox"
             />
             Punkte
           </label>
           <input
             class="h-7 w-7 cursor-pointer rounded border-none"
-            [formField]="control.color"
+            [formField]="control.lineColor"
             type="color"
-            title="Farbe wählen"
+            title="Linienfarbe"
+          />
+          <label
+            class="flex cursor-pointer items-center gap-1 text-xs text-gray-500"
+            [for]="'polygon-' + polygonIndex + '-fill-none'"
+          >
+            <input
+              class="h-4 w-4 cursor-pointer rounded border-gray-300"
+              [id]="'polygon-' + polygonIndex + '-fill-none'"
+              [checked]="polygons[polygonIndex].fillColor === null"
+              (change)="
+                onFillNoneToggle(
+                  polygonIndex,
+                  $any($event.target).checked,
+                  polygons[polygonIndex].lineColor
+                )
+              "
+              type="checkbox"
+            />
+            keine Füllung
+          </label>
+          <input
+            class="h-7 w-7 cursor-pointer rounded border-none disabled:opacity-30"
+            [value]="polygons[polygonIndex].fillColor ?? '#000000'"
+            [disabled]="polygons[polygonIndex].fillColor === null"
+            (input)="onFillColorChange(polygonIndex, $any($event.target).value)"
+            type="color"
+            title="Füllfarbe"
           />
           <button
             class="flex h-7 w-7 items-center justify-center rounded text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
-            (click)="store.removeArea(areaIndex)"
+            (click)="store.removePolygon(polygonIndex)"
             type="button"
-            title="Fläche entfernen"
+            title="Polygon entfernen"
           >
             <fa-icon [icon]="faTrashCan" />
           </button>
         </div>
+
+        <div
+          class="mb-2 grid grid-cols-[auto_1fr] items-center gap-x-3 gap-y-2"
+        >
+          <label
+            class="text-xs text-gray-600"
+            [for]="'polygon-' + polygonIndex + '-connect'"
+            >Verbinden</label
+          >
+          <input
+            class="h-4 w-4 cursor-pointer rounded border-gray-300"
+            [formField]="control.connect"
+            [id]="'polygon-' + polygonIndex + '-connect'"
+            type="checkbox"
+          />
+          <span class="text-xs text-gray-600">Linie</span>
+          <lg-dropdown
+            [formField]="control.lineStyle"
+            [options]="lineStyleOptions"
+          />
+        </div>
+
+        @if (polygons[polygonIndex].points.length < 3) {
+          <div class="mb-2 text-xs text-gray-500">
+            Ab 3 Punkten entsteht eine Fläche.
+          </div>
+        }
 
         <div class="space-y-2">
           @for (
@@ -76,14 +134,14 @@
                 <div class="flex-1">
                   <label
                     class="mb-1 block text-xs text-gray-500"
-                    [for]="'area-' + areaIndex + '-x-' + pointIndex"
+                    [for]="'polygon-' + polygonIndex + '-x-' + pointIndex"
                     >X{{ pointIndex + 1 }}</label
                   >
                   <lg-input
                     [field]="point.x"
-                    [id]="'area-' + areaIndex + '-x-' + pointIndex"
+                    [id]="'polygon-' + polygonIndex + '-x-' + pointIndex"
                     [autofocus]="
-                      newItemIndex() === areaIndex && pointIndex === 0
+                      newItemIndex() === polygonIndex && pointIndex === 0
                     "
                     type="number"
                   />
@@ -91,18 +149,21 @@
                 <div class="flex-1">
                   <label
                     class="mb-1 block text-xs text-gray-500"
-                    [for]="'area-' + areaIndex + '-y-' + pointIndex"
+                    [for]="'polygon-' + polygonIndex + '-y-' + pointIndex"
                     >Y{{ pointIndex + 1 }}</label
                   >
                   <lg-input
                     [field]="point.y"
-                    [id]="'area-' + areaIndex + '-y-' + pointIndex"
+                    [id]="'polygon-' + polygonIndex + '-y-' + pointIndex"
                     type="number"
                   />
                 </div>
                 <button
-                  class="mb-1 flex h-8 w-8 shrink-0 items-center justify-center rounded text-gray-400 transition-colors hover:bg-red-100 hover:text-red-500"
-                  (click)="store.removeAreaPoint({ areaIndex, pointIndex })"
+                  class="mb-1 flex h-8 w-8 shrink-0 items-center justify-center rounded text-gray-400 transition-colors hover:bg-red-100 hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-gray-400"
+                  [disabled]="polygons[polygonIndex].points.length <= 2"
+                  (click)="
+                    store.removePolygonPoint({ polygonIndex, pointIndex })
+                  "
                   type="button"
                   title="Punkt entfernen"
                 >
@@ -114,19 +175,23 @@
                   <div class="flex-1">
                     <label
                       class="mb-1 block text-xs text-gray-500"
-                      [for]="'area-' + areaIndex + '-labeltext-' + pointIndex"
+                      [for]="
+                        'polygon-' + polygonIndex + '-labeltext-' + pointIndex
+                      "
                       >Label</label
                     >
                     <lg-input
                       [field]="point.labelText"
-                      [id]="'area-' + areaIndex + '-labeltext-' + pointIndex"
+                      [id]="
+                        'polygon-' + polygonIndex + '-labeltext-' + pointIndex
+                      "
                       type="text"
                     />
                   </div>
                   <div class="flex-1">
                     <label
                       class="mb-1 block text-xs text-gray-500"
-                      [for]="'area-' + areaIndex + '-label-' + pointIndex"
+                      [for]="'polygon-' + polygonIndex + '-label-' + pointIndex"
                       >Position</label
                     >
                     <lg-dropdown
@@ -142,7 +207,7 @@
 
         <button
           class="hover:border-brand hover:text-brand mt-2 flex w-full items-center justify-center gap-1 rounded-md border border-dashed border-gray-300 py-2 text-xs text-gray-500 transition-colors"
-          (click)="store.addAreaPoint(areaIndex)"
+          (click)="store.addPolygonPoint(polygonIndex)"
           type="button"
         >
           <fa-icon [icon]="faPlusCircle" />
@@ -154,7 +219,7 @@
     <div class="flex gap-1.5">
       <button
         class="flex-[1.4]"
-        (click)="store.startInteractive(InteractiveMode.Area)"
+        (click)="store.startInteractive(InteractiveMode.Polygon)"
         lgButton
         size="cta"
         type="button"

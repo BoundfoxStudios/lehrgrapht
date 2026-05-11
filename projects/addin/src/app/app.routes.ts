@@ -2,10 +2,9 @@ import { Routes } from '@angular/router';
 import { PlotList } from './components/plot-list/plot-list';
 import { PlotEditor } from './components/plot-editor/plot-editor';
 import { PlotEditorHub } from './components/plot-editor-hub/plot-editor-hub';
-import { SectionAreas } from './components/plot-editor/sections/section-areas/section-areas';
 import { SectionFnx } from './components/plot-editor/sections/section-fnx/section-fnx';
-import { SectionLines } from './components/plot-editor/sections/section-lines/section-lines';
 import { SectionMarkers } from './components/plot-editor/sections/section-markers/section-markers';
+import { SectionPolygons } from './components/plot-editor/sections/section-polygons/section-polygons';
 import { SectionRange } from './components/plot-editor/sections/section-range/section-range';
 import { SectionSettings } from './components/plot-editor/sections/section-settings/section-settings';
 import { unsavedChangesGuard } from './components/plot-editor/unsaved-changes.guard';
@@ -66,12 +65,8 @@ export const routes: Routes = [
             component: SectionMarkers,
           },
           {
-            path: 'lines',
-            component: SectionLines,
-          },
-          {
-            path: 'areas',
-            component: SectionAreas,
+            path: 'polygons',
+            component: SectionPolygons,
           },
           {
             path: 'range',

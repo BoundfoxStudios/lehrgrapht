@@ -17,7 +17,6 @@ import {
   faDrawPolygon,
   faExpand,
   faLocationDot,
-  faMinus,
   faSliders,
   faSquareRootVariable,
 } from '@fortawesome/free-solid-svg-icons';
@@ -94,16 +93,10 @@ export class PlotEditor {
         count: model.markers.length,
       },
       {
-        id: 'lines',
-        label: 'Linien',
-        icon: faMinus,
-        count: model.lines.length,
-      },
-      {
-        id: 'areas',
-        label: 'Flächen',
+        id: 'polygons',
+        label: 'Polygone',
         icon: faDrawPolygon,
-        count: model.areas.length,
+        count: model.polygons.length,
       },
       { id: 'range', label: 'Grenzen', icon: faExpand },
       { id: 'settings', label: 'Darstellung', icon: faSliders },
