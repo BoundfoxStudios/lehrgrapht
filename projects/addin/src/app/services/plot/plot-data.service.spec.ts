@@ -1,4 +1,4 @@
-import { AreaPoint, Plot, PlotSettings } from '../../models/plot';
+import { Plot, PlotSettings, PolygonPoint } from '../../models/plot';
 import { PlotDataService } from './plot-data.service';
 import { PLOT_CONSTANTS } from './plot.types';
 
@@ -144,74 +144,114 @@ describe('PlotDataService', () => {
     });
   });
 
-  describe('buildLineTraces', () => {
-    it('should return empty array when no lines', () => {
-      const result = service.buildLineTraces(basePlot, plotSettings);
+  describe('buildPolygonTraces', () => {
+    it('returns empty array when no polygons', () => {
+      const result = service.buildPolygonTraces(basePlot, plotSettings);
       expect(result).toEqual([]);
     });
 
-    it('should return one trace per line', () => {
+    it('renders an open polygon as a polyline without fill', () => {
       const plot: Plot = {
         ...basePlot,
-        lines: [
+        polygons: [
           {
-            x1: 0,
-            y1: 0,
-            x2: 1,
-            y2: 1,
-            color: '#ff0000',
+            points: [
+              { x: 0, y: 0, labelPosition: 'auto', labelText: '' },
+              { x: 1, y: 1, labelPosition: 'auto', labelText: '' },
+              { x: 2, y: 0, labelPosition: 'auto', labelText: '' },
+            ],
+            connect: false,
+            lineColor: '#ff0000',
+            fillColor: '#00ff00',
             lineStyle: 'solid',
-          },
-          {
-            x1: 2,
-            y1: 2,
-            x2: 3,
-            y2: 3,
-            color: '#00ff00',
-            lineStyle: 'solid',
+            showPoints: false,
           },
         ],
       };
-      const result = service.buildLineTraces(plot, plotSettings);
-      expect(result.length).toBe(2);
-      expect(result[0].x).toEqual([0, 1]);
-      expect(result[0].y).toEqual([0, 1]);
-      expect(result[0].line?.color).toBe('#ff0000');
+      const result = service.buildPolygonTraces(plot, plotSettings);
+      expect(result.length).toBe(1);
+      const trace = result[0];
+      expect(trace.fill).toBe('none');
+      expect(trace.line?.color).toBe('#ff0000');
+      expect(trace.x).toEqual([0, 1, 2]);
+      expect(trace.y).toEqual([0, 1, 0]);
     });
 
-    it('should use solid dash for solid lineStyle', () => {
+    it('renders a closed polygon with fill and closes the line', () => {
       const plot: Plot = {
         ...basePlot,
-        lines: [
+        polygons: [
           {
-            x1: 0,
-            y1: 0,
-            x2: 1,
-            y2: 1,
-            color: '#000',
+            points: [
+              { x: 0, y: 0, labelPosition: 'auto', labelText: '' },
+              { x: 1, y: 0, labelPosition: 'auto', labelText: '' },
+              { x: 0, y: 1, labelPosition: 'auto', labelText: '' },
+            ],
+            connect: true,
+            lineColor: '#000000',
+            fillColor: '#ff0000',
             lineStyle: 'solid',
+            showPoints: false,
           },
         ],
       };
-      const result = service.buildLineTraces(plot, plotSettings);
-      expect(result[0].line?.dash).toBe('solid');
+      const result = service.buildPolygonTraces(plot, plotSettings);
+      const trace = result[0];
+      expect(trace.fill).toBe('toself');
+      expect(trace.fillcolor).toBe('rgba(255, 0, 0, 0.7)');
+      expect(trace.line?.color).toBe('#000000');
+      expect(trace.line?.width).toBe(plotSettings.plotLineWidth);
+      const xs = trace.x as number[];
+      expect(xs.length).toBe(4);
+      expect(xs[0]).toBe(xs[3]);
     });
 
-    it('should use a custom px pattern for dashed lineStyle that divides the line length evenly', () => {
+    it('renders a closed polygon without fill as outline only', () => {
       const plot: Plot = {
         ...basePlot,
-        lines: [
+        polygons: [
           {
-            x1: 0,
-            y1: 0,
-            x2: 4,
-            y2: 0,
-            color: '#000',
+            points: [
+              { x: 0, y: 0, labelPosition: 'auto', labelText: '' },
+              { x: 1, y: 0, labelPosition: 'auto', labelText: '' },
+              { x: 0, y: 1, labelPosition: 'auto', labelText: '' },
+            ],
+            connect: true,
+            lineColor: '#0000ff',
+            fillColor: null,
+            lineStyle: 'solid',
+            showPoints: false,
+          },
+        ],
+      };
+      const result = service.buildPolygonTraces(plot, plotSettings);
+      const trace = result[0];
+      expect(trace.fill).toBe('none');
+      const xs = trace.x as number[];
+      expect(xs.length).toBe(4);
+      expect(xs[0]).toBe(xs[3]);
+    });
+
+    it('emits a dashed pattern over the full perimeter for dashed polygons', () => {
+      // 3-4-5 right triangle: perimeter = 3 + 4 + 5 = 12 units
+      const plot: Plot = {
+        ...basePlot,
+        polygons: [
+          {
+            points: [
+              { x: 0, y: 0, labelPosition: 'auto', labelText: '' },
+              { x: 4, y: 0, labelPosition: 'auto', labelText: '' },
+              { x: 4, y: 3, labelPosition: 'auto', labelText: '' },
+            ],
+            connect: true,
+            lineColor: '#000000',
+            fillColor: null,
             lineStyle: 'dashed',
+            showPoints: false,
           },
         ],
       };
-      const result = service.buildLineTraces(plot, plotSettings);
+      const result = service.buildPolygonTraces(plot, plotSettings);
       const dash = result[0].line?.dash as string;
       const match = /^([\d.]+)px,([\d.]+)px$/.exec(dash);
       if (!match) throw new Error(`Unexpected dash pattern: ${dash}`);
@@ -222,76 +262,53 @@ describe('PlotDataService', () => {
 
       const { dtick, mmPerTick, mmToInches, ppiBase } = PLOT_CONSTANTS;
       const pxPerUnit = (mmPerTick / dtick) * mmToInches * ppiBase;
-      const lineLengthPx = 4 * pxPerUnit;
-      const numPeriods = lineLengthPx / period;
+      const perimeterPx = 12 * pxPerUnit;
+      const numPeriods = perimeterPx / period;
 
       expect(numPeriods).toBeCloseTo(Math.round(numPeriods), 5);
     });
 
-    it('should fall back to "dash" for zero-length dashed lines', () => {
+    it('does not crash on an empty closed polygon', () => {
       const plot: Plot = {
         ...basePlot,
-        lines: [
+        polygons: [
           {
-            x1: 1,
-            y1: 1,
-            x2: 1,
-            y2: 1,
-            color: '#000',
-            lineStyle: 'dashed',
-          },
-        ],
-      };
-      const result = service.buildLineTraces(plot, plotSettings);
-      expect(result[0].line?.dash).toBe('dash');
-    });
-  });
-
-  describe('buildAreaTraces', () => {
-    it('should return empty array when no areas', () => {
-      const result = service.buildAreaTraces(basePlot, plotSettings);
-      expect(result).toEqual([]);
-    });
-
-    it('should create fill trace with closed polygon', () => {
-      const plot: Plot = {
-        ...basePlot,
-        areas: [
-          {
-            points: [
-              { x: 0, y: 0, labelPosition: 'auto', labelText: '' },
-              { x: 1, y: 0, labelPosition: 'auto', labelText: '' },
-              { x: 0, y: 1, labelPosition: 'auto', labelText: '' },
-            ],
-            color: '#ff0000',
+            points: [],
+            connect: true,
+            lineColor: '#000',
+            fillColor: null,
+            lineStyle: 'solid',
             showPoints: false,
           },
         ],
       };
-      const result = service.buildAreaTraces(plot, plotSettings);
-      expect(result.length).toBeGreaterThanOrEqual(1);
-      const trace = result[0];
-      const xArr = trace.x as number[];
-      expect(xArr.length).toBe(4);
-      expect(xArr[0]).toBe(xArr[3]);
+      expect(() =>
+        service.buildPolygonTraces(plot, plotSettings),
+      ).not.toThrow();
+      const result = service.buildPolygonTraces(plot, plotSettings);
+      expect(result.length).toBe(1);
+      expect(result[0].x).toEqual([]);
     });
 
-    it('should include area point marker traces when showPoints is true', () => {
+    it('includes point marker traces when showPoints is true', () => {
       const plot: Plot = {
         ...basePlot,
-        areas: [
+        polygons: [
           {
             points: [
               { x: 0, y: 0, labelPosition: 'auto', labelText: 'A' },
               { x: 1, y: 0, labelPosition: 'auto', labelText: 'B' },
               { x: 0, y: 1, labelPosition: 'auto', labelText: 'C' },
             ],
-            color: '#ff0000',
+            connect: true,
+            lineColor: '#000000',
+            fillColor: '#ff0000',
+            lineStyle: 'solid',
             showPoints: true,
           },
         ],
       };
-      const result = service.buildAreaTraces(plot, plotSettings);
+      const result = service.buildPolygonTraces(plot, plotSettings);
       expect(result.length).toBeGreaterThan(1);
     });
   });
@@ -309,14 +326,17 @@ describe('PlotDataService', () => {
           },
         ],
         markers: [{ x: 1, y: 1, text: 'P' }],
-        lines: [
+        polygons: [
           {
-            x1: 0,
-            y1: 0,
-            x2: 1,
-            y2: 1,
-            color: '#000',
+            points: [
+              { x: 0, y: 0, labelPosition: 'auto', labelText: '' },
+              { x: 1, y: 1, labelPosition: 'auto', labelText: '' },
+            ],
+            connect: false,
+            lineColor: '#000',
+            fillColor: null,
             lineStyle: 'solid',
+            showPoints: false,
           },
         ],
       };
@@ -336,14 +356,14 @@ describe('PlotDataService', () => {
   });
 
   describe('calculateLabelPosition', () => {
-    const makePoint = (x: number, y: number): AreaPoint => ({
+    const makePoint = (x: number, y: number): PolygonPoint => ({
       x,
       y,
       labelPosition: 'auto',
       labelText: '',
     });
 
-    const triangle: AreaPoint[] = [
+    const triangle: PolygonPoint[] = [
       makePoint(0, 2),
       makePoint(-2, -1),
       makePoint(2, -1),
@@ -386,7 +406,7 @@ describe('PlotDataService', () => {
     });
 
     it('should handle all 8 directions', () => {
-      const square: AreaPoint[] = [
+      const square: PolygonPoint[] = [
         makePoint(1, 1),
         makePoint(-1, 1),
         makePoint(-1, -1),
