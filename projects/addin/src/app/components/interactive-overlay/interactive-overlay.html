@@ -41,6 +41,16 @@
         {{ emptyStateHint() }}
       </span>
     </div>
+  } @else if (canCloseByClickingStart()) {
+    <div
+      class="pointer-events-none absolute top-2 right-2 left-2 flex justify-center px-2"
+    >
+      <span
+        class="rounded-base text-body bg-white/95 px-3 py-2 text-center text-xs shadow-sm"
+      >
+        Tippe den Startpunkt erneut, um eine Fläche zu schließen
+      </span>
+    </div>
   }
 </div>
 

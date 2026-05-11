@@ -168,6 +168,19 @@ export interface InteractiveStrategy {
   ): Plot;
 }
 
+export function isPolygonClosingClick(
+  mode: InteractiveMode,
+  currentPoints: readonly { x: number; y: number }[],
+  click: { x: number; y: number },
+): boolean {
+  return (
+    mode === InteractiveMode.Polygon &&
+    currentPoints.length >= 3 &&
+    currentPoints[0].x === click.x &&
+    currentPoints[0].y === click.y
+  );
+}
+
 export function applyPolygon(
   model: Plot,
   points: readonly { x: number; y: number }[],
@@ -617,8 +630,33 @@ export const PlotEditorStore = signalStore(
       onPlotClick(event: PlotClickEvent): void {
         const mode = store.interactiveMode();
         if (mode === InteractiveMode.Off) return;
+
+        const currentPoints = store.interactivePoints();
+
+        if (isPolygonClosingClick(mode, currentPoints, event)) {
+          const ctx: ApplyContext = {
+            scheme: store.plotSettings().markerNamingScheme,
+            markerNamingService,
+          };
+          store.editorForm().controlValue.update(m => {
+            const updated = applyPolygon(m, currentPoints, ctx);
+            const lastIndex = updated.polygons.length - 1;
+            return {
+              ...updated,
+              polygons: updated.polygons.map((p, i) =>
+                i === lastIndex ? { ...p, connect: true } : p,
+              ),
+            };
+          });
+          patchState(store, {
+            interactiveMode: InteractiveMode.Off,
+            interactivePoints: [],
+          });
+          return;
+        }
+
         const strategy = INTERACTIVE_STRATEGIES[mode];
-        const points = [...store.interactivePoints(), event];
+        const points = [...currentPoints, event];
         if (strategy.autoFinishAt && points.length >= strategy.autoFinishAt) {
           const ctx: ApplyContext = {
             scheme: store.plotSettings().markerNamingScheme,

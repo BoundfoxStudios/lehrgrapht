@@ -6,11 +6,13 @@ import {
   applyStraightLine,
   ApplyContext,
   calculateStraightLineFunction,
+  isPolygonClosingClick,
   namePolygonPoints,
   nextColor,
   removeAt,
   shiftIndicesAfterRemove,
 } from './plot-editor.store';
+import { InteractiveMode } from './interactive-mode';
 
 const basePlot: Plot = {
   version: '1.0.0',
@@ -311,5 +313,84 @@ describe('applyPolygon', () => {
       ctx,
     );
     expect(JSON.stringify(basePlot)).toBe(before);
+  });
+});
+
+describe('isPolygonClosingClick', () => {
+  it('returns false when mode is not Polygon', () => {
+    expect(
+      isPolygonClosingClick(
+        InteractiveMode.Marker,
+        [
+          { x: 0, y: 0 },
+          { x: 1, y: 1 },
+          { x: 2, y: 0 },
+        ],
+        { x: 0, y: 0 },
+      ),
+    ).toBe(false);
+  });
+
+  it('returns false when fewer than 3 points have been placed', () => {
+    expect(
+      isPolygonClosingClick(
+        InteractiveMode.Polygon,
+        [
+          { x: 0, y: 0 },
+          { x: 1, y: 1 },
+        ],
+        { x: 0, y: 0 },
+      ),
+    ).toBe(false);
+  });
+
+  it('returns false when there are no points yet', () => {
+    expect(
+      isPolygonClosingClick(InteractiveMode.Polygon, [], { x: 0, y: 0 }),
+    ).toBe(false);
+  });
+
+  it('returns false when the click does not match the start point', () => {
+    expect(
+      isPolygonClosingClick(
+        InteractiveMode.Polygon,
+        [
+          { x: 0, y: 0 },
+          { x: 1, y: 1 },
+          { x: 2, y: 0 },
+        ],
+        { x: 1, y: 1 },
+      ),
+    ).toBe(false);
+  });
+
+  it('returns true when 3 points placed and click matches the start point', () => {
+    expect(
+      isPolygonClosingClick(
+        InteractiveMode.Polygon,
+        [
+          { x: 0.5, y: 0.5 },
+          { x: 1, y: 1 },
+          { x: 2, y: 0 },
+        ],
+        { x: 0.5, y: 0.5 },
+      ),
+    ).toBe(true);
+  });
+
+  it('returns true when more than 3 points placed and click matches the start point', () => {
+    expect(
+      isPolygonClosingClick(
+        InteractiveMode.Polygon,
+        [
+          { x: 0, y: 0 },
+          { x: 1, y: 0 },
+          { x: 1, y: 1 },
+          { x: 0.5, y: 1.5 },
+          { x: 0, y: 1 },
+        ],
+        { x: 0, y: 0 },
+      ),
+    ).toBe(true);
   });
 });

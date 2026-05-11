@@ -90,6 +90,12 @@ export class InteractiveOverlay {
     }
   });
 
+  protected readonly canCloseByClickingStart = computed(
+    () =>
+      this.store.interactiveMode() === InteractiveMode.Polygon &&
+      this.store.interactivePoints().length >= 3,
+  );
+
   protected pointLabel(index: number): string {
     const mode = this.store.interactiveMode();
     switch (mode) {
