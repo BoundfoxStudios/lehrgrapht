@@ -515,6 +515,7 @@ export const PlotEditorStore = signalStore(
     interactiveMode: InteractiveMode.Off,
     interactivePoints: [] as { x: number; y: number }[],
     expandedItems: emptyExpandedItems(),
+    hoveredPolygonIndex: null as number | null,
   }),
   withComputed(store => {
     const plotService = inject(PlotService);
@@ -943,6 +944,10 @@ export const PlotEditorStore = signalStore(
         patchState(store, {
           expandedItems: { ...store.expandedItems(), [section]: [] },
         });
+      },
+
+      setHoveredPolygon(index: number | null): void {
+        patchState(store, { hoveredPolygonIndex: index });
       },
     };
   }),

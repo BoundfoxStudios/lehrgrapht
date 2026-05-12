@@ -10,6 +10,13 @@ import { hexToRgba, PLOT_CONSTANTS } from './plot.types';
 
 const DASH_TARGET_PERIOD_UNITS = 0.5;
 const DASH_RATIO = 0.6;
+const HIGHLIGHT_LINE_WIDTH_MULTIPLIER = 1;
+const HIGHLIGHT_HALO_WIDTH_MULTIPLIER = 3;
+const HIGHLIGHT_HALO_ALPHA = 0.3;
+
+export interface PolygonRenderOptions {
+  highlightedPolygonIndex?: number | null;
+}
 
 @Injectable({ providedIn: 'root' })
 export class PlotDataService {
@@ -18,6 +25,7 @@ export class PlotDataService {
     plotSettings: PlotSettings,
     xValuesArray: number[],
     yValuesArray: number[][],
+    options: PolygonRenderOptions = {},
   ): Partial<PlotData>[] {
     return [
       ...this.buildFunctionTraces(
@@ -27,7 +35,7 @@ export class PlotDataService {
         yValuesArray,
       ),
       ...this.buildMarkerTraces(plot),
-      ...this.buildPolygonTraces(plot, plotSettings),
+      ...this.buildPolygonTraces(plot, plotSettings, options),
     ];
   }
 
@@ -77,10 +85,14 @@ export class PlotDataService {
   buildPolygonTraces(
     plot: Plot,
     plotSettings: PlotSettings,
+    options: PolygonRenderOptions = {},
   ): Partial<PlotData>[] {
     if (!plot.polygons.length) return [];
 
-    const polygonTraces = plot.polygons.map<Partial<PlotData>>(polygon => {
+    const highlightedIndex = options.highlightedPolygonIndex ?? null;
+
+    const haloTraces: Partial<PlotData>[] = [];
+    const polygonTraces = plot.polygons.map<Partial<PlotData>>((polygon, i) => {
       const closed = polygon.connect;
       const orderedPoints =
         closed && polygon.points.length > 0
@@ -93,6 +105,27 @@ export class PlotDataService {
       const fillColor = hasFill
         ? (polygon.fillColor ?? polygon.lineColor)
         : null;
+      const isHighlighted = i === highlightedIndex;
+      const lineWidth = isHighlighted
+        ? plotSettings.plotLineWidth * HIGHLIGHT_LINE_WIDTH_MULTIPLIER
+        : plotSettings.plotLineWidth;
+
+      if (isHighlighted) {
+        haloTraces.push({
+          type: 'scatter',
+          mode: 'lines',
+          showlegend: false,
+          fill: 'none',
+          x: orderedPoints.map(p => p.x),
+          y: orderedPoints.map(p => p.y),
+          line: {
+            color: hexToRgba(polygon.lineColor, HIGHLIGHT_HALO_ALPHA),
+            width: plotSettings.plotLineWidth * HIGHLIGHT_HALO_WIDTH_MULTIPLIER,
+            dash: 'solid',
+          },
+          hoverinfo: 'skip',
+        });
+      }
 
       return {
         type: 'scatter',
@@ -113,7 +146,7 @@ export class PlotDataService {
         y: orderedPoints.map(p => p.y),
         line: {
           color: polygon.lineColor,
-          width: plotSettings.plotLineWidth,
+          width: lineWidth,
           dash:
             polygon.lineStyle === 'dashed'
               ? this.calculatePolygonDashPattern(polygon.points, closed)
@@ -122,7 +155,11 @@ export class PlotDataService {
       };
     });
 
-    return [...polygonTraces, ...this.buildPolygonPointMarkerTraces(plot)];
+    return [
+      ...haloTraces,
+      ...polygonTraces,
+      ...this.buildPolygonPointMarkerTraces(plot),
+    ];
   }
 
   private calculatePolygonDashPattern(

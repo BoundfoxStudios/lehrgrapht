@@ -32,7 +32,10 @@ export class PlotService {
   async generate(
     plot: Plot,
     plotSettings: PlotSettings,
-    options: { applyScaleFactor: boolean },
+    options: {
+      applyScaleFactor: boolean;
+      highlightedPolygonIndex?: number | null;
+    },
   ): Promise<
     | {
         base64: string;
@@ -91,6 +94,7 @@ export class PlotService {
       plotSettings,
       cleanedValues.xValuesArray,
       cleanedValues.yValuesArray,
+      { highlightedPolygonIndex: options.highlightedPolygonIndex ?? null },
     );
 
     return this.renderPlot(

@@ -36,6 +36,12 @@
         [isNew]="newItemIndex() === polygonIndex"
         (expandedChange)="store.toggleCardExpanded('polygons', polygonIndex)"
         (cardFocusOut)="newItemIndex.set(null)"
+        (mouseenter)="
+          store.setHoveredPolygon(
+            form.polygons.length > 1 ? polygonIndex : null
+          )
+        "
+        (mouseleave)="store.setHoveredPolygon(null)"
       >
         <lg-id-pill
           [prefix]="polygonPrefix(polygons[polygonIndex])"
