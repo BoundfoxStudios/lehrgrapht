@@ -17,7 +17,7 @@ class Host {
   value = 'a';
 }
 
-function queryButtons(fixture: ComponentFixture<Host>): HTMLButtonElement[] {
+function queryButtons(fixture: ComponentFixture<unknown>): HTMLButtonElement[] {
   const host = fixture.nativeElement as HTMLElement;
   return Array.from(host.querySelectorAll('button'));
 }
@@ -47,5 +47,55 @@ describe('PillSwitch', () => {
     fixture.detectChanges();
     expect(fixture.componentInstance.value).toBe('b');
     expect(buttons[1].getAttribute('aria-checked')).toBe('true');
+  });
+
+  it('does not update value when disabled', () => {
+    TestBed.resetTestingModule();
+    @Component({
+      template: `<lg-pill-switch
+        [(value)]="value"
+        [options]="options"
+        [disabled]="true"
+      />`,
+      imports: [PillSwitch],
+    })
+    class DisabledHost {
+      options = [
+        { value: 'a', label: 'A' },
+        { value: 'b', label: 'B' },
+      ];
+      value = 'a';
+    }
+    const disabledFixture = TestBed.createComponent(DisabledHost);
+    disabledFixture.detectChanges();
+    const buttons = queryButtons(disabledFixture);
+    buttons[1].click();
+    disabledFixture.detectChanges();
+    expect(disabledFixture.componentInstance.value).toBe('a');
+  });
+
+  it('applies rounded-full when shape is pill', () => {
+    TestBed.resetTestingModule();
+    @Component({
+      template: `<lg-pill-switch
+        [(value)]="value"
+        [options]="options"
+        shape="pill"
+      />`,
+      imports: [PillSwitch],
+    })
+    class PillHost {
+      options = [
+        { value: 'a', label: 'A' },
+        { value: 'b', label: 'B' },
+      ];
+      value = 'a';
+    }
+    const pillFixture = TestBed.createComponent(PillHost);
+    pillFixture.detectChanges();
+    const host = pillFixture.nativeElement as HTMLElement;
+    const button = host.querySelector('button');
+    expect(button?.classList.contains('rounded-full')).toBe(true);
+    expect(button?.classList.contains('rounded-base')).toBe(false);
   });
 });

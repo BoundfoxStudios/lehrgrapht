@@ -21,6 +21,7 @@ export type PillSwitchShape = 'square' | 'pill';
   host: {
     role: 'radiogroup',
     class: 'flex gap-1',
+    '[attr.aria-label]': 'ariaLabel() || null',
   },
 })
 export class PillSwitch<T> implements FormValueControl<T> {

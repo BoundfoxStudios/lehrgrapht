@@ -1,8 +1,8 @@
 @for (option of options(); track option.value) {
   @let active = option.value === value();
   <button
-    class="flex-1 cursor-pointer border px-2 py-2.5 text-[11px] font-semibold transition-colors"
-    [class.rounded-md]="shape() === 'square'"
+    class="focus-visible:ring-brand-medium flex-1 cursor-pointer border px-2 py-2.5 text-[11px] font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+    [class.rounded-base]="shape() === 'square'"
     [class.rounded-full]="shape() === 'pill'"
     [class.border-brand]="active"
     [class.bg-brand-soft]="active"
@@ -12,7 +12,6 @@
     [class.text-body]="!active"
     [disabled]="disabled()"
     [attr.aria-checked]="active"
-    [attr.aria-label]="option.label"
     (click)="select(option)"
     type="button"
     role="radio"
