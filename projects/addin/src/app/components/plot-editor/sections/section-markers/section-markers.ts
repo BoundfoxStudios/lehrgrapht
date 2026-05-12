@@ -18,6 +18,7 @@ import { Card } from '../../../../ui/card/card';
 import { Input } from '../../../../ui/input/input';
 import { SectionEmptyState } from '../section-empty-state/section-empty-state';
 import { SectionMarkersImage } from './section-markers-image';
+import { SectionHint } from '../../../section-hint/section-hint';
 
 @Component({
   selector: 'lg-section-markers',
@@ -28,6 +29,7 @@ import { SectionMarkersImage } from './section-markers-image';
     Input,
     SectionEmptyState,
     SectionMarkersImage,
+    SectionHint,
   ],
   templateUrl: './section-markers.html',
   styleUrl: './section-markers.css',
