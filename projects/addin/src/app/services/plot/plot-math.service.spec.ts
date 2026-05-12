@@ -20,6 +20,7 @@ const basePlot: Plot = {
   legendLabelFormat: 'none',
   showAxisArrows: false,
   gridStep: '1',
+  reflection: { kind: 'none' },
 };
 
 describe('PlotMathService', () => {

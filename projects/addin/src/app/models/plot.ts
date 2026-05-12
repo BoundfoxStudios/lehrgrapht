@@ -56,6 +56,21 @@ export interface PlotSettings {
   legendLabelFormat: LegendLabelFormat;
 }
 
+export interface ReflectionPoint {
+  x: number;
+  y: number;
+}
+
+export interface ReflectionAxis {
+  p1: { x: number; y: number };
+  p2: { x: number; y: number };
+}
+
+export type Reflection =
+  | { kind: 'none' }
+  | { kind: 'point'; point: ReflectionPoint }
+  | { kind: 'axis'; axis: ReflectionAxis };
+
 export interface Plot {
   version: string;
   name: string;
@@ -77,4 +92,5 @@ export interface Plot {
   legendLabelFormat: LegendLabelFormat;
   showAxisArrows: boolean;
   gridStep: GridStep;
+  reflection: Reflection;
 }

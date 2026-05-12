@@ -266,6 +266,7 @@ const buildInitialPlot = (): Plot => ({
   legendLabelFormat: 'none',
   showAxisArrows: true,
   gridStep: '0.5',
+  reflection: { kind: 'none' },
 });
 
 const lessThanValidator = (
