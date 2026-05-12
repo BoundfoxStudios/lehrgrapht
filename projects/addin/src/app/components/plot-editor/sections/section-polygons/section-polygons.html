@@ -37,6 +37,12 @@
         (expandedChange)="store.toggleCardExpanded('polygons', polygonIndex)"
         (cardFocusOut)="newItemIndex.set(null)"
       >
+        <lg-id-pill
+          [prefix]="polygonPrefix(polygons[polygonIndex])"
+          [index]="polygonIndex"
+          [color]="polygons[polygonIndex].lineColor"
+          card-id
+        />
         <div
           class="flex items-center gap-2"
           card-actions

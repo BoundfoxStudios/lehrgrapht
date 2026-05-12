@@ -28,7 +28,8 @@
         class="text-gray-400"
         [icon]="expanded() ? faChevronDown : faChevronRight"
       />
-      <span class="text-xs font-medium text-gray-500">{{ title() }}</span>
+      <ng-content select="[card-id]" />
+      <span class="text-body text-xs font-medium">{{ title() }}</span>
     </button>
     <ng-content select="[card-actions]" />
   </div>

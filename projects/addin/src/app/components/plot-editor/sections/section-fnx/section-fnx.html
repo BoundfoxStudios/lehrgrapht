@@ -33,6 +33,12 @@
         (expandedChange)="store.toggleCardExpanded('fnx', index)"
         (cardFocusOut)="newItemIndex.set(null)"
       >
+        <lg-id-pill
+          [index]="index"
+          [color]="control.color().value()"
+          card-id
+          prefix="f"
+        />
         <div
           class="flex items-center gap-2"
           card-actions

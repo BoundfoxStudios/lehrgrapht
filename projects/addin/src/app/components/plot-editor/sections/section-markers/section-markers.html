@@ -27,12 +27,17 @@
     }
     @for (control of form.markers; let index = $index; track index) {
       <lg-card
-        [title]="'Punkt ' + (index + 1)"
+        [title]="markerTitle(markers[index], index)"
         [expanded]="expandedSet().has(index)"
         [isNew]="newItemIndex() === index"
         (expandedChange)="store.toggleCardExpanded('markers', index)"
         (cardFocusOut)="newItemIndex.set(null)"
       >
+        <lg-id-pill
+          [index]="index"
+          card-id
+          prefix="P"
+        />
         <div
           class="flex items-center gap-2"
           card-actions

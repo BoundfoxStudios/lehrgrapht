@@ -24,6 +24,7 @@ import { SectionPolygonsImage } from './section-polygons-image';
 import { Polygon, PolygonFillStyle } from '../../../../models/plot';
 import { PillSwitch, PillSwitchOption } from '../../../pill-switch/pill-switch';
 import { SectionHint } from '../../../section-hint/section-hint';
+import { IdPill, IdPillPrefix } from '../../../id-pill/id-pill';
 
 @Component({
   selector: 'lg-section-polygons',
@@ -38,6 +39,7 @@ import { SectionHint } from '../../../section-hint/section-hint';
     Input,
     SectionEmptyState,
     SectionPolygonsImage,
+    IdPill,
   ],
   templateUrl: './section-polygons.html',
   styleUrl: './section-polygons.css',
@@ -77,6 +79,11 @@ export class SectionPolygons {
     } else {
       this.store.collapseAllCards('polygons');
     }
+  }
+
+  protected polygonPrefix(polygon: Polygon): IdPillPrefix {
+    // closed shape with >= 3 points -> Area, otherwise Line
+    return polygon.connect && polygon.points.length >= 3 ? 'A' : 'L';
   }
 
   protected polygonTitle(polygon: Polygon, index: number): string {

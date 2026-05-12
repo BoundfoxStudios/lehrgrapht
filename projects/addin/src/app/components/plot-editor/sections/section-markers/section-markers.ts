@@ -19,6 +19,8 @@ import { Input } from '../../../../ui/input/input';
 import { SectionEmptyState } from '../section-empty-state/section-empty-state';
 import { SectionMarkersImage } from './section-markers-image';
 import { SectionHint } from '../../../section-hint/section-hint';
+import { IdPill } from '../../../id-pill/id-pill';
+import { Plot } from '../../../../models/plot';
 
 @Component({
   selector: 'lg-section-markers',
@@ -30,6 +32,7 @@ import { SectionHint } from '../../../section-hint/section-hint';
     SectionEmptyState,
     SectionMarkersImage,
     SectionHint,
+    IdPill,
   ],
   templateUrl: './section-markers.html',
   styleUrl: './section-markers.css',
@@ -54,6 +57,13 @@ export class SectionMarkers {
   protected addManual(): void {
     this.store.addMarker();
     this.newItemIndex.set(this.store.model().markers.length - 1);
+  }
+
+  protected markerTitle(
+    marker: Plot['markers'][number],
+    index: number,
+  ): string {
+    return marker.text || `Punkt ${index + 1}`;
   }
 
   protected toggleAll(): void {

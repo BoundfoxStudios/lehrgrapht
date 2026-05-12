@@ -26,6 +26,7 @@ import { Card } from '../../../../ui/card/card';
 import { Input } from '../../../../ui/input/input';
 import { SectionEmptyState } from '../section-empty-state/section-empty-state';
 import { SectionFnxImage } from './section-fnx-image';
+import { IdPill } from '../../../id-pill/id-pill';
 
 @Component({
   selector: 'lg-section-fnx',
@@ -40,6 +41,7 @@ import { SectionFnxImage } from './section-fnx-image';
     Input,
     SectionEmptyState,
     SectionFnxImage,
+    IdPill,
   ],
   templateUrl: './section-fnx.html',
   styleUrl: './section-fnx.css',
