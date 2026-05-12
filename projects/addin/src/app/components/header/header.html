@@ -11,6 +11,15 @@
     </a>
   }
 
+  @if (showLogo()) {
+    <div class="h-8 w-8 shrink-0">
+      <img
+        src="lehrgrapht-white.svg"
+        alt="LehrGrapht Logo"
+      />
+    </div>
+  }
+
   <div class="min-w-0 flex-1">
     <h1 class="truncate text-base font-semibold tracking-wide">
       {{ title() }}

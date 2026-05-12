@@ -1,4 +1,9 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import {
+  booleanAttribute,
+  ChangeDetectionStrategy,
+  Component,
+  input,
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import {
@@ -24,6 +29,7 @@ export class Header {
   readonly title = input.required<string>();
   readonly subtitle = input<string>();
   readonly backLink = input<unknown[]>();
+  readonly showLogo = input(false, { transform: booleanAttribute });
   readonly saveState = input<HeaderSaveState>('idle');
   readonly loading = input(false);
 }

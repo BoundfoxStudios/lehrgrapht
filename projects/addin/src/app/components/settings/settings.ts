@@ -21,15 +21,18 @@ import {
 } from '../../services/plot-settings.service';
 import { lehrgraphtVersion } from '../../../version';
 import { Input } from '../../ui/input/input';
-
-interface SegmentOption<T> {
-  value: T;
-  label: string;
-}
+import { PillSwitch, PillSwitchOption } from '../pill-switch/pill-switch';
 
 @Component({
   selector: 'lg-settings',
-  imports: [Header, ContentContainer, PlotPreview, FormField, Input],
+  imports: [
+    Header,
+    ContentContainer,
+    PlotPreview,
+    FormField,
+    Input,
+    PillSwitch,
+  ],
   templateUrl: './settings.html',
   styleUrl: './settings.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -37,13 +40,13 @@ interface SegmentOption<T> {
 export class Settings {
   private readonly plotSettingsService = inject(PlotSettingsService);
 
-  protected readonly markerNamingSchemeOptions: SegmentOption<MarkerNamingScheme>[] =
+  protected readonly markerNamingSchemeOptions: PillSwitchOption<MarkerNamingScheme>[] =
     [
       { value: 'alphabetic', label: 'A, B, C, …' },
       { value: 'numeric', label: 'P1, P2, P3, …' },
     ];
 
-  protected readonly legendLabelFormatOptions: SegmentOption<LegendLabelFormat>[] =
+  protected readonly legendLabelFormatOptions: PillSwitchOption<LegendLabelFormat>[] =
     [
       { value: 'none', label: 'Keine' },
       { value: 'f(x)=', label: 'f(x)=' },
@@ -89,13 +92,8 @@ export class Settings {
     axisLabelX: 'x',
     axisLabelY: 'y',
     legendLabelFormat: 'none',
-    showAxisArrows: false,
-    gridStep: '1',
-  };
-
-  protected readonly examplePlot2: Plot = {
-    ...this.examplePlot1,
-    placeAxisLabelsInside: false,
+    showAxisArrows: true,
+    gridStep: '0.5',
   };
 
   constructor() {
@@ -104,13 +102,5 @@ export class Settings {
     effect(() => {
       this.plotSettingsService.set(this.editorModel());
     });
-  }
-
-  protected setMarkerNamingScheme(value: MarkerNamingScheme): void {
-    this.editorModel.update(s => ({ ...s, markerNamingScheme: value }));
-  }
-
-  protected setLegendLabelFormat(value: LegendLabelFormat): void {
-    this.editorModel.update(s => ({ ...s, legendLabelFormat: value }));
   }
 }

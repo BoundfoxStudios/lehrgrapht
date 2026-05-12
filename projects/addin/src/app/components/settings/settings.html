@@ -94,28 +94,11 @@
       <span class="text-heading mb-1 block text-sm font-medium"
         >Namensschema</span
       >
-      <div
-        class="flex gap-1.5"
-        role="radiogroup"
+      <lg-pill-switch
+        [options]="markerNamingSchemeOptions"
+        [formField]="editorForm.markerNamingScheme"
         aria-label="Namensschema"
-      >
-        @for (opt of markerNamingSchemeOptions; track opt.value) {
-          @let active = editorModel().markerNamingScheme === opt.value;
-          <button
-            class="border-default-medium text-body rounded-base flex-1 cursor-pointer border bg-white px-2 py-2 text-xs font-medium transition-colors"
-            [class.border-brand]="active"
-            [class.bg-brand-soft]="active"
-            [class.text-brand-strong]="active"
-            [class.font-semibold]="active"
-            [attr.aria-checked]="active"
-            (click)="setMarkerNamingScheme(opt.value)"
-            role="radio"
-            type="button"
-          >
-            {{ opt.label }}
-          </button>
-        }
-      </div>
+      />
     </div>
   </section>
 
@@ -128,28 +111,11 @@
     </div>
     <div class="flex flex-col gap-2">
       <span class="text-heading mb-1 block text-sm font-medium">Format</span>
-      <div
-        class="flex gap-1.5"
-        role="radiogroup"
+      <lg-pill-switch
+        [options]="legendLabelFormatOptions"
+        [formField]="editorForm.legendLabelFormat"
         aria-label="Legendenformat"
-      >
-        @for (opt of legendLabelFormatOptions; track opt.value) {
-          @let active = editorModel().legendLabelFormat === opt.value;
-          <button
-            class="border-default-medium text-body rounded-base flex-1 cursor-pointer border bg-white px-2 py-2 text-xs font-medium transition-colors"
-            [class.border-brand]="active"
-            [class.bg-brand-soft]="active"
-            [class.text-brand-strong]="active"
-            [class.font-semibold]="active"
-            [attr.aria-checked]="active"
-            (click)="setLegendLabelFormat(opt.value)"
-            role="radio"
-            type="button"
-          >
-            {{ opt.label }}
-          </button>
-        }
-      </div>
+      />
     </div>
   </section>
 
@@ -163,10 +129,6 @@
     <div class="flex justify-center gap-2">
       <lg-plot-preview
         [plot]="examplePlot1"
-        [plotSettings]="editorModel()"
-      />
-      <lg-plot-preview
-        [plot]="examplePlot2"
         [plotSettings]="editorModel()"
       />
     </div>
