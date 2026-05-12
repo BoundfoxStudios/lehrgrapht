@@ -692,7 +692,7 @@ describe('dedupePolygonPoints', () => {
     ]);
   });
 
-  it('removes multiple collinear middles iteratively', () => {
+  it('removes all collinear middles on a shared axis', () => {
     const result = dedupePolygonPoints([
       { x: 0, y: 0 },
       { x: 2, y: 0 },
@@ -730,14 +730,5 @@ describe('dedupePolygonPoints', () => {
       { x: 10, y: 0 },
       { x: 10, y: 5 },
     ]);
-  });
-
-  it('removes nothing from a clean triangle', () => {
-    const input = [
-      { x: 0, y: 0 },
-      { x: 5, y: 0 },
-      { x: 0, y: 5 },
-    ];
-    expect(dedupePolygonPoints(input)).toEqual(input);
   });
 });

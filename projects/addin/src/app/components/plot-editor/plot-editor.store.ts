@@ -401,7 +401,6 @@ export function isPolygonClosingClick(
 export function dedupePolygonPoints(
   points: readonly { x: number; y: number }[],
 ): { x: number; y: number }[] {
-  // Step 1: remove consecutive duplicates
   const result: { x: number; y: number }[] = [];
   for (const p of points) {
     const last = result.at(-1);
@@ -410,7 +409,8 @@ export function dedupePolygonPoints(
     }
   }
 
-  // Step 2: remove collinear middle points, iteratively until stable
+  // Run after the consecutive-duplicate pass so triples are guaranteed non-degenerate;
+  // restart from the start after each splice because indices shift and a removal can expose new collinear triples.
   let changed = true;
   while (changed) {
     changed = false;
