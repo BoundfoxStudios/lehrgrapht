@@ -87,7 +87,7 @@
       @if (store.interactivePoints().length === 0) {
         <p class="text-body-subtle text-xs">Noch keine Punkte gesetzt.</p>
       } @else {
-        <div class="space-y-1">
+        <div class="gap-y-1">
           @for (point of store.interactivePoints(); let i = $index; track i) {
             <div
               class="flex items-center justify-between rounded bg-gray-50 px-2 py-1.5 text-sm"

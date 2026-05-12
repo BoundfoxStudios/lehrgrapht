@@ -1,7 +1,7 @@
 @let form = store.editorForm;
 @let markers = store.model().markers;
 
-<div class="flex flex-col space-y-3 p-2">
+<div class="flex flex-col gap-y-3 p-2">
   @if (markers.length === 0) {
     <lg-section-empty-state
       [interactiveMode]="InteractiveMode.Marker"

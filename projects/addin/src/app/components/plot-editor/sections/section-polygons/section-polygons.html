@@ -1,7 +1,7 @@
 @let form = store.editorForm;
 @let polygons = store.model().polygons;
 
-<div class="flex flex-col space-y-3 p-2">
+<div class="flex flex-col gap-y-3 p-2">
   @if (polygons.length === 0) {
     <lg-section-empty-state
       [interactiveMode]="InteractiveMode.Polygon"
