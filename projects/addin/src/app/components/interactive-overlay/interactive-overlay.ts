@@ -67,6 +67,13 @@ export class InteractiveOverlay {
     return INTERACTIVE_STRATEGIES[mode].minPoints;
   });
 
+  protected readonly headerMax = computed(() => {
+    const mode = this.store.interactiveMode();
+    if (mode === InteractiveMode.Off) return 0;
+    const strategy = INTERACTIVE_STRATEGIES[mode];
+    return strategy.autoFinishAt ?? strategy.minPoints;
+  });
+
   protected readonly canFinish = computed(
     () => this.store.interactivePoints().length >= this.minPoints(),
   );
