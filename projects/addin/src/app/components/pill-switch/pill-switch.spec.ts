@@ -74,6 +74,38 @@ describe('PillSwitch', () => {
     expect(disabledFixture.componentInstance.value).toBe('a');
   });
 
+  it('renders one row per group when options is a 2D array', () => {
+    TestBed.resetTestingModule();
+    @Component({
+      template: `<lg-pill-switch
+        [(value)]="value"
+        [options]="options"
+      />`,
+      imports: [PillSwitch],
+    })
+    class GroupedHost {
+      options = [
+        [
+          { value: 'a', label: 'A' },
+          { value: 'b', label: 'B' },
+        ],
+        [
+          { value: 'c', label: 'C' },
+          { value: 'd', label: 'D' },
+        ],
+      ];
+      value = 'a';
+    }
+    const groupedFixture = TestBed.createComponent(GroupedHost);
+    groupedFixture.detectChanges();
+    const host = groupedFixture.nativeElement as HTMLElement;
+    const switchEl = host.querySelector('lg-pill-switch');
+    const rows = switchEl?.querySelectorAll(':scope > div') ?? [];
+    expect(rows.length).toBe(2);
+    expect(rows[0].querySelectorAll('button').length).toBe(2);
+    expect(rows[1].querySelectorAll('button').length).toBe(2);
+  });
+
   it('applies rounded-full when shape is pill', () => {
     TestBed.resetTestingModule();
     @Component({

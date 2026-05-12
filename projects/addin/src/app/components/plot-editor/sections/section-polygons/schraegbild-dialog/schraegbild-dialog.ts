@@ -32,7 +32,7 @@ export interface SchraegbildResult {
 export const SCHRAEGBILD_MIN_DEPTH = 0.5;
 export const SCHRAEGBILD_MAX_DEPTH = 5;
 export const SCHRAEGBILD_STEP = 0.5;
-export const SCHRAEGBILD_DEFAULT_DEPTH = 0.5;
+export const SCHRAEGBILD_DEFAULT_DEPTH = 1;
 export const SCHRAEGBILD_DEFAULT_DIRECTION: SchraegbildDirection = 'right-up';
 
 export function schraegbildDirectionToOffset(
@@ -62,12 +62,16 @@ export class SchraegbildDialog {
 
   protected readonly step = SCHRAEGBILD_STEP;
 
-  protected readonly directionOptions: PillSwitchOption<SchraegbildDirection>[] =
+  protected readonly directionOptions: PillSwitchOption<SchraegbildDirection>[][] =
     [
-      { value: 'right-up', label: 'Rechts/oben' },
-      { value: 'right-down', label: 'Rechts/unten' },
-      { value: 'left-up', label: 'Links/oben' },
-      { value: 'left-down', label: 'Links/unten' },
+      [
+        { value: 'right-up', label: 'Rechts/oben' },
+        { value: 'right-down', label: 'Rechts/unten' },
+      ],
+      [
+        { value: 'left-up', label: 'Links/oben' },
+        { value: 'left-down', label: 'Links/unten' },
+      ],
     ];
 
   private readonly state = signal<SchraegbildFormValue>({
