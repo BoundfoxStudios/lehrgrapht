@@ -25,4 +25,5 @@ export class Header {
   readonly subtitle = input<string>();
   readonly backLink = input<unknown[]>();
   readonly saveState = input<HeaderSaveState>('idle');
+  readonly loading = input(false);
 }
