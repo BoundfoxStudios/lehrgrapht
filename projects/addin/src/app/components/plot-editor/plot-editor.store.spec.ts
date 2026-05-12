@@ -732,8 +732,11 @@ describe('dedupePolygonPoints', () => {
     ]);
   });
 
-  it('returns a single point when input was just one or duplicate-only', () => {
+  it('returns a single point when input contains only one point', () => {
     expect(dedupePolygonPoints([{ x: 3, y: 3 }])).toEqual([{ x: 3, y: 3 }]);
+  });
+
+  it('returns a single point when all points are duplicates', () => {
     expect(
       dedupePolygonPoints([
         { x: 3, y: 3 },
