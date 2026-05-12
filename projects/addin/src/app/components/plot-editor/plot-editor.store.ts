@@ -401,7 +401,18 @@ export function isPolygonClosingClick(
 export function dedupePolygonPoints(
   points: readonly { x: number; y: number }[],
 ): { x: number; y: number }[] {
-  return points.map(p => ({ x: p.x, y: p.y }));
+  const result: { x: number; y: number }[] = [];
+  for (const p of points) {
+    if (result.length === 0) {
+      result.push({ x: p.x, y: p.y });
+      continue;
+    }
+    const last = result[result.length - 1];
+    if (last.x !== p.x || last.y !== p.y) {
+      result.push({ x: p.x, y: p.y });
+    }
+  }
+  return result;
 }
 
 export function applyPolygon(

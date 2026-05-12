@@ -642,4 +642,39 @@ describe('dedupePolygonPoints', () => {
     ];
     expect(dedupePolygonPoints(input)).toEqual(input);
   });
+
+  it('removes a consecutive duplicate', () => {
+    const result = dedupePolygonPoints([
+      { x: 0, y: 0 },
+      { x: 0, y: 0 },
+      { x: 5, y: 5 },
+    ]);
+    expect(result).toEqual([
+      { x: 0, y: 0 },
+      { x: 5, y: 5 },
+    ]);
+  });
+
+  it('removes multiple consecutive duplicates in a row', () => {
+    const result = dedupePolygonPoints([
+      { x: 0, y: 0 },
+      { x: 0, y: 0 },
+      { x: 0, y: 0 },
+      { x: 5, y: 5 },
+    ]);
+    expect(result).toEqual([
+      { x: 0, y: 0 },
+      { x: 5, y: 5 },
+    ]);
+  });
+
+  it('keeps non-consecutive duplicates (self-intersection)', () => {
+    const input = [
+      { x: 0, y: 0 },
+      { x: 5, y: 0 },
+      { x: 0, y: 0 },
+      { x: 0, y: 5 },
+    ];
+    expect(dedupePolygonPoints(input)).toEqual(input);
+  });
 });
