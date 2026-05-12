@@ -98,6 +98,10 @@ const buildInitialPlot = (): Plot => ({
   axisLabelX: 'x',
   axisLabelY: 'y',
   legendLabelFormat: 'none',
+  showAxisArrows: false,
+  gridStep: '1',
+  aspectRatio: 'auto',
+  background: 'white',
 });
 
 const lessThanValidator = (
@@ -203,6 +207,7 @@ export function applyPolygon(
         fillColor: null,
         lineStyle: 'solid',
         showPoints: false,
+        fillStyle: 'solid',
       },
     ],
   };
@@ -488,6 +493,7 @@ export const PlotEditorStore = signalStore(
               fillColor: null,
               lineStyle: 'solid',
               showPoints: false,
+              fillStyle: 'solid',
             },
           ],
         }));

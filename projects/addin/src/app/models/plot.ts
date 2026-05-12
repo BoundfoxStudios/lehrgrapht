@@ -6,6 +6,11 @@ export type LegendLabelFormat = 'none' | 'f(x)=' | 'y=';
 
 export type FunctionLineStyle = 'solid' | 'dashed';
 
+export type AspectRatio = 'auto' | 'square' | 'wide';
+export type PlotBackground = 'white' | 'soft' | 'paper';
+export type GridStep = '0.5' | '1' | '2';
+export type PolygonFillStyle = 'solid' | 'hatched' | 'outline';
+
 export interface MathFunction {
   fnx: string;
   color: string;
@@ -40,6 +45,7 @@ export interface Polygon {
   fillColor: string | null;
   lineStyle: FunctionLineStyle;
   showPoints: boolean;
+  fillStyle: PolygonFillStyle;
 }
 
 export interface PlotSettings {
@@ -71,4 +77,8 @@ export interface Plot {
   axisLabelX: string;
   axisLabelY: string;
   legendLabelFormat: LegendLabelFormat;
+  showAxisArrows: boolean;
+  gridStep: GridStep;
+  aspectRatio: AspectRatio;
+  background: PlotBackground;
 }

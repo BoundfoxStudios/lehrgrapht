@@ -89,6 +89,10 @@ export class Settings {
     axisLabelX: 'x',
     axisLabelY: 'y',
     legendLabelFormat: 'none',
+    showAxisArrows: false,
+    gridStep: '1',
+    aspectRatio: 'auto',
+    background: 'white',
   };
 
   protected readonly examplePlot2: Plot = {

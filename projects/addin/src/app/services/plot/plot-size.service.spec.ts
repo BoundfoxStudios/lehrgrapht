@@ -18,6 +18,10 @@ const basePlot: Plot = {
   axisLabelX: 'x',
   axisLabelY: 'y',
   legendLabelFormat: 'none',
+  showAxisArrows: false,
+  gridStep: '1',
+  aspectRatio: 'auto',
+  background: 'white',
 };
 
 describe('PlotSizeService', () => {

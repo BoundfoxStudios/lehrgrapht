@@ -216,4 +216,91 @@ describe('migrate-to-latest', () => {
       expect(result['areas']).toBeUndefined();
     });
   });
+
+  describe('display field defaults', () => {
+    it('backfills showAxisArrows to false', () => {
+      const result = migrate({});
+      expect(result['showAxisArrows']).toBe(false);
+    });
+
+    it('preserves existing showAxisArrows', () => {
+      const result = migrate({ showAxisArrows: true });
+      expect(result['showAxisArrows']).toBe(true);
+    });
+
+    it('backfills gridStep to 1', () => {
+      const result = migrate({});
+      expect(result['gridStep']).toBe('1');
+    });
+
+    it('preserves existing gridStep', () => {
+      const result = migrate({ gridStep: '0.5' });
+      expect(result['gridStep']).toBe('0.5');
+    });
+
+    it('backfills aspectRatio to auto', () => {
+      const result = migrate({});
+      expect(result['aspectRatio']).toBe('auto');
+    });
+
+    it('backfills background to white', () => {
+      const result = migrate({});
+      expect(result['background']).toBe('white');
+    });
+  });
+
+  describe('polygon fillStyle backfill', () => {
+    it('backfills fillStyle to solid on existing polygons', () => {
+      const result = migrate({
+        polygons: [
+          {
+            points: [],
+            connect: true,
+            lineColor: '#000',
+            fillColor: '#fff',
+            lineStyle: 'solid',
+            showPoints: false,
+          },
+        ],
+      });
+      const polygons = result['polygons'] as Record<string, unknown>[];
+      expect(polygons[0]['fillStyle']).toBe('solid');
+    });
+
+    it('preserves existing fillStyle on existing polygons', () => {
+      const result = migrate({
+        polygons: [
+          {
+            points: [],
+            connect: true,
+            lineColor: '#000',
+            fillColor: '#fff',
+            lineStyle: 'solid',
+            showPoints: false,
+            fillStyle: 'hatched',
+          },
+        ],
+      });
+      const polygons = result['polygons'] as Record<string, unknown>[];
+      expect(polygons[0]['fillStyle']).toBe('hatched');
+    });
+
+    it('sets fillStyle solid on legacy lines and areas', () => {
+      const result = migrate({
+        lines: [
+          { x1: 0, y1: 0, x2: 1, y2: 1, color: '#ff0000', lineStyle: 'solid' },
+        ],
+        areas: [
+          {
+            points: [{ x: 0, y: 0 }],
+            color: '#00ff00',
+            showPoints: false,
+          },
+        ],
+      });
+      const polygons = result['polygons'] as Record<string, unknown>[];
+      expect(polygons[0]['fillStyle']).toBe('solid');
+      expect(polygons[1]['fillStyle']).toBe('solid');
+    });
+  });
 });

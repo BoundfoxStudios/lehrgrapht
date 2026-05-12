@@ -20,24 +20,15 @@ export const migrateToLatest: Migration = {
 
     const polygonsFromLines = lines.map(line => ({
       points: [
-        {
-          x: line['x1'],
-          y: line['y1'],
-          labelPosition: 'auto',
-          labelText: '',
-        },
-        {
-          x: line['x2'],
-          y: line['y2'],
-          labelPosition: 'auto',
-          labelText: '',
-        },
+        { x: line['x1'], y: line['y1'], labelPosition: 'auto', labelText: '' },
+        { x: line['x2'], y: line['y2'], labelPosition: 'auto', labelText: '' },
       ],
       connect: false,
       lineColor: line['color'],
       fillColor: null,
       lineStyle: line['lineStyle'] ?? 'solid',
       showPoints: false,
+      fillStyle: 'solid',
     }));
 
     const polygonsFromAreas = areas.map(area => {
@@ -55,15 +46,27 @@ export const migrateToLatest: Migration = {
         fillColor: area['color'],
         lineStyle: 'solid',
         showPoints: area['showPoints'] ?? false,
+        fillStyle: 'solid',
       };
     });
+
+    const existingPolygons =
+      (plot['polygons'] as Record<string, unknown>[] | undefined) ?? [];
+    const migratedExistingPolygons = existingPolygons.map(p => ({
+      ...p,
+      fillStyle: p['fillStyle'] ?? 'solid',
+    }));
 
     const result: Record<string, unknown> = {
       ...plot,
       fnx: migratedFnx,
       legendLabelFormat: plot['legendLabelFormat'] ?? 'none',
+      showAxisArrows: plot['showAxisArrows'] ?? false,
+      gridStep: plot['gridStep'] ?? '1',
+      aspectRatio: plot['aspectRatio'] ?? 'auto',
+      background: plot['background'] ?? 'white',
       polygons: [
-        ...((plot['polygons'] as Record<string, unknown>[] | undefined) ?? []),
+        ...migratedExistingPolygons,
         ...polygonsFromLines,
         ...polygonsFromAreas,
       ],

@@ -27,6 +27,10 @@ const basePlot: Plot = {
   axisLabelX: 'x',
   axisLabelY: 'y',
   legendLabelFormat: 'none',
+  showAxisArrows: false,
+  gridStep: '1',
+  aspectRatio: 'auto',
+  background: 'white',
 };
 
 describe('PlotDataService', () => {
@@ -163,6 +167,7 @@ describe('PlotDataService', () => {
             fillColor: '#00ff00',
             lineStyle: 'solid',
             showPoints: false,
+            fillStyle: 'solid',
           },
         ],
       };
@@ -190,6 +195,7 @@ describe('PlotDataService', () => {
             fillColor: '#ff0000',
             lineStyle: 'solid',
             showPoints: false,
+            fillStyle: 'solid',
           },
         ],
       };
@@ -219,6 +225,7 @@ describe('PlotDataService', () => {
             fillColor: null,
             lineStyle: 'solid',
             showPoints: false,
+            fillStyle: 'solid',
           },
         ],
       };
@@ -246,6 +253,7 @@ describe('PlotDataService', () => {
             fillColor: null,
             lineStyle: 'dashed',
             showPoints: false,
+            fillStyle: 'solid',
           },
         ],
       };
@@ -277,6 +285,7 @@ describe('PlotDataService', () => {
             fillColor: null,
             lineStyle: 'solid',
             showPoints: false,
+            fillStyle: 'solid',
           },
         ],
       };
@@ -303,6 +312,7 @@ describe('PlotDataService', () => {
             fillColor: '#ff0000',
             lineStyle: 'solid',
             showPoints: true,
+            fillStyle: 'solid',
           },
         ],
       };
@@ -335,6 +345,7 @@ describe('PlotDataService', () => {
             fillColor: null,
             lineStyle: 'solid',
             showPoints: false,
+            fillStyle: 'solid',
           },
         ],
       };
