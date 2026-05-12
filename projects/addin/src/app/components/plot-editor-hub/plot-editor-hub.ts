@@ -1,4 +1,9 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import {
@@ -28,4 +33,11 @@ export class PlotEditorHub {
   protected readonly faDrawPolygon = faDrawPolygon;
 
   protected readonly store = inject(PlotEditorStore);
+
+  protected readonly rangeSubtitle = computed(() => {
+    const r = this.store.model().range;
+    const xCount = (r.x.max - r.x.min) * 2;
+    const yCount = (r.y.max - r.y.min) * 2;
+    return `x: ${r.x.min} / ${r.x.max} · y: ${r.y.min} / ${r.y.max} · ${xCount}×${yCount} K.`;
+  });
 }

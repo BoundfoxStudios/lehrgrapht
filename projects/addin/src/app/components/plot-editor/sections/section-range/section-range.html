@@ -66,11 +66,17 @@
     </div>
   </div>
 
-  <div
-    class="flex items-center justify-between rounded-lg bg-gray-100 px-3 py-2"
-  >
-    <span class="text-sm text-gray-600">Kästchen:</span>
-    <span class="font-medium text-gray-800">{{ squareCount() }}</span>
+  <div class="flex items-center justify-between">
+    <span
+      class="text-body-subtle text-[10px] font-semibold tracking-wider uppercase"
+    >
+      Kästchen
+    </span>
+    <span
+      class="bg-brand-soft text-brand-strong rounded-full px-2.5 py-0.5 text-xs font-semibold tabular-nums"
+    >
+      {{ squareCount() }}
+    </span>
   </div>
 
   @if (plotSizeMm.exceedsA4) {
