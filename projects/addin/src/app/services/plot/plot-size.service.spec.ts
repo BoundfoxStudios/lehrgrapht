@@ -20,8 +20,6 @@ const basePlot: Plot = {
   legendLabelFormat: 'none',
   showAxisArrows: false,
   gridStep: '1',
-  aspectRatio: 'auto',
-  background: 'white',
 };
 
 describe('PlotSizeService', () => {

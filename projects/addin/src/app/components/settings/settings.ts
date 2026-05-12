@@ -91,8 +91,6 @@ export class Settings {
     legendLabelFormat: 'none',
     showAxisArrows: false,
     gridStep: '1',
-    aspectRatio: 'auto',
-    background: 'white',
   };
 
   protected readonly examplePlot2: Plot = {

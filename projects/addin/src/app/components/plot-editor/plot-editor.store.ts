@@ -100,8 +100,6 @@ const buildInitialPlot = (): Plot => ({
   legendLabelFormat: 'none',
   showAxisArrows: false,
   gridStep: '1',
-  aspectRatio: 'auto',
-  background: 'white',
 });
 
 const lessThanValidator = (

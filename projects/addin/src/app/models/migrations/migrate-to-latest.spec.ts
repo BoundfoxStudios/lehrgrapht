@@ -237,16 +237,6 @@ describe('migrate-to-latest', () => {
       const result = migrate({ gridStep: '0.5' });
       expect(result['gridStep']).toBe('0.5');
     });
-
-    it('backfills aspectRatio to auto', () => {
-      const result = migrate({});
-      expect(result['aspectRatio']).toBe('auto');
-    });
-
-    it('backfills background to white', () => {
-      const result = migrate({});
-      expect(result['background']).toBe('white');
-    });
   });
 
   describe('polygon fillStyle backfill', () => {

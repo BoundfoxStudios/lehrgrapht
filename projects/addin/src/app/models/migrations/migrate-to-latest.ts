@@ -63,8 +63,6 @@ export const migrateToLatest: Migration = {
       legendLabelFormat: plot['legendLabelFormat'] ?? 'none',
       showAxisArrows: plot['showAxisArrows'] ?? false,
       gridStep: plot['gridStep'] ?? '1',
-      aspectRatio: plot['aspectRatio'] ?? 'auto',
-      background: plot['background'] ?? 'white',
       polygons: [
         ...migratedExistingPolygons,
         ...polygonsFromLines,

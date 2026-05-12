@@ -6,8 +6,6 @@ export type LegendLabelFormat = 'none' | 'f(x)=' | 'y=';
 
 export type FunctionLineStyle = 'solid' | 'dashed';
 
-export type AspectRatio = 'auto' | 'square' | 'wide';
-export type PlotBackground = 'white' | 'soft' | 'paper';
 export type GridStep = '0.5' | '1' | '2';
 export type PolygonFillStyle = 'solid' | 'hatched' | 'outline';
 
@@ -79,6 +77,4 @@ export interface Plot {
   legendLabelFormat: LegendLabelFormat;
   showAxisArrows: boolean;
   gridStep: GridStep;
-  aspectRatio: AspectRatio;
-  background: PlotBackground;
 }

@@ -199,17 +199,14 @@ export class PlotService {
     | PlotGenerateErrorCode
   > {
     const { mmToInches, ppiBase } = PLOT_CONSTANTS;
-    const { xValueMin, xValueMax, yValueMin, yValueMax } = sizeCalc;
-    const plotSizePx = { ...sizeCalc.plotSizePx };
-    const plotSizePoints = { ...sizeCalc.plotSizePoints };
-
-    if (plot.aspectRatio === 'wide') {
-      plotSizePx.width = plotSizePx.height * (4 / 3);
-      plotSizePoints.width = plotSizePoints.height * (4 / 3);
-    }
-
-    const useSquareScale = plot.aspectRatio === 'square' || plot.squarePlots;
-    const backgroundColor = this.backgroundCssFor(plot.background);
+    const {
+      plotSizePx,
+      plotSizePoints,
+      xValueMin,
+      xValueMax,
+      yValueMin,
+      yValueMax,
+    } = sizeCalc;
     const gridDtick = Number(plot.gridStep);
 
     const tempDiv = document.createElement('div');
@@ -225,8 +222,6 @@ export class PlotService {
           showlegend: false,
           width: plotSizePx.width,
           height: plotSizePx.height,
-          plot_bgcolor: backgroundColor,
-          paper_bgcolor: backgroundColor,
           images: functionLabelImages.length ? functionLabelImages : undefined,
           annotations: !plot.showAxis
             ? undefined
@@ -245,9 +240,7 @@ export class PlotService {
             showticklabels: plot.showAxisLabels && !plot.placeAxisLabelsInside,
             tickmode: 'linear',
             dtick: gridDtick,
-            ...(useSquareScale
-              ? { scaleanchor: 'y' as const, scaleratio: 1 }
-              : {}),
+            scaleanchor: 'y',
             ticklabelstep: 2,
             gridcolor: plotSettings.gridLineColor,
             gridwidth: plotSettings.gridLineWidth,
@@ -375,17 +368,6 @@ export class PlotService {
       }
     } catch {
       return undefined;
-    }
-  }
-
-  private backgroundCssFor(bg: Plot['background']): string {
-    switch (bg) {
-      case 'soft':
-        return '#f7f8fc';
-      case 'paper':
-        return '#fdf6e3';
-      default:
-        return '#ffffff';
     }
   }
 
