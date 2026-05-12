@@ -403,12 +403,8 @@ export function dedupePolygonPoints(
 ): { x: number; y: number }[] {
   const result: { x: number; y: number }[] = [];
   for (const p of points) {
-    if (result.length === 0) {
-      result.push({ x: p.x, y: p.y });
-      continue;
-    }
-    const last = result[result.length - 1];
-    if (last.x !== p.x || last.y !== p.y) {
+    const last = result.at(-1);
+    if (last?.x !== p.x || last.y !== p.y) {
       result.push({ x: p.x, y: p.y });
     }
   }
