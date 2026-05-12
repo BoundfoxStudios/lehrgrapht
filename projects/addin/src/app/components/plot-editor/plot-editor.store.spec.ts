@@ -8,6 +8,7 @@ import {
   ApplyContext,
   calculateParabolaFunction,
   calculateStraightLineFunction,
+  dedupePolygonPoints,
   isPolygonClosingClick,
   namePolygonPoints,
   nextColor,
@@ -629,5 +630,16 @@ describe('isPolygonClosingClick', () => {
         { x: 0, y: 0 },
       ),
     ).toBe(true);
+  });
+});
+
+describe('dedupePolygonPoints', () => {
+  it('returns input unchanged when there is no redundancy', () => {
+    const input = [
+      { x: 0, y: 0 },
+      { x: 5, y: 0 },
+      { x: 0, y: 5 },
+    ];
+    expect(dedupePolygonPoints(input)).toEqual(input);
   });
 });

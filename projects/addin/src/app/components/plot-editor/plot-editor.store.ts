@@ -398,6 +398,12 @@ export function isPolygonClosingClick(
   );
 }
 
+export function dedupePolygonPoints(
+  points: readonly { x: number; y: number }[],
+): { x: number; y: number }[] {
+  return points.map(p => ({ x: p.x, y: p.y }));
+}
+
 export function applyPolygon(
   model: Plot,
   points: readonly { x: number; y: number }[],
