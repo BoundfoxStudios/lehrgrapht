@@ -448,13 +448,19 @@ export function applyMarker(
   };
 }
 
-export function applyStraightLine(
+export function applyFunction(
   model: Plot,
   points: readonly { x: number; y: number }[],
   _ctx: ApplyContext,
 ): Plot {
-  if (points.length < 2) return model;
-  const fnxString = calculateStraightLineFunction(points[0], points[1]);
+  let fnxString: string | null;
+  if (points.length === 2) {
+    fnxString = calculateStraightLineFunction(points[0], points[1]);
+  } else if (points.length >= 3) {
+    fnxString = calculateParabolaFunction(points[0], points[1], points[2]);
+  } else {
+    return model;
+  }
   if (fnxString === null) return model;
   return {
     ...model,
@@ -478,8 +484,8 @@ export const INTERACTIVE_STRATEGIES: Record<
   [InteractiveMode.Marker]: { minPoints: 1, apply: applyMarker },
   [InteractiveMode.Function]: {
     minPoints: 2,
-    autoFinishAt: 2,
-    apply: applyStraightLine,
+    autoFinishAt: 3,
+    apply: applyFunction,
   },
 };
 

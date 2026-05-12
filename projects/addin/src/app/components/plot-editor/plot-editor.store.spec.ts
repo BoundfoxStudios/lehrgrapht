@@ -2,9 +2,9 @@ import { Plot, Polygon } from '../../models/plot';
 import { MarkerNamingService } from '../../services/marker-naming.service';
 import {
   applyAutoLabelToPolygon,
+  applyFunction,
   applyMarker,
   applyPolygon,
-  applyStraightLine,
   ApplyContext,
   calculateParabolaFunction,
   calculateStraightLineFunction,
@@ -340,14 +340,14 @@ describe('applyMarker', () => {
   });
 });
 
-describe('applyStraightLine', () => {
+describe('applyFunction', () => {
   it('returns model unchanged with <2 points', () => {
-    expect(applyStraightLine(basePlot, [], ctx)).toBe(basePlot);
-    expect(applyStraightLine(basePlot, [{ x: 0, y: 0 }], ctx)).toBe(basePlot);
+    expect(applyFunction(basePlot, [], ctx)).toBe(basePlot);
+    expect(applyFunction(basePlot, [{ x: 0, y: 0 }], ctx)).toBe(basePlot);
   });
 
-  it('returns model unchanged for vertical line (calculateStraightLineFunction returns null)', () => {
-    const result = applyStraightLine(
+  it('returns model unchanged for two points with same x (vertical)', () => {
+    const result = applyFunction(
       basePlot,
       [
         { x: 1, y: 0 },
@@ -358,8 +358,8 @@ describe('applyStraightLine', () => {
     expect(result).toBe(basePlot);
   });
 
-  it('appends fnx with computed expression, cycled color, none legend', () => {
-    const result = applyStraightLine(
+  it('appends fnx with line expression for two points', () => {
+    const result = applyFunction(
       basePlot,
       [
         { x: 0, y: 1 },
@@ -374,6 +374,75 @@ describe('applyStraightLine', () => {
       legendPosition: 'none',
       lineStyle: 'solid',
     });
+  });
+
+  it('appends fnx with parabola expression for three points', () => {
+    const result = applyFunction(
+      basePlot,
+      [
+        { x: -1, y: 1 },
+        { x: 0, y: 0 },
+        { x: 1, y: 1 },
+      ],
+      ctx,
+    );
+    expect(result.fnx.length).toBe(1);
+    expect(result.fnx[0]).toEqual({
+      fnx: 'x^2',
+      color: nextColor(0),
+      legendPosition: 'none',
+      lineStyle: 'solid',
+    });
+  });
+
+  it('returns model unchanged for three points sharing an x', () => {
+    const result = applyFunction(
+      basePlot,
+      [
+        { x: 1, y: 0 },
+        { x: 1, y: 2 },
+        { x: 2, y: 5 },
+      ],
+      ctx,
+    );
+    expect(result).toBe(basePlot);
+  });
+
+  it('appends a line for three collinear points', () => {
+    const result = applyFunction(
+      basePlot,
+      [
+        { x: 0, y: 0 },
+        { x: 1, y: 1 },
+        { x: 2, y: 2 },
+      ],
+      ctx,
+    );
+    expect(result.fnx.length).toBe(1);
+    expect(result.fnx[0].fnx).toBe('x');
+  });
+
+  it('cycles color based on existing fnx count', () => {
+    const seed = {
+      ...basePlot,
+      fnx: [
+        {
+          fnx: 'x',
+          color: nextColor(0),
+          legendPosition: 'none' as const,
+          lineStyle: 'solid' as const,
+        },
+      ],
+    };
+    const result = applyFunction(
+      seed,
+      [
+        { x: 0, y: 0 },
+        { x: 1, y: 1 },
+      ],
+      ctx,
+    );
+    expect(result.fnx[1].color).toBe(nextColor(1));
   });
 });
 
