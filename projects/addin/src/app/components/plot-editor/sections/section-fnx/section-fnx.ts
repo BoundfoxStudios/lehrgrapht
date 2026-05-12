@@ -14,6 +14,7 @@ import {
 import { FormField } from '@angular/forms/signals';
 import { Dropdown } from '../../../dropdown/dropdown';
 import { MathDisplay } from '../../../math-display/math-display';
+import { PillSwitch } from '../../../pill-switch/pill-switch';
 import { InteractiveMode } from '../../interactive-mode';
 import { PlotEditorStore } from '../../plot-editor.store';
 import {
@@ -32,6 +33,7 @@ import { SectionFnxImage } from './section-fnx-image';
     FaIconComponent,
     FormField,
     Dropdown,
+    PillSwitch,
     MathDisplay,
     ButtonDirective,
     Card,

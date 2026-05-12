@@ -53,19 +53,26 @@
           </button>
         </div>
 
-        <div
-          class="mb-2 grid grid-cols-[auto_1fr] items-center gap-x-3 gap-y-2"
-        >
-          <span class="text-xs text-gray-600">Linie</span>
-          <lg-dropdown
-            [formField]="control.lineStyle"
-            [options]="lineStyleOptions"
-          />
-          <span class="text-xs text-gray-600">Legende</span>
-          <lg-dropdown
-            [formField]="control.legendPosition"
-            [options]="legendPositionOptions"
-          />
+        <div class="mb-2 flex flex-col gap-2">
+          <div class="flex items-center justify-between">
+            <span class="text-body-subtle text-[10px] font-semibold">Stil</span>
+            <lg-pill-switch
+              [options]="lineStyleOptions"
+              [formField]="control.lineStyle"
+              shape="pill"
+              aria-label="Linienstil"
+            />
+          </div>
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-body-subtle text-[10px] font-semibold"
+              >Legende</span
+            >
+            <lg-dropdown
+              class="max-w-[180px] flex-1"
+              [formField]="control.legendPosition"
+              [options]="legendPositionOptions"
+            />
+          </div>
         </div>
         <div class="flex items-center gap-2">
           <lg-input
