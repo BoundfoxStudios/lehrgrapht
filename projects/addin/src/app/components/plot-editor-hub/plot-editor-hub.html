@@ -50,7 +50,7 @@
   </h3>
   <div class="grid grid-cols-2 gap-2">
     <a
-      class="border-default-medium rounded-base hover:border-brand-medium flex min-h-[78px] flex-col gap-1.5 border bg-white p-2.5 text-left transition-colors"
+      class="border-default-medium rounded-base hover:border-brand-medium flex min-h-19.5 flex-col gap-1.5 border bg-white p-2.5 text-left transition-colors"
       [routerLink]="['/plot/editor', store.routeId(), 'fnx']"
     >
       <div class="flex items-center justify-between">
@@ -132,7 +132,9 @@
         }
       </div>
       <div>
-        <div class="text-heading text-sm font-semibold">Polygone</div>
+        <div class="text-heading text-sm font-semibold">
+          Polygone / Linien / Flächen
+        </div>
         <div class="text-body-subtle text-2xs mt-0.5">
           @if (model.polygons.length === 0) {
             + hinzufügen

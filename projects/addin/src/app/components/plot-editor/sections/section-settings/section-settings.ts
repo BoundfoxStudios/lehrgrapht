@@ -21,6 +21,5 @@ export class SectionSettings {
   protected readonly gridStepOptions: PillSwitchOption<GridStep>[] = [
     { value: '0.5', label: '0,5' },
     { value: '1', label: '1' },
-    { value: '2', label: '2' },
   ];
 }

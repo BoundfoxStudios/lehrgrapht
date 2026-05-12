@@ -62,17 +62,19 @@
 @let visibleList = plots.value();
 @let isLoading = plots.isLoading();
 
-<div class="px-3 py-2.5">
-  <a
-    class="w-full"
-    [routerLink]="'/plot/editor'"
-    lgButton
-    variant="outline"
-  >
-    <fa-icon [icon]="faPlus" />
-    <span>Neuer Plot</span>
-  </a>
-</div>
+@if (visibleList.length) {
+  <div class="px-3 py-2.5">
+    <a
+      class="w-full"
+      [routerLink]="'/plot/editor'"
+      lgButton
+      variant="outline"
+    >
+      <fa-icon [icon]="faPlus" />
+      <span>Neuer Plot</span>
+    </a>
+  </div>
+}
 
 <div class="flex flex-col gap-2 px-3 pb-3">
   @if (isLoading) {
@@ -89,7 +91,7 @@
     }
   } @else if (visibleList.length === 0) {
     <div
-      class="border-default-medium rounded-base flex flex-col items-center gap-3 border bg-white px-4 py-6 text-center"
+      class="border-default-medium rounded-base mt-2.5 flex flex-col items-center gap-3 border bg-white px-4 py-6 text-center"
     >
       <svg
         class="text-brand"

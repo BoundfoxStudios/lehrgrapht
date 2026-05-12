@@ -80,14 +80,7 @@ const buildInitialPlot = (): Plot => ({
     x: { min: -3, max: 3 },
     y: { min: -3, max: 3 },
   },
-  fnx: [
-    {
-      fnx: 'x',
-      color: colors[0],
-      legendPosition: 'none',
-      lineStyle: 'solid',
-    },
-  ],
+  fnx: [],
   markers: [],
   polygons: [],
   showAxis: true,
@@ -98,8 +91,8 @@ const buildInitialPlot = (): Plot => ({
   axisLabelX: 'x',
   axisLabelY: 'y',
   legendLabelFormat: 'none',
-  showAxisArrows: false,
-  gridStep: '1',
+  showAxisArrows: true,
+  gridStep: '0.5',
 });
 
 const lessThanValidator = (

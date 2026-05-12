@@ -14,16 +14,18 @@
       label="Achsen anzeigen"
       sub="X- und Y-Achse als Linie"
     />
-    <lg-toggle-row
-      [formField]="form.showAxisLabels"
-      label="Achsenbeschriftung"
-      sub="Zahlenwerte an den Gitterlinien"
-    />
-    <lg-toggle-row
-      [formField]="form.showAxisArrows"
-      label="Pfeilspitzen"
-      sub="An den Enden der Achsen"
-    />
+    @if (form.showAxis().value()) {
+      <lg-toggle-row
+        [formField]="form.showAxisLabels"
+        label="Achsenbeschriftung"
+        sub="Zahlenwerte an den Gitterlinien"
+      />
+      <lg-toggle-row
+        [formField]="form.showAxisArrows"
+        label="Pfeilspitzen"
+        sub="An den Enden der Achsen"
+      />
+    }
   </section>
 
   <section

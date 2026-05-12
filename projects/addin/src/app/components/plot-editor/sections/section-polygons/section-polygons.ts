@@ -83,7 +83,7 @@ export class SectionPolygons {
 
   protected polygonPrefix(polygon: Polygon): IdPillPrefix {
     // closed shape with >= 3 points -> Area, otherwise Line
-    return polygon.connect && polygon.points.length >= 3 ? 'A' : 'L';
+    return polygon.connect && polygon.points.length >= 3 ? 'F' : 'L';
   }
 
   protected polygonTitle(polygon: Polygon, index: number): string {

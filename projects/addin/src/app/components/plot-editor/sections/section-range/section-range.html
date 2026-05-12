@@ -101,10 +101,17 @@
 
   <button
     class="w-full"
+    [disabled]="!store.model().markers.length && !store.model().polygons.length"
     (click)="store.autoAdjustLimits()"
     lgButton
     type="button"
   >
     Grenzen automatisch anpassen
   </button>
+  <lg-section-hint [icon]="faInfoCircle"
+    >"Grenzen automatisch anpassen" passt die Grenzen so an, dass alle Punkte
+    und Polygone im Schaubild sichtbar sind + 1 weiteres Kästchen auf jeder
+    Seite. Benötigt daher mindestens einen Punkt oder ein
+    Polygon.</lg-section-hint
+  >
 </div>

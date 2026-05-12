@@ -5,7 +5,7 @@ import {
   input,
 } from '@angular/core';
 
-export type IdPillPrefix = 'P' | 'L' | 'f' | 'A';
+export type IdPillPrefix = 'P' | 'L' | 'f' | 'F';
 export type IdPillState = 'normal' | 'new';
 
 @Component({
