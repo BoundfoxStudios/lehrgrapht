@@ -3,5 +3,9 @@
   [href]="url()"
 >
   <fa-icon [icon]="icon()" />
-  <span class="pl-0.5 underline">{{ text() }}</span></a
+  <span
+    class="pl-0.5"
+    [class.underline]="underline()"
+    >{{ text() }}</span
+  ></a
 >

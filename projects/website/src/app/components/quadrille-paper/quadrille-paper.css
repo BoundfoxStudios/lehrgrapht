@@ -1,0 +1,56 @@
+@reference '../../../styles.css';
+
+:host {
+  @apply block;
+  background-size:
+    16px 16px,
+    16px 16px,
+    80px 80px,
+    80px 80px;
+
+  &.with-border {
+    @apply rounded-2xl border-2;
+  }
+
+  &.cream {
+    @apply bg-cream;
+    background-image:
+      linear-gradient(
+        to right,
+        rgba(168, 140, 80, 0.18) 0.5px,
+        transparent 0.5px
+      ),
+      linear-gradient(
+        to bottom,
+        rgba(168, 140, 80, 0.18) 0.5px,
+        transparent 0.5px
+      ),
+      linear-gradient(
+        to right,
+        rgba(168, 140, 80, 0.3) 0.7px,
+        transparent 0.7px
+      ),
+      linear-gradient(
+        to bottom,
+        rgba(168, 140, 80, 0.3) 0.7px,
+        transparent 0.7px
+      );
+
+    &.with-border {
+      @apply border-cream-line;
+    }
+  }
+
+  &:not(.cream) {
+    @apply bg-paper;
+    background-image:
+      linear-gradient(to right, #cfd6e8 0.5px, transparent 0.5px),
+      linear-gradient(to bottom, #cfd6e8 0.5px, transparent 0.5px),
+      linear-gradient(to right, #a9b1c7 0.6px, transparent 0.6px),
+      linear-gradient(to bottom, #a9b1c7 0.6px, transparent 0.6px);
+
+    &.with-border {
+      @apply border-[#e4e6ef];
+    }
+  }
+}

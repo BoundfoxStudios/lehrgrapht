@@ -1,0 +1,49 @@
+<ng-template #header>
+  <div class="text-xl">
+    <ng-container *ngTemplateOutlet="handwrittenTemplate()?.template" />
+  </div>
+  <div class="mt-3 mb-10 text-5xl font-medium">
+    <ng-container *ngTemplateOutlet="headlineTemplate()?.template" />
+  </div>
+</ng-template>
+
+<ng-template #verticalTemplate>
+  <div class="flex flex-col items-center">
+    <ng-container *ngTemplateOutlet="header" />
+
+    <ng-container *ngTemplateOutlet="contentTemplate()?.template" />
+  </div>
+</ng-template>
+
+<ng-template #horizontalTemplate>
+  <div
+    class="flex flex-col items-center gap-x-12 gap-y-4 lg:flex-row"
+    [class.lg:flex-row-reverse]="headerSide() === 'right'"
+  >
+    <div class="flex flex-2/5 flex-col">
+      <ng-container *ngTemplateOutlet="header" />
+      <ng-container *ngTemplateOutlet="contentTemplate()?.template" />
+    </div>
+    <div class="flex-3/5">
+      <ng-container *ngTemplateOutlet="sideContentTemplate()?.template" />
+    </div>
+  </div>
+</ng-template>
+
+@let isVertical = headerSide() === 'top';
+
+@if (variant() === 'quadrille paper') {
+  <lgw-quadrille-paper class="py-20">
+    <lgw-content-container>
+      <ng-container
+        *ngTemplateOutlet="isVertical ? verticalTemplate : horizontalTemplate"
+      />
+    </lgw-content-container>
+  </lgw-quadrille-paper>
+} @else {
+  <lgw-content-container>
+    <ng-container
+      *ngTemplateOutlet="isVertical ? verticalTemplate : horizontalTemplate"
+    />
+  </lgw-content-container>
+}

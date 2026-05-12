@@ -1,11 +1,12 @@
 import { Component, inject } from '@angular/core';
-import { Hero } from '../../components/hero/hero';
 import { ContentContainer } from '../../components/content-container/content-container';
 import { Meta, Title } from '@angular/platform-browser';
+import { Handwritten } from '../../components/handwritten/handwritten';
+import { Header } from '../../components/header/header';
 
 @Component({
   selector: 'lgw-privacy-policy-page',
-  imports: [Hero, ContentContainer],
+  imports: [ContentContainer, Handwritten, Header],
   templateUrl: './privacy-policy-page.html',
   styleUrl: './privacy-policy-page.css',
 })

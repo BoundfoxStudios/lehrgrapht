@@ -12,6 +12,7 @@ export class SupportEmailLink {
   protected readonly faEnvelope = faEnvelope;
 
   readonly subject = input<string | undefined>(undefined);
+  readonly underline = input(true);
 
   protected readonly url = computed(() => {
     const baseUrl = 'mailto:support@lehrgrapht.de';

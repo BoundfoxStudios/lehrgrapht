@@ -1,12 +1,16 @@
 import { Component, inject } from '@angular/core';
-import { Hero } from '../../components/hero/hero';
 import { ContentContainer } from '../../components/content-container/content-container';
 import { Meta, Title } from '@angular/platform-browser';
-import { changelogData } from '@lehrgrapht/shared';
+import { changelogData, gitHubUrl } from '@lehrgrapht/shared';
+import { Handwritten } from '../../components/handwritten/handwritten';
+import { Header } from '../../components/header/header';
+import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { faGithub } from '@fortawesome/free-brands-svg-icons';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'lgw-changelog-page',
-  imports: [Hero, ContentContainer],
+  imports: [ContentContainer, Handwritten, Header, DatePipe],
   templateUrl: './changelog-page.html',
   styleUrl: './changelog-page.css',
 })
@@ -39,4 +43,8 @@ export class ChangelogPage {
       content: 'https://lehrgrapht.de/changelog',
     });
   }
+
+  protected readonly faArrowRight = faArrowRight;
+  protected readonly gitHubUrl = gitHubUrl;
+  protected readonly faGithub = faGithub;
 }

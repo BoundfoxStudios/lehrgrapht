@@ -1,27 +1,45 @@
 import { Component, inject } from '@angular/core';
-import { Hero } from '../../components/hero/hero';
-import { ContentContainer } from '../../components/content-container/content-container';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import {
+  faArrowRight,
   faBoltLightning,
   faCoffee,
+  faFaceSmile,
   faGear,
+  faLightbulb,
   faStar,
 } from '@fortawesome/free-solid-svg-icons';
-import { faGithub, faMicrosoft } from '@fortawesome/free-brands-svg-icons';
+import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import { KnownIssues } from '../../components/known-issues/known-issues';
 import { Meta, Title } from '@angular/platform-browser';
-import { GitHubLink, SupportEmailLink } from '@lehrgrapht/shared';
+import { GitHubLink, gitHubUrl, SupportEmailLink } from '@lehrgrapht/shared';
+import { Header } from '../../components/header/header';
+import { Handwritten } from '../../components/handwritten/handwritten';
+import {
+  Section,
+  SectionContent,
+  SectionHandwritten,
+  SectionHeadline,
+  SectionSideContent,
+} from '../../components/section/section';
+import { QuadrillePaper } from '../../components/quadrille-paper/quadrille-paper';
+import { lehrgraphtVersion } from '../../../../../addin/src/version';
 
 @Component({
   selector: 'lgw-home-page',
   imports: [
-    Hero,
-    ContentContainer,
     FaIconComponent,
     KnownIssues,
     GitHubLink,
     SupportEmailLink,
+    Header,
+    Handwritten,
+    Section,
+    SectionHandwritten,
+    SectionHeadline,
+    SectionContent,
+    QuadrillePaper,
+    SectionSideContent,
   ],
   templateUrl: './home-page.html',
   styleUrl: './home-page.css',
@@ -32,7 +50,8 @@ export class HomePage {
   protected readonly faGear = faGear;
   protected readonly faBoltLightning = faBoltLightning;
   protected readonly faStar = faStar;
-  protected readonly faMicrosoft = faMicrosoft;
+  protected readonly faArrowRight = faArrowRight;
+  protected readonly gitHubUrl = gitHubUrl;
 
   private readonly title = inject(Title);
   private readonly meta = inject(Meta);
@@ -60,4 +79,8 @@ export class HomePage {
       content: 'https://lehrgrapht.de',
     });
   }
+
+  protected readonly faLightbulb = faLightbulb;
+  protected readonly lehrgraphtVersion = lehrgraphtVersion;
+  protected readonly faFaceSmile = faFaceSmile;
 }
