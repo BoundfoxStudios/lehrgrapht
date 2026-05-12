@@ -215,6 +215,20 @@
           <fa-icon [icon]="faPlusCircle" />
           <span>Eckpunkt hinzufügen</span>
         </button>
+
+        @if (canCreateSchraegbild(polygons[polygonIndex])) {
+          <button
+            class="mt-2 w-full"
+            (click)="openSchraegbildDialog(polygonIndex)"
+            lgButton
+            variant="outline"
+            size="small"
+            type="button"
+          >
+            <fa-icon [icon]="faCube" />
+            <span>Schrägbild</span>
+          </button>
+        }
       </lg-card>
     }
 

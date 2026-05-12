@@ -7,11 +7,14 @@ import {
 } from '@angular/core';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import {
+  faCube,
   faMousePointer,
   faPlusCircle,
   faTrashCan,
 } from '@fortawesome/free-solid-svg-icons';
 import { FormField } from '@angular/forms/signals';
+import { Dialog } from '@angular/cdk/dialog';
+import { firstValueFrom } from 'rxjs';
 import { Dropdown } from '../../../dropdown/dropdown';
 import { InteractiveMode } from '../../interactive-mode';
 import { PlotEditorStore } from '../../plot-editor.store';
@@ -25,6 +28,12 @@ import { Polygon, PolygonFillStyle } from '../../../../models/plot';
 import { PillSwitch, PillSwitchOption } from '../../../pill-switch/pill-switch';
 import { SectionHint } from '../../../section-hint/section-hint';
 import { IdPill, IdPillPrefix } from '../../../id-pill/id-pill';
+import {
+  SchraegbildData,
+  SchraegbildDialog,
+  SchraegbildResult,
+  schraegbildDirectionToOffset,
+} from './schraegbild-dialog/schraegbild-dialog';
 
 @Component({
   selector: 'lg-section-polygons',
@@ -49,6 +58,7 @@ export class SectionPolygons {
   protected readonly faPlusCircle = faPlusCircle;
   protected readonly faTrashCan = faTrashCan;
   protected readonly faMousePointer = faMousePointer;
+  protected readonly faCube = faCube;
   protected readonly InteractiveMode = InteractiveMode;
   protected readonly lineStyleOptions = lineStyleOptions;
   protected readonly labelPositionOptions = labelPositionOptions;
@@ -58,6 +68,7 @@ export class SectionPolygons {
     { value: 'outline', label: 'Nur Rand' },
   ];
   protected readonly store = inject(PlotEditorStore);
+  private readonly dialog = inject(Dialog);
   protected readonly newItemIndex = signal<number | null>(null);
 
   protected readonly expandedSet = computed(
@@ -102,5 +113,35 @@ export class SectionPolygons {
         i === polygonIndex ? { ...polygon, fillColor: color } : polygon,
       ),
     }));
+  }
+
+  protected canCreateSchraegbild(polygon: Polygon): boolean {
+    return polygon.connect && polygon.points.length >= 3;
+  }
+
+  protected async openSchraegbildDialog(polygonIndex: number): Promise<void> {
+    const polygon = this.store.model().polygons[polygonIndex];
+    if (!this.canCreateSchraegbild(polygon)) {
+      return;
+    }
+
+    const ref = this.dialog.open<
+      SchraegbildResult,
+      SchraegbildData,
+      SchraegbildDialog
+    >(SchraegbildDialog, {
+      data: { polygonTitle: this.polygonTitle(polygon, polygonIndex) },
+      hasBackdrop: true,
+      role: 'dialog',
+      ariaLabelledBy: 'schraegbild-dialog-title',
+    });
+
+    const result = await firstValueFrom(ref.closed);
+    if (!result) {
+      return;
+    }
+
+    const offset = schraegbildDirectionToOffset(result.direction, result.depth);
+    this.store.createObliqueProjection({ polygonIndex, offset });
   }
 }
