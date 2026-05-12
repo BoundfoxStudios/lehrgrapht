@@ -115,6 +115,12 @@ export class SectionPolygons {
     }));
   }
 
+  protected onShowPointsChange(polygonIndex: number, event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    if (!checked) return;
+    this.store.autoLabelPolygonPointsIfEmpty(polygonIndex);
+  }
+
   protected canCreateSchraegbild(polygon: Polygon): boolean {
     return polygon.connect && polygon.points.length >= 3;
   }

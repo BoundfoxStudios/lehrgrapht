@@ -72,6 +72,24 @@ export function namePolygonPoints(
   }));
 }
 
+export function applyAutoLabelToPolygon(
+  polygon: Polygon,
+  scheme: MarkerNamingScheme,
+  service: MarkerNamingService,
+  startIndex: number,
+): Polygon {
+  if (polygon.points.some(p => p.labelText.trim() !== '')) {
+    return polygon;
+  }
+  return {
+    ...polygon,
+    points: polygon.points.map((p, i) => ({
+      ...p,
+      labelText: service.generateName(startIndex + i, scheme),
+    })),
+  };
+}
+
 interface GeoPoint {
   x: number;
   y: number;
@@ -701,6 +719,30 @@ export const PlotEditorStore = signalStore(
               : polygon,
           ),
         }));
+      },
+
+      autoLabelPolygonPointsIfEmpty(polygonIndex: number): void {
+        const scheme = store.plotSettings().markerNamingScheme;
+        store.editorForm().controlValue.update(m => {
+          if (polygonIndex < 0 || polygonIndex >= m.polygons.length) return m;
+          let startIndex = 0;
+          for (let i = 0; i < polygonIndex; i++) {
+            startIndex += m.polygons[i].points.length;
+          }
+          return {
+            ...m,
+            polygons: m.polygons.map((polygon, i) =>
+              i === polygonIndex
+                ? applyAutoLabelToPolygon(
+                    polygon,
+                    scheme,
+                    markerNamingService,
+                    startIndex,
+                  )
+                : polygon,
+            ),
+          };
+        });
       },
 
       createObliqueProjection(payload: {

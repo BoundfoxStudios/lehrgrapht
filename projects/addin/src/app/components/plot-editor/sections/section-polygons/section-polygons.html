@@ -61,6 +61,7 @@
               class="h-4 w-4 cursor-pointer rounded border-gray-300"
               [formField]="control.showPoints"
               [id]="'polygon-' + polygonIndex + '-show-points'"
+              (change)="onShowPointsChange(polygonIndex, $event)"
               type="checkbox"
             />
             Punkte
