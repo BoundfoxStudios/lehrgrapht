@@ -20,12 +20,14 @@ export interface ColorSwatchOption {
   host: {
     role: 'radiogroup',
     class: 'flex gap-1.5',
+    '[attr.aria-label]': 'ariaLabel() || null',
   },
 })
 export class ColorSwatchRow implements FormValueControl<string> {
   readonly options = input.required<ColorSwatchOption[]>();
   readonly value = model<string>('');
   readonly disabled = input(false);
+  readonly ariaLabel = input<string>('', { alias: 'aria-label' });
 
   protected select(option: ColorSwatchOption): void {
     if (this.disabled()) {
