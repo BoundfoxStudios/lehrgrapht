@@ -51,7 +51,7 @@ export class InteractiveOverlay {
       case InteractiveMode.Marker:
         return 'Punkte setzen';
       case InteractiveMode.Function:
-        return 'Gerade durch zwei Punkte';
+        return 'Funktion zeichnen';
       case InteractiveMode.Polygon:
         return 'Polygon zeichnen';
       default:
@@ -82,7 +82,7 @@ export class InteractiveOverlay {
       case InteractiveMode.Marker:
         return 'Tippe auf den Plot, um einen Punkt zu setzen';
       case InteractiveMode.Function:
-        return 'Tippe zwei Punkte für die Linie';
+        return 'Tippe 2 Punkte für eine Gerade oder 3 für eine Parabel';
       case InteractiveMode.Polygon:
         return 'Tippe mindestens 2 Punkte für ein Polygon';
       default:
@@ -105,7 +105,7 @@ export class InteractiveOverlay {
           this.store.plotSettings().markerNamingScheme,
         );
       case InteractiveMode.Function:
-        return index === 0 ? 'Start' : 'Ende';
+        return `P${index + 1}`;
       case InteractiveMode.Polygon:
         return `P${index + 1}`;
       default:
