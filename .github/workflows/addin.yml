@@ -4,12 +4,14 @@ on:
     branches:
       - main
       - develop
-    paths:
+    paths: &paths
       - 'projects/addin/**'
       - 'tasks/**'
       - 'manifest.xml'
       - 'package.json'
       - 'package-lock.json'
+  pull_request:
+    paths: *paths
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -87,6 +89,7 @@ jobs:
         env:
           APP_VERSION: ${{ steps.version.outputs.value }}
       - uses: SamKirkland/FTP-Deploy-Action@v4.4.0
+        if: github.event_name != 'pull_request'
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
@@ -95,6 +98,7 @@ jobs:
           server-dir: addin/${{steps.version.outputs.value}}/
           protocol: ftp
       - uses: actions/upload-artifact@v6
+        if: github.event_name != 'pull_request'
         with:
           name: manifest
           path: dist/addin/browser/manifest.xml

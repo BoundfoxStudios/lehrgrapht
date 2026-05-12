@@ -3,8 +3,12 @@ on:
   push:
     branches:
       - main
-    paths:
+    paths: &paths
       - 'projects/website/**'
+      - 'package.json'
+      - 'package-lock.json'
+  pull_request:
+    paths: *paths
   issues:
   issue_comment:
   schedule:
@@ -58,6 +62,7 @@ jobs:
           LEHRGRAPHT_WEBSITE_GITHUB_TOKEN: ${{ secrets.LEHRGRAPHT_WEBSITE_GITHUB_TOKEN }}
       - run: npm run prepare-deployment
       - uses: SamKirkland/FTP-Deploy-Action@v4.3.6
+        if: github.event_name != 'pull_request'
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
