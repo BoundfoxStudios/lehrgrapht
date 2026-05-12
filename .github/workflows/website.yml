@@ -53,8 +53,11 @@ jobs:
       - lint
     steps:
       - uses: actions/checkout@v6
+        if: github.event_name != 'pull_request'
         with:
           ref: main
+      - uses: actions/checkout@v6
+        if: github.event_name == 'pull_request'
       - uses: ./.github/actions/read-node-version-from-nvmrc
         id: version
       - uses: ./.github/actions/prepare-node
