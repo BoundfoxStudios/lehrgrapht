@@ -17,31 +17,6 @@
     />
   </div>
 
-  <!-- Range / Achsen card -->
-  <a
-    class="border-default-medium rounded-base hover:border-brand-medium flex items-center gap-2.5 border bg-white p-2.5 text-left transition-colors"
-    [routerLink]="['/plot/editor', store.routeId(), 'range']"
-  >
-    <span
-      class="bg-brand-soft text-brand grid h-9 w-9 shrink-0 place-items-center rounded-md"
-      aria-hidden="true"
-    >
-      <fa-icon [icon]="faExpand" />
-    </span>
-    <span class="min-w-0 flex-1">
-      <span class="text-heading block text-sm font-bold"
-        >Grenzen &amp; Achsen</span
-      >
-      <span class="text-body-subtle block text-xs tabular-nums">
-        {{ rangeSubtitle() }}
-      </span>
-    </span>
-    <fa-icon
-      class="text-body-subtle"
-      [icon]="faChevronRight"
-    />
-  </a>
-
   <!-- OBJEKTE -->
   <h3
     class="text-2xs text-body-subtle px-0.5 pt-1 font-bold tracking-wider uppercase"
@@ -133,7 +108,7 @@
       </div>
       <div>
         <div class="text-heading text-sm font-semibold">
-          Polygone / Linien / Flächen
+          Polygone &amp; Flächen
         </div>
         <div class="text-body-subtle text-2xs mt-0.5">
           @if (model.polygons.length === 0) {
@@ -154,6 +129,32 @@
   >
     Weitere
   </h3>
+
+  <!-- Range / Achsen card -->
+  <a
+    class="border-default-medium rounded-base hover:border-brand-medium flex items-center gap-2.5 border bg-white p-2.5 text-left transition-colors"
+    [routerLink]="['/plot/editor', store.routeId(), 'range']"
+  >
+    <span
+      class="bg-brand-soft text-brand grid h-9 w-9 shrink-0 place-items-center rounded-md"
+      aria-hidden="true"
+    >
+      <fa-icon [icon]="faExpand" />
+    </span>
+    <span class="min-w-0 flex-1">
+      <span class="text-heading block text-sm font-bold"
+        >Grenzen &amp; Achsen</span
+      >
+      <span class="text-body-subtle block text-xs tabular-nums">
+        {{ rangeSubtitle() }}
+      </span>
+    </span>
+    <fa-icon
+      class="text-body-subtle"
+      [icon]="faChevronRight"
+    />
+  </a>
+
   <a
     class="border-default-medium rounded-base hover:border-brand-medium flex items-center gap-2.5 border bg-white p-2.5 text-left transition-colors"
     [routerLink]="['/plot/editor', store.routeId(), 'settings']"
