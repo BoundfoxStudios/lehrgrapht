@@ -677,4 +677,67 @@ describe('dedupePolygonPoints', () => {
     ];
     expect(dedupePolygonPoints(input)).toEqual(input);
   });
+
+  it('removes a collinear middle point on a segment', () => {
+    const result = dedupePolygonPoints([
+      { x: 0, y: 0 },
+      { x: 5, y: 0 },
+      { x: 10, y: 0 },
+      { x: 10, y: 5 },
+    ]);
+    expect(result).toEqual([
+      { x: 0, y: 0 },
+      { x: 10, y: 0 },
+      { x: 10, y: 5 },
+    ]);
+  });
+
+  it('removes multiple collinear middles iteratively', () => {
+    const result = dedupePolygonPoints([
+      { x: 0, y: 0 },
+      { x: 2, y: 0 },
+      { x: 5, y: 0 },
+      { x: 10, y: 0 },
+      { x: 10, y: 5 },
+    ]);
+    expect(result).toEqual([
+      { x: 0, y: 0 },
+      { x: 10, y: 0 },
+      { x: 10, y: 5 },
+    ]);
+  });
+
+  it('keeps a zigzag point (collinear but outside the segment)', () => {
+    const input = [
+      { x: 0, y: 0 },
+      { x: 10, y: 0 },
+      { x: 5, y: 0 },
+      { x: 5, y: 5 },
+    ];
+    expect(dedupePolygonPoints(input)).toEqual(input);
+  });
+
+  it('combines duplicate and collinear removal in the correct order', () => {
+    const result = dedupePolygonPoints([
+      { x: 0, y: 0 },
+      { x: 0, y: 0 },
+      { x: 5, y: 0 },
+      { x: 10, y: 0 },
+      { x: 10, y: 5 },
+    ]);
+    expect(result).toEqual([
+      { x: 0, y: 0 },
+      { x: 10, y: 0 },
+      { x: 10, y: 5 },
+    ]);
+  });
+
+  it('removes nothing from a clean triangle', () => {
+    const input = [
+      { x: 0, y: 0 },
+      { x: 5, y: 0 },
+      { x: 0, y: 5 },
+    ];
+    expect(dedupePolygonPoints(input)).toEqual(input);
+  });
 });

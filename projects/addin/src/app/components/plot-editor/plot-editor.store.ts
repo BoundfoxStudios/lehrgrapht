@@ -401,6 +401,7 @@ export function isPolygonClosingClick(
 export function dedupePolygonPoints(
   points: readonly { x: number; y: number }[],
 ): { x: number; y: number }[] {
+  // Step 1: remove consecutive duplicates
   const result: { x: number; y: number }[] = [];
   for (const p of points) {
     const last = result.at(-1);
@@ -408,6 +409,29 @@ export function dedupePolygonPoints(
       result.push({ x: p.x, y: p.y });
     }
   }
+
+  // Step 2: remove collinear middle points, iteratively until stable
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (let i = 1; i < result.length - 1; i++) {
+      const a = result[i - 1];
+      const b = result[i];
+      const c = result[i + 1];
+      const cross = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
+      if (cross !== 0) continue;
+      const between =
+        b.x >= Math.min(a.x, c.x) &&
+        b.x <= Math.max(a.x, c.x) &&
+        b.y >= Math.min(a.y, c.y) &&
+        b.y <= Math.max(a.y, c.y);
+      if (!between) continue;
+      result.splice(i, 1);
+      changed = true;
+      break;
+    }
+  }
+
   return result;
 }
 
