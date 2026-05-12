@@ -16,6 +16,7 @@
     "watch": "ng build addin --watch --configuration development",
     "validate": "office-addin-manifest validate manifest.xml",
     "test": "ng test",
+    "test:addin": "ng test addin",
     "lint": "ng lint",
     "lint:website": "ng lint website",
     "lint:addin": "ng lint addin",
