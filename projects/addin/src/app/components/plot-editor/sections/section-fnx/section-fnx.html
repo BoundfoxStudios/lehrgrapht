@@ -4,7 +4,7 @@
 <div class="flex flex-col space-y-3 p-2">
   @if (fnx.length === 0) {
     <lg-section-empty-state
-      [interactiveMode]="InteractiveMode.StraightLine"
+      [interactiveMode]="InteractiveMode.Function"
       (manualClick)="addManual()"
       heading="Noch keine Funktionen"
       text="Definiere Funktionen wie x², sin(x), 2x+1 oder was auch immer Du benötigst."
@@ -108,7 +108,7 @@
     <div class="flex gap-1.5">
       <button
         class="flex-[1.4]"
-        (click)="store.startInteractive(InteractiveMode.StraightLine)"
+        (click)="store.startInteractive(InteractiveMode.Function)"
         lgButton
         size="cta"
         type="button"

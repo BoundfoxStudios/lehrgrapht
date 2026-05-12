@@ -476,7 +476,7 @@ export const INTERACTIVE_STRATEGIES: Record<
 > = {
   [InteractiveMode.Polygon]: { minPoints: 2, apply: applyPolygon },
   [InteractiveMode.Marker]: { minPoints: 1, apply: applyMarker },
-  [InteractiveMode.StraightLine]: {
+  [InteractiveMode.Function]: {
     minPoints: 2,
     autoFinishAt: 2,
     apply: applyStraightLine,
