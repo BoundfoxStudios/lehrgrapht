@@ -440,13 +440,14 @@ export function applyPolygon(
   points: readonly { x: number; y: number }[],
   _ctx: ApplyContext,
 ): Plot {
-  if (points.length < 2) return model;
+  const deduped = dedupePolygonPoints(points);
+  if (deduped.length < 2) return model;
   return {
     ...model,
     polygons: [
       ...model.polygons,
       {
-        points: points.map(p => ({
+        points: deduped.map(p => ({
           x: p.x,
           y: p.y,
           labelPosition: 'auto',

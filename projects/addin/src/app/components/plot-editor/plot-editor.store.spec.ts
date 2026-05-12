@@ -552,6 +552,38 @@ describe('applyPolygon', () => {
     );
     expect(JSON.stringify(basePlot)).toBe(before);
   });
+
+  it('removes redundant points from the polygon it creates', () => {
+    const result = applyPolygon(
+      basePlot,
+      [
+        { x: 0, y: 0 },
+        { x: 0, y: 0 },
+        { x: 5, y: 0 },
+        { x: 10, y: 0 },
+        { x: 10, y: 5 },
+      ],
+      ctx,
+    );
+    expect(result.polygons.length).toBe(1);
+    expect(result.polygons[0].points).toEqual([
+      { x: 0, y: 0, labelPosition: 'auto', labelText: '' },
+      { x: 10, y: 0, labelPosition: 'auto', labelText: '' },
+      { x: 10, y: 5, labelPosition: 'auto', labelText: '' },
+    ]);
+  });
+
+  it('returns the model unchanged when dedupe reduces below 2 points', () => {
+    const result = applyPolygon(
+      basePlot,
+      [
+        { x: 3, y: 3 },
+        { x: 3, y: 3 },
+      ],
+      ctx,
+    );
+    expect(result).toBe(basePlot);
+  });
 });
 
 describe('isPolygonClosingClick', () => {
