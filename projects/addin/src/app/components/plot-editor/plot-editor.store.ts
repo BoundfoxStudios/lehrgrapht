@@ -347,9 +347,8 @@ export const calculateParabolaFunction = (
   const cRounded = Math.round(c * 100) / 100;
 
   if (aRounded === 0) {
-    // d13 !== 0 is guaranteed above, so the line through p1, p3 is non-vertical.
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return calculateStraightLineFunction(p1, p3)!;
+    // d13 !== 0 above makes the line non-vertical; the ?? satisfies strict-null-checks.
+    return calculateStraightLineFunction(p1, p3) ?? `${cRounded}`;
   }
 
   const aStr = aRounded === 1 ? '' : aRounded === -1 ? '-' : `${aRounded}*`;
