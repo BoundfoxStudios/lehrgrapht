@@ -21,7 +21,9 @@ import { Card } from '../../../../ui/card/card';
 import { Input } from '../../../../ui/input/input';
 import { SectionEmptyState } from '../section-empty-state/section-empty-state';
 import { SectionPolygonsImage } from './section-polygons-image';
-import { Polygon } from '../../../../models/plot';
+import { Polygon, PolygonFillStyle } from '../../../../models/plot';
+import { PillSwitch, PillSwitchOption } from '../../../pill-switch/pill-switch';
+import { SectionHint } from '../../../section-hint/section-hint';
 
 @Component({
   selector: 'lg-section-polygons',
@@ -29,6 +31,8 @@ import { Polygon } from '../../../../models/plot';
     FaIconComponent,
     FormField,
     Dropdown,
+    PillSwitch,
+    SectionHint,
     ButtonDirective,
     Card,
     Input,
@@ -46,6 +50,11 @@ export class SectionPolygons {
   protected readonly InteractiveMode = InteractiveMode;
   protected readonly lineStyleOptions = lineStyleOptions;
   protected readonly labelPositionOptions = labelPositionOptions;
+  protected readonly fillStyleOptions: PillSwitchOption<PolygonFillStyle>[] = [
+    { value: 'solid', label: 'Voll' },
+    { value: 'hatched', label: 'Schraffur' },
+    { value: 'outline', label: 'Nur Rand' },
+  ];
   protected readonly store = inject(PlotEditorStore);
   protected readonly newItemIndex = signal<number | null>(null);
 
@@ -77,24 +86,6 @@ export class SectionPolygons {
     if (n === 4 && polygon.connect) return `Viereck ${index + 1}`;
     if (n >= 5 && polygon.connect) return `Fläche ${index + 1}`;
     return `Polygon ${index + 1}`;
-  }
-
-  protected onFillNoneToggle(
-    polygonIndex: number,
-    noFill: boolean,
-    currentLineColor: string,
-  ): void {
-    this.store.editorForm().controlValue.update(m => ({
-      ...m,
-      polygons: m.polygons.map((polygon, i) =>
-        i === polygonIndex
-          ? {
-              ...polygon,
-              fillColor: noFill ? null : currentLineColor,
-            }
-          : polygon,
-      ),
-    }));
   }
 
   protected onFillColorChange(polygonIndex: number, color: string): void {

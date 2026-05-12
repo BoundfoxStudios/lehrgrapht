@@ -82,19 +82,33 @@ export class PlotDataService {
 
     const polygonTraces = plot.polygons.map<Partial<PlotData>>(polygon => {
       const closed = polygon.connect;
-      const fillColor =
-        closed && polygon.fillColor !== null ? polygon.fillColor : null;
       const orderedPoints =
         closed && polygon.points.length > 0
           ? [...polygon.points, polygon.points[0]]
           : polygon.points;
+
+      const fillStyle = polygon.fillStyle;
+      const hasFill =
+        closed && polygon.points.length >= 3 && fillStyle !== 'outline';
+      const fillColor = hasFill
+        ? (polygon.fillColor ?? polygon.lineColor)
+        : null;
 
       return {
         type: 'scatter',
         mode: 'lines',
         showlegend: false,
         fill: fillColor !== null ? 'toself' : 'none',
-        fillcolor: fillColor !== null ? hexToRgba(fillColor, 0.7) : undefined,
+        fillcolor:
+          fillColor !== null
+            ? fillStyle === 'hatched'
+              ? hexToRgba(fillColor, 0.35)
+              : hexToRgba(fillColor, 0.7)
+            : undefined,
+        fillpattern:
+          fillStyle === 'hatched' && fillColor !== null
+            ? { shape: '/', size: 8, fgcolor: fillColor }
+            : undefined,
         x: orderedPoints.map(p => p.x),
         y: orderedPoints.map(p => p.y),
         line: {

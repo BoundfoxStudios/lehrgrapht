@@ -225,7 +225,7 @@ describe('PlotDataService', () => {
             fillColor: null,
             lineStyle: 'solid',
             showPoints: false,
-            fillStyle: 'solid',
+            fillStyle: 'outline',
           },
         ],
       };
@@ -318,6 +318,79 @@ describe('PlotDataService', () => {
       };
       const result = service.buildPolygonTraces(plot, plotSettings);
       expect(result.length).toBeGreaterThan(1);
+    });
+
+    describe('polygon fillStyle', () => {
+      it('emits no fill when fillStyle is outline, even on closed polygon', () => {
+        const plot: Plot = {
+          ...basePlot,
+          polygons: [
+            {
+              points: [
+                { x: 0, y: 0, labelPosition: 'auto', labelText: '' },
+                { x: 1, y: 0, labelPosition: 'auto', labelText: '' },
+                { x: 0, y: 1, labelPosition: 'auto', labelText: '' },
+              ],
+              connect: true,
+              lineColor: '#000',
+              fillColor: '#0f0',
+              lineStyle: 'solid',
+              showPoints: false,
+              fillStyle: 'outline',
+            },
+          ],
+        };
+        const [trace] = service.buildPolygonTraces(plot, plotSettings);
+        expect(trace.fill).toBe('none');
+      });
+
+      it('emits fillpattern when fillStyle is hatched on closed polygon', () => {
+        const plot: Plot = {
+          ...basePlot,
+          polygons: [
+            {
+              points: [
+                { x: 0, y: 0, labelPosition: 'auto', labelText: '' },
+                { x: 1, y: 0, labelPosition: 'auto', labelText: '' },
+                { x: 0, y: 1, labelPosition: 'auto', labelText: '' },
+              ],
+              connect: true,
+              lineColor: '#000',
+              fillColor: '#0f0',
+              lineStyle: 'solid',
+              showPoints: false,
+              fillStyle: 'hatched',
+            },
+          ],
+        };
+        const [trace] = service.buildPolygonTraces(plot, plotSettings);
+        expect(trace.fill).toBe('toself');
+        expect(
+          (trace as { fillpattern?: { shape: string } }).fillpattern?.shape,
+        ).toBe('/');
+      });
+
+      it('emits no fill on open polygon regardless of fillStyle', () => {
+        const plot: Plot = {
+          ...basePlot,
+          polygons: [
+            {
+              points: [
+                { x: 0, y: 0, labelPosition: 'auto', labelText: '' },
+                { x: 1, y: 1, labelPosition: 'auto', labelText: '' },
+              ],
+              connect: false,
+              lineColor: '#000',
+              fillColor: '#0f0',
+              lineStyle: 'solid',
+              showPoints: false,
+              fillStyle: 'solid',
+            },
+          ],
+        };
+        const [trace] = service.buildPolygonTraces(plot, plotSettings);
+        expect(trace.fill).toBe('none');
+      });
     });
   });
 
