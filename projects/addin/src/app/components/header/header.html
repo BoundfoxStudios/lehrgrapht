@@ -28,9 +28,9 @@
       <h2 class="text-2xs flex items-center gap-1.5 truncate text-white/80">
         @if (loading()) {
           <fa-icon
-            class="animate-spin"
             [icon]="faCircleNotch"
             style="font-size: 10px; opacity: 0.85"
+            animation="spin"
             aria-hidden="true"
           />
         }
@@ -48,8 +48,8 @@
         aria-live="polite"
       >
         <fa-icon
-          class="animate-spin"
           [icon]="faCircleNotch"
+          animation="spin"
         />
         <span>Wird gespeichert …</span>
       </span>
@@ -77,8 +77,8 @@
   >
     @if (solutionRenderService.progress(); as progress) {
       <fa-icon
-        class="animate-spin"
         [icon]="faCircleNotch"
+        animation="spin"
         aria-hidden="true"
       />
       <span

@@ -20,8 +20,8 @@
       aria-label="Aktualisieren"
     >
       <fa-icon
-        [class.animate-spin]="plots.isLoading()"
         [icon]="faRotate"
+        [animation]="plots.isLoading() ? 'spin' : undefined"
       />
     </button>
     <a
