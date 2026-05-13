@@ -37,8 +37,9 @@
     <Host Name="Document" />
   </Hosts>
   <Requirements>
-    <Sets>
+    <Sets DefaultMinVersion="1.1">
       <Set Name="WordApi" MinVersion="1.9"/>
+      <Set Name="SharedRuntime" MinVersion="1.1"/>
     </Sets>
   </Requirements>
   <DefaultSettings>
@@ -57,6 +58,9 @@
       <!-- Excel host is Workbook, Word host is Document, and PowerPoint host is Presentation. -->
       <!-- Make sure the hosts you override match the hosts declared in the top section of the manifest. -->
       <Host xsi:type="Document">
+        <Runtimes>
+          <Runtime resid="Taskpane.Url" lifetime="long" />
+        </Runtimes>
         <!-- Form factor. Currently only DesktopFormFactor is supported. -->
         <DesktopFormFactor>
           <!--"This code enables a customizable message to be displayed when the add-in is loaded successfully upon individual install."-->
@@ -72,7 +76,7 @@
           </GetStarted>
           <!-- Function file is a HTML page that includes the JavaScript where functions for ExecuteAction will be called.
             Think of the FunctionFile as the code behind ExecuteFunction. -->
-          <FunctionFile resid="Commands.Url" />
+          <FunctionFile resid="Taskpane.Url" />
 
           <!-- PrimaryCommandSurface is the main Office Ribbon. -->
           <ExtensionPoint xsi:type="PrimaryCommandSurface">
@@ -112,6 +116,21 @@
                     <SourceLocation resid="Taskpane.Url" />
                   </Action>
                 </Control>
+                <Control xsi:type="Button" id="ToggleSolutionButton">
+                  <Label resid="ToggleSolutionButton.Label" />
+                  <Supertip>
+                    <Title resid="ToggleSolutionButton.Label" />
+                    <Description resid="ToggleSolutionButton.Tooltip" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16x16" />
+                    <bt:Image size="32" resid="Icon.32x32" />
+                    <bt:Image size="80" resid="Icon.80x80" />
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>toggleSolutionView</FunctionName>
+                  </Action>
+                </Control>
               </Group>
             </OfficeTab>
           </ExtensionPoint>
@@ -128,7 +147,6 @@
       </bt:Images>
       <bt:Urls>
         <bt:Url id="GetStarted.LearnMoreUrl" DefaultValue="https://lehrgrapht.de" />
-        <bt:Url id="Commands.Url" DefaultValue="https://localhost:4200" />
         <bt:Url id="Taskpane.Url" DefaultValue="https://localhost:4200" />
       </bt:Urls>
       <!-- ShortStrings max characters==125. -->
@@ -136,11 +154,13 @@
         <bt:String id="GetStarted.Title" DefaultValue="Los geht's mit LehrGrapht!" />
         <bt:String id="CommandsGroup.Label" DefaultValue="LehrGrapht" />
         <bt:String id="TaskpaneButton.Label" DefaultValue="LehrGrapht" />
+        <bt:String id="ToggleSolutionButton.Label" DefaultValue="Lösung umschalten" />
       </bt:ShortStrings>
       <!-- LongStrings max characters==250. -->
       <bt:LongStrings>
         <bt:String id="GetStarted.Description" DefaultValue="Das LehrGrapht AddIn wurde erfolgreich geladen. Gehe zum HOME Tab und klicke auf den LehrGrapht-Button um anzufangen." />
         <bt:String id="TaskpaneButton.Tooltip" DefaultValue="Klicken, um LehrGrapht zu öffnen" />
+        <bt:String id="ToggleSolutionButton.Tooltip" DefaultValue="Zeigt für alle Plots dieses Dokuments die gespiegelten Objekte an. Erneut klicken, um zur Aufgabenansicht zurückzukehren." />
       </bt:LongStrings>
     </Resources>
   </VersionOverrides>
