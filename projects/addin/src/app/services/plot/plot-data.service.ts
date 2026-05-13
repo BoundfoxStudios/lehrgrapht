@@ -6,7 +6,11 @@ import {
   PlotSettings,
   PolygonPoint,
 } from '../../models/plot';
-import { computeAxisLineEndpoints } from './reflection';
+import {
+  computeAxisLineEndpoints,
+  reflectPoint,
+  reflectPolygonPoints,
+} from './reflection';
 import { hexToRgba, PLOT_CONSTANTS } from './plot.types';
 
 const DASH_TARGET_PERIOD_UNITS = 0.5;
@@ -36,8 +40,9 @@ export class PlotDataService {
         xValuesArray,
         yValuesArray,
       ),
-      ...this.buildMarkerTraces(plot),
+      ...this.buildMarkerTraces(plot, { showSolution: options.showSolution }),
       ...this.buildPolygonTraces(plot, plotSettings, options),
+      ...this.buildReflectionTraces(plot),
     ];
   }
 
@@ -61,11 +66,14 @@ export class PlotDataService {
     }));
   }
 
-  buildMarkerTraces(plot: Plot): Partial<PlotData>[] {
-    if (!plot.markers.length) return [];
+  buildMarkerTraces(
+    plot: Plot,
+    options: { showSolution?: boolean } = {},
+  ): Partial<PlotData>[] {
+    const traces: Partial<PlotData>[] = [];
 
-    return [
-      {
+    if (plot.markers.length) {
+      traces.push({
         type: 'scatter',
         mode: 'text+markers',
         showlegend: false,
@@ -80,8 +88,37 @@ export class PlotDataService {
         },
         textfont: { size: 12 },
         textposition: 'bottom left',
-      },
-    ];
+      });
+    }
+
+    if (
+      options.showSolution &&
+      plot.reflection.kind !== 'none' &&
+      plot.markers.length
+    ) {
+      const mirrored = plot.markers.map(m => {
+        const reflected = reflectPoint({ x: m.x, y: m.y }, plot.reflection);
+        return { ...reflected, text: m.text ? `${m.text}'` : '' };
+      });
+      traces.push({
+        type: 'scatter',
+        mode: 'text+markers',
+        showlegend: false,
+        x: mirrored.map(m => m.x),
+        y: mirrored.map(m => m.y),
+        text: mirrored.map(m => m.text),
+        marker: {
+          symbol: 'x-thin',
+          color: '#000000',
+          size: 10,
+          line: { width: 1.5 },
+        },
+        textfont: { size: 12 },
+        textposition: 'bottom left',
+      });
+    }
+
+    return traces;
   }
 
   buildPolygonTraces(
@@ -157,9 +194,59 @@ export class PlotDataService {
       };
     });
 
+    const mirroredTraces: Partial<PlotData>[] = [];
+    if (options.showSolution && plot.reflection.kind !== 'none') {
+      for (const polygon of plot.polygons) {
+        const mirroredPoints = reflectPolygonPoints(
+          polygon.points,
+          plot.reflection,
+        );
+        const closed = polygon.connect;
+        const orderedPoints =
+          closed && mirroredPoints.length > 0
+            ? [...mirroredPoints, mirroredPoints[0]]
+            : mirroredPoints;
+        const hasFill =
+          closed &&
+          mirroredPoints.length >= 3 &&
+          polygon.fillStyle !== 'outline';
+        const fillColor = hasFill
+          ? (polygon.fillColor ?? polygon.lineColor)
+          : null;
+
+        mirroredTraces.push({
+          type: 'scatter',
+          mode: 'lines',
+          showlegend: false,
+          fill: fillColor !== null ? 'toself' : 'none',
+          fillcolor:
+            fillColor !== null
+              ? polygon.fillStyle === 'hatched'
+                ? hexToRgba(fillColor, 0.35)
+                : hexToRgba(fillColor, 0.7)
+              : undefined,
+          fillpattern:
+            polygon.fillStyle === 'hatched' && fillColor !== null
+              ? { shape: '/', size: 8, fgcolor: fillColor }
+              : undefined,
+          x: orderedPoints.map(p => p.x),
+          y: orderedPoints.map(p => p.y),
+          line: {
+            color: polygon.lineColor,
+            width: plotSettings.plotLineWidth,
+            dash:
+              polygon.lineStyle === 'dashed'
+                ? this.calculatePolygonDashPattern(mirroredPoints, closed)
+                : 'solid',
+          },
+        });
+      }
+    }
+
     return [
       ...haloTraces,
       ...polygonTraces,
+      ...mirroredTraces,
       ...this.buildPolygonPointMarkerTraces(plot),
     ];
   }
