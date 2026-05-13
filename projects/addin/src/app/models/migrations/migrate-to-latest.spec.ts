@@ -293,4 +293,26 @@ describe('migrate-to-latest', () => {
       expect(polygons[1]['fillStyle']).toBe('solid');
     });
   });
+
+  describe('reflection backfill', () => {
+    it('backfills reflection to kind="none" when missing', () => {
+      const result = migrate({});
+      expect(result['reflection']).toEqual({ kind: 'none' });
+    });
+
+    it('preserves existing reflection of kind="point"', () => {
+      const reflection = { kind: 'point', point: { x: 1, y: 2 } };
+      const result = migrate({ reflection });
+      expect(result['reflection']).toEqual(reflection);
+    });
+
+    it('preserves existing reflection of kind="axis"', () => {
+      const reflection = {
+        kind: 'axis',
+        axis: { p1: { x: 0, y: 0 }, p2: { x: 1, y: 1 } },
+      };
+      const result = migrate({ reflection });
+      expect(result['reflection']).toEqual(reflection);
+    });
+  });
 });
