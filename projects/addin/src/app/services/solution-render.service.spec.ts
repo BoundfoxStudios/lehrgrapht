@@ -55,6 +55,7 @@ type UpsertFn = (...args: unknown[]) => Promise<void>;
 
 describe('SolutionRenderService', () => {
   let solutionView: SolutionViewService;
+  let renderService: SolutionRenderService;
   let wordPlots: WordPlot[];
   let generateSpy: ReturnType<typeof vi.fn<GenerateFn>>;
   let upsertSpy: ReturnType<typeof vi.fn<UpsertFn>>;
@@ -92,7 +93,7 @@ describe('SolutionRenderService', () => {
     });
 
     // Instantiate render service so its effect registers and the initial run consumes firstRun.
-    TestBed.inject(SolutionRenderService);
+    renderService = TestBed.inject(SolutionRenderService);
     solutionView = TestBed.inject(SolutionViewService);
     TestBed.tick();
     await flushMicrotasks();
@@ -143,6 +144,77 @@ describe('SolutionRenderService', () => {
 
     expect(generateSpy).toHaveBeenCalledTimes(2);
     expect(upsertSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('exposes a null progress initially', () => {
+    expect(renderService.progress()).toBeNull();
+  });
+
+  it('clears progress after a normal run', async () => {
+    wordPlots = [
+      { id: 'a', model: makePlot('point') },
+      { id: 'b', model: makePlot('axis') },
+    ];
+    solutionView.showSolution.set(true);
+    await flushSignalAndAsync();
+
+    expect(renderService.progress()).toBeNull();
+  });
+
+  it('keeps progress null when there are no eligible plots', async () => {
+    wordPlots = [{ id: 'a', model: makePlot('none') }];
+    solutionView.showSolution.set(true);
+    await flushSignalAndAsync();
+
+    expect(renderService.progress()).toBeNull();
+  });
+
+  it('reports progress while regeneration is in flight', async () => {
+    wordPlots = [
+      { id: 'a', model: makePlot('point') },
+      { id: 'b', model: makePlot('axis') },
+    ];
+
+    const gate: (() => void)[] = [];
+    generateSpy.mockImplementation(
+      () =>
+        new Promise(resolve => {
+          gate.push(() => {
+            resolve({
+              base64: 'data:image/png;base64,fake',
+              widthInPx: 100,
+              heightInPx: 100,
+              widthInPoints: 50,
+              heightInPoints: 50,
+            });
+          });
+        }),
+    );
+
+    solutionView.showSolution.set(true);
+    TestBed.tick();
+    await flushMicrotasks();
+
+    expect(renderService.progress()).toEqual({ current: 0, total: 2 });
+
+    gate[0]();
+    await flushMicrotasks();
+    expect(renderService.progress()).toEqual({ current: 1, total: 2 });
+
+    gate[1]();
+    await flushMicrotasks();
+    expect(renderService.progress()).toBeNull();
+  });
+
+  it('clears progress even when generate returns an error code', async () => {
+    wordPlots = [{ id: 'a', model: makePlot('point') }];
+    generateSpy.mockImplementationOnce(() =>
+      Promise.resolve(PlotGenerateErrorCode.evaluate),
+    );
+    solutionView.showSolution.set(true);
+    await flushSignalAndAsync();
+
+    expect(renderService.progress()).toBeNull();
   });
 
   it('passes the current showSolution value to plotService.generate', async () => {

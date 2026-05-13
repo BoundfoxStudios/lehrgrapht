@@ -13,6 +13,7 @@ import {
   faCircleNotch,
   faTriangleExclamation,
 } from '@fortawesome/free-solid-svg-icons';
+import { SolutionRenderService } from '../../services/solution-render.service';
 import { SolutionViewService } from '../../services/solution-view.service';
 
 export type HeaderSaveState = 'idle' | 'saving' | 'saved';
@@ -31,6 +32,7 @@ export class Header {
   protected readonly faTriangleExclamation = faTriangleExclamation;
 
   protected readonly solutionViewService = inject(SolutionViewService);
+  protected readonly solutionRenderService = inject(SolutionRenderService);
 
   readonly title = input.required<string>();
   readonly subtitle = input<string>();
