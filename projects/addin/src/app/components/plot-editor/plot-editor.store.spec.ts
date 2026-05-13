@@ -5,6 +5,8 @@ import {
   applyFunction,
   applyMarker,
   applyPolygon,
+  applyReflectionAxis,
+  applyReflectionPoint,
   ApplyContext,
   calculateParabolaFunction,
   calculateStraightLineFunction,
@@ -780,5 +782,67 @@ describe('dedupePolygonPoints', () => {
 
   it('returns an empty array for empty input', () => {
     expect(dedupePolygonPoints([])).toEqual([]);
+  });
+});
+
+describe('applyReflectionPoint', () => {
+  it('sets reflection.kind to "point" with the click coordinates', () => {
+    const result = applyReflectionPoint(basePlot, [{ x: 1, y: 2 }], ctx);
+    expect(result.reflection).toEqual({
+      kind: 'point',
+      point: { x: 1, y: 2 },
+    });
+  });
+
+  it('overwrites an existing reflection.kind="axis"', () => {
+    const plot: Plot = {
+      ...basePlot,
+      reflection: {
+        kind: 'axis',
+        axis: { p1: { x: 0, y: 0 }, p2: { x: 1, y: 1 } },
+      },
+    };
+    const result = applyReflectionPoint(plot, [{ x: 5, y: 5 }], ctx);
+    expect(result.reflection).toEqual({
+      kind: 'point',
+      point: { x: 5, y: 5 },
+    });
+  });
+
+  it('returns model unchanged when no points are provided', () => {
+    expect(applyReflectionPoint(basePlot, [], ctx)).toBe(basePlot);
+  });
+});
+
+describe('applyReflectionAxis', () => {
+  it('sets reflection.kind to "axis" with the two click coordinates', () => {
+    const result = applyReflectionAxis(
+      basePlot,
+      [
+        { x: 0, y: 0 },
+        { x: 5, y: 5 },
+      ],
+      ctx,
+    );
+    expect(result.reflection).toEqual({
+      kind: 'axis',
+      axis: { p1: { x: 0, y: 0 }, p2: { x: 5, y: 5 } },
+    });
+  });
+
+  it('returns model unchanged when the two points are identical', () => {
+    const result = applyReflectionAxis(
+      basePlot,
+      [
+        { x: 3, y: 3 },
+        { x: 3, y: 3 },
+      ],
+      ctx,
+    );
+    expect(result).toBe(basePlot);
+  });
+
+  it('returns model unchanged when fewer than 2 points are provided', () => {
+    expect(applyReflectionAxis(basePlot, [{ x: 1, y: 2 }], ctx)).toBe(basePlot);
   });
 });

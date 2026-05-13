@@ -3,4 +3,6 @@ export enum InteractiveMode {
   Polygon = 'polygon',
   Marker = 'marker',
   Function = 'function',
+  ReflectionPoint = 'reflection-point',
+  ReflectionAxis = 'reflection-axis',
 }

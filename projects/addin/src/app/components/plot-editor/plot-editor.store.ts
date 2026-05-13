@@ -516,6 +516,36 @@ export function applyFunction(
   };
 }
 
+export function applyReflectionPoint(
+  model: Plot,
+  points: readonly { x: number; y: number }[],
+  _ctx: ApplyContext,
+): Plot {
+  if (points.length < 1) return model;
+  const point = points[0];
+  return {
+    ...model,
+    reflection: { kind: 'point', point: { x: point.x, y: point.y } },
+  };
+}
+
+export function applyReflectionAxis(
+  model: Plot,
+  points: readonly { x: number; y: number }[],
+  _ctx: ApplyContext,
+): Plot {
+  if (points.length < 2) return model;
+  const [p1, p2] = points;
+  if (p1.x === p2.x && p1.y === p2.y) return model;
+  return {
+    ...model,
+    reflection: {
+      kind: 'axis',
+      axis: { p1: { x: p1.x, y: p1.y }, p2: { x: p2.x, y: p2.y } },
+    },
+  };
+}
+
 export const INTERACTIVE_STRATEGIES: Record<
   Exclude<InteractiveMode, InteractiveMode.Off>,
   InteractiveStrategy
@@ -526,6 +556,16 @@ export const INTERACTIVE_STRATEGIES: Record<
     minPoints: 2,
     autoFinishAt: 3,
     apply: applyFunction,
+  },
+  [InteractiveMode.ReflectionPoint]: {
+    minPoints: 1,
+    autoFinishAt: 1,
+    apply: applyReflectionPoint,
+  },
+  [InteractiveMode.ReflectionAxis]: {
+    minPoints: 2,
+    autoFinishAt: 2,
+    apply: applyReflectionAxis,
   },
 };
 
