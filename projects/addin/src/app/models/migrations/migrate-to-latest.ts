@@ -29,6 +29,7 @@ export const migrateToLatest: Migration = {
       lineStyle: line['lineStyle'] ?? 'solid',
       showPoints: false,
       fillStyle: 'solid',
+      isSolution: false,
     }));
 
     const polygonsFromAreas = areas.map(area => {
@@ -47,6 +48,7 @@ export const migrateToLatest: Migration = {
         lineStyle: 'solid',
         showPoints: area['showPoints'] ?? false,
         fillStyle: 'solid',
+        isSolution: false,
       };
     });
 
@@ -55,6 +57,7 @@ export const migrateToLatest: Migration = {
     const migratedExistingPolygons = existingPolygons.map(p => ({
       ...p,
       fillStyle: p['fillStyle'] ?? 'solid',
+      isSolution: p['isSolution'] ?? false,
     }));
 
     const result: Record<string, unknown> = {

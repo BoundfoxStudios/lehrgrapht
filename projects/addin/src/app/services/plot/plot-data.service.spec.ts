@@ -167,6 +167,7 @@ describe('PlotDataService', () => {
             lineStyle: 'solid',
             showPoints: false,
             fillStyle: 'solid',
+            isSolution: false,
           },
         ],
       };
@@ -195,6 +196,7 @@ describe('PlotDataService', () => {
             lineStyle: 'solid',
             showPoints: false,
             fillStyle: 'solid',
+            isSolution: false,
           },
         ],
       };
@@ -225,6 +227,7 @@ describe('PlotDataService', () => {
             lineStyle: 'solid',
             showPoints: false,
             fillStyle: 'outline',
+            isSolution: false,
           },
         ],
       };
@@ -253,6 +256,7 @@ describe('PlotDataService', () => {
             lineStyle: 'dashed',
             showPoints: false,
             fillStyle: 'solid',
+            isSolution: false,
           },
         ],
       };
@@ -285,6 +289,7 @@ describe('PlotDataService', () => {
             lineStyle: 'solid',
             showPoints: false,
             fillStyle: 'solid',
+            isSolution: false,
           },
         ],
       };
@@ -312,6 +317,7 @@ describe('PlotDataService', () => {
             lineStyle: 'solid',
             showPoints: true,
             fillStyle: 'solid',
+            isSolution: false,
           },
         ],
       };
@@ -336,6 +342,7 @@ describe('PlotDataService', () => {
               lineStyle: 'solid',
               showPoints: false,
               fillStyle: 'outline',
+              isSolution: false,
             },
           ],
         };
@@ -359,6 +366,7 @@ describe('PlotDataService', () => {
               lineStyle: 'solid',
               showPoints: false,
               fillStyle: 'hatched',
+              isSolution: false,
             },
           ],
         };
@@ -384,6 +392,7 @@ describe('PlotDataService', () => {
               lineStyle: 'solid',
               showPoints: false,
               fillStyle: 'solid',
+              isSolution: false,
             },
           ],
         };
@@ -418,6 +427,7 @@ describe('PlotDataService', () => {
             lineStyle: 'solid',
             showPoints: false,
             fillStyle: 'solid',
+            isSolution: false,
           },
         ],
       };
@@ -578,6 +588,7 @@ describe('PlotDataService', () => {
       lineStyle: 'solid',
       showPoints: false,
       fillStyle: 'solid',
+      isSolution: false,
     };
 
     it('emits no mirrored trace when reflection.kind === "none"', () => {

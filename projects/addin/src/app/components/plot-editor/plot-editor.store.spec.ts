@@ -136,6 +136,7 @@ describe('applyAutoLabelToPolygon', () => {
     lineStyle: 'solid',
     showPoints: true,
     fillStyle: 'solid',
+    isSolution: false,
   });
 
   it('labels all points when none have a label', () => {

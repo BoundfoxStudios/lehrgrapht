@@ -121,6 +121,17 @@ export class SectionPolygons {
     this.store.autoLabelPolygonPointsIfEmpty(polygonIndex);
   }
 
+  protected toggleIsSolution(polygonIndex: number): void {
+    this.store.editorForm().controlValue.update(m => ({
+      ...m,
+      polygons: m.polygons.map((polygon, i) =>
+        i === polygonIndex
+          ? { ...polygon, isSolution: !polygon.isSolution }
+          : polygon,
+      ),
+    }));
+  }
+
   protected canCreateSchraegbild(polygon: Polygon): boolean {
     return polygon.connect && polygon.points.length >= 3;
   }

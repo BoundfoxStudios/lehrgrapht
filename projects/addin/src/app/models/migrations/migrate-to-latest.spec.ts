@@ -268,6 +268,7 @@ describe('migrate-to-latest', () => {
             lineStyle: 'solid',
             showPoints: false,
             fillStyle: 'hatched',
+            isSolution: false,
           },
         ],
       });

@@ -462,6 +462,7 @@ export function applyPolygon(
         lineStyle: 'solid',
         showPoints: false,
         fillStyle: 'solid',
+        isSolution: false,
       },
     ],
   };
@@ -797,6 +798,7 @@ export const PlotEditorStore = signalStore(
               lineStyle: 'solid',
               showPoints: false,
               fillStyle: 'solid',
+              isSolution: false,
             },
           ],
         }));
@@ -963,6 +965,7 @@ export const PlotEditorStore = signalStore(
             lineStyle: seg.hidden ? 'dashed' : 'solid',
             showPoints: false,
             fillStyle: 'outline',
+            isSolution: source.isSolution,
           }));
 
           const updatedPolygons = m.polygons.map((p, i) =>

@@ -54,44 +54,28 @@
           card-actions
         >
           <label
-            class="text-body-subtle flex cursor-pointer items-center gap-1 text-xs"
-            [for]="'polygon-' + polygonIndex + '-show-points'"
+            class="text-body-subtle flex cursor-pointer items-center gap-1.5 text-xs"
+            [for]="'polygon-' + polygonIndex + '-is-solution'"
           >
-            <input
-              class="h-4 w-4 cursor-pointer rounded border-gray-300"
-              [formField]="control.showPoints"
-              [id]="'polygon-' + polygonIndex + '-show-points'"
-              (change)="onShowPointsChange(polygonIndex, $event)"
-              type="checkbox"
-            />
-            Punkte
+            <span>Lösung</span>
+            <button
+              class="lg-switch focus-visible:ring-brand-medium relative h-4 w-7 shrink-0 cursor-pointer rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
+              [class.bg-brand]="polygons[polygonIndex].isSolution"
+              [class.bg-default-medium]="!polygons[polygonIndex].isSolution"
+              [class.lg-switch--on]="polygons[polygonIndex].isSolution"
+              [id]="'polygon-' + polygonIndex + '-is-solution'"
+              [attr.aria-checked]="polygons[polygonIndex].isSolution"
+              [attr.aria-label]="
+                polygonTitle(polygons[polygonIndex], polygonIndex) +
+                ' als Lösung markieren'
+              "
+              (click)="toggleIsSolution(polygonIndex)"
+              role="switch"
+              type="button"
+            >
+              <span class="lg-switch__knob"></span>
+            </button>
           </label>
-          <input
-            class="h-7 w-7 cursor-pointer rounded border-none"
-            [formField]="control.lineColor"
-            type="color"
-            title="Linienfarbe"
-            aria-label="Linienfarbe"
-          />
-          @if (
-            polygons[polygonIndex].connect &&
-            polygons[polygonIndex].points.length >= 3 &&
-            polygons[polygonIndex].fillStyle !== 'outline'
-          ) {
-            <input
-              class="h-7 w-7 cursor-pointer rounded border-none"
-              [value]="
-                polygons[polygonIndex].fillColor ??
-                polygons[polygonIndex].lineColor
-              "
-              (input)="
-                onFillColorChange(polygonIndex, $any($event.target).value)
-              "
-              type="color"
-              title="Füllfarbe"
-              aria-label="Füllfarbe"
-            />
-          }
           <button
             class="grid h-7 w-7 place-items-center rounded text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
             [attr.aria-label]="
@@ -106,6 +90,53 @@
         </div>
 
         <div class="mb-2 flex flex-col gap-2">
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-body-subtle text-[10px] font-semibold"
+              >Farben</span
+            >
+            <div class="flex items-center gap-1.5">
+              <input
+                class="h-7 w-7 cursor-pointer rounded border-none"
+                [formField]="control.lineColor"
+                type="color"
+                title="Linienfarbe"
+                aria-label="Linienfarbe"
+              />
+              @if (
+                polygons[polygonIndex].connect &&
+                polygons[polygonIndex].points.length >= 3 &&
+                polygons[polygonIndex].fillStyle !== 'outline'
+              ) {
+                <input
+                  class="h-7 w-7 cursor-pointer rounded border-none"
+                  [value]="
+                    polygons[polygonIndex].fillColor ??
+                    polygons[polygonIndex].lineColor
+                  "
+                  (input)="
+                    onFillColorChange(polygonIndex, $any($event.target).value)
+                  "
+                  type="color"
+                  title="Füllfarbe"
+                  aria-label="Füllfarbe"
+                />
+              }
+            </div>
+          </div>
+          <div class="flex items-center justify-between">
+            <label
+              class="text-body-subtle text-[10px] font-semibold"
+              [for]="'polygon-' + polygonIndex + '-show-points'"
+              >Punkte anzeigen</label
+            >
+            <input
+              class="h-4 w-4 cursor-pointer rounded border-gray-300"
+              [formField]="control.showPoints"
+              [id]="'polygon-' + polygonIndex + '-show-points'"
+              (change)="onShowPointsChange(polygonIndex, $event)"
+              type="checkbox"
+            />
+          </div>
           <div class="flex items-center justify-between">
             <label
               class="text-body-subtle text-[10px] font-semibold"

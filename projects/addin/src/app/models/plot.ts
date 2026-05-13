@@ -44,6 +44,7 @@ export interface Polygon {
   lineStyle: FunctionLineStyle;
   showPoints: boolean;
   fillStyle: PolygonFillStyle;
+  isSolution: boolean;
 }
 
 export interface PlotSettings {

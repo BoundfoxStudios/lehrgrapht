@@ -4,6 +4,7 @@ import {
   LabelPosition,
   Plot,
   PlotSettings,
+  Polygon,
   PolygonPoint,
 } from '../../models/plot';
 import {
@@ -130,8 +131,14 @@ export class PlotDataService {
 
     const highlightedIndex = options.highlightedPolygonIndex ?? null;
 
+    const isVisible = (polygon: Polygon): boolean =>
+      !polygon.isSolution || options.showSolution === true;
+
     const haloTraces: Partial<PlotData>[] = [];
-    const polygonTraces = plot.polygons.map<Partial<PlotData>>((polygon, i) => {
+    const polygonTraces: Partial<PlotData>[] = [];
+    plot.polygons.forEach((polygon, i) => {
+      if (!isVisible(polygon)) return;
+
       const closed = polygon.connect;
       const orderedPoints =
         closed && polygon.points.length > 0
@@ -166,7 +173,7 @@ export class PlotDataService {
         });
       }
 
-      return {
+      polygonTraces.push({
         type: 'scatter',
         mode: 'lines',
         showlegend: false,
@@ -191,12 +198,13 @@ export class PlotDataService {
               ? this.calculatePolygonDashPattern(polygon.points, closed)
               : 'solid',
         },
-      };
+      });
     });
 
     const mirroredTraces: Partial<PlotData>[] = [];
     if (options.showSolution && plot.reflection.kind !== 'none') {
       for (const polygon of plot.polygons) {
+        if (!isVisible(polygon)) continue;
         const mirroredPoints = reflectPolygonPoints(
           polygon.points,
           plot.reflection,
@@ -247,7 +255,7 @@ export class PlotDataService {
       ...haloTraces,
       ...polygonTraces,
       ...mirroredTraces,
-      ...this.buildPolygonPointMarkerTraces(plot),
+      ...this.buildPolygonPointMarkerTraces(plot, options),
     ];
   }
 
@@ -332,7 +340,10 @@ export class PlotDataService {
     return `${dashPx}px,${gapPx}px` as Dash;
   }
 
-  private buildPolygonPointMarkerTraces(plot: Plot): Partial<PlotData>[] {
+  private buildPolygonPointMarkerTraces(
+    plot: Plot,
+    options: PolygonRenderOptions = {},
+  ): Partial<PlotData>[] {
     const polygonPointMarkers: {
       x: number;
       y: number;
@@ -342,6 +353,7 @@ export class PlotDataService {
 
     for (const polygon of plot.polygons) {
       if (!polygon.showPoints) continue;
+      if (polygon.isSolution && !options.showSolution) continue;
 
       for (const point of polygon.points) {
         const position =
