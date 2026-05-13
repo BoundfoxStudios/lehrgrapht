@@ -53,3 +53,7 @@ You can start the development server for the website with `npm run start:website
 There's an environment variable `LEHRGRAPHT_WEBSITE_GITHUB_TOKEN`.
 You don't need to provide a value for it.
 If it's set with the correct permissions it will grab a list of issues from GitHub and displays it as a roadmap.
+
+## Icon Generation
+
+Use [SVG to PNG](https://vincerubinetti.github.io/svg-to-png/) for converting the SVG files to PNG.
