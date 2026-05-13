@@ -28,5 +28,12 @@
         >{{ tab.count }}</span
       >
     }
+    @if (tab.isEnabled) {
+      <span
+        class="text-body data-[active=true]:bg-brand text-2xs inline-flex h-5 w-5 items-center justify-center rounded-full px-2 font-bold tracking-wide uppercase data-[active=true]:text-white"
+        [attr.data-active]="isActive"
+        ><fa-icon [icon]="faCheck"
+      /></span>
+    }
   </button>
 }

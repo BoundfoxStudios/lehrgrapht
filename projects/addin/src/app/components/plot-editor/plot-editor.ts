@@ -13,6 +13,7 @@ import {
 } from '@angular/router';
 import { filter, firstValueFrom, map, startWith } from 'rxjs';
 import {
+  faArrowsLeftRightToLine,
   faCircleNotch,
   faDrawPolygon,
   faExpand,
@@ -97,6 +98,12 @@ export class PlotEditor {
         label: 'Polygone',
         icon: faDrawPolygon,
         count: model.polygons.length,
+      },
+      {
+        id: 'reflection',
+        label: 'Spiegelung',
+        icon: faArrowsLeftRightToLine,
+        isEnabled: model.reflection.kind !== 'none',
       },
       { id: 'range', label: 'Grenzen', icon: faExpand },
       { id: 'settings', label: 'Darstellung', icon: faSliders },

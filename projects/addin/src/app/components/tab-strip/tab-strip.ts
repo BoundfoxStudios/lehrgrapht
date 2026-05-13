@@ -6,12 +6,14 @@ import {
 } from '@angular/core';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
+import { faCheck } from '@fortawesome/free-solid-svg-icons';
 
 export interface TabStripItem {
   id: string;
   label: string;
   icon?: IconDefinition;
   count?: number;
+  isEnabled?: boolean;
   hasError?: boolean;
 }
 
@@ -37,4 +39,6 @@ export class TabStrip {
       this.tabChange.emit(id);
     }
   }
+
+  protected readonly faCheck = faCheck;
 }

@@ -1,4 +1,4 @@
-import { Injectable, effect, inject } from '@angular/core';
+import { effect, inject, Injectable } from '@angular/core';
 import { PlotService } from './plot/plot.service';
 import { plotHasErrorCode } from './plot/plot.types';
 import { PlotSettingsService } from './plot-settings.service';
@@ -30,14 +30,18 @@ export class SolutionRenderService {
     const settings = this.plotSettingsService.get();
 
     for (const wp of plots) {
-      if (!wp.model || wp.model.reflection.kind === 'none') continue;
+      if (!wp.model || wp.model.reflection.kind === 'none') {
+        continue;
+      }
 
       const result = await this.plotService.generate(wp.model, settings, {
         applyScaleFactor:
           this.wordService.plotGenerationSettings.applyScaleFactor,
         showSolution,
       });
-      if (plotHasErrorCode(result)) continue;
+      if (plotHasErrorCode(result)) {
+        continue;
+      }
 
       await this.wordService.upsertPicture({
         id: wp.id,
