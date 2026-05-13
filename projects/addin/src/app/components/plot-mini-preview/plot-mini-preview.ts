@@ -12,6 +12,7 @@ import { Plot } from '../../models/plot';
 import { PlotService } from '../../services/plot/plot.service';
 import { plotHasErrorCode } from '../../services/plot/plot.types';
 import { PlotSettingsService } from '../../services/plot-settings.service';
+import { SolutionViewService } from '../../services/solution-view.service';
 
 @Component({
   selector: 'lg-plot-mini-preview',
@@ -25,18 +26,21 @@ import { PlotSettingsService } from '../../services/plot-settings.service';
 export class PlotMiniPreview {
   private readonly plotService = inject(PlotService);
   private readonly plotSettingsService = inject(PlotSettingsService);
+  private readonly solutionViewService = inject(SolutionViewService);
 
   readonly plot = input.required<Plot>();
 
   private readonly model = computed(() => ({
     plot: this.plot(),
     plotSettings: this.plotSettingsService.get(),
+    showSolution: this.solutionViewService.showSolution(),
   }));
 
   readonly preview$ = toObservable(this.model).pipe(
-    switchMap(({ plot, plotSettings }) =>
+    switchMap(({ plot, plotSettings, showSolution }) =>
       this.plotService.generate(plot, plotSettings, {
         applyScaleFactor: false,
+        showSolution,
       }),
     ),
   );

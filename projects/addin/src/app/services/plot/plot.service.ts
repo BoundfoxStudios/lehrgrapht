@@ -34,6 +34,7 @@ export class PlotService {
     plotSettings: PlotSettings,
     options: {
       applyScaleFactor: boolean;
+      showSolution: boolean;
       highlightedPolygonIndex?: number | null;
     },
   ): Promise<
@@ -94,7 +95,10 @@ export class PlotService {
       plotSettings,
       cleanedValues.xValuesArray,
       cleanedValues.yValuesArray,
-      { highlightedPolygonIndex: options.highlightedPolygonIndex ?? null },
+      {
+        highlightedPolygonIndex: options.highlightedPolygonIndex ?? null,
+        showSolution: options.showSolution,
+      },
     );
 
     return this.renderPlot(

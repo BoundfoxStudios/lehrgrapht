@@ -27,6 +27,7 @@ import {
 } from '../../services/plot-settings.service';
 import { PlotService } from '../../services/plot/plot.service';
 import { plotHasErrorCode, PlotSizeMm } from '../../services/plot/plot.types';
+import { SolutionViewService } from '../../services/solution-view.service';
 import { WordService } from '../../services/word/word.service';
 import { PlotClickEvent } from '../plot-preview/plot-preview';
 import { InteractiveMode } from './interactive-mode';
@@ -546,6 +547,7 @@ export const PlotEditorStore = signalStore(
     const wordService = inject(WordService);
     const router = inject(Router);
     const route = inject(ActivatedRoute);
+    const solutionViewService = inject(SolutionViewService);
 
     const model = signal<Plot>(buildInitialPlot());
     const plotSettings = signal<PlotSettings>(defaultPlotSettings);
@@ -556,6 +558,7 @@ export const PlotEditorStore = signalStore(
       const m = model();
       const plot = await plotService.generate(m, plotSettings(), {
         applyScaleFactor: wordService.plotGenerationSettings.applyScaleFactor,
+        showSolution: solutionViewService.showSolution(),
       });
 
       if (plotHasErrorCode(plot)) {

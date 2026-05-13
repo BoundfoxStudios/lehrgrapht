@@ -16,6 +16,7 @@ const HIGHLIGHT_HALO_ALPHA = 0.3;
 
 export interface PolygonRenderOptions {
   highlightedPolygonIndex?: number | null;
+  showSolution?: boolean;
 }
 
 @Injectable({ providedIn: 'root' })

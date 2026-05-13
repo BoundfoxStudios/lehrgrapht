@@ -10,12 +10,14 @@ import { DocumentStorageService } from '../document-storage.service';
 import { PlotService } from '../plot/plot.service';
 import { plotHasErrorCode } from '../plot/plot.types';
 import { PlotSettingsService } from '../plot-settings.service';
+import { SolutionViewService } from '../solution-view.service';
 
 @Injectable()
 export class WordForDesktopService extends WordService {
   private readonly documentStorageService = inject(DocumentStorageService);
   private readonly plotService = inject(PlotService);
   private readonly plotSettingsService = inject(PlotSettingsService);
+  private readonly solutionViewService = inject(SolutionViewService);
 
   override plotGenerationSettings: PlotGenerationSettings = {
     applyScaleFactor: true,
@@ -95,7 +97,10 @@ export class WordForDesktopService extends WordService {
       const plot = await this.plotService.generate(
         clonedWordPlot.model,
         this.plotSettingsService.get(),
-        this.plotGenerationSettings,
+        {
+          ...this.plotGenerationSettings,
+          showSolution: this.solutionViewService.showSolution(),
+        },
       );
 
       if (plotHasErrorCode(plot)) {

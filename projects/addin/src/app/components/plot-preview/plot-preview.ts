@@ -35,6 +35,7 @@ export class PlotPreview {
   readonly plotSettings = input.required<PlotSettings>();
   readonly interactive = input(false);
   readonly highlightedPolygonIndex = input<number | null>(null);
+  readonly showSolution = input(true);
   readonly plotClick = output<PlotClickEvent>();
 
   protected readonly hoverPosition = signal<{
@@ -48,13 +49,15 @@ export class PlotPreview {
     plot: this.plot(),
     plotSettings: this.plotSettings(),
     highlightedPolygonIndex: this.highlightedPolygonIndex(),
+    showSolution: this.showSolution(),
   }));
 
   preview$ = toObservable(this.model).pipe(
-    switchMap(({ plot, plotSettings, highlightedPolygonIndex }) =>
+    switchMap(({ plot, plotSettings, highlightedPolygonIndex, showSolution }) =>
       this.plotService.generate(plot, plotSettings, {
         applyScaleFactor: true,
         highlightedPolygonIndex,
+        showSolution,
       }),
     ),
   );
