@@ -25,6 +25,7 @@ import {
   defaultPlotSettings,
   PlotSettingsService,
 } from '../../services/plot-settings.service';
+import { reflectPoint } from '../../services/plot/reflection';
 import { PlotService } from '../../services/plot/plot.service';
 import { plotHasErrorCode, PlotSizeMm } from '../../services/plot/plot.types';
 import { SolutionViewService } from '../../services/solution-view.service';
@@ -986,6 +987,26 @@ export const PlotEditorStore = signalStore(
         }
         for (const polygon of m.polygons) {
           allPoints.push(...polygon.points);
+        }
+
+        // Reflection definition itself must fit in the range (axis stützpunkte / point S).
+        // Mirrored objects must also fit so the solution view never gets clipped.
+        if (m.reflection.kind === 'point') {
+          allPoints.push(m.reflection.point);
+        } else if (m.reflection.kind === 'axis') {
+          allPoints.push(m.reflection.axis.p1, m.reflection.axis.p2);
+        }
+        if (m.reflection.kind !== 'none') {
+          const reflection = m.reflection;
+          const originals = [
+            ...m.markers.map(mk => ({ x: mk.x, y: mk.y })),
+            ...m.polygons.flatMap(p =>
+              p.points.map(pt => ({ x: pt.x, y: pt.y })),
+            ),
+          ];
+          for (const p of originals) {
+            allPoints.push(reflectPoint(p, reflection));
+          }
         }
 
         if (!allPoints.length) {
