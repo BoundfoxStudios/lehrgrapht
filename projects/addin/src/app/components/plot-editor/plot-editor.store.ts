@@ -1128,6 +1128,39 @@ export const PlotEditorStore = signalStore(
       setHoveredPolygon(index: number | null): void {
         patchState(store, { hoveredPolygonIndex: index });
       },
+
+      setReflectionPoint(point: { x: number; y: number }): void {
+        store.editorForm().controlValue.update(m => ({
+          ...m,
+          reflection: { kind: 'point', point: { x: point.x, y: point.y } },
+        }));
+      },
+
+      setReflectionAxis(
+        p1: { x: number; y: number },
+        p2: { x: number; y: number },
+      ): void {
+        // Akzeptiert auch degenerate Achsen (p1 === p2) — das UI zeigt die Validierung als Fehlermeldung an,
+        // damit der Nutzer beim Eintippen der 4 Koordinaten Zwischenzustände sehen kann.
+        // `applyReflectionAxis` (interactive) verhindert degenerate Commits separat.
+        store.editorForm().controlValue.update(m => ({
+          ...m,
+          reflection: {
+            kind: 'axis',
+            axis: {
+              p1: { x: p1.x, y: p1.y },
+              p2: { x: p2.x, y: p2.y },
+            },
+          },
+        }));
+      },
+
+      removeReflection(): void {
+        store.editorForm().controlValue.update(m => ({
+          ...m,
+          reflection: { kind: 'none' },
+        }));
+      },
     };
   }),
   withHooks({
