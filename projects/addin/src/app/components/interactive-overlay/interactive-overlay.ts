@@ -15,11 +15,9 @@ import {
 import { MarkerNamingService } from '../../services/marker-naming.service';
 import { ButtonDirective } from '../../ui/button/button.directive';
 import { InteractiveMode } from '../plot-editor/interactive-mode';
-import {
-  INTERACTIVE_STRATEGIES,
-  PlotEditorStore,
-} from '../plot-editor/plot-editor.store';
+import { PlotEditorStore } from '../plot-editor/plot-editor.store';
 import { PlotPreview } from '../plot-preview/plot-preview';
+import { INTERACTIVE_STRATEGIES } from '../plot-editor/interactive-strategy';
 
 @Component({
   selector: 'lg-interactive-overlay',
