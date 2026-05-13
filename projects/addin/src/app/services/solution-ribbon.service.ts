@@ -1,4 +1,4 @@
-import { Injectable, effect, inject } from '@angular/core';
+import { effect, inject, Injectable } from '@angular/core';
 import { SolutionViewService } from './solution-view.service';
 
 @Injectable({ providedIn: 'root' })
@@ -8,7 +8,10 @@ export class SolutionRibbonService {
   constructor() {
     effect(() => {
       const showSolution = this.solutionViewService.showSolution();
-      if (typeof Office === 'undefined') return;
+      if (typeof Office === 'undefined') {
+        return;
+      }
+
       void Office.ribbon.requestUpdate({
         tabs: [
           {

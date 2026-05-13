@@ -12,12 +12,20 @@ const bootstrap = (runConfiguration: RunConfiguration): void => {
       const solutionView = appRef.injector.get(SolutionViewService);
       appRef.injector.get(SolutionRenderService);
       appRef.injector.get(SolutionRibbonService);
-      Office.actions.associate('showSolution', () => {
-        solutionView.show();
-      });
-      Office.actions.associate('hideSolution', () => {
-        solutionView.hide();
-      });
+      Office.actions.associate(
+        'showSolution',
+        (event: Office.AddinCommands.Event) => {
+          solutionView.show();
+          event.completed();
+        },
+      );
+      Office.actions.associate(
+        'hideSolution',
+        (event: Office.AddinCommands.Event) => {
+          solutionView.hide();
+          event.completed();
+        },
+      );
     })
     .catch((err: unknown) => {
       console.error(err);
