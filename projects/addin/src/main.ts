@@ -3,6 +3,7 @@ import { App } from './app/components/app/app';
 import { createAppConfig } from './app/app.config';
 import { RunConfiguration } from './app/models/run-configuration';
 import { SolutionRenderService } from './app/services/solution-render.service';
+import { SolutionRibbonService } from './app/services/solution-ribbon.service';
 import { SolutionViewService } from './app/services/solution-view.service';
 
 const bootstrap = (runConfiguration: RunConfiguration): void => {
@@ -10,6 +11,7 @@ const bootstrap = (runConfiguration: RunConfiguration): void => {
     .then(appRef => {
       const solutionView = appRef.injector.get(SolutionViewService);
       appRef.injector.get(SolutionRenderService);
+      appRef.injector.get(SolutionRibbonService);
       Office.actions.associate('toggleSolutionView', () => {
         solutionView.toggle();
       });

@@ -116,11 +116,26 @@
                     <SourceLocation resid="Taskpane.Url" />
                   </Action>
                 </Control>
-                <Control xsi:type="Button" id="ToggleSolutionButton">
-                  <Label resid="ToggleSolutionButton.Label" />
+                <Control xsi:type="Button" id="ShowSolutionButton">
+                  <Label resid="ShowSolutionButton.Label" />
                   <Supertip>
-                    <Title resid="ToggleSolutionButton.Label" />
-                    <Description resid="ToggleSolutionButton.Tooltip" />
+                    <Title resid="ShowSolutionButton.Label" />
+                    <Description resid="ShowSolutionButton.Tooltip" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16x16" />
+                    <bt:Image size="32" resid="Icon.32x32" />
+                    <bt:Image size="80" resid="Icon.80x80" />
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>toggleSolutionView</FunctionName>
+                  </Action>
+                </Control>
+                <Control xsi:type="Button" id="HideSolutionButton">
+                  <Label resid="HideSolutionButton.Label" />
+                  <Supertip>
+                    <Title resid="HideSolutionButton.Label" />
+                    <Description resid="HideSolutionButton.Tooltip" />
                   </Supertip>
                   <Icon>
                     <bt:Image size="16" resid="Icon.16x16" />
@@ -154,13 +169,15 @@
         <bt:String id="GetStarted.Title" DefaultValue="Los geht's mit LehrGrapht!" />
         <bt:String id="CommandsGroup.Label" DefaultValue="LehrGrapht" />
         <bt:String id="TaskpaneButton.Label" DefaultValue="LehrGrapht" />
-        <bt:String id="ToggleSolutionButton.Label" DefaultValue="Lösung umschalten" />
+        <bt:String id="ShowSolutionButton.Label" DefaultValue="Lösung anzeigen" />
+        <bt:String id="HideSolutionButton.Label" DefaultValue="Lösung verbergen" />
       </bt:ShortStrings>
       <!-- LongStrings max characters==250. -->
       <bt:LongStrings>
         <bt:String id="GetStarted.Description" DefaultValue="Das LehrGrapht AddIn wurde erfolgreich geladen. Gehe zum HOME Tab und klicke auf den LehrGrapht-Button um anzufangen." />
         <bt:String id="TaskpaneButton.Tooltip" DefaultValue="Klicken, um LehrGrapht zu öffnen" />
-        <bt:String id="ToggleSolutionButton.Tooltip" DefaultValue="Zeigt für alle Plots dieses Dokuments die gespiegelten Objekte an. Erneut klicken, um zur Aufgabenansicht zurückzukehren." />
+        <bt:String id="ShowSolutionButton.Tooltip" DefaultValue="Zeigt für alle Plots dieses Dokuments die gespiegelten Objekte an." />
+        <bt:String id="HideSolutionButton.Tooltip" DefaultValue="Verbirgt die gespiegelten Objekte und zeigt nur die Aufgabenansicht." />
       </bt:LongStrings>
     </Resources>
   </VersionOverrides>
