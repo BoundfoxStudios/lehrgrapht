@@ -65,3 +65,17 @@
     }
   }
 </header>
+
+@if (solutionViewService.showSolution()) {
+  <div
+    class="text-2xs flex items-center justify-center gap-1.5 bg-red-600 px-3 py-1 font-semibold text-white"
+    role="status"
+    aria-live="polite"
+  >
+    <fa-icon
+      [icon]="faTriangleExclamation"
+      aria-hidden="true"
+    />
+    <span>Lösungen sind aktiv</span>
+  </div>
+}

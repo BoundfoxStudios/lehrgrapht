@@ -2,6 +2,7 @@ import {
   booleanAttribute,
   ChangeDetectionStrategy,
   Component,
+  inject,
   input,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
@@ -10,7 +11,9 @@ import {
   faArrowLeft,
   faCheck,
   faCircleNotch,
+  faTriangleExclamation,
 } from '@fortawesome/free-solid-svg-icons';
+import { SolutionViewService } from '../../services/solution-view.service';
 
 export type HeaderSaveState = 'idle' | 'saving' | 'saved';
 
@@ -25,6 +28,9 @@ export class Header {
   protected readonly faArrowLeft = faArrowLeft;
   protected readonly faCheck = faCheck;
   protected readonly faCircleNotch = faCircleNotch;
+  protected readonly faTriangleExclamation = faTriangleExclamation;
+
+  protected readonly solutionViewService = inject(SolutionViewService);
 
   readonly title = input.required<string>();
   readonly subtitle = input<string>();
