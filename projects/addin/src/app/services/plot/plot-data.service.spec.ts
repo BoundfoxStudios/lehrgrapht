@@ -436,6 +436,51 @@ describe('PlotDataService', () => {
     });
   });
 
+  describe('buildReflectionTraces', () => {
+    it('returns empty array when reflection.kind === "none"', () => {
+      const result = service.buildReflectionTraces(basePlot);
+      expect(result).toEqual([]);
+    });
+
+    it('returns one marker trace for a reflection point', () => {
+      const plot: Plot = {
+        ...basePlot,
+        reflection: { kind: 'point', point: { x: 1, y: 2 } },
+      };
+      const result = service.buildReflectionTraces(plot);
+      expect(result.length).toBe(1);
+      expect(result[0].mode).toBe('text+markers');
+      expect(result[0].x).toEqual([1]);
+      expect(result[0].y).toEqual([2]);
+    });
+
+    it('returns one line trace for an axis that intersects the range', () => {
+      const plot: Plot = {
+        ...basePlot,
+        reflection: {
+          kind: 'axis',
+          axis: { p1: { x: 0, y: 0 }, p2: { x: 1, y: 0 } },
+        },
+      };
+      const result = service.buildReflectionTraces(plot);
+      expect(result.length).toBe(1);
+      expect(result[0].mode).toBe('lines');
+      expect(result[0].x).toEqual([basePlot.range.x.min, basePlot.range.x.max]);
+      expect(result[0].y).toEqual([0, 0]);
+    });
+
+    it('returns empty array for an axis outside the range', () => {
+      const plot: Plot = {
+        ...basePlot,
+        reflection: {
+          kind: 'axis',
+          axis: { p1: { x: 100, y: 0 }, p2: { x: 100, y: 1 } },
+        },
+      };
+      expect(service.buildReflectionTraces(plot)).toEqual([]);
+    });
+  });
+
   describe('calculateLabelPosition', () => {
     const makePoint = (x: number, y: number): PolygonPoint => ({
       x,

@@ -6,6 +6,7 @@ import {
   PlotSettings,
   PolygonPoint,
 } from '../../models/plot';
+import { computeAxisLineEndpoints } from './reflection';
 import { hexToRgba, PLOT_CONSTANTS } from './plot.types';
 
 const DASH_TARGET_PERIOD_UNITS = 0.5;
@@ -160,6 +161,55 @@ export class PlotDataService {
       ...haloTraces,
       ...polygonTraces,
       ...this.buildPolygonPointMarkerTraces(plot),
+    ];
+  }
+
+  buildReflectionTraces(plot: Plot): Partial<PlotData>[] {
+    if (plot.reflection.kind === 'none') return [];
+
+    if (plot.reflection.kind === 'point') {
+      const { x, y } = plot.reflection.point;
+      return [
+        {
+          type: 'scatter',
+          mode: 'text+markers',
+          showlegend: false,
+          x: [x],
+          y: [y],
+          text: ['S'],
+          marker: {
+            symbol: 'cross-thin',
+            color: '#666666',
+            size: 12,
+            line: { width: 2 },
+          },
+          textfont: { size: 12, color: '#666666' },
+          textposition: 'top right',
+          hoverinfo: 'skip',
+        },
+      ];
+    }
+
+    const endpoints = computeAxisLineEndpoints(
+      plot.reflection.axis,
+      plot.range,
+    );
+    if (!endpoints) return [];
+
+    return [
+      {
+        type: 'scatter',
+        mode: 'lines',
+        showlegend: false,
+        x: [endpoints[0].x, endpoints[1].x],
+        y: [endpoints[0].y, endpoints[1].y],
+        line: {
+          color: '#888888',
+          width: 1,
+          dash: 'dash',
+        },
+        hoverinfo: 'skip',
+      },
     ];
   }
 
