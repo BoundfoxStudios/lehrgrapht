@@ -24,7 +24,7 @@
   </span>
 </header>
 
-<div class="relative flex-1 overflow-hidden bg-white">
+<div class="flex-1 overflow-hidden bg-white">
   <lg-plot-preview
     [plot]="store.previewModel()"
     [plotSettings]="store.plotSettings()"
@@ -33,7 +33,7 @@
   />
   @if (store.interactivePoints().length === 0) {
     <div
-      class="pointer-events-none absolute inset-0 flex items-center justify-center px-6 text-center"
+      class="pointer-events-none inset-0 flex items-center justify-center px-6 py-2 text-center"
     >
       <span
         class="rounded-base text-body bg-white/95 px-3 py-2 text-sm shadow-sm"
@@ -43,7 +43,7 @@
     </div>
   } @else if (canCloseByClickingStart()) {
     <div
-      class="pointer-events-none absolute top-2 right-2 left-2 flex justify-center px-2"
+      class="pointer-events-none top-2 right-2 left-2 flex justify-center px-2"
     >
       <span
         class="rounded-base text-body bg-white/95 px-3 py-2 text-center text-xs shadow-sm"
@@ -81,7 +81,7 @@
   </button>
   @if (sheetOpen()) {
     <div
-      class="max-h-[200px] overflow-y-auto px-3 pb-3"
+      class="max-h-50 overflow-y-auto px-3 pb-3"
       id="interactive-overlay-points"
     >
       @if (store.interactivePoints().length === 0) {
@@ -112,7 +112,7 @@
 </div>
 
 <div
-  class="border-default-medium flex h-[72px] shrink-0 items-center border-t bg-white px-3"
+  class="border-default-medium flex h-18 shrink-0 items-center border-t bg-white px-3"
 >
   <button
     class="h-11 w-full"
