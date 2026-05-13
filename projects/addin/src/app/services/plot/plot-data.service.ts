@@ -95,9 +95,8 @@ export class PlotDataService {
     }
 
     if (
-      options.showSolution &&
       plot.reflection.kind !== 'none' &&
-      plot.reflection.isSolution &&
+      (!plot.reflection.isSolution || options.showSolution === true) &&
       plot.markers.length
     ) {
       const mirrored = plot.markers.map(m => {
@@ -210,9 +209,8 @@ export class PlotDataService {
 
     const mirroredTraces: Partial<PlotData>[] = [];
     if (
-      options.showSolution &&
       plot.reflection.kind !== 'none' &&
-      plot.reflection.isSolution
+      (!plot.reflection.isSolution || options.showSolution === true)
     ) {
       for (const polygon of plot.polygons) {
         if (!isVisible(polygon)) {

@@ -216,6 +216,13 @@ export const PlotEditorStore = signalStore(
           },
         );
       }),
+      hasAnySolution: computed(() => {
+        const model = store.model();
+        if (model.reflection.kind !== 'none' && model.reflection.isSolution) {
+          return true;
+        }
+        return model.polygons.some(polygon => polygon.isSolution);
+      }),
     };
   }),
   withMethods(store => {

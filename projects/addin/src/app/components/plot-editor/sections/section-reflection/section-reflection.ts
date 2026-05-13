@@ -16,20 +16,12 @@ import { InteractiveMode } from '../../interactive-mode';
 import { PlotEditorStore } from '../../plot-editor.store';
 import { ButtonDirective } from '../../../../ui/button/button.directive';
 import { Card } from '../../../../ui/card/card';
-import { SectionHint } from '../../../section-hint/section-hint';
 import { IdPill } from '../../../id-pill/id-pill';
 import { Switch } from '../../../switch/switch';
 
 @Component({
   selector: 'lg-section-reflection',
-  imports: [
-    FaIconComponent,
-    ButtonDirective,
-    Card,
-    SectionHint,
-    IdPill,
-    Switch,
-  ],
+  imports: [FaIconComponent, ButtonDirective, Card, IdPill, Switch],
   templateUrl: './section-reflection.html',
   styleUrl: './section-reflection.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

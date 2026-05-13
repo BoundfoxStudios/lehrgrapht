@@ -34,6 +34,14 @@
       <router-outlet />
     </div>
 
+    @if (store.hasAnySolution() && !solutionViewService.showSolution()) {
+      <lg-section-hint class="mx-2 mb-2">
+        Die Vorschau zeigt immer auch die Lösung mit an, auch wenn Du die
+        Anzeige von Lösungen aktuell ausgeschaltet hast. Sobald der Plot in Word
+        liegt, wird er dort keine Lösung anzeigen.
+      </lg-section-hint>
+    }
+
     @if (!store.isAnyInteractiveMode()) {
       <lg-preview-dock [errorVariant]="showErrorDock()" />
     }

@@ -656,7 +656,7 @@ describe('PlotDataService', () => {
       expect(mirrored.y).toEqual([-1, -1]);
     });
 
-    it('emits no mirrored trace when showSolution=true but reflection.isSolution=false', () => {
+    it('emits a mirrored polygon trace when reflection.isSolution=false regardless of showSolution', () => {
       const plot: Plot = {
         ...basePlot,
         polygons: [polygon],
@@ -671,10 +671,16 @@ describe('PlotDataService', () => {
         plotSettings,
         { showSolution: false },
       );
-      const result = service.buildPolygonTraces(plot, plotSettings, {
+
+      const previewResult = service.buildPolygonTraces(plot, plotSettings, {
         showSolution: true,
       });
-      expect(result.length).toBe(baseline.length);
+      expect(previewResult.length).toBe(baseline.length + 1);
+
+      const wordResult = service.buildPolygonTraces(plot, plotSettings, {
+        showSolution: false,
+      });
+      expect(wordResult.length).toBe(baseline.length + 1);
     });
   });
 
@@ -720,7 +726,7 @@ describe('PlotDataService', () => {
       expect(mirrored.text).toEqual(["A'"]);
     });
 
-    it('emits no mirrored trace when showSolution=true but reflection.isSolution=false', () => {
+    it('emits a mirrored marker trace when reflection.isSolution=false regardless of showSolution', () => {
       const plot: Plot = {
         ...basePlot,
         markers: [marker],
@@ -730,8 +736,16 @@ describe('PlotDataService', () => {
           isSolution: false,
         },
       };
-      const result = service.buildMarkerTraces(plot, { showSolution: true });
-      expect(result.length).toBe(1);
+
+      const previewResult = service.buildMarkerTraces(plot, {
+        showSolution: true,
+      });
+      expect(previewResult.length).toBe(2);
+
+      const wordResult = service.buildMarkerTraces(plot, {
+        showSolution: false,
+      });
+      expect(wordResult.length).toBe(2);
     });
   });
 });

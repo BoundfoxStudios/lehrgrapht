@@ -34,6 +34,8 @@ import {
   UnsavedChangesDialog,
   UnsavedChangesResult,
 } from './unsaved-changes-dialog/unsaved-changes-dialog';
+import { SectionHint } from '../section-hint/section-hint';
+import { SolutionViewService } from '../../services/solution-view.service';
 
 @Component({
   selector: 'lg-plot-editor',
@@ -45,6 +47,7 @@ import {
     TabStrip,
     RouterOutlet,
     FaIconComponent,
+    SectionHint,
   ],
   templateUrl: './plot-editor.html',
   styleUrl: './plot-editor.css',
@@ -55,6 +58,7 @@ export class PlotEditor {
   protected readonly faCircleNotch = faCircleNotch;
 
   protected readonly store = inject(PlotEditorStore);
+  protected readonly solutionViewService = inject(SolutionViewService);
   private readonly router = inject(Router);
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly dialog = inject(Dialog);
