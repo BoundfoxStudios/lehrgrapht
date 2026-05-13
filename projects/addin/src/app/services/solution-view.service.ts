@@ -4,7 +4,11 @@ import { Injectable, signal } from '@angular/core';
 export class SolutionViewService {
   readonly showSolution = signal(false);
 
-  toggle(): void {
-    this.showSolution.update(v => !v);
+  show(): void {
+    this.showSolution.set(true);
+  }
+
+  hide(): void {
+    this.showSolution.set(false);
   }
 }

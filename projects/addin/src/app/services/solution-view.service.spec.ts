@@ -13,10 +13,25 @@ describe('SolutionViewService', () => {
     expect(service.showSolution()).toBe(false);
   });
 
-  it('flips showSolution on each toggle', () => {
-    service.toggle();
+  it('sets showSolution to true on show()', () => {
+    service.show();
     expect(service.showSolution()).toBe(true);
-    service.toggle();
+  });
+
+  it('sets showSolution to false on hide()', () => {
+    service.show();
+    service.hide();
+    expect(service.showSolution()).toBe(false);
+  });
+
+  it('is idempotent — calling show() twice keeps showSolution true', () => {
+    service.show();
+    service.show();
+    expect(service.showSolution()).toBe(true);
+  });
+
+  it('is idempotent — calling hide() when already false keeps showSolution false', () => {
+    service.hide();
     expect(service.showSolution()).toBe(false);
   });
 });

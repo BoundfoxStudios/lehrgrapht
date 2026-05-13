@@ -128,7 +128,7 @@
                     <bt:Image size="80" resid="Icon.80x80" />
                   </Icon>
                   <Action xsi:type="ExecuteFunction">
-                    <FunctionName>toggleSolutionView</FunctionName>
+                    <FunctionName>showSolution</FunctionName>
                   </Action>
                 </Control>
                 <Control xsi:type="Button" id="HideSolutionButton">
@@ -143,7 +143,7 @@
                     <bt:Image size="80" resid="Icon.80x80" />
                   </Icon>
                   <Action xsi:type="ExecuteFunction">
-                    <FunctionName>toggleSolutionView</FunctionName>
+                    <FunctionName>hideSolution</FunctionName>
                   </Action>
                 </Control>
               </Group>

@@ -12,8 +12,11 @@ const bootstrap = (runConfiguration: RunConfiguration): void => {
       const solutionView = appRef.injector.get(SolutionViewService);
       appRef.injector.get(SolutionRenderService);
       appRef.injector.get(SolutionRibbonService);
-      Office.actions.associate('toggleSolutionView', () => {
-        solutionView.toggle();
+      Office.actions.associate('showSolution', () => {
+        solutionView.show();
+      });
+      Office.actions.associate('hideSolution', () => {
+        solutionView.hide();
       });
     })
     .catch((err: unknown) => {
