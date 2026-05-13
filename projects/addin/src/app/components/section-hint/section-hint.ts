@@ -12,7 +12,7 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class:
-      'bg-brand-soft text-brand-strong flex items-center gap-1.5 rounded-base px-2.5 py-2 text-[10px]',
+      'bg-brand-soft text-brand-strong flex items-center gap-1.5 rounded-base px-2.5 py-2 text-2xs',
     role: 'note',
   },
 })

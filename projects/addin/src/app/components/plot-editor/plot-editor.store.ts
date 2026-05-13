@@ -536,6 +536,10 @@ export function applyFunction(
   };
 }
 
+function previousReflectionIsSolution(model: Plot): boolean {
+  return model.reflection.kind === 'none' ? false : model.reflection.isSolution;
+}
+
 export function applyReflectionPoint(
   model: Plot,
   points: readonly { x: number; y: number }[],
@@ -547,7 +551,11 @@ export function applyReflectionPoint(
   const point = points[0];
   return {
     ...model,
-    reflection: { kind: 'point', point: { x: point.x, y: point.y } },
+    reflection: {
+      kind: 'point',
+      point: { x: point.x, y: point.y },
+      isSolution: previousReflectionIsSolution(model),
+    },
   };
 }
 
@@ -568,6 +576,7 @@ export function applyReflectionAxis(
     reflection: {
       kind: 'axis',
       axis: { p1: { x: p1.x, y: p1.y }, p2: { x: p2.x, y: p2.y } },
+      isSolution: previousReflectionIsSolution(model),
     },
   };
 }
@@ -1196,7 +1205,11 @@ export const PlotEditorStore = signalStore(
       setReflectionPoint(point: { x: number; y: number }): void {
         store.editorForm().controlValue.update(m => ({
           ...m,
-          reflection: { kind: 'point', point: { x: point.x, y: point.y } },
+          reflection: {
+            kind: 'point',
+            point: { x: point.x, y: point.y },
+            isSolution: previousReflectionIsSolution(m),
+          },
         }));
       },
 
@@ -1215,8 +1228,24 @@ export const PlotEditorStore = signalStore(
               p1: { x: p1.x, y: p1.y },
               p2: { x: p2.x, y: p2.y },
             },
+            isSolution: previousReflectionIsSolution(m),
           },
         }));
+      },
+
+      toggleReflectionIsSolution(): void {
+        store.editorForm().controlValue.update(m => {
+          if (m.reflection.kind === 'none') {
+            return m;
+          }
+          return {
+            ...m,
+            reflection: {
+              ...m.reflection,
+              isSolution: !m.reflection.isSolution,
+            },
+          };
+        });
       },
 
       removeReflection(): void {

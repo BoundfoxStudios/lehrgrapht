@@ -85,6 +85,19 @@
         class="flex items-center gap-2"
         card-actions
       >
+        <label
+          class="text-body-subtle flex cursor-pointer items-center gap-1.5 text-xs"
+          for="reflection-is-solution"
+        >
+          <span>Lösung</span>
+          <lg-switch
+            [value]="r.isSolution"
+            (valueChange)="toggleIsSolution()"
+            inputId="reflection-is-solution"
+            ariaLabel="Spiegelpunkt als Lösung markieren"
+            size="small"
+          />
+        </label>
         <button
           class="grid h-7 w-7 place-items-center rounded text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
           (click)="remove()"
@@ -154,6 +167,19 @@
         class="flex items-center gap-2"
         card-actions
       >
+        <label
+          class="text-body-subtle flex cursor-pointer items-center gap-1.5 text-xs"
+          for="reflection-is-solution"
+        >
+          <span>Lösung</span>
+          <lg-switch
+            [value]="r.isSolution"
+            (valueChange)="toggleIsSolution()"
+            inputId="reflection-is-solution"
+            ariaLabel="Spiegelachse als Lösung markieren"
+            size="small"
+          />
+        </label>
         <button
           class="grid h-7 w-7 place-items-center rounded text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
           (click)="remove()"
@@ -241,7 +267,7 @@
   }
 
   <lg-section-hint>
-    Tipp: Die Funktion „Lösung umschalten" im Word-Menüband zeigt für alle Plots
-    dieses Dokuments die gespiegelten Objekte.
+    Tipp: Aktiviere den Schalter „Lösung", damit die gespiegelten Objekte beim
+    Umschalten der Lösungen im Word-Menüband angezeigt werden.
   </lg-section-hint>
 </div>

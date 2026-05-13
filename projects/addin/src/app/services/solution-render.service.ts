@@ -40,7 +40,8 @@ export class SolutionRenderService {
     const eligiblePlots = plots.filter(
       (wp): wp is WordPlot & { model: Plot } =>
         !!wp.model &&
-        (wp.model.reflection.kind !== 'none' ||
+        ((wp.model.reflection.kind !== 'none' &&
+          wp.model.reflection.isSolution) ||
           wp.model.polygons.some(polygon => polygon.isSolution)),
     );
 

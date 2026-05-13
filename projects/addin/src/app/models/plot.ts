@@ -69,8 +69,8 @@ export interface ReflectionAxis {
 
 export type Reflection =
   | { kind: 'none' }
-  | { kind: 'point'; point: ReflectionPoint }
-  | { kind: 'axis'; axis: ReflectionAxis };
+  | { kind: 'point'; point: ReflectionPoint; isSolution: boolean }
+  | { kind: 'axis'; axis: ReflectionAxis; isSolution: boolean };
 
 export interface Plot {
   version: string;

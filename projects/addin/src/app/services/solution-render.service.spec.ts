@@ -11,7 +11,10 @@ import { SolutionRenderService } from './solution-render.service';
 import { SolutionViewService } from './solution-view.service';
 import { WordPlot, WordService } from './word/word.service';
 
-function makePlot(reflectionKind: 'none' | 'point' | 'axis'): Plot {
+function makePlot(
+  reflectionKind: 'none' | 'point' | 'axis',
+  isSolution = true,
+): Plot {
   return {
     version: '1.0',
     name: 'test',
@@ -33,10 +36,11 @@ function makePlot(reflectionKind: 'none' | 'point' | 'axis'): Plot {
       reflectionKind === 'none'
         ? { kind: 'none' }
         : reflectionKind === 'point'
-          ? { kind: 'point', point: { x: 0, y: 0 } }
+          ? { kind: 'point', point: { x: 0, y: 0 }, isSolution }
           : {
               kind: 'axis',
               axis: { p1: { x: 0, y: 0 }, p2: { x: 1, y: 0 } },
+              isSolution,
             },
   };
 }
@@ -109,11 +113,12 @@ describe('SolutionRenderService', () => {
     expect(upsertSpy).not.toHaveBeenCalled();
   });
 
-  it('regenerates only plots with reflection.kind !== "none" when signal flips', async () => {
+  it('regenerates only plots whose reflection.isSolution is true when signal flips', async () => {
     wordPlots = [
       { id: 'a', model: makePlot('none') },
-      { id: 'b', model: makePlot('point') },
-      { id: 'c', model: makePlot('axis') },
+      { id: 'b', model: makePlot('point', true) },
+      { id: 'c', model: makePlot('axis', true) },
+      { id: 'd', model: makePlot('point', false) },
     ];
     solutionView.showSolution.set(true);
     await flushSignalAndAsync();

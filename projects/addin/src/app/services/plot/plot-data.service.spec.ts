@@ -457,7 +457,11 @@ describe('PlotDataService', () => {
     it('returns one marker trace for a reflection point', () => {
       const plot: Plot = {
         ...basePlot,
-        reflection: { kind: 'point', point: { x: 1, y: 2 } },
+        reflection: {
+          kind: 'point',
+          point: { x: 1, y: 2 },
+          isSolution: false,
+        },
       };
       const result = service.buildReflectionTraces(plot);
       expect(result.length).toBe(1);
@@ -472,6 +476,7 @@ describe('PlotDataService', () => {
         reflection: {
           kind: 'axis',
           axis: { p1: { x: 0, y: 0 }, p2: { x: 1, y: 0 } },
+          isSolution: false,
         },
       };
       const result = service.buildReflectionTraces(plot);
@@ -487,6 +492,7 @@ describe('PlotDataService', () => {
         reflection: {
           kind: 'axis',
           axis: { p1: { x: 100, y: 0 }, p2: { x: 100, y: 1 } },
+          isSolution: false,
         },
       };
       expect(service.buildReflectionTraces(plot)).toEqual([]);
@@ -611,6 +617,7 @@ describe('PlotDataService', () => {
         reflection: {
           kind: 'axis',
           axis: { p1: { x: 0, y: 0 }, p2: { x: 1, y: 0 } },
+          isSolution: true,
         },
       };
       const baseline = service.buildPolygonTraces(
@@ -624,13 +631,14 @@ describe('PlotDataService', () => {
       expect(result.length).toBe(baseline.length);
     });
 
-    it('emits one additional mirrored polygon trace when showSolution=true', () => {
+    it('emits one additional mirrored polygon trace when showSolution=true and reflection.isSolution=true', () => {
       const plot: Plot = {
         ...basePlot,
         polygons: [polygon],
         reflection: {
           kind: 'axis',
           axis: { p1: { x: 0, y: 0 }, p2: { x: 1, y: 0 } },
+          isSolution: true,
         },
       };
       const baseline = service.buildPolygonTraces(
@@ -647,6 +655,27 @@ describe('PlotDataService', () => {
       expect(mirrored.x).toEqual([1, 3]);
       expect(mirrored.y).toEqual([-1, -1]);
     });
+
+    it('emits no mirrored trace when showSolution=true but reflection.isSolution=false', () => {
+      const plot: Plot = {
+        ...basePlot,
+        polygons: [polygon],
+        reflection: {
+          kind: 'axis',
+          axis: { p1: { x: 0, y: 0 }, p2: { x: 1, y: 0 } },
+          isSolution: false,
+        },
+      };
+      const baseline = service.buildPolygonTraces(
+        { ...basePlot, polygons: [polygon] },
+        plotSettings,
+        { showSolution: false },
+      );
+      const result = service.buildPolygonTraces(plot, plotSettings, {
+        showSolution: true,
+      });
+      expect(result.length).toBe(baseline.length);
+    });
   });
 
   describe('mirrored markers via showSolution', () => {
@@ -662,17 +691,25 @@ describe('PlotDataService', () => {
       const plot: Plot = {
         ...basePlot,
         markers: [marker],
-        reflection: { kind: 'point', point: { x: 0, y: 0 } },
+        reflection: {
+          kind: 'point',
+          point: { x: 0, y: 0 },
+          isSolution: true,
+        },
       };
       const result = service.buildMarkerTraces(plot, { showSolution: false });
       expect(result.length).toBe(1);
     });
 
-    it('emits one additional mirrored marker trace with apostrophed labels when showSolution=true', () => {
+    it('emits one additional mirrored marker trace with apostrophed labels when showSolution=true and reflection.isSolution=true', () => {
       const plot: Plot = {
         ...basePlot,
         markers: [marker],
-        reflection: { kind: 'point', point: { x: 0, y: 0 } },
+        reflection: {
+          kind: 'point',
+          point: { x: 0, y: 0 },
+          isSolution: true,
+        },
       };
       const result = service.buildMarkerTraces(plot, { showSolution: true });
       expect(result.length).toBe(2);
@@ -681,6 +718,20 @@ describe('PlotDataService', () => {
       expect(mirrored.x).toEqual([-2]);
       expect(mirrored.y).toEqual([-3]);
       expect(mirrored.text).toEqual(["A'"]);
+    });
+
+    it('emits no mirrored trace when showSolution=true but reflection.isSolution=false', () => {
+      const plot: Plot = {
+        ...basePlot,
+        markers: [marker],
+        reflection: {
+          kind: 'point',
+          point: { x: 0, y: 0 },
+          isSolution: false,
+        },
+      };
+      const result = service.buildMarkerTraces(plot, { showSolution: true });
+      expect(result.length).toBe(1);
     });
   });
 });

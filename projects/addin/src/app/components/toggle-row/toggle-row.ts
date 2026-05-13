@@ -5,12 +5,13 @@ import {
   model,
 } from '@angular/core';
 import { FormValueControl } from '@angular/forms/signals';
+import { Switch } from '../switch/switch';
 
 let toggleRowIdCounter = 0;
 
 @Component({
   selector: 'lg-toggle-row',
-  imports: [],
+  imports: [Switch],
   templateUrl: './toggle-row.html',
   styleUrl: './toggle-row.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -25,11 +26,4 @@ export class ToggleRow implements FormValueControl<boolean> {
   readonly disabled = input(false);
 
   protected readonly inputId = `lg-toggle-row-${++toggleRowIdCounter}`;
-
-  protected toggle(): void {
-    if (this.disabled()) {
-      return;
-    }
-    this.value.update(v => !v);
-  }
 }

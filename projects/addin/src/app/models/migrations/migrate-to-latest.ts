@@ -60,13 +60,33 @@ export const migrateToLatest: Migration = {
       isSolution: p['isSolution'] ?? false,
     }));
 
+    const existingReflection = plot['reflection'] as
+      | Record<string, unknown>
+      | undefined;
+    const buildReflection = (): Record<string, unknown> => {
+      if (!existingReflection || existingReflection['kind'] === 'none') {
+        return { kind: 'none' };
+      }
+      if (
+        existingReflection['kind'] === 'point' ||
+        existingReflection['kind'] === 'axis'
+      ) {
+        return {
+          ...existingReflection,
+          isSolution: existingReflection['isSolution'] ?? false,
+        };
+      }
+      return { kind: 'none' };
+    };
+    const migratedReflection = buildReflection();
+
     const result: Record<string, unknown> = {
       ...plot,
       fnx: migratedFnx,
       legendLabelFormat: plot['legendLabelFormat'] ?? 'none',
       showAxisArrows: plot['showAxisArrows'] ?? false,
       gridStep: plot['gridStep'] ?? '1',
-      reflection: plot['reflection'] ?? { kind: 'none' },
+      reflection: migratedReflection,
       polygons: [
         ...migratedExistingPolygons,
         ...polygonsFromLines,

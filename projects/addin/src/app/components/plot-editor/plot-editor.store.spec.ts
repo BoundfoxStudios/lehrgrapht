@@ -787,26 +787,29 @@ describe('dedupePolygonPoints', () => {
 });
 
 describe('applyReflectionPoint', () => {
-  it('sets reflection.kind to "point" with the click coordinates', () => {
+  it('sets reflection.kind to "point" with the click coordinates and isSolution=false', () => {
     const result = applyReflectionPoint(basePlot, [{ x: 1, y: 2 }], ctx);
     expect(result.reflection).toEqual({
       kind: 'point',
       point: { x: 1, y: 2 },
+      isSolution: false,
     });
   });
 
-  it('overwrites an existing reflection.kind="axis"', () => {
+  it('overwrites an existing reflection.kind="axis" and preserves isSolution', () => {
     const plot: Plot = {
       ...basePlot,
       reflection: {
         kind: 'axis',
         axis: { p1: { x: 0, y: 0 }, p2: { x: 1, y: 1 } },
+        isSolution: true,
       },
     };
     const result = applyReflectionPoint(plot, [{ x: 5, y: 5 }], ctx);
     expect(result.reflection).toEqual({
       kind: 'point',
       point: { x: 5, y: 5 },
+      isSolution: true,
     });
   });
 
@@ -816,7 +819,7 @@ describe('applyReflectionPoint', () => {
 });
 
 describe('applyReflectionAxis', () => {
-  it('sets reflection.kind to "axis" with the two click coordinates', () => {
+  it('sets reflection.kind to "axis" with the two click coordinates and isSolution=false', () => {
     const result = applyReflectionAxis(
       basePlot,
       [
@@ -828,6 +831,31 @@ describe('applyReflectionAxis', () => {
     expect(result.reflection).toEqual({
       kind: 'axis',
       axis: { p1: { x: 0, y: 0 }, p2: { x: 5, y: 5 } },
+      isSolution: false,
+    });
+  });
+
+  it('preserves isSolution from an existing reflection.kind="point"', () => {
+    const plot: Plot = {
+      ...basePlot,
+      reflection: {
+        kind: 'point',
+        point: { x: 0, y: 0 },
+        isSolution: true,
+      },
+    };
+    const result = applyReflectionAxis(
+      plot,
+      [
+        { x: 0, y: 0 },
+        { x: 5, y: 5 },
+      ],
+      ctx,
+    );
+    expect(result.reflection).toEqual({
+      kind: 'axis',
+      axis: { p1: { x: 0, y: 0 }, p2: { x: 5, y: 5 } },
+      isSolution: true,
     });
   });
 

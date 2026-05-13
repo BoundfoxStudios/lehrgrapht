@@ -58,23 +58,16 @@
             [for]="'polygon-' + polygonIndex + '-is-solution'"
           >
             <span>Lösung</span>
-            <button
-              class="lg-switch focus-visible:ring-brand-medium relative h-4 w-7 shrink-0 cursor-pointer rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
-              [class.bg-brand]="polygons[polygonIndex].isSolution"
-              [class.bg-default-medium]="!polygons[polygonIndex].isSolution"
-              [class.lg-switch--on]="polygons[polygonIndex].isSolution"
-              [id]="'polygon-' + polygonIndex + '-is-solution'"
-              [attr.aria-checked]="polygons[polygonIndex].isSolution"
-              [attr.aria-label]="
+            <lg-switch
+              [value]="polygons[polygonIndex].isSolution"
+              [inputId]="'polygon-' + polygonIndex + '-is-solution'"
+              [ariaLabel]="
                 polygonTitle(polygons[polygonIndex], polygonIndex) +
                 ' als Lösung markieren'
               "
-              (click)="toggleIsSolution(polygonIndex)"
-              role="switch"
-              type="button"
-            >
-              <span class="lg-switch__knob"></span>
-            </button>
+              (valueChange)="toggleIsSolution(polygonIndex)"
+              size="small"
+            />
           </label>
           <button
             class="grid h-7 w-7 place-items-center rounded text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
@@ -91,9 +84,7 @@
 
         <div class="mb-2 flex flex-col gap-2">
           <div class="flex items-center justify-between gap-2">
-            <span class="text-body-subtle text-[10px] font-semibold"
-              >Farben</span
-            >
+            <span class="text-body-subtle text-2xs font-semibold">Farben</span>
             <div class="flex items-center gap-1.5">
               <input
                 class="h-7 w-7 cursor-pointer rounded border-none"
@@ -125,7 +116,7 @@
           </div>
           <div class="flex items-center justify-between">
             <label
-              class="text-body-subtle text-[10px] font-semibold"
+              class="text-body-subtle text-2xs font-semibold"
               [for]="'polygon-' + polygonIndex + '-show-points'"
               >Punkte anzeigen</label
             >
@@ -137,21 +128,23 @@
               type="checkbox"
             />
           </div>
+          @if (polygons[polygonIndex].points.length > 2) {
+            <div class="flex items-center justify-between">
+              <label
+                class="text-body-subtle text-2xs font-semibold"
+                [for]="'polygon-' + polygonIndex + '-connect'"
+                >Verbinden</label
+              >
+              <input
+                class="h-4 w-4 cursor-pointer rounded border-gray-300"
+                [formField]="control.connect"
+                [id]="'polygon-' + polygonIndex + '-connect'"
+                type="checkbox"
+              />
+            </div>
+          }
           <div class="flex items-center justify-between">
-            <label
-              class="text-body-subtle text-[10px] font-semibold"
-              [for]="'polygon-' + polygonIndex + '-connect'"
-              >Verbinden</label
-            >
-            <input
-              class="h-4 w-4 cursor-pointer rounded border-gray-300"
-              [formField]="control.connect"
-              [id]="'polygon-' + polygonIndex + '-connect'"
-              type="checkbox"
-            />
-          </div>
-          <div class="flex items-center justify-between">
-            <span class="text-body-subtle text-[10px] font-semibold">Stil</span>
+            <span class="text-body-subtle text-2xs font-semibold">Stil</span>
             <lg-pill-switch
               [options]="lineStyleOptions"
               [formField]="control.lineStyle"
@@ -166,9 +159,7 @@
           polygons[polygonIndex].points.length >= 3
         ) {
           <div class="mb-2 flex items-center justify-between">
-            <span class="text-body-subtle text-[10px] font-semibold"
-              >Füllung</span
-            >
+            <span class="text-body-subtle text-2xs font-semibold">Füllung</span>
             <lg-pill-switch
               [options]="fillStyleOptions"
               [formField]="control.fillStyle"
@@ -184,7 +175,7 @@
           </div>
         }
 
-        <div class="text-body-subtle mb-1 text-[10px]">
+        <div class="text-body-subtle text-2xs mb-1">
           Eckpunkte · in Reihenfolge
         </div>
         <div class="flex flex-col gap-1.5">

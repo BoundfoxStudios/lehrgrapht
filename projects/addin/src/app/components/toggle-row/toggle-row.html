@@ -4,20 +4,11 @@
 >
   <span class="text-heading block text-xs font-medium">{{ label() }}</span>
   @if (sub(); as sub) {
-    <span class="text-body-subtle block text-[10px]">{{ sub }}</span>
+    <span class="text-body-subtle text-2xs block">{{ sub }}</span>
   }
 </label>
-<button
-  class="lg-switch focus-visible:ring-brand-medium relative h-5 w-9 shrink-0 cursor-pointer rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
-  [class.bg-brand]="value()"
-  [class.bg-default-medium]="!value()"
-  [class.lg-switch--on]="value()"
-  [id]="inputId"
+<lg-switch
+  [(value)]="value"
   [disabled]="disabled()"
-  [attr.aria-checked]="value()"
-  (click)="toggle()"
-  role="switch"
-  type="button"
->
-  <span class="lg-switch__knob"></span>
-</button>
+  [inputId]="inputId"
+/>

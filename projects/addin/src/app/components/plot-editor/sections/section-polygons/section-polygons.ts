@@ -28,6 +28,7 @@ import { Polygon, PolygonFillStyle } from '../../../../models/plot';
 import { PillSwitch, PillSwitchOption } from '../../../pill-switch/pill-switch';
 import { SectionHint } from '../../../section-hint/section-hint';
 import { IdPill, IdPillPrefix } from '../../../id-pill/id-pill';
+import { Switch } from '../../../switch/switch';
 import {
   SchraegbildData,
   SchraegbildDialog,
@@ -49,6 +50,7 @@ import {
     SectionEmptyState,
     SectionPolygonsImage,
     IdPill,
+    Switch,
   ],
   templateUrl: './section-polygons.html',
   styleUrl: './section-polygons.css',

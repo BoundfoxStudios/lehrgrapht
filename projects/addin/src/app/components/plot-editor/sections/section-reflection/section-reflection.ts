@@ -18,10 +18,18 @@ import { ButtonDirective } from '../../../../ui/button/button.directive';
 import { Card } from '../../../../ui/card/card';
 import { SectionHint } from '../../../section-hint/section-hint';
 import { IdPill } from '../../../id-pill/id-pill';
+import { Switch } from '../../../switch/switch';
 
 @Component({
   selector: 'lg-section-reflection',
-  imports: [FaIconComponent, ButtonDirective, Card, SectionHint, IdPill],
+  imports: [
+    FaIconComponent,
+    ButtonDirective,
+    Card,
+    SectionHint,
+    IdPill,
+    Switch,
+  ],
   templateUrl: './section-reflection.html',
   styleUrl: './section-reflection.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -120,6 +128,10 @@ export class SectionReflection {
 
   protected remove(): void {
     this.store.removeReflection();
+  }
+
+  protected toggleIsSolution(): void {
+    this.store.toggleReflectionIsSolution();
   }
 
   private parseEventValue(event: Event): number | null {

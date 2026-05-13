@@ -301,16 +301,42 @@ describe('migrate-to-latest', () => {
       expect(result['reflection']).toEqual({ kind: 'none' });
     });
 
-    it('preserves existing reflection of kind="point"', () => {
+    it('preserves point and backfills isSolution=false when missing', () => {
       const reflection = { kind: 'point', point: { x: 1, y: 2 } };
+      const result = migrate({ reflection });
+      expect(result['reflection']).toEqual({
+        ...reflection,
+        isSolution: false,
+      });
+    });
+
+    it('preserves axis and backfills isSolution=false when missing', () => {
+      const reflection = {
+        kind: 'axis',
+        axis: { p1: { x: 0, y: 0 }, p2: { x: 1, y: 1 } },
+      };
+      const result = migrate({ reflection });
+      expect(result['reflection']).toEqual({
+        ...reflection,
+        isSolution: false,
+      });
+    });
+
+    it('preserves existing isSolution=true on point reflection', () => {
+      const reflection = {
+        kind: 'point',
+        point: { x: 1, y: 2 },
+        isSolution: true,
+      };
       const result = migrate({ reflection });
       expect(result['reflection']).toEqual(reflection);
     });
 
-    it('preserves existing reflection of kind="axis"', () => {
+    it('preserves existing isSolution=true on axis reflection', () => {
       const reflection = {
         kind: 'axis',
         axis: { p1: { x: 0, y: 0 }, p2: { x: 1, y: 1 } },
+        isSolution: true,
       };
       const result = migrate({ reflection });
       expect(result['reflection']).toEqual(reflection);

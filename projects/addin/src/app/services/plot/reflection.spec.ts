@@ -13,12 +13,20 @@ describe('reflectPoint', () => {
   });
 
   it('reflects through origin point', () => {
-    const r: Reflection = { kind: 'point', point: { x: 0, y: 0 } };
+    const r: Reflection = {
+      kind: 'point',
+      point: { x: 0, y: 0 },
+      isSolution: false,
+    };
     expect(reflectPoint({ x: 3, y: 4 }, r)).toEqual({ x: -3, y: -4 });
   });
 
   it('reflects through arbitrary point', () => {
-    const r: Reflection = { kind: 'point', point: { x: 1, y: 2 } };
+    const r: Reflection = {
+      kind: 'point',
+      point: { x: 1, y: 2 },
+      isSolution: false,
+    };
     expect(reflectPoint({ x: 3, y: 4 }, r)).toEqual({ x: -1, y: 0 });
   });
 
@@ -26,6 +34,7 @@ describe('reflectPoint', () => {
     const r: Reflection = {
       kind: 'axis',
       axis: { p1: { x: 0, y: 0 }, p2: { x: 1, y: 0 } },
+      isSolution: false,
     };
     expect(reflectPoint({ x: 3, y: 4 }, r)).toEqual({ x: 3, y: -4 });
   });
@@ -34,6 +43,7 @@ describe('reflectPoint', () => {
     const r: Reflection = {
       kind: 'axis',
       axis: { p1: { x: 0, y: 0 }, p2: { x: 0, y: 1 } },
+      isSolution: false,
     };
     expect(reflectPoint({ x: 3, y: 4 }, r)).toEqual({ x: -3, y: 4 });
   });
@@ -42,6 +52,7 @@ describe('reflectPoint', () => {
     const r: Reflection = {
       kind: 'axis',
       axis: { p1: { x: 0, y: 0 }, p2: { x: 1, y: 1 } },
+      isSolution: false,
     };
     expect(reflectPoint({ x: 3, y: 4 }, r)).toEqual({ x: 4, y: 3 });
   });
@@ -50,6 +61,7 @@ describe('reflectPoint', () => {
     const r: Reflection = {
       kind: 'axis',
       axis: { p1: { x: 0, y: 1 }, p2: { x: 1, y: 2 } },
+      isSolution: false,
     };
     expect(reflectPoint({ x: 3, y: 4 }, r)).toEqual({ x: 3, y: 4 });
   });
@@ -58,6 +70,7 @@ describe('reflectPoint', () => {
     const r: Reflection = {
       kind: 'axis',
       axis: { p1: { x: 0, y: 1 }, p2: { x: 1, y: 2 } },
+      isSolution: false,
     };
     expect(reflectPoint({ x: 0, y: 0 }, r)).toEqual({ x: -1, y: 1 });
   });
@@ -66,6 +79,7 @@ describe('reflectPoint', () => {
     const r: Reflection = {
       kind: 'axis',
       axis: { p1: { x: 1, y: 1 }, p2: { x: 1, y: 1 } },
+      isSolution: false,
     };
     expect(reflectPoint({ x: 3, y: 4 }, r)).toEqual({ x: 3, y: 4 });
   });
@@ -76,6 +90,7 @@ describe('reflectPolygonPoints', () => {
     const r: Reflection = {
       kind: 'axis',
       axis: { p1: { x: 0, y: 0 }, p2: { x: 1, y: 0 } },
+      isSolution: false,
     };
     const result = reflectPolygonPoints(
       [
