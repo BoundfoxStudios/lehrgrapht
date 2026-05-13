@@ -2,7 +2,7 @@ import * as mathjs from 'mathjs';
 import { inject, Injectable } from '@angular/core';
 import Plotly, { Annotations, PlotData } from 'plotly.js-dist-min';
 import { LegendLabelFormat, Plot, PlotSettings } from '../../models/plot';
-import { modelIdPrefix } from '../word/word.service';
+import { modelIdPrefix } from '../office/plot/word-plot.service';
 import { v7 } from 'uuid';
 import {
   PLOT_CONSTANTS,

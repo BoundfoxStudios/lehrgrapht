@@ -20,7 +20,10 @@ import {
   faRotate,
   faTrashCan,
 } from '@fortawesome/free-solid-svg-icons';
-import { WordPlot, WordService } from '../../services/word/word.service';
+import {
+  WordPlot,
+  WordPlotService,
+} from '../../services/office/plot/word-plot.service';
 import { PlotMiniPreview } from '../plot-mini-preview/plot-mini-preview';
 import { ButtonDirective } from '../../ui/button/button.directive';
 import {
@@ -52,7 +55,7 @@ export class PlotList {
   protected readonly faPlus = faPlus;
   protected readonly faRotate = faRotate;
 
-  protected readonly wordService = inject(WordService);
+  protected readonly wordService = inject(WordPlotService);
   private readonly router = inject(Router);
   private readonly dialog = inject(Dialog);
 

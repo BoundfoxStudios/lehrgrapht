@@ -1,5 +1,5 @@
 import { signal } from '@angular/core';
-import { Plot } from '../../models/plot';
+import { Plot } from '../../../models/plot';
 
 export interface WordPlot {
   id: string;
@@ -12,7 +12,7 @@ export interface PlotGenerationSettings {
 
 export const modelIdPrefix = 'plot-';
 
-export abstract class WordService {
+export abstract class WordPlotService {
   abstract readonly plotGenerationSettings: PlotGenerationSettings;
 
   readonly selection = signal<WordPlot | undefined>(undefined, {

@@ -29,7 +29,7 @@ import { reflectPoint } from '../../services/plot/reflection';
 import { PlotService } from '../../services/plot/plot.service';
 import { plotHasErrorCode, PlotSizeMm } from '../../services/plot/plot.types';
 import { SolutionViewService } from '../../services/solution-view.service';
-import { WordService } from '../../services/word/word.service';
+import { WordPlotService } from '../../services/office/plot/word-plot.service';
 import { PlotClickEvent } from '../plot-preview/plot-preview';
 import { InteractiveMode } from './interactive-mode';
 
@@ -619,7 +619,7 @@ export function emptyExpandedItems(): ExpandedItems {
 export const PlotEditorStore = signalStore(
   withProps(() => {
     const plotService = inject(PlotService);
-    const wordService = inject(WordService);
+    const wordService = inject(WordPlotService);
     const router = inject(Router);
     const route = inject(ActivatedRoute);
     const solutionViewService = inject(SolutionViewService);
@@ -1259,7 +1259,7 @@ export const PlotEditorStore = signalStore(
   withHooks({
     onInit(store) {
       const route = inject(ActivatedRoute);
-      const wordService = inject(WordService);
+      const wordService = inject(WordPlotService);
       const plotSettingsService = inject(PlotSettingsService);
 
       const settings = plotSettingsService.get();

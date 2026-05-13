@@ -2,30 +2,15 @@ import { bootstrapApplication } from '@angular/platform-browser';
 import { App } from './app/components/app/app';
 import { createAppConfig } from './app/app.config';
 import { RunConfiguration } from './app/models/run-configuration';
+import { OfficeRibbonService } from './app/services/office/ribbon/office-ribbon.service';
 import { SolutionRenderService } from './app/services/solution-render.service';
-import { SolutionRibbonService } from './app/services/solution-ribbon.service';
-import { SolutionViewService } from './app/services/solution-view.service';
 
 const bootstrap = (runConfiguration: RunConfiguration): void => {
   bootstrapApplication(App, createAppConfig(runConfiguration))
     .then(appRef => {
-      const solutionView = appRef.injector.get(SolutionViewService);
+      // We're injecting here to get the effects going of those services.
+      appRef.injector.get(OfficeRibbonService);
       appRef.injector.get(SolutionRenderService);
-      appRef.injector.get(SolutionRibbonService);
-      Office.actions.associate(
-        'showSolution',
-        (event: Office.AddinCommands.Event) => {
-          solutionView.show();
-          event.completed();
-        },
-      );
-      Office.actions.associate(
-        'hideSolution',
-        (event: Office.AddinCommands.Event) => {
-          solutionView.hide();
-          event.completed();
-        },
-      );
     })
     .catch((err: unknown) => {
       console.error(err);

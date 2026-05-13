@@ -9,7 +9,7 @@ import {
 } from './plot-settings.service';
 import { SolutionRenderService } from './solution-render.service';
 import { SolutionViewService } from './solution-view.service';
-import { WordPlot, WordService } from './word/word.service';
+import { WordPlot, WordPlotService } from './office/plot/word-plot.service';
 
 function makePlot(
   reflectionKind: 'none' | 'point' | 'axis',
@@ -90,7 +90,7 @@ describe('SolutionRenderService', () => {
 
     TestBed.configureTestingModule({
       providers: [
-        { provide: WordService, useValue: wordServiceMock },
+        { provide: WordPlotService, useValue: wordServiceMock },
         { provide: PlotService, useValue: plotServiceMock },
         { provide: PlotSettingsService, useValue: settingsServiceMock },
       ],

@@ -1,9 +1,13 @@
 import { Injectable } from '@angular/core';
-import { Plot } from '../../models/plot';
-import { PlotGenerationSettings, WordPlot, WordService } from './word.service';
+import { Plot } from '../../../models/plot';
+import {
+  PlotGenerationSettings,
+  WordPlot,
+  WordPlotService,
+} from './word-plot.service';
 
 @Injectable()
-export class NoOpWordService extends WordService {
+export class NoOpWordPlotService extends WordPlotService {
   override plotGenerationSettings: PlotGenerationSettings = {
     applyScaleFactor: false,
   };

@@ -4,7 +4,7 @@ import { PlotService } from './plot/plot.service';
 import { plotHasErrorCode } from './plot/plot.types';
 import { PlotSettingsService } from './plot-settings.service';
 import { SolutionViewService } from './solution-view.service';
-import { WordPlot, WordService } from './word/word.service';
+import { WordPlot, WordPlotService } from './office/plot/word-plot.service';
 
 export interface SolutionRenderProgress {
   current: number;
@@ -13,20 +13,27 @@ export interface SolutionRenderProgress {
 
 @Injectable({ providedIn: 'root' })
 export class SolutionRenderService {
-  private readonly wordService = inject(WordService);
+  private readonly wordService = inject(WordPlotService);
   private readonly plotService = inject(PlotService);
   private readonly plotSettingsService = inject(PlotSettingsService);
   private readonly solutionViewService = inject(SolutionViewService);
 
   readonly progress = signal<SolutionRenderProgress | null>(null);
 
-  private firstRun = true;
-
   constructor() {
+    this.regeneratePlotsEffect();
+  }
+
+  private regeneratePlotsEffect(): void {
+    let firstRun = true;
+
     effect(() => {
       const showSolution = this.solutionViewService.showSolution();
-      if (this.firstRun) {
-        this.firstRun = false;
+
+      // Effects always run one time, and we do not want to regenerate the plots
+      // in this case.
+      if (firstRun) {
+        firstRun = false;
         return;
       }
       void this.regenerateReflectedPlots(showSolution);

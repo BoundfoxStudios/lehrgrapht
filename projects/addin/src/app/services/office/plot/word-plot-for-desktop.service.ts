@@ -1,31 +1,31 @@
-import { Plot } from '../../models/plot';
+import { inject, Injectable } from '@angular/core';
+import { Plot } from '../../../models/plot';
 import {
   modelIdPrefix,
   PlotGenerationSettings,
   WordPlot,
-  WordService,
-} from './word.service';
-import { inject, Injectable } from '@angular/core';
-import { DocumentStorageService } from '../document-storage.service';
-import { PlotService } from '../plot/plot.service';
-import { plotHasErrorCode } from '../plot/plot.types';
-import { PlotSettingsService } from '../plot-settings.service';
-import { SolutionViewService } from '../solution-view.service';
+  WordPlotService,
+} from './word-plot.service';
+import { DocumentStorageService } from '../../document-storage.service';
+import { PlotService } from '../../plot/plot.service';
+import { plotHasErrorCode } from '../../plot/plot.types';
+import { PlotSettingsService } from '../../plot-settings.service';
+import { SolutionViewService } from '../../solution-view.service';
 
 @Injectable()
-export class WordForWebService extends WordService {
+export class WordPlotForDesktopService extends WordPlotService {
   private readonly documentStorageService = inject(DocumentStorageService);
   private readonly plotService = inject(PlotService);
   private readonly plotSettingsService = inject(PlotSettingsService);
   private readonly solutionViewService = inject(SolutionViewService);
 
   override plotGenerationSettings: PlotGenerationSettings = {
-    applyScaleFactor: false,
+    applyScaleFactor: true,
   };
 
-  override list(): Promise<WordPlot[]> {
+  override async list(): Promise<WordPlot[]> {
     return Word.run(async context => {
-      const images = context.document.body.inlinePictures.load('items');
+      const shapes = context.document.body.shapes.load('items');
       const plotModels =
         await this.documentStorageService.loadAllPlotsFromContext(
           context,
@@ -33,10 +33,10 @@ export class WordForWebService extends WordService {
         );
 
       const result: WordPlot[] = [];
-      for (const image of images.items) {
-        const model = plotModels.get(image.altTextDescription);
+      for (const shape of shapes.items) {
+        const model = plotModels.get(shape.altTextDescription);
         if (model) {
-          result.push({ id: image.altTextDescription, model });
+          result.push({ id: shape.altTextDescription, model });
         }
       }
       return result;
@@ -45,7 +45,7 @@ export class WordForWebService extends WordService {
 
   override listRaw(): Promise<(WordPlot | { id: string })[]> {
     return Word.run(async context => {
-      const images = context.document.body.inlinePictures.load('items');
+      const shapes = context.document.body.shapes.load('items');
       const plotModels =
         await this.documentStorageService.loadAllPlotsFromContext(
           context,
@@ -53,12 +53,12 @@ export class WordForWebService extends WordService {
         );
 
       const result: (WordPlot | { id: string })[] = [];
-      for (const image of images.items) {
-        const model = plotModels.get(image.altTextDescription);
+      for (const shape of shapes.items) {
+        const model = plotModels.get(shape.altTextDescription);
         result.push(
           model
-            ? { id: image.altTextDescription, model }
-            : { id: image.altTextDescription },
+            ? { id: shape.altTextDescription, model }
+            : { id: shape.altTextDescription },
         );
       }
       return result;
@@ -67,13 +67,14 @@ export class WordForWebService extends WordService {
 
   override async delete(id: string): Promise<void> {
     await Word.run(async context => {
-      const image = await this.getImage(context, id);
+      const shape = await this.getShape(context, { id });
 
-      if (!image) {
+      if (!shape) {
         return;
       }
 
-      image.delete();
+      shape.delete();
+
       await this.documentStorageService.remove(id);
       await context.sync();
     });
@@ -120,27 +121,27 @@ export class WordForWebService extends WordService {
 
   override async select(id: string): Promise<void> {
     await Word.run(async context => {
-      const image = await this.getImage(context, id);
+      const shape = await this.getShape(context, { id });
 
-      if (!image) {
+      if (!shape) {
         return;
       }
 
-      image.select();
+      shape.select();
       await context.sync();
     });
   }
 
-  override get(id: string): Promise<Required<WordPlot> | undefined> {
+  override async get(id: string): Promise<Required<WordPlot> | undefined> {
     return Word.run(async context => {
-      const image = await this.getImage(context, id);
+      const shape = await this.getShape(context, { id });
 
-      if (!image) {
+      if (!shape) {
         return;
       }
 
       const model = await this.documentStorageService.getPlot(
-        image.altTextDescription,
+        shape.altTextDescription,
       );
 
       if (!model) {
@@ -149,7 +150,7 @@ export class WordForWebService extends WordService {
 
       const result: Required<WordPlot> = {
         model,
-        id: image.altTextDescription,
+        id: shape.altTextDescription,
       };
 
       return result;
@@ -165,54 +166,85 @@ export class WordForWebService extends WordService {
     existingId?: string;
   }): Promise<void> {
     return Word.run(async context => {
-      let shouldReplace = false;
-
-      let range: Word.Range | undefined;
+      let top: number | undefined;
+      let left: number | undefined;
+      let restoreSelection: Word.Range | undefined;
 
       if (options.existingId) {
-        const oldImage = await this.getImage(context, options.existingId);
+        const oldShape = await this.getShape(context, {
+          id: options.existingId,
+        });
 
-        if (oldImage) {
-          oldImage.select();
+        if (oldShape) {
+          top = oldShape.top;
+          left = oldShape.left;
+
+          restoreSelection = context.document.getSelection();
+          restoreSelection.track();
+          oldShape.select();
           await context.sync();
 
-          range = context.document.getSelection();
-
-          shouldReplace = true;
+          oldShape.delete();
         }
       }
 
-      range ??= context.document.getSelection();
-      await context.sync();
+      const range = context.document.getSelection();
 
-      const picture = range.insertInlinePictureFromBase64(
+      const picture = range.insertPictureFromBase64(
         this.plotService.extractRawPictureDataFromBase64Picture(
           options.base64Picture,
         ),
-        shouldReplace ? Word.InsertLocation.replace : Word.InsertLocation.end,
+        {
+          width: options.width,
+          height: options.height,
+          top,
+          left,
+        },
       );
       picture.altTextDescription = options.id;
+
+      if (restoreSelection) {
+        restoreSelection.select();
+        restoreSelection.untrack();
+      }
+
       await context.sync();
 
       await this.documentStorageService.setPlot(options.id, options.model);
     });
   }
 
-  private async getImages(
+  private async getShapes(
     context: Word.RequestContext,
-  ): Promise<Word.InlinePictureCollection> {
-    const images = context.document.body.inlinePictures.load('items');
+  ): Promise<Word.ShapeCollection> {
+    const shapes = context.document.body.shapes.load('items');
     await context.sync();
 
-    return images;
+    return shapes;
   }
 
-  private async getImage(
+  private async getShape(
     context: Word.RequestContext,
-    id: string,
-  ): Promise<Word.InlinePicture | undefined> {
-    const images = await this.getImages(context);
+    {
+      id,
+      officeId,
+    }: {
+      id?: string;
+      officeId?: number;
+    },
+  ): Promise<Word.Shape | undefined> {
+    if (!officeId && !id) {
+      return;
+    }
 
-    return images.items.find(i => i.altTextDescription === id);
+    if (officeId) {
+      const shape = context.document.body.shapes.getById(officeId).load();
+      await context.sync();
+      return shape.isNullObject ? undefined : shape;
+    }
+
+    const shapes = await this.getShapes(context);
+
+    return shapes.items.find(shape => shape.altTextDescription === id);
   }
 }

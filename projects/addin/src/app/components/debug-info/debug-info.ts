@@ -5,8 +5,8 @@ import { Section } from '../section/section';
 import {
   modelIdPrefix,
   WordPlot,
-  WordService,
-} from '../../services/word/word.service';
+  WordPlotService,
+} from '../../services/office/plot/word-plot.service';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faRefresh, faWarning } from '@fortawesome/free-solid-svg-icons';
 import { JsonPipe } from '@angular/common';
@@ -30,7 +30,7 @@ export class DebugInfo {
   protected readonly faRefresh = faRefresh;
   protected readonly faWarning = faWarning;
 
-  private readonly wordService = inject(WordService);
+  private readonly wordService = inject(WordPlotService);
   private readonly documentStorageService = inject(DocumentStorageService);
 
   protected readonly plots = resource({
