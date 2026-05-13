@@ -2,14 +2,16 @@ import { bootstrapApplication } from '@angular/platform-browser';
 import { App } from './app/components/app/app';
 import { createAppConfig } from './app/app.config';
 import { RunConfiguration } from './app/models/run-configuration';
+import { SolutionRenderService } from './app/services/solution-render.service';
 import { SolutionViewService } from './app/services/solution-view.service';
 
 const bootstrap = (runConfiguration: RunConfiguration): void => {
   bootstrapApplication(App, createAppConfig(runConfiguration))
     .then(appRef => {
       const solutionView = appRef.injector.get(SolutionViewService);
+      appRef.injector.get(SolutionRenderService);
       Office.actions.associate('toggleSolutionView', () => {
-        void solutionView.toggle();
+        solutionView.toggle();
       });
     })
     .catch((err: unknown) => {
