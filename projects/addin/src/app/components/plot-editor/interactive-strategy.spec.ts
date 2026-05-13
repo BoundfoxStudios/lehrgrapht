@@ -293,6 +293,9 @@ describe('applyReflectionPoint', () => {
         kind: 'axis',
         axis: { p1: { x: 0, y: 0 }, p2: { x: 1, y: 1 } },
         isSolution: true,
+        color: '#ff0000',
+        lineStyle: 'solid',
+        extendBeyondPoints: false,
       },
     };
     const result = applyReflectionPoint(plot, [{ x: 5, y: 5 }], ctx);
@@ -322,6 +325,9 @@ describe('applyReflectionAxis', () => {
       kind: 'axis',
       axis: { p1: { x: 0, y: 0 }, p2: { x: 5, y: 5 } },
       isSolution: false,
+      color: '#ff0000',
+      lineStyle: 'solid',
+      extendBeyondPoints: false,
     });
   });
 
@@ -346,6 +352,39 @@ describe('applyReflectionAxis', () => {
       kind: 'axis',
       axis: { p1: { x: 0, y: 0 }, p2: { x: 5, y: 5 } },
       isSolution: true,
+      color: '#ff0000',
+      lineStyle: 'solid',
+      extendBeyondPoints: false,
+    });
+  });
+
+  it('preserves the existing axis style when overwriting an axis reflection', () => {
+    const plot: Plot = {
+      ...basePlot,
+      reflection: {
+        kind: 'axis',
+        axis: { p1: { x: 0, y: 0 }, p2: { x: 1, y: 1 } },
+        isSolution: false,
+        color: '#00ff00',
+        lineStyle: 'dashed',
+        extendBeyondPoints: true,
+      },
+    };
+    const result = applyReflectionAxis(
+      plot,
+      [
+        { x: 2, y: 0 },
+        { x: 5, y: 5 },
+      ],
+      ctx,
+    );
+    expect(result.reflection).toEqual({
+      kind: 'axis',
+      axis: { p1: { x: 2, y: 0 }, p2: { x: 5, y: 5 } },
+      isSolution: false,
+      color: '#00ff00',
+      lineStyle: 'dashed',
+      extendBeyondPoints: true,
     });
   });
 

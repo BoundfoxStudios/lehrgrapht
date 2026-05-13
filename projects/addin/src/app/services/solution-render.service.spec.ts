@@ -41,6 +41,9 @@ function makePlot(
               kind: 'axis',
               axis: { p1: { x: 0, y: 0 }, p2: { x: 1, y: 0 } },
               isSolution,
+              color: '#ff0000',
+              lineStyle: 'solid',
+              extendBeyondPoints: false,
             },
   };
 }

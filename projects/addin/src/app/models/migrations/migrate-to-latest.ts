@@ -67,13 +67,19 @@ export const migrateToLatest: Migration = {
       if (!existingReflection || existingReflection['kind'] === 'none') {
         return { kind: 'none' };
       }
-      if (
-        existingReflection['kind'] === 'point' ||
-        existingReflection['kind'] === 'axis'
-      ) {
+      if (existingReflection['kind'] === 'point') {
         return {
           ...existingReflection,
           isSolution: existingReflection['isSolution'] ?? false,
+        };
+      }
+      if (existingReflection['kind'] === 'axis') {
+        return {
+          ...existingReflection,
+          isSolution: existingReflection['isSolution'] ?? false,
+          color: existingReflection['color'] ?? '#ff0000',
+          lineStyle: existingReflection['lineStyle'] ?? 'solid',
+          extendBeyondPoints: existingReflection['extendBeyondPoints'] ?? false,
         };
       }
       return { kind: 'none' };

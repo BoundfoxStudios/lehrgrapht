@@ -470,13 +470,50 @@ describe('PlotDataService', () => {
       expect(result[0].y).toEqual([2]);
     });
 
-    it('returns one line trace for an axis that intersects the range', () => {
+    it('returns a line trace between p1 and p2 when extendBeyondPoints=false', () => {
       const plot: Plot = {
         ...basePlot,
         reflection: {
           kind: 'axis',
           axis: { p1: { x: 0, y: 0 }, p2: { x: 1, y: 0 } },
           isSolution: false,
+          color: '#ff0000',
+          lineStyle: 'solid',
+          extendBeyondPoints: false,
+        },
+      };
+      const result = service.buildReflectionTraces(plot);
+      expect(result.length).toBe(1);
+      expect(result[0].mode).toBe('lines');
+      expect(result[0].x).toEqual([0, 1]);
+      expect(result[0].y).toEqual([0, 0]);
+    });
+
+    it('returns empty array when extendBeyondPoints=false and the axis is degenerate', () => {
+      const plot: Plot = {
+        ...basePlot,
+        reflection: {
+          kind: 'axis',
+          axis: { p1: { x: 1, y: 1 }, p2: { x: 1, y: 1 } },
+          isSolution: false,
+          color: '#ff0000',
+          lineStyle: 'solid',
+          extendBeyondPoints: false,
+        },
+      };
+      expect(service.buildReflectionTraces(plot)).toEqual([]);
+    });
+
+    it('returns one line trace clipped to the range when extendBeyondPoints=true', () => {
+      const plot: Plot = {
+        ...basePlot,
+        reflection: {
+          kind: 'axis',
+          axis: { p1: { x: 0, y: 0 }, p2: { x: 1, y: 0 } },
+          isSolution: false,
+          color: '#ff0000',
+          lineStyle: 'solid',
+          extendBeyondPoints: true,
         },
       };
       const result = service.buildReflectionTraces(plot);
@@ -486,16 +523,67 @@ describe('PlotDataService', () => {
       expect(result[0].y).toEqual([0, 0]);
     });
 
-    it('returns empty array for an axis outside the range', () => {
+    it('returns empty array when extendBeyondPoints=true and the axis is outside the range', () => {
       const plot: Plot = {
         ...basePlot,
         reflection: {
           kind: 'axis',
           axis: { p1: { x: 100, y: 0 }, p2: { x: 100, y: 1 } },
           isSolution: false,
+          color: '#ff0000',
+          lineStyle: 'solid',
+          extendBeyondPoints: true,
         },
       };
       expect(service.buildReflectionTraces(plot)).toEqual([]);
+    });
+
+    it('uses axis.color for the line color', () => {
+      const plot: Plot = {
+        ...basePlot,
+        reflection: {
+          kind: 'axis',
+          axis: { p1: { x: 0, y: 0 }, p2: { x: 1, y: 0 } },
+          isSolution: false,
+          color: '#00ff00',
+          lineStyle: 'solid',
+          extendBeyondPoints: false,
+        },
+      };
+      const result = service.buildReflectionTraces(plot);
+      expect(result[0].line?.color).toBe('#00ff00');
+    });
+
+    it('uses solid dash for lineStyle=solid', () => {
+      const plot: Plot = {
+        ...basePlot,
+        reflection: {
+          kind: 'axis',
+          axis: { p1: { x: 0, y: 0 }, p2: { x: 1, y: 0 } },
+          isSolution: false,
+          color: '#ff0000',
+          lineStyle: 'solid',
+          extendBeyondPoints: false,
+        },
+      };
+      const result = service.buildReflectionTraces(plot);
+      expect(result[0].line?.dash).toBe('solid');
+    });
+
+    it('uses dash for lineStyle=dashed', () => {
+      const plot: Plot = {
+        ...basePlot,
+        reflection: {
+          kind: 'axis',
+          axis: { p1: { x: 0, y: 0 }, p2: { x: 1, y: 0 } },
+          isSolution: false,
+          color: '#ff0000',
+          lineStyle: 'dashed',
+          extendBeyondPoints: false,
+        },
+      };
+      const result = service.buildReflectionTraces(plot);
+      expect(result[0].line?.dash).toBe('dash');
     });
   });
 
@@ -618,6 +706,9 @@ describe('PlotDataService', () => {
           kind: 'axis',
           axis: { p1: { x: 0, y: 0 }, p2: { x: 1, y: 0 } },
           isSolution: true,
+          color: '#ff0000',
+          lineStyle: 'solid',
+          extendBeyondPoints: false,
         },
       };
       const baseline = service.buildPolygonTraces(
@@ -639,6 +730,9 @@ describe('PlotDataService', () => {
           kind: 'axis',
           axis: { p1: { x: 0, y: 0 }, p2: { x: 1, y: 0 } },
           isSolution: true,
+          color: '#ff0000',
+          lineStyle: 'solid',
+          extendBeyondPoints: false,
         },
       };
       const baseline = service.buildPolygonTraces(
@@ -664,6 +758,9 @@ describe('PlotDataService', () => {
           kind: 'axis',
           axis: { p1: { x: 0, y: 0 }, p2: { x: 1, y: 0 } },
           isSolution: false,
+          color: '#ff0000',
+          lineStyle: 'solid',
+          extendBeyondPoints: false,
         },
       };
       const baseline = service.buildPolygonTraces(

@@ -70,7 +70,14 @@ export interface ReflectionAxis {
 export type Reflection =
   | { kind: 'none' }
   | { kind: 'point'; point: ReflectionPoint; isSolution: boolean }
-  | { kind: 'axis'; axis: ReflectionAxis; isSolution: boolean };
+  | {
+      kind: 'axis';
+      axis: ReflectionAxis;
+      isSolution: boolean;
+      color: string;
+      lineStyle: FunctionLineStyle;
+      extendBeyondPoints: boolean;
+    };
 
 export interface Plot {
   version: string;

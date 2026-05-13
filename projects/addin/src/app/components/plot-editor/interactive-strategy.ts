@@ -1,4 +1,4 @@
-import { MarkerNamingScheme, Plot } from '../../models/plot';
+import { FunctionLineStyle, MarkerNamingScheme, Plot } from '../../models/plot';
 import { nextColor } from '../../utils/next-color';
 import { InteractiveMode } from './interactive-mode';
 import { MarkerNamingService } from '../../services/marker-naming.service';
@@ -156,6 +156,29 @@ export function previousReflectionIsSolution(model: Plot): boolean {
   return model.reflection.kind === 'none' ? false : model.reflection.isSolution;
 }
 
+export interface PreviousAxisStyle {
+  color: string;
+  lineStyle: FunctionLineStyle;
+  extendBeyondPoints: boolean;
+}
+
+export const DEFAULT_AXIS_STYLE: PreviousAxisStyle = {
+  color: '#ff0000',
+  lineStyle: 'solid',
+  extendBeyondPoints: false,
+};
+
+export function previousAxisStyle(model: Plot): PreviousAxisStyle {
+  if (model.reflection.kind !== 'axis') {
+    return DEFAULT_AXIS_STYLE;
+  }
+  return {
+    color: model.reflection.color,
+    lineStyle: model.reflection.lineStyle,
+    extendBeyondPoints: model.reflection.extendBeyondPoints,
+  };
+}
+
 export function applyReflectionPoint(
   model: Plot,
   points: readonly { x: number; y: number }[],
@@ -187,12 +210,16 @@ export function applyReflectionAxis(
   if (p1.x === p2.x && p1.y === p2.y) {
     return model;
   }
+  const style = previousAxisStyle(model);
   return {
     ...model,
     reflection: {
       kind: 'axis',
       axis: { p1: { x: p1.x, y: p1.y }, p2: { x: p2.x, y: p2.y } },
       isSolution: previousReflectionIsSolution(model),
+      color: style.color,
+      lineStyle: style.lineStyle,
+      extendBeyondPoints: style.extendBeyondPoints,
     },
   };
 }

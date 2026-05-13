@@ -12,16 +12,19 @@ import {
   faPlusCircle,
   faTrashCan,
 } from '@fortawesome/free-solid-svg-icons';
+import { FunctionLineStyle } from '../../../../models/plot';
 import { InteractiveMode } from '../../interactive-mode';
+import { lineStyleOptions } from '../../dropdown-options';
 import { PlotEditorStore } from '../../plot-editor.store';
 import { ButtonDirective } from '../../../../ui/button/button.directive';
 import { Card } from '../../../../ui/card/card';
 import { IdPill } from '../../../id-pill/id-pill';
+import { PillSwitch } from '../../../pill-switch/pill-switch';
 import { Switch } from '../../../switch/switch';
 
 @Component({
   selector: 'lg-section-reflection',
-  imports: [FaIconComponent, ButtonDirective, Card, IdPill, Switch],
+  imports: [FaIconComponent, ButtonDirective, Card, IdPill, PillSwitch, Switch],
   templateUrl: './section-reflection.html',
   styleUrl: './section-reflection.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -33,6 +36,7 @@ export class SectionReflection {
   protected readonly faCircleDot = faCircleDot;
   protected readonly faArrowsLeftRightToLine = faArrowsLeftRightToLine;
   protected readonly InteractiveMode = InteractiveMode;
+  protected readonly lineStyleOptions = lineStyleOptions;
   protected readonly store = inject(PlotEditorStore);
 
   protected readonly reflection = computed(() => this.store.model().reflection);
@@ -124,6 +128,22 @@ export class SectionReflection {
 
   protected toggleIsSolution(): void {
     this.store.toggleReflectionIsSolution();
+  }
+
+  protected onAxisColorChange(event: Event): void {
+    const target = event.target as HTMLInputElement | null;
+    if (!target) {
+      return;
+    }
+    this.store.setReflectionAxisColor(target.value);
+  }
+
+  protected onAxisLineStyleChange(value: FunctionLineStyle): void {
+    this.store.setReflectionAxisLineStyle(value);
+  }
+
+  protected onAxisExtendBeyondPointsChange(extend: boolean): void {
+    this.store.setReflectionAxisExtendBeyondPoints(extend);
   }
 
   private parseEventValue(event: Event): number | null {

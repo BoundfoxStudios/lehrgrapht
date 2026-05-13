@@ -35,6 +35,9 @@ describe('reflectPoint', () => {
       kind: 'axis',
       axis: { p1: { x: 0, y: 0 }, p2: { x: 1, y: 0 } },
       isSolution: false,
+      color: '#ff0000',
+      lineStyle: 'solid',
+      extendBeyondPoints: false,
     };
     expect(reflectPoint({ x: 3, y: 4 }, r)).toEqual({ x: 3, y: -4 });
   });
@@ -44,6 +47,9 @@ describe('reflectPoint', () => {
       kind: 'axis',
       axis: { p1: { x: 0, y: 0 }, p2: { x: 0, y: 1 } },
       isSolution: false,
+      color: '#ff0000',
+      lineStyle: 'solid',
+      extendBeyondPoints: false,
     };
     expect(reflectPoint({ x: 3, y: 4 }, r)).toEqual({ x: -3, y: 4 });
   });
@@ -53,6 +59,9 @@ describe('reflectPoint', () => {
       kind: 'axis',
       axis: { p1: { x: 0, y: 0 }, p2: { x: 1, y: 1 } },
       isSolution: false,
+      color: '#ff0000',
+      lineStyle: 'solid',
+      extendBeyondPoints: false,
     };
     expect(reflectPoint({ x: 3, y: 4 }, r)).toEqual({ x: 4, y: 3 });
   });
@@ -62,6 +71,9 @@ describe('reflectPoint', () => {
       kind: 'axis',
       axis: { p1: { x: 0, y: 1 }, p2: { x: 1, y: 2 } },
       isSolution: false,
+      color: '#ff0000',
+      lineStyle: 'solid',
+      extendBeyondPoints: false,
     };
     expect(reflectPoint({ x: 3, y: 4 }, r)).toEqual({ x: 3, y: 4 });
   });
@@ -71,6 +83,9 @@ describe('reflectPoint', () => {
       kind: 'axis',
       axis: { p1: { x: 0, y: 1 }, p2: { x: 1, y: 2 } },
       isSolution: false,
+      color: '#ff0000',
+      lineStyle: 'solid',
+      extendBeyondPoints: false,
     };
     expect(reflectPoint({ x: 0, y: 0 }, r)).toEqual({ x: -1, y: 1 });
   });
@@ -80,6 +95,9 @@ describe('reflectPoint', () => {
       kind: 'axis',
       axis: { p1: { x: 1, y: 1 }, p2: { x: 1, y: 1 } },
       isSolution: false,
+      color: '#ff0000',
+      lineStyle: 'solid',
+      extendBeyondPoints: false,
     };
     expect(reflectPoint({ x: 3, y: 4 }, r)).toEqual({ x: 3, y: 4 });
   });
@@ -91,6 +109,9 @@ describe('reflectPolygonPoints', () => {
       kind: 'axis',
       axis: { p1: { x: 0, y: 0 }, p2: { x: 1, y: 0 } },
       isSolution: false,
+      color: '#ff0000',
+      lineStyle: 'solid',
+      extendBeyondPoints: false,
     };
     const result = reflectPolygonPoints(
       [

@@ -160,7 +160,7 @@
       <lg-id-pill
         [prefix]="'Sa'"
         [index]="0"
-        color="#666666"
+        [color]="r.color"
         card-id
       />
       <div
@@ -189,6 +189,45 @@
         >
           <fa-icon [icon]="faTrashCan" />
         </button>
+      </div>
+
+      <div class="mb-2 flex flex-col gap-2">
+        <div class="flex items-center justify-between gap-2">
+          <span class="text-body-subtle text-2xs font-semibold">Farbe</span>
+          <input
+            class="h-7 w-7 cursor-pointer rounded border-none"
+            [value]="r.color"
+            (input)="onAxisColorChange($event)"
+            type="color"
+            title="Achsenfarbe"
+            aria-label="Achsenfarbe"
+          />
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-body-subtle text-2xs font-semibold">Stil</span>
+          <lg-pill-switch
+            [options]="lineStyleOptions"
+            [value]="r.lineStyle"
+            (valueChange)="onAxisLineStyleChange($event)"
+            shape="pill"
+            aria-label="Linienstil"
+          />
+        </div>
+        <label
+          class="flex cursor-pointer items-center justify-between"
+          for="reflection-axis-extend"
+        >
+          <span class="text-body-subtle text-2xs font-semibold"
+            >Als Gerade verlängern</span
+          >
+          <lg-switch
+            [value]="r.extendBeyondPoints"
+            (valueChange)="onAxisExtendBeyondPointsChange($event)"
+            inputId="reflection-axis-extend"
+            ariaLabel="Spiegelachse über die Punkte hinaus als Gerade zeichnen"
+            size="small"
+          />
+        </label>
       </div>
 
       <div class="flex flex-col gap-1.5">

@@ -13,7 +13,12 @@ import { form } from '@angular/forms/signals';
 import { ActivatedRoute, Router } from '@angular/router';
 import { map } from 'rxjs';
 import { lehrgraphtVersion } from '../../../version';
-import { Plot, PlotSettings, Polygon } from '../../models/plot';
+import {
+  FunctionLineStyle,
+  Plot,
+  PlotSettings,
+  Polygon,
+} from '../../models/plot';
 import { MarkerNamingService } from '../../services/marker-naming.service';
 import {
   defaultPlotSettings,
@@ -41,6 +46,7 @@ import {
   ApplyContext,
   applyPolygon,
   INTERACTIVE_STRATEGIES,
+  previousAxisStyle,
   previousReflectionIsSolution,
 } from './interactive-strategy';
 
@@ -705,17 +711,59 @@ export const PlotEditorStore = signalStore(
         // Akzeptiert auch degenerate Achsen (p1 === p2) — das UI zeigt die Validierung als Fehlermeldung an,
         // damit der Nutzer beim Eintippen der 4 Koordinaten Zwischenzustände sehen kann.
         // `applyReflectionAxis` (interactive) verhindert degenerate Commits separat.
-        store.editorForm().controlValue.update(m => ({
-          ...m,
-          reflection: {
-            kind: 'axis',
-            axis: {
-              p1: { x: p1.x, y: p1.y },
-              p2: { x: p2.x, y: p2.y },
+        store.editorForm().controlValue.update(m => {
+          const style = previousAxisStyle(m);
+          return {
+            ...m,
+            reflection: {
+              kind: 'axis',
+              axis: {
+                p1: { x: p1.x, y: p1.y },
+                p2: { x: p2.x, y: p2.y },
+              },
+              isSolution: previousReflectionIsSolution(m),
+              color: style.color,
+              lineStyle: style.lineStyle,
+              extendBeyondPoints: style.extendBeyondPoints,
             },
-            isSolution: previousReflectionIsSolution(m),
-          },
-        }));
+          };
+        });
+      },
+
+      setReflectionAxisColor(color: string): void {
+        store.editorForm().controlValue.update(m => {
+          if (m.reflection.kind !== 'axis') {
+            return m;
+          }
+          return {
+            ...m,
+            reflection: { ...m.reflection, color },
+          };
+        });
+      },
+
+      setReflectionAxisLineStyle(lineStyle: FunctionLineStyle): void {
+        store.editorForm().controlValue.update(m => {
+          if (m.reflection.kind !== 'axis') {
+            return m;
+          }
+          return {
+            ...m,
+            reflection: { ...m.reflection, lineStyle },
+          };
+        });
+      },
+
+      setReflectionAxisExtendBeyondPoints(extendBeyondPoints: boolean): void {
+        store.editorForm().controlValue.update(m => {
+          if (m.reflection.kind !== 'axis') {
+            return m;
+          }
+          return {
+            ...m,
+            reflection: { ...m.reflection, extendBeyondPoints },
+          };
+        });
       },
 
       toggleReflectionIsSolution(): void {

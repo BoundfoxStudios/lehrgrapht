@@ -21,6 +21,13 @@ const devicePixelRatio = window.devicePixelRatio || 1;
 const effectiveDpi = 254 * devicePixelRatio;
 const scaleFactor = effectiveDpi / PLOT_CONSTANTS.ppiBase;
 
+interface RenderedLegendLabel {
+  index: number;
+  dataUrl: string;
+  widthPx: number;
+  heightPx: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class PlotService {
   private readonly plotMathService = inject(PlotMathService);
@@ -66,7 +73,14 @@ export class PlotService {
       valueRanges,
       plot,
     );
-    const margin = this.plotSizeService.calculateEffectiveMargin(plot);
+    const renderedLabels = await this.renderLegendLabels(plot);
+    const labelWidthsPx = new Map(
+      renderedLabels.map(r => [r.index, r.widthPx]),
+    );
+    const margin = this.plotSizeService.calculateEffectiveMargin(
+      plot,
+      labelWidthsPx,
+    );
     const sizeCalc = this.plotSizeService.calculatePlotSize(
       plot,
       cleanedValues,
@@ -77,8 +91,9 @@ export class PlotService {
       plot,
       plotSettings,
     );
-    const functionLabelImages = await this.buildFunctionLabelImages(
+    const functionLabelImages = this.buildLegendImages(
       plot,
+      renderedLabels,
       cleanedValues.xValuesArray,
       cleanedValues.yValuesArray,
       sizeCalc,
@@ -126,18 +141,12 @@ export class PlotService {
     return this.plotSizeService.calculatePlotSizeMm(plot);
   }
 
-  private async buildFunctionLabelImages(
-    plot: Plot,
-    xValuesArray: number[],
-    yValuesArray: number[][],
-    sizeCalc: PlotSizeCalculation,
-    margin: PlotMarginMm,
-  ): Promise<Partial<Plotly.Image>[]> {
+  private async renderLegendLabels(plot: Plot): Promise<RenderedLegendLabel[]> {
     if (typeof MathJax === 'undefined') {
       return [];
     }
 
-    const images: Partial<Plotly.Image>[] = [];
+    const rendered: RenderedLegendLabel[] = [];
 
     for (let i = 0; i < plot.fnx.length; i++) {
       const fn = plot.fnx[i];
@@ -145,10 +154,41 @@ export class PlotService {
         continue;
       }
 
+      const result = await this.renderMathPng(
+        fn.fnx,
+        fn.color,
+        plot.legendLabelFormat,
+      );
+      if (!result) {
+        continue;
+      }
+
+      rendered.push({ index: i, ...result });
+    }
+
+    return rendered;
+  }
+
+  private buildLegendImages(
+    plot: Plot,
+    renderedLabels: readonly RenderedLegendLabel[],
+    xValuesArray: number[],
+    yValuesArray: number[][],
+    sizeCalc: PlotSizeCalculation,
+    margin: PlotMarginMm,
+  ): Partial<Plotly.Image>[] {
+    const images: Partial<Plotly.Image>[] = [];
+
+    for (const label of renderedLabels) {
+      const fn = plot.fnx[label.index];
+      if (fn.legendPosition === 'none') {
+        continue;
+      }
+
       const fromStart = fn.legendPosition === 'start';
       const pos = this.plotLabelsService.findLabelPosition(
         xValuesArray,
-        yValuesArray[i],
+        yValuesArray[label.index],
         sizeCalc.yValueMin,
         sizeCalc.yValueMax,
         fromStart,
@@ -158,26 +198,17 @@ export class PlotService {
         continue;
       }
 
-      const rendered = await this.renderMathPng(
-        fn.fnx,
-        fn.color,
-        plot.legendLabelFormat,
-      );
-      if (!rendered) {
-        continue;
-      }
-
       const coords = this.plotLabelsService.calculateLabelImageCoordinates(
         pos,
-        rendered.widthPx,
-        rendered.heightPx,
+        label.widthPx,
+        label.heightPx,
         sizeCalc,
         margin,
         fromStart,
       );
 
       images.push({
-        source: rendered.dataUrl,
+        source: label.dataUrl,
         x: coords.x,
         y: coords.y,
         xref: 'paper',

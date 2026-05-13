@@ -101,6 +101,99 @@ describe('PlotSizeService', () => {
       const margin = service.calculateEffectiveMargin(plot);
       expect(margin.l).toBeGreaterThanOrEqual(PLOT_CONSTANTS.mmMargin.l);
     });
+
+    it('uses measured label width when provided for end-positioned legend', () => {
+      const plot: Plot = {
+        ...basePlot,
+        fnx: [
+          {
+            fnx: 'x',
+            color: '#000',
+            legendPosition: 'end',
+            lineStyle: 'solid',
+          },
+        ],
+      };
+      // 400 px wide is far more than the heuristic would predict for "x".
+      const measured = new Map([[0, 400]]);
+      const margin = service.calculateEffectiveMargin(plot, measured);
+      // Right margin must grow to accommodate the actual rendered width:
+      // 400 px ≈ 105.8 mm, minus 7.5 mm base, plus 7.5 mm base = ~105.8+.
+      expect(margin.r).toBeGreaterThan(100);
+      expect(margin.l).toBe(PLOT_CONSTANTS.mmMargin.l);
+    });
+
+    it('uses measured label width when provided for start-positioned legend', () => {
+      const plot: Plot = {
+        ...basePlot,
+        fnx: [
+          {
+            fnx: 'x',
+            color: '#000',
+            legendPosition: 'start',
+            lineStyle: 'solid',
+          },
+        ],
+      };
+      const measured = new Map([[0, 400]]);
+      const margin = service.calculateEffectiveMargin(plot, measured);
+      expect(margin.l).toBeGreaterThan(100);
+      expect(margin.r).toBe(PLOT_CONSTANTS.mmMargin.r);
+    });
+
+    it('falls back to heuristic when measurement is missing for a function', () => {
+      const plot: Plot = {
+        ...basePlot,
+        fnx: [
+          {
+            fnx: 'sin(x) + cos(x) * 2',
+            color: '#000',
+            legendPosition: 'end',
+            lineStyle: 'solid',
+          },
+        ],
+      };
+      const marginHeuristic = service.calculateEffectiveMargin(plot);
+      // Empty measurement map: still falls back to heuristic for index 0.
+      const marginNoMeasure = service.calculateEffectiveMargin(plot, new Map());
+      expect(marginNoMeasure.r).toBeCloseTo(marginHeuristic.r, 5);
+    });
+
+    it('chooses the larger side when multiple functions share a side', () => {
+      const plot: Plot = {
+        ...basePlot,
+        fnx: [
+          {
+            fnx: 'x',
+            color: '#000',
+            legendPosition: 'end',
+            lineStyle: 'solid',
+          },
+          {
+            fnx: 'x^2',
+            color: '#000',
+            legendPosition: 'end',
+            lineStyle: 'solid',
+          },
+        ],
+      };
+      const measured = new Map([
+        [0, 100],
+        [1, 300],
+      ]);
+      const margin = service.calculateEffectiveMargin(plot, measured);
+      // Right margin should reflect the wider label (index 1), not the smaller (index 0).
+      const expectedFromLarger = (300 + 5) * (25.4 / PLOT_CONSTANTS.ppiBase);
+      // The margin is base.r + extra, where extra = max(0, expectedFromLarger - base.l).
+      const expectedExtra = Math.max(
+        0,
+        expectedFromLarger - PLOT_CONSTANTS.mmMargin.l,
+      );
+      expect(margin.r).toBeCloseTo(
+        PLOT_CONSTANTS.mmMargin.r + expectedExtra,
+        5,
+      );
+    });
   });
 
   describe('calculatePlotSize', () => {

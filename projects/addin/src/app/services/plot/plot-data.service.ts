@@ -298,12 +298,21 @@ export class PlotDataService {
       ];
     }
 
-    const endpoints = computeAxisLineEndpoints(
-      plot.reflection.axis,
-      plot.range,
-    );
-    if (!endpoints) {
-      return [];
+    const axis = plot.reflection.axis;
+    let from: { x: number; y: number };
+    let to: { x: number; y: number };
+    if (plot.reflection.extendBeyondPoints) {
+      const endpoints = computeAxisLineEndpoints(axis, plot.range);
+      if (!endpoints) {
+        return [];
+      }
+      [from, to] = endpoints;
+    } else {
+      if (axis.p1.x === axis.p2.x && axis.p1.y === axis.p2.y) {
+        return [];
+      }
+      from = axis.p1;
+      to = axis.p2;
     }
 
     return [
@@ -311,12 +320,12 @@ export class PlotDataService {
         type: 'scatter',
         mode: 'lines',
         showlegend: false,
-        x: [endpoints[0].x, endpoints[1].x],
-        y: [endpoints[0].y, endpoints[1].y],
+        x: [from.x, to.x],
+        y: [from.y, to.y],
         line: {
-          color: '#888888',
+          color: plot.reflection.color,
           width: 1,
-          dash: 'dash',
+          dash: plot.reflection.lineStyle === 'dashed' ? 'dash' : 'solid',
         },
         hoverinfo: 'skip',
       },

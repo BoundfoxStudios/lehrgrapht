@@ -319,7 +319,79 @@ describe('migrate-to-latest', () => {
       expect(result['reflection']).toEqual({
         ...reflection,
         isSolution: false,
+        color: '#ff0000',
+        lineStyle: 'solid',
+        extendBeyondPoints: false,
       });
+    });
+
+    it('backfills axis color to red when missing', () => {
+      const reflection = {
+        kind: 'axis',
+        axis: { p1: { x: 0, y: 0 }, p2: { x: 1, y: 1 } },
+      };
+      const result = migrate({ reflection });
+      expect((result['reflection'] as Record<string, unknown>)['color']).toBe(
+        '#ff0000',
+      );
+    });
+
+    it('preserves existing axis color', () => {
+      const reflection = {
+        kind: 'axis',
+        axis: { p1: { x: 0, y: 0 }, p2: { x: 1, y: 1 } },
+        color: '#00ff00',
+      };
+      const result = migrate({ reflection });
+      expect((result['reflection'] as Record<string, unknown>)['color']).toBe(
+        '#00ff00',
+      );
+    });
+
+    it('backfills axis lineStyle to solid when missing', () => {
+      const reflection = {
+        kind: 'axis',
+        axis: { p1: { x: 0, y: 0 }, p2: { x: 1, y: 1 } },
+      };
+      const result = migrate({ reflection });
+      expect(
+        (result['reflection'] as Record<string, unknown>)['lineStyle'],
+      ).toBe('solid');
+    });
+
+    it('preserves existing axis lineStyle', () => {
+      const reflection = {
+        kind: 'axis',
+        axis: { p1: { x: 0, y: 0 }, p2: { x: 1, y: 1 } },
+        lineStyle: 'dashed',
+      };
+      const result = migrate({ reflection });
+      expect(
+        (result['reflection'] as Record<string, unknown>)['lineStyle'],
+      ).toBe('dashed');
+    });
+
+    it('backfills axis extendBeyondPoints to false when missing', () => {
+      const reflection = {
+        kind: 'axis',
+        axis: { p1: { x: 0, y: 0 }, p2: { x: 1, y: 1 } },
+      };
+      const result = migrate({ reflection });
+      expect(
+        (result['reflection'] as Record<string, unknown>)['extendBeyondPoints'],
+      ).toBe(false);
+    });
+
+    it('preserves existing axis extendBeyondPoints=true', () => {
+      const reflection = {
+        kind: 'axis',
+        axis: { p1: { x: 0, y: 0 }, p2: { x: 1, y: 1 } },
+        extendBeyondPoints: true,
+      };
+      const result = migrate({ reflection });
+      expect(
+        (result['reflection'] as Record<string, unknown>)['extendBeyondPoints'],
+      ).toBe(true);
     });
 
     it('preserves existing isSolution=true on point reflection', () => {
@@ -339,7 +411,12 @@ describe('migrate-to-latest', () => {
         isSolution: true,
       };
       const result = migrate({ reflection });
-      expect(result['reflection']).toEqual(reflection);
+      expect(result['reflection']).toEqual({
+        ...reflection,
+        color: '#ff0000',
+        lineStyle: 'solid',
+        extendBeyondPoints: false,
+      });
     });
   });
 });
