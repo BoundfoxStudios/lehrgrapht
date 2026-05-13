@@ -133,13 +133,17 @@ export class PlotService {
     sizeCalc: PlotSizeCalculation,
     margin: PlotMarginMm,
   ): Promise<Partial<Plotly.Image>[]> {
-    if (typeof MathJax === 'undefined') return [];
+    if (typeof MathJax === 'undefined') {
+      return [];
+    }
 
     const images: Partial<Plotly.Image>[] = [];
 
     for (let i = 0; i < plot.fnx.length; i++) {
       const fn = plot.fnx[i];
-      if (fn.legendPosition === 'none') continue;
+      if (fn.legendPosition === 'none') {
+        continue;
+      }
 
       const fromStart = fn.legendPosition === 'start';
       const pos = this.plotLabelsService.findLabelPosition(
@@ -150,14 +154,18 @@ export class PlotService {
         fromStart,
       );
 
-      if (!pos) continue;
+      if (!pos) {
+        continue;
+      }
 
       const rendered = await this.renderMathPng(
         fn.fnx,
         fn.color,
         plot.legendLabelFormat,
       );
-      if (!rendered) continue;
+      if (!rendered) {
+        continue;
+      }
 
       const coords = this.plotLabelsService.calculateLabelImageCoordinates(
         pos,
@@ -314,7 +322,9 @@ export class PlotService {
   > {
     try {
       const node = mathjs.parse(expression);
-      if (node.type === 'ConstantNode') return undefined;
+      if (node.type === 'ConstantNode') {
+        return undefined;
+      }
       let tex = node.toTex({ parenthesis: 'keep' });
 
       if (legendLabelFormat === 'f(x)=') {
@@ -364,7 +374,9 @@ export class PlotService {
         canvas.width = Math.ceil(widthPx * renderScale);
         canvas.height = Math.ceil(heightPx * renderScale);
         const ctx = canvas.getContext('2d');
-        if (!ctx) return undefined;
+        if (!ctx) {
+          return undefined;
+        }
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         return {
           dataUrl: canvas.toDataURL('image/png'),

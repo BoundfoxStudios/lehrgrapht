@@ -45,9 +45,12 @@ export class PlotEditorHub {
 
   protected readonly reflectionSubtitle = computed(() => {
     const r = this.store.model().reflection;
-    if (r.kind === 'none') return '+ hinzufügen';
-    if (r.kind === 'point')
+    if (r.kind === 'none') {
+      return '+ hinzufügen';
+    }
+    if (r.kind === 'point') {
       return `Punktspiegelung S(${r.point.x}|${r.point.y})`;
+    }
     return `Spiegelachse durch (${r.axis.p1.x}|${r.axis.p1.y})–(${r.axis.p2.x}|${r.axis.p2.y})`;
   });
 }

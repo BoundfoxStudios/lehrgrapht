@@ -77,7 +77,9 @@ export class PlotSizeService {
     const pxToMm = 25.4 / PLOT_CONSTANTS.ppiBase;
 
     for (const fn of plot.fnx) {
-      if (fn.legendPosition === 'none') continue;
+      if (fn.legendPosition === 'none') {
+        continue;
+      }
 
       let prefixChars = 0;
       if (plot.legendLabelFormat === 'f(x)=') {

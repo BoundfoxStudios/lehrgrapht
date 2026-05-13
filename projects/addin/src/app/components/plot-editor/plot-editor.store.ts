@@ -101,7 +101,9 @@ const GEO_EPS = 1e-9;
 
 export function pointOnSegment(p: GeoPoint, a: GeoPoint, b: GeoPoint): boolean {
   const cross = (b.x - a.x) * (p.y - a.y) - (b.y - a.y) * (p.x - a.x);
-  if (Math.abs(cross) > GEO_EPS) return false;
+  if (Math.abs(cross) > GEO_EPS) {
+    return false;
+  }
   const minX = Math.min(a.x, b.x) - GEO_EPS;
   const maxX = Math.max(a.x, b.x) + GEO_EPS;
   const minY = Math.min(a.y, b.y) - GEO_EPS;
@@ -115,7 +117,9 @@ export function pointInPolygon(
 ): boolean {
   const n = polygon.length;
   for (let i = 0, j = n - 1; i < n; j = i++) {
-    if (pointOnSegment(point, polygon[j], polygon[i])) return false;
+    if (pointOnSegment(point, polygon[j], polygon[i])) {
+      return false;
+    }
   }
   let inside = false;
   for (let i = 0, j = n - 1; i < n; j = i++) {
@@ -169,7 +173,9 @@ export function segmentSegmentIntersectionT(
   const r2x = p4.x - p3.x;
   const r2y = p4.y - p3.y;
   const denom = r1x * r2y - r1y * r2x;
-  if (Math.abs(denom) < GEO_EPS) return null;
+  if (Math.abs(denom) < GEO_EPS) {
+    return null;
+  }
   const t = ((p3.x - p1.x) * r2y - (p3.y - p1.y) * r2x) / denom;
   const u = ((p3.x - p1.x) * r1y - (p3.y - p1.y) * r1x) / denom;
   if (t < -GEO_EPS || t > 1 + GEO_EPS || u < -GEO_EPS || u > 1 + GEO_EPS) {
@@ -215,7 +221,9 @@ export function clipSegmentByOccluders(
   for (let k = 0; k < ts.length - 1; k++) {
     const t1 = ts[k];
     const t2 = ts[k + 1];
-    if (t2 - t1 < GEO_EPS) continue;
+    if (t2 - t1 < GEO_EPS) {
+      continue;
+    }
     const mid = interp((t1 + t2) / 2);
     const hidden = occluders.some(o => pointInPolygon(mid, o));
     out.push({ from: interp(t1), to: interp(t2), hidden });
@@ -422,13 +430,17 @@ export function dedupePolygonPoints(
       const b = result[i];
       const c = result[i + 1];
       const cross = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
-      if (cross !== 0) continue;
+      if (cross !== 0) {
+        continue;
+      }
       const between =
         b.x >= Math.min(a.x, c.x) &&
         b.x <= Math.max(a.x, c.x) &&
         b.y >= Math.min(a.y, c.y) &&
         b.y <= Math.max(a.y, c.y);
-      if (!between) continue;
+      if (!between) {
+        continue;
+      }
       result.splice(i, 1);
       changed = true;
       break;
@@ -444,7 +456,9 @@ export function applyPolygon(
   _ctx: ApplyContext,
 ): Plot {
   const deduped = dedupePolygonPoints(points);
-  if (deduped.length < 2) return model;
+  if (deduped.length < 2) {
+    return model;
+  }
   return {
     ...model,
     polygons: [
@@ -473,7 +487,9 @@ export function applyMarker(
   points: readonly { x: number; y: number }[],
   ctx: ApplyContext,
 ): Plot {
-  if (points.length === 0) return model;
+  if (points.length === 0) {
+    return model;
+  }
   return {
     ...model,
     markers: [
@@ -503,7 +519,9 @@ export function applyFunction(
   } else {
     return model;
   }
-  if (fnxString === null) return model;
+  if (fnxString === null) {
+    return model;
+  }
   return {
     ...model,
     fnx: [
@@ -523,7 +541,9 @@ export function applyReflectionPoint(
   points: readonly { x: number; y: number }[],
   _ctx: ApplyContext,
 ): Plot {
-  if (points.length < 1) return model;
+  if (points.length < 1) {
+    return model;
+  }
   const point = points[0];
   return {
     ...model,
@@ -536,9 +556,13 @@ export function applyReflectionAxis(
   points: readonly { x: number; y: number }[],
   _ctx: ApplyContext,
 ): Plot {
-  if (points.length < 2) return model;
+  if (points.length < 2) {
+    return model;
+  }
   const [p1, p2] = points;
-  if (p1.x === p2.x && p1.y === p2.y) return model;
+  if (p1.x === p2.x && p1.y === p2.y) {
+    return model;
+  }
   return {
     ...model,
     reflection: {
@@ -693,7 +717,9 @@ export const PlotEditorStore = signalStore(
       previewModel: computed<Plot>(() => {
         const model = store.model();
         const mode = store.interactiveMode();
-        if (mode === InteractiveMode.Off) return model;
+        if (mode === InteractiveMode.Off) {
+          return model;
+        }
         return INTERACTIVE_STRATEGIES[mode].apply(
           model,
           store.interactivePoints(),
@@ -864,7 +890,9 @@ export const PlotEditorStore = signalStore(
       autoLabelPolygonPointsIfEmpty(polygonIndex: number): void {
         const scheme = store.plotSettings().markerNamingScheme;
         store.editorForm().controlValue.update(m => {
-          if (polygonIndex < 0 || polygonIndex >= m.polygons.length) return m;
+          if (polygonIndex < 0 || polygonIndex >= m.polygons.length) {
+            return m;
+          }
           let startIndex = 0;
           for (let i = 0; i < polygonIndex; i++) {
             startIndex += m.polygons[i].points.length;
@@ -1022,10 +1050,18 @@ export const PlotEditorStore = signalStore(
         let maxY = allPoints[0].y;
 
         for (const point of allPoints) {
-          if (point.x < minX) minX = point.x;
-          if (point.x > maxX) maxX = point.x;
-          if (point.y < minY) minY = point.y;
-          if (point.y > maxY) maxY = point.y;
+          if (point.x < minX) {
+            minX = point.x;
+          }
+          if (point.x > maxX) {
+            maxX = point.x;
+          }
+          if (point.y < minY) {
+            minY = point.y;
+          }
+          if (point.y > maxY) {
+            maxY = point.y;
+          }
         }
 
         store.editorForm().controlValue.update(model => ({
@@ -1052,7 +1088,9 @@ export const PlotEditorStore = signalStore(
 
       finishInteractive(): void {
         const mode = store.interactiveMode();
-        if (mode === InteractiveMode.Off) return;
+        if (mode === InteractiveMode.Off) {
+          return;
+        }
         const strategy = INTERACTIVE_STRATEGIES[mode];
         const points = store.interactivePoints();
         if (points.length >= strategy.minPoints) {
@@ -1080,7 +1118,9 @@ export const PlotEditorStore = signalStore(
 
       onPlotClick(event: PlotClickEvent): void {
         const mode = store.interactiveMode();
-        if (mode === InteractiveMode.Off) return;
+        if (mode === InteractiveMode.Off) {
+          return;
+        }
 
         const currentPoints = store.interactivePoints();
 

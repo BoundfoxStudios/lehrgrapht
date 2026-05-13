@@ -63,13 +63,17 @@ export class InteractiveOverlay {
 
   protected readonly minPoints = computed(() => {
     const mode = this.store.interactiveMode();
-    if (mode === InteractiveMode.Off) return 0;
+    if (mode === InteractiveMode.Off) {
+      return 0;
+    }
     return INTERACTIVE_STRATEGIES[mode].minPoints;
   });
 
   protected readonly headerMax = computed(() => {
     const mode = this.store.interactiveMode();
-    if (mode === InteractiveMode.Off) return 0;
+    if (mode === InteractiveMode.Off) {
+      return 0;
+    }
     const strategy = INTERACTIVE_STRATEGIES[mode];
     return strategy.autoFinishAt ?? strategy.minPoints;
   });
@@ -80,7 +84,9 @@ export class InteractiveOverlay {
 
   protected readonly hasAutoFinish = computed(() => {
     const mode = this.store.interactiveMode();
-    if (mode === InteractiveMode.Off) return false;
+    if (mode === InteractiveMode.Off) {
+      return false;
+    }
     return INTERACTIVE_STRATEGIES[mode].autoFinishAt !== undefined;
   });
 

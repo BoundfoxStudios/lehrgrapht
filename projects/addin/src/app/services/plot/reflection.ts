@@ -7,7 +7,9 @@ export interface Vec2 {
 }
 
 export function reflectPoint(p: Vec2, r: Reflection): Vec2 {
-  if (r.kind === 'none') return { x: p.x, y: p.y };
+  if (r.kind === 'none') {
+    return { x: p.x, y: p.y };
+  }
   if (r.kind === 'point') {
     return { x: 2 * r.point.x - p.x, y: 2 * r.point.y - p.y };
   }
@@ -15,7 +17,9 @@ export function reflectPoint(p: Vec2, r: Reflection): Vec2 {
   const dx = p2.x - p1.x;
   const dy = p2.y - p1.y;
   const lenSq = dx * dx + dy * dy;
-  if (lenSq === 0) return { x: p.x, y: p.y };
+  if (lenSq === 0) {
+    return { x: p.x, y: p.y };
+  }
   const t = ((p.x - p1.x) * dx + (p.y - p1.y) * dy) / lenSq;
   const fx = p1.x + t * dx;
   const fy = p1.y + t * dy;
@@ -42,10 +46,14 @@ export function computeAxisLineEndpoints(
 ): [Vec2, Vec2] | null {
   const dx = axis.p2.x - axis.p1.x;
   const dy = axis.p2.y - axis.p1.y;
-  if (dx === 0 && dy === 0) return null;
+  if (dx === 0 && dy === 0) {
+    return null;
+  }
 
   if (dx === 0) {
-    if (axis.p1.x < range.x.min || axis.p1.x > range.x.max) return null;
+    if (axis.p1.x < range.x.min || axis.p1.x > range.x.max) {
+      return null;
+    }
     return [
       { x: axis.p1.x, y: range.y.min },
       { x: axis.p1.x, y: range.y.max },
@@ -53,7 +61,9 @@ export function computeAxisLineEndpoints(
   }
 
   if (dy === 0) {
-    if (axis.p1.y < range.y.min || axis.p1.y > range.y.max) return null;
+    if (axis.p1.y < range.y.min || axis.p1.y > range.y.max) {
+      return null;
+    }
     return [
       { x: range.x.min, y: axis.p1.y },
       { x: range.x.max, y: axis.p1.y },
@@ -81,7 +91,9 @@ export function computeAxisLineEndpoints(
     }
   }
 
-  if (candidates.length < 2) return null;
+  if (candidates.length < 2) {
+    return null;
+  }
   candidates.sort((a, b) => a.t - b.t);
   return [candidates[0].point, candidates[candidates.length - 1].point];
 }

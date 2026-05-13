@@ -263,7 +263,9 @@ describe('PlotDataService', () => {
       const result = service.buildPolygonTraces(plot, plotSettings);
       const dash = result[0].line?.dash as string;
       const match = /^([\d.]+)px,([\d.]+)px$/.exec(dash);
-      if (!match) throw new Error(`Unexpected dash pattern: ${dash}`);
+      if (!match) {
+        throw new Error(`Unexpected dash pattern: ${dash}`);
+      }
 
       const dashPx = parseFloat(match[1]);
       const gapPx = parseFloat(match[2]);

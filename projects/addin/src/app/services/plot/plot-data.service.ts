@@ -53,7 +53,9 @@ export class PlotDataService {
     xValuesArray: number[],
     yValuesArray: number[][],
   ): Partial<PlotData>[] {
-    if (!plot.fnx.length) return [];
+    if (!plot.fnx.length) {
+      return [];
+    }
 
     return yValuesArray.map((y, i) => ({
       type: 'scatter',
@@ -127,7 +129,9 @@ export class PlotDataService {
     plotSettings: PlotSettings,
     options: PolygonRenderOptions = {},
   ): Partial<PlotData>[] {
-    if (!plot.polygons.length) return [];
+    if (!plot.polygons.length) {
+      return [];
+    }
 
     const highlightedIndex = options.highlightedPolygonIndex ?? null;
 
@@ -137,7 +141,9 @@ export class PlotDataService {
     const haloTraces: Partial<PlotData>[] = [];
     const polygonTraces: Partial<PlotData>[] = [];
     plot.polygons.forEach((polygon, i) => {
-      if (!isVisible(polygon)) return;
+      if (!isVisible(polygon)) {
+        return;
+      }
 
       const closed = polygon.connect;
       const orderedPoints =
@@ -204,7 +210,9 @@ export class PlotDataService {
     const mirroredTraces: Partial<PlotData>[] = [];
     if (options.showSolution && plot.reflection.kind !== 'none') {
       for (const polygon of plot.polygons) {
-        if (!isVisible(polygon)) continue;
+        if (!isVisible(polygon)) {
+          continue;
+        }
         const mirroredPoints = reflectPolygonPoints(
           polygon.points,
           plot.reflection,
@@ -260,7 +268,9 @@ export class PlotDataService {
   }
 
   buildReflectionTraces(plot: Plot): Partial<PlotData>[] {
-    if (plot.reflection.kind === 'none') return [];
+    if (plot.reflection.kind === 'none') {
+      return [];
+    }
 
     if (plot.reflection.kind === 'point') {
       const { x, y } = plot.reflection.point;
@@ -289,7 +299,9 @@ export class PlotDataService {
       plot.reflection.axis,
       plot.range,
     );
-    if (!endpoints) return [];
+    if (!endpoints) {
+      return [];
+    }
 
     return [
       {
@@ -324,7 +336,9 @@ export class PlotDataService {
       perimeter += Math.sqrt(dx * dx + dy * dy);
     }
 
-    if (perimeter === 0) return 'dash';
+    if (perimeter === 0) {
+      return 'dash';
+    }
 
     const numPeriods = Math.max(
       1,
@@ -352,8 +366,12 @@ export class PlotDataService {
     }[] = [];
 
     for (const polygon of plot.polygons) {
-      if (!polygon.showPoints) continue;
-      if (polygon.isSolution && !options.showSolution) continue;
+      if (!polygon.showPoints) {
+        continue;
+      }
+      if (polygon.isSolution && !options.showSolution) {
+        continue;
+      }
 
       for (const point of polygon.points) {
         const position =
@@ -369,7 +387,9 @@ export class PlotDataService {
       }
     }
 
-    if (!polygonPointMarkers.length) return [];
+    if (!polygonPointMarkers.length) {
+      return [];
+    }
 
     const groupedByPosition = new Map<
       Exclude<LabelPosition, 'auto'>,
@@ -422,13 +442,27 @@ export class PlotDataService {
     const dy = point.y - centroid.y;
     const angle = Math.atan2(dy, dx) * (180 / Math.PI);
 
-    if (angle >= -22.5 && angle < 22.5) return 'middle right';
-    if (angle >= 22.5 && angle < 67.5) return 'top right';
-    if (angle >= 67.5 && angle < 112.5) return 'top center';
-    if (angle >= 112.5 && angle < 157.5) return 'top left';
-    if (angle >= 157.5 || angle < -157.5) return 'middle left';
-    if (angle >= -157.5 && angle < -112.5) return 'bottom left';
-    if (angle >= -112.5 && angle < -67.5) return 'bottom center';
+    if (angle >= -22.5 && angle < 22.5) {
+      return 'middle right';
+    }
+    if (angle >= 22.5 && angle < 67.5) {
+      return 'top right';
+    }
+    if (angle >= 67.5 && angle < 112.5) {
+      return 'top center';
+    }
+    if (angle >= 112.5 && angle < 157.5) {
+      return 'top left';
+    }
+    if (angle >= 157.5 || angle < -157.5) {
+      return 'middle left';
+    }
+    if (angle >= -157.5 && angle < -112.5) {
+      return 'bottom left';
+    }
+    if (angle >= -112.5 && angle < -67.5) {
+      return 'bottom center';
+    }
     return 'bottom right';
   }
 }

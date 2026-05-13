@@ -99,10 +99,18 @@ export class SectionPolygons {
 
   protected polygonTitle(polygon: Polygon, index: number): string {
     const n = polygon.points.length;
-    if (n === 2) return `Linie ${index + 1}`;
-    if (n === 3 && polygon.connect) return `Dreieck ${index + 1}`;
-    if (n === 4 && polygon.connect) return `Viereck ${index + 1}`;
-    if (n >= 5 && polygon.connect) return `Fläche ${index + 1}`;
+    if (n === 2) {
+      return `Linie ${index + 1}`;
+    }
+    if (n === 3 && polygon.connect) {
+      return `Dreieck ${index + 1}`;
+    }
+    if (n === 4 && polygon.connect) {
+      return `Viereck ${index + 1}`;
+    }
+    if (n >= 5 && polygon.connect) {
+      return `Fläche ${index + 1}`;
+    }
     return `Polygon ${index + 1}`;
   }
 
@@ -117,7 +125,9 @@ export class SectionPolygons {
 
   protected onShowPointsChange(polygonIndex: number, event: Event): void {
     const checked = (event.target as HTMLInputElement).checked;
-    if (!checked) return;
+    if (!checked) {
+      return;
+    }
     this.store.autoLabelPolygonPointsIfEmpty(polygonIndex);
   }
 

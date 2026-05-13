@@ -40,55 +40,81 @@ export class SectionReflection {
 
   protected readonly axisIsDegenerate = computed(() => {
     const r = this.reflection();
-    if (r.kind !== 'axis') return false;
+    if (r.kind !== 'axis') {
+      return false;
+    }
     return r.axis.p1.x === r.axis.p2.x && r.axis.p1.y === r.axis.p2.y;
   });
 
   protected onPointXChange(event: Event): void {
     const value = this.parseEventValue(event);
-    if (value === null) return;
+    if (value === null) {
+      return;
+    }
     const r = this.reflection();
-    if (r.kind !== 'point') return;
+    if (r.kind !== 'point') {
+      return;
+    }
     this.store.setReflectionPoint({ x: value, y: r.point.y });
   }
 
   protected onPointYChange(event: Event): void {
     const value = this.parseEventValue(event);
-    if (value === null) return;
+    if (value === null) {
+      return;
+    }
     const r = this.reflection();
-    if (r.kind !== 'point') return;
+    if (r.kind !== 'point') {
+      return;
+    }
     this.store.setReflectionPoint({ x: r.point.x, y: value });
   }
 
   protected onAxisX1Change(event: Event): void {
     const value = this.parseEventValue(event);
-    if (value === null) return;
+    if (value === null) {
+      return;
+    }
     const r = this.reflection();
-    if (r.kind !== 'axis') return;
+    if (r.kind !== 'axis') {
+      return;
+    }
     this.store.setReflectionAxis({ x: value, y: r.axis.p1.y }, r.axis.p2);
   }
 
   protected onAxisY1Change(event: Event): void {
     const value = this.parseEventValue(event);
-    if (value === null) return;
+    if (value === null) {
+      return;
+    }
     const r = this.reflection();
-    if (r.kind !== 'axis') return;
+    if (r.kind !== 'axis') {
+      return;
+    }
     this.store.setReflectionAxis({ x: r.axis.p1.x, y: value }, r.axis.p2);
   }
 
   protected onAxisX2Change(event: Event): void {
     const value = this.parseEventValue(event);
-    if (value === null) return;
+    if (value === null) {
+      return;
+    }
     const r = this.reflection();
-    if (r.kind !== 'axis') return;
+    if (r.kind !== 'axis') {
+      return;
+    }
     this.store.setReflectionAxis(r.axis.p1, { x: value, y: r.axis.p2.y });
   }
 
   protected onAxisY2Change(event: Event): void {
     const value = this.parseEventValue(event);
-    if (value === null) return;
+    if (value === null) {
+      return;
+    }
     const r = this.reflection();
-    if (r.kind !== 'axis') return;
+    if (r.kind !== 'axis') {
+      return;
+    }
     this.store.setReflectionAxis(r.axis.p1, { x: r.axis.p2.x, y: value });
   }
 
@@ -98,7 +124,9 @@ export class SectionReflection {
 
   private parseEventValue(event: Event): number | null {
     const target = event.target as HTMLInputElement | null;
-    if (!target) return null;
+    if (!target) {
+      return null;
+    }
     const value = parseFloat(target.value);
     return Number.isFinite(value) ? value : null;
   }
