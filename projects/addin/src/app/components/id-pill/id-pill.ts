@@ -5,7 +5,7 @@ import {
   input,
 } from '@angular/core';
 
-export type IdPillPrefix = 'P' | 'L' | 'f' | 'F';
+export type IdPillPrefix = 'P' | 'L' | 'f' | 'F' | 'Sp' | 'Sa';
 export type IdPillState = 'normal' | 'new';
 
 @Component({
@@ -35,6 +35,6 @@ export class IdPill {
   protected readonly ariaLabel = computed(() => this.label());
   protected readonly isCircle = computed(() => {
     const p = this.prefix();
-    return p === 'P' || p === 'f';
+    return p === 'P' || p === 'f' || p === 'Sp';
   });
 }
