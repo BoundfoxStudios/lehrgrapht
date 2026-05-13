@@ -7,6 +7,7 @@ import {
 import { RouterLink } from '@angular/router';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import {
+  faArrowsLeftRightToLine,
   faChevronRight,
   faDrawPolygon,
   faExpand,
@@ -31,6 +32,7 @@ export class PlotEditorHub {
   protected readonly faSquareRootVariable = faSquareRootVariable;
   protected readonly faLocationDot = faLocationDot;
   protected readonly faDrawPolygon = faDrawPolygon;
+  protected readonly faArrowsLeftRightToLine = faArrowsLeftRightToLine;
 
   protected readonly store = inject(PlotEditorStore);
 
@@ -39,5 +41,13 @@ export class PlotEditorHub {
     const xCount = (r.x.max - r.x.min) * 2;
     const yCount = (r.y.max - r.y.min) * 2;
     return `x: ${r.x.min} / ${r.x.max} · y: ${r.y.min} / ${r.y.max} · ${xCount}×${yCount} K.`;
+  });
+
+  protected readonly reflectionSubtitle = computed(() => {
+    const r = this.store.model().reflection;
+    if (r.kind === 'none') return '+ hinzufügen';
+    if (r.kind === 'point')
+      return `Punktspiegelung S(${r.point.x}|${r.point.y})`;
+    return `Spiegelachse durch (${r.axis.p1.x}|${r.axis.p1.y})–(${r.axis.p2.x}|${r.axis.p2.y})`;
   });
 }

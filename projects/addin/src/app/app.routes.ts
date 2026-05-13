@@ -6,6 +6,7 @@ import { SectionFnx } from './components/plot-editor/sections/section-fnx/sectio
 import { SectionMarkers } from './components/plot-editor/sections/section-markers/section-markers';
 import { SectionPolygons } from './components/plot-editor/sections/section-polygons/section-polygons';
 import { SectionRange } from './components/plot-editor/sections/section-range/section-range';
+import { SectionReflection } from './components/plot-editor/sections/section-reflection/section-reflection';
 import { SectionSettings } from './components/plot-editor/sections/section-settings/section-settings';
 import { unsavedChangesGuard } from './components/plot-editor/unsaved-changes.guard';
 import { Info } from './components/info/info';
@@ -75,6 +76,10 @@ export const routes: Routes = [
           {
             path: 'settings',
             component: SectionSettings,
+          },
+          {
+            path: 'reflection',
+            component: SectionReflection,
           },
         ],
       },
