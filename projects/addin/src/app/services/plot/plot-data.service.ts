@@ -43,7 +43,7 @@ export class PlotDataService {
       ),
       ...this.buildMarkerTraces(plot, { showSolution: options.showSolution }),
       ...this.buildPolygonTraces(plot, plotSettings, options),
-      ...this.buildReflectionTraces(plot),
+      ...this.buildReflectionTraces(plot, plotSettings),
     ];
   }
 
@@ -270,7 +270,10 @@ export class PlotDataService {
     ];
   }
 
-  buildReflectionTraces(plot: Plot): Partial<PlotData>[] {
+  buildReflectionTraces(
+    plot: Plot,
+    plotSettings: PlotSettings,
+  ): Partial<PlotData>[] {
     if (plot.reflection.kind === 'none') {
       return [];
     }
@@ -324,7 +327,7 @@ export class PlotDataService {
         y: [from.y, to.y],
         line: {
           color: plot.reflection.color,
-          width: 1,
+          width: plotSettings.plotLineWidth,
           dash: plot.reflection.lineStyle === 'dashed' ? 'dash' : 'solid',
         },
         hoverinfo: 'skip',

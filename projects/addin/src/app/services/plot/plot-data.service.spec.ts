@@ -450,7 +450,7 @@ describe('PlotDataService', () => {
 
   describe('buildReflectionTraces', () => {
     it('returns empty array when reflection.kind === "none"', () => {
-      const result = service.buildReflectionTraces(basePlot);
+      const result = service.buildReflectionTraces(basePlot, plotSettings);
       expect(result).toEqual([]);
     });
 
@@ -463,7 +463,7 @@ describe('PlotDataService', () => {
           isSolution: false,
         },
       };
-      const result = service.buildReflectionTraces(plot);
+      const result = service.buildReflectionTraces(plot, plotSettings);
       expect(result.length).toBe(1);
       expect(result[0].mode).toBe('text+markers');
       expect(result[0].x).toEqual([1]);
@@ -482,7 +482,7 @@ describe('PlotDataService', () => {
           extendBeyondPoints: false,
         },
       };
-      const result = service.buildReflectionTraces(plot);
+      const result = service.buildReflectionTraces(plot, plotSettings);
       expect(result.length).toBe(1);
       expect(result[0].mode).toBe('lines');
       expect(result[0].x).toEqual([0, 1]);
@@ -501,7 +501,7 @@ describe('PlotDataService', () => {
           extendBeyondPoints: false,
         },
       };
-      expect(service.buildReflectionTraces(plot)).toEqual([]);
+      expect(service.buildReflectionTraces(plot, plotSettings)).toEqual([]);
     });
 
     it('returns one line trace clipped to the range when extendBeyondPoints=true', () => {
@@ -516,7 +516,7 @@ describe('PlotDataService', () => {
           extendBeyondPoints: true,
         },
       };
-      const result = service.buildReflectionTraces(plot);
+      const result = service.buildReflectionTraces(plot, plotSettings);
       expect(result.length).toBe(1);
       expect(result[0].mode).toBe('lines');
       expect(result[0].x).toEqual([basePlot.range.x.min, basePlot.range.x.max]);
@@ -535,7 +535,7 @@ describe('PlotDataService', () => {
           extendBeyondPoints: true,
         },
       };
-      expect(service.buildReflectionTraces(plot)).toEqual([]);
+      expect(service.buildReflectionTraces(plot, plotSettings)).toEqual([]);
     });
 
     it('uses axis.color for the line color', () => {
@@ -550,7 +550,7 @@ describe('PlotDataService', () => {
           extendBeyondPoints: false,
         },
       };
-      const result = service.buildReflectionTraces(plot);
+      const result = service.buildReflectionTraces(plot, plotSettings);
       expect(result[0].line?.color).toBe('#00ff00');
     });
 
@@ -566,7 +566,7 @@ describe('PlotDataService', () => {
           extendBeyondPoints: false,
         },
       };
-      const result = service.buildReflectionTraces(plot);
+      const result = service.buildReflectionTraces(plot, plotSettings);
       expect(result[0].line?.dash).toBe('solid');
     });
 
@@ -582,7 +582,7 @@ describe('PlotDataService', () => {
           extendBeyondPoints: false,
         },
       };
-      const result = service.buildReflectionTraces(plot);
+      const result = service.buildReflectionTraces(plot, plotSettings);
       expect(result[0].line?.dash).toBe('dash');
     });
   });
