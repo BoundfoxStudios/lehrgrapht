@@ -4,7 +4,9 @@ import { ContentContainer } from '../content-container/content-container';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import {
   faChartLine,
+  faCube,
   faImages,
+  faLightbulb,
   faMapPin,
   faTableCells,
 } from '@fortawesome/free-solid-svg-icons';
@@ -32,4 +34,7 @@ export class FirstRunExperience {
 
     void this.router.navigate(['/plot/list']);
   }
+
+  protected readonly faCube = faCube;
+  protected readonly faLightbulb = faLightbulb;
 }
