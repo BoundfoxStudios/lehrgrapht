@@ -1,7 +1,7 @@
-import { migrateTo150 } from './migrate-to-1.5.0';
+import { migrateTo160 } from './migrate-to-1.6.0';
 
 describe('migrate-to-1.5.0', () => {
-  const migrate = migrateTo150.migrate;
+  const migrate = migrateTo160.migrate;
 
   it('should backfill fnx legendPosition', () => {
     const result = migrate({ fnx: [{ fnx: 'x', color: '#000' }] });
