@@ -17,6 +17,7 @@
     "patch-docx": "node tasks/patch-docx.mjs",
     "watch": "ng build addin --watch --configuration development",
     "validate": "office-addin-manifest validate manifest.xml",
+    "validate:production": "office-addin-manifest validate --production dist/addin/browser/manifest.xml",
     "test": "ng test",
     "test:addin": "ng test addin",
     "lint": "ng lint",
