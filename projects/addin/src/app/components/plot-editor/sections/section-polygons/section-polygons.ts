@@ -67,7 +67,7 @@ export class SectionPolygons {
   protected readonly fillStyleOptions: PillSwitchOption<PolygonFillStyle>[] = [
     { value: 'solid', label: 'Voll' },
     { value: 'hatched', label: 'Schraffur' },
-    { value: 'outline', label: 'Nur Rand' },
+    { value: 'outline', label: 'Umriss' },
   ];
   protected readonly store = inject(PlotEditorStore);
   private readonly dialog = inject(Dialog);

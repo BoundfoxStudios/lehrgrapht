@@ -1,24 +1,26 @@
-<a id="features"
-  ><h2 class="mb-4 text-2xl font-bold">
-    Geplante Features &amp; bekannte Fehler
-  </h2></a
->
-
 @let data = issues.value();
+
+@if (data?.issues?.length) {
+  <div class="mb-4 flex justify-end">
+    <a class="text-brand border-b-brand flex cursor-pointer gap-1 border-b">
+      <span>Alle auf GitHub</span>
+      <fa-icon [icon]="faArrowRight" />
+    </a>
+  </div>
+}
 
 <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
   @for (issue of data?.issues; track issue.id) {
     <div
-      class="bg-neutral-primary-soft border-default rounded-base block flex flex-col border p-6 shadow-xs"
+      class="bg-neutral-primary-soft border-default rounded-base flex flex-col border p-6 shadow-xs drop-shadow-xl"
     >
-      <div class="flex justify-between space-x-4">
-        <div>
-          <a [href]="issue.url">
-            <h5 class="text-heading text-2xl font-semibold tracking-tight">
-              {{ issue.title }}
-            </h5>
-          </a>
-        </div>
+      <div class="flex justify-between gap-x-4">
+        <a [href]="issue.url">
+          <h3
+            class="text-2xl font-medium tracking-tight"
+            [innerHTML]="issue.title | insertWbr"
+          ></h3>
+        </a>
         <div>
           @if (issue.isBug) {
             <span
@@ -33,11 +35,15 @@
           }
         </div>
       </div>
-      <p class="text-body-subtle mb-2 text-sm">{{ issue.createdAt | date }}</p>
-      <div class="text-body mb-3">
+      <p class="text-body-subtle my-2 font-mono text-sm">
+        {{ issue.createdAt | date }}
+      </p>
+      <div class="mb-3">
         {{ issue.body | truncate }}
       </div>
-      <div class="mt-auto flex justify-between">
+      <div
+        class="border-t-cream-line mt-auto flex justify-between border-t pt-3"
+      >
         <a
           class="text-fg-brand inline-flex items-center font-medium hover:underline"
           [href]="issue.url"
@@ -46,14 +52,20 @@
           <fa-icon
             class="pl-1"
             [icon]="faExternalLink"
-            size="sm"
+            size="xs"
           />
         </a>
         <div class="text-gray-500">
           {{ issue.comments }}
-          <fa-icon [icon]="faComment" />
+          <fa-icon
+            [icon]="faComment"
+            size="sm"
+          />
           {{ issue.reactions }}
-          <fa-icon [icon]="faHeart" />
+          <fa-icon
+            [icon]="faHeart"
+            size="sm"
+          />
         </div>
       </div>
     </div>
@@ -69,10 +81,21 @@
   }
 </div>
 
-@if ((data?.totalCount ?? 0) > 10) {
-  <p class="mt-4">
-    Zeige 10 von {{ data?.totalCount }} Items. Alle auf
-    <lgs-github-link deepLink="issues" />
-    anzeigen.
-  </p>
+@if (data?.issues?.length) {
+  <div class="mt-4 flex justify-end text-xl">
+    <lgw-handwritten
+      >Fehler gefunden oder Vorschlagen machen? Schreib eine
+      <a
+        class="underline"
+        href="mailto:support@lehrgrapht.de"
+        >E-Mail</a
+      >
+      oder direkt auf
+      <a
+        class="underline"
+        [href]="gitHubUrl"
+        >GitHub</a
+      >!</lgw-handwritten
+    >
+  </div>
 }

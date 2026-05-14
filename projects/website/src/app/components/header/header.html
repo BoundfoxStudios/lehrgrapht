@@ -1,0 +1,48 @@
+<lgw-quadrille-paper
+  class="pt-6 pb-20"
+  variant="cream"
+>
+  <lgw-content-container>
+    <header
+      class="flex flex-col items-center justify-between gap-8 lg:flex-row lg:gap-0"
+    >
+      <lgw-logo />
+      <nav>
+        <ul class="flex flex-wrap items-center gap-2">
+          <li>
+            <a
+              class="rounded-full px-4 py-2"
+              [routerLinkActive]="['bg-black', 'text-white']"
+              [routerLinkActiveOptions]="{ exact: true }"
+              [routerLink]="['/']"
+              >Start</a
+            >
+          </li>
+          <li>
+            <a
+              class="rounded-full px-4 py-2"
+              [routerLinkActive]="['bg-black', 'text-white']"
+              [routerLink]="['/changelog']"
+              >Versionshistorie</a
+            >
+          </li>
+          <li>
+            <a
+              class="bg-brand shadow-brand/30 hover:shadow-brand/50 flex items-center gap-x-2 rounded-full px-4 py-2 text-white shadow-lg transition-shadow"
+              href="https://marketplace.microsoft.com/en-us/product/office/WA200009741"
+            >
+              <img
+                class="h-4 w-4"
+                src="microsoft-logo.svg"
+                alt="Microsoft Logo"
+              />
+              <span>Download</span></a
+            >
+          </li>
+        </ul>
+      </nav>
+    </header>
+
+    <ng-content />
+  </lgw-content-container>
+</lgw-quadrille-paper>

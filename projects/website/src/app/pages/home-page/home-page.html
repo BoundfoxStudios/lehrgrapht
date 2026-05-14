@@ -1,149 +1,440 @@
-<lgw-hero>
-  <h1>Willkommen bei LehrGrapht.</h1>
-  <p>
-    Ein kostenfreies Word AddIn zum Erstellen von maßstabsgetreuen Plots für
-    Lehrkräfte.
-  </p>
-</lgw-hero>
-
-<lgw-content-container>
-  <div class="my-16 flex flex-col items-center space-y-2">
-    <a
-      class="rounded-sm bg-pink-600 px-8 py-4 text-white"
-      href="https://marketplace.microsoft.com/en-us/product/office/WA200009741"
-      target="_blank"
+<lgw-header>
+  <div class="mt-8 flex flex-col items-center gap-y-2">
+    <lgw-handwritten class="text-2xl"
+      >Hallo, liebe Mathe-Lehrer:innen!</lgw-handwritten
     >
-      <fa-icon [icon]="faMicrosoft" />
-      Download (Microsoft Marketplace)</a
-    >
-    <lgs-github-link text="GitHub (Source Code)" />
-  </div>
-</lgw-content-container>
-
-<lgw-content-container class="mt-12 block">
-  <div class="flex flex-col space-y-12 sm:space-y-0 md:flex-row md:space-x-12">
-    <div class="flex flex-1 flex-col items-center">
-      <fa-icon
-        [icon]="faGear"
-        size="6x"
-      />
-      <h2 class="text-brand mt-12 mb-4 text-2xl font-bold">Plattformen</h2>
-      <p>Verfügbar für Microsoft Word auf Windows, macOS und iPad.</p>
+    <h1 class="mb-4 text-center text-4xl font-semibold lg:text-6xl">
+      Maßstabsgetreue Plots.
+    </h1>
+    <p class="max-w-xl text-center text-base leading-8 lg:text-xl">
+      Ein kostenfreies, quell-offenes Word AddIn zum Erstellen von
+      maßstabsgetreuen Plots für Lehrkräfte. Passgenau auf
+      <span class="whitespace-nowrap">5x5 mm</span> Karopapier.
+    </p>
+    <p class="max-w-xl text-center text-base leading-8 lg:text-xl">
+      Verfügbar für Windows, macOS und iPad.
+    </p>
+    <div class="mt-8 flex flex-col items-center gap-y-4">
+      <a
+        class="flex items-center gap-x-2 rounded-xl bg-black px-6 py-3 text-white shadow-lg transition-shadow hover:shadow-lg/50"
+        href="https://marketplace.microsoft.com/en-us/product/office/WA200009741"
+      >
+        <img
+          class="h-4 w-4"
+          src="microsoft-logo.svg"
+          alt="Microsoft Logo"
+        />
+        <span>Microsoft Marketplace</span>
+        <fa-icon [icon]="faArrowRight" />
+      </a>
+      <a
+        class="flex items-center gap-x-1 rounded-xl"
+        [href]="gitHubUrl"
+      >
+        <fa-icon [icon]="faGithub" /><span>GitHub (Source Code)</span>
+      </a>
     </div>
-    <div class="flex flex-1 flex-col text-center">
-      <fa-icon
-        [icon]="faBoltLightning"
-        size="6x"
-      />
-      <h2 class="text-brand mt-12 mb-4 text-2xl font-bold">
-        Maßstabsgetreue Plots
-      </h2>
-      <p>
-        Die vom Plotter erzeugten Graphen sind maßstabsgetreu auf 5x5 mm
-        Karopapier.
-      </p>
-    </div>
-    <div class="flex flex-1 flex-col text-center">
-      <fa-icon
-        [icon]="faStar"
-        size="6x"
-      />
-      <h2 class="text-brand mt-12 mb-4 text-2xl font-bold">Funktionen</h2>
-      <p>
-        Beliebig viele Schaubilder pro Word-Dokument. Beliebig viele Graphen,
-        Punkte, Flächen und Linien pro Schaubild in unterschiedlichen Farben.
-      </p>
-    </div>
-  </div>
 
-  <img
-    class="mt-12 drop-shadow-xl"
-    src="images/word-beispiel.png"
-    alt="LehrGrapht in Word"
-  />
-
-  <div class="mt-12 flex flex-col space-y-12">
-    <div
-      class="grid grid-cols-1 gap-y-12 drop-shadow-xl sm:grid-cols-3 sm:gap-x-12"
-    >
+    <div class="mt-8">
       <img
-        class="mx-auto h-auto"
-        src="images/plot-liste.png"
-        alt="Plot Liste"
-      />
-      <div class="col-span-2 flex flex-col space-y-4">
-        <h3 class="text-2xl font-bold">Plot Liste</h3>
-        <p>
-          LehrGrapht zeigt Dir eine Liste aller im Dokument erkannter Plots an,
-          sodass Du diese editieren und anpassen kannst.
-        </p>
-      </div>
-    </div>
-
-    <div
-      class="grid grid-cols-1 gap-y-12 drop-shadow-xl sm:grid-cols-3 sm:gap-x-12"
-    >
-      <img
-        class="mx-auto h-auto sm:order-2"
-        src="images/plot-editor.png"
-        alt="Plot Editor"
-      />
-      <div class="col-span-2 flex flex-col space-y-4 sm:order-1">
-        <h3 class="text-2xl font-bold">Plot-Editor</h3>
-        <p>
-          Der Plot-Editor erlaubt Dir, einen neuen Plot im Word-Dokument
-          einzufügen. Du kannst hierbei beliebig viele Graphen pro Schaubild
-          erzeugen oder auch Punkte einzeichnen lassen. Der Wertebereich gibt
-          an, in welchen Grenzen die Graphen/Punkte angezeigt werden.
-        </p>
-      </div>
-    </div>
-
-    <div
-      class="grid grid-cols-1 gap-y-12 drop-shadow-xl sm:grid-cols-3 sm:gap-x-12"
-    >
-      <img
-        class="mx-auto h-auto"
+        class="rounded-xl drop-shadow-xl"
         src="images/vorschau.png"
-        alt="Graphen und Punkte"
+        alt="LehrGrapht Beispiel-Plot"
       />
-      <div class="col-span-2 flex flex-col space-y-4">
-        <h3 class="text-2xl font-bold">
-          Mehrere Graphen, Punkte, Flächen und Linien pro Schaubild
-        </h3>
-        <p>
-          LehrGrapht kann pro Schaubild mehrere Graphen anzeigen, Punkte,
-          Flächen und Linien einzeichnen. Was genau in einem Plot ist, bestimmt
-          natürlich Du.
-        </p>
+    </div>
+  </div>
+</lgw-header>
+
+<lgw-section>
+  <ng-template lgwSectionHandwritten>
+    <lgw-handwritten>Was Du bekommst</lgw-handwritten>
+  </ng-template>
+  <ng-template lgwSectionHeadline>
+    <h2>Kurz &amp; knapp auf einen Blick.</h2>
+  </ng-template>
+  <ng-template lgwSectionContent>
+    <div class="flex flex-col gap-y-8 sm:gap-y-0 md:flex-row md:gap-x-12">
+      <lgw-quadrille-paper
+        class="flex-1/3 p-8 drop-shadow-xl"
+        hasBorder
+      >
+        <div class="flex flex-1 flex-col">
+          <fa-icon
+            [icon]="faBoltLightning"
+            size="3x"
+          />
+          <h3 class="mt-6 mb-3 text-3xl font-medium">Maßstabsgetreue Plots</h3>
+          <p>
+            Die vom Plotter erzeugten Graphen sind maßstabsgetreu auf 5x5 mm
+            Karopapier. Ideal für Schüler:innen zum Nachmessen.
+          </p>
+        </div>
+      </lgw-quadrille-paper>
+      <lgw-quadrille-paper
+        class="flex-1/3 p-8 drop-shadow-xl"
+        hasBorder
+      >
+        <div class="flex flex-1 flex-col">
+          <fa-icon
+            [icon]="faStar"
+            size="3x"
+          />
+          <h3 class="mt-6 mb-3 text-3xl font-medium">Funktionen</h3>
+          <p>
+            Beliebig viele Schaubilder pro Word-Dokument. Beliebig viele
+            Graphen, Punkte, Flächen und Linien pro Schaubild in
+            unterschiedlichen Farben.
+          </p>
+        </div>
+      </lgw-quadrille-paper>
+      <lgw-quadrille-paper
+        class="flex-1/3 p-8 drop-shadow-xl"
+        hasBorder
+      >
+        <div class="flex flex-1 flex-col">
+          <fa-icon
+            [icon]="faLightbulb"
+            size="3x"
+          />
+          <h3 class="mt-6 mb-3 text-3xl font-medium">Das gewisse Extra</h3>
+          <p>
+            Erstelle Schrägbilder, Spiegelachsen oder Punktspiegelungen. Und mit
+            einem Schalter kannst Du zwischen Arbeitsblatt und Lösungsblatt
+            umschalten.
+          </p>
+        </div>
+      </lgw-quadrille-paper>
+    </div>
+  </ng-template>
+</lgw-section>
+
+<lgw-section variant="quadrille paper">
+  <ng-template lgwSectionHandwritten>
+    <lgw-handwritten>So benutzt Du LehrGrapht</lgw-handwritten>
+  </ng-template>
+  <ng-template lgwSectionHeadline>
+    <h2>Von der Idee zum Arbeitsblatt.</h2>
+  </ng-template>
+  <ng-template lgwSectionContent>
+    <div class="grid grid-cols-1 gap-12 lg:grid-cols-3">
+      <div class="flex flex-col gap-y-8">
+        <div>
+          <img
+            class="w-auto -rotate-1 rounded-2xl drop-shadow-xl lg:-rotate-2"
+            src="images/plot-liste.png"
+            alt="Plot Liste"
+          />
+        </div>
+        <div class="flex flex-col items-center gap-y-4 sm:order-1">
+          <div
+            class="flex h-10 w-10 items-center justify-center rounded-full bg-black text-xl text-white"
+          >
+            1
+          </div>
+
+          <h3 class="text-2xl font-medium">Plot-Liste</h3>
+          <p class="text-center">
+            LehrGrapht zeigt Dir eine Liste aller im Dokument erkannter Plots
+            an, sodass Du diese editieren und anpassen kannst. Und falls Du
+            einen nicht mehr benötigst, kannst Du ihn ganz komfortabel auch
+            wieder löschen.
+          </p>
+        </div>
+      </div>
+      <div class="flex flex-col gap-y-8">
+        <div>
+          <img
+            class="w-auto rotate-1 rounded-2xl drop-shadow-xl lg:rotate-2"
+            src="images/plot-editor.png"
+            alt="Plot Liste"
+          />
+        </div>
+        <div class="flex flex-col items-center gap-y-4 sm:order-1">
+          <div
+            class="flex h-10 w-10 items-center justify-center rounded-full bg-black text-xl text-white"
+          >
+            2
+          </div>
+
+          <h3 class="text-2xl font-medium">Plot-Editor</h3>
+          <p class="text-center">
+            Der Plot-Editor erlaubt Dir, einen neuen Plot im Word-Dokument
+            einzufügen. Du kannst hierbei beliebig viele Graphen pro Schaubild
+            erzeugen oder auch Punkte einzeichnen lassen. Der Wertebereich gibt
+            an, in welchen Grenzen die Graphen/Punkte angezeigt werden.
+          </p>
+        </div>
+      </div>
+      <div class="flex flex-col gap-y-8">
+        <div>
+          <img
+            class="w-auto -rotate-1 rounded-2xl drop-shadow-xl lg:-rotate-2"
+            src="images/schraffur.png"
+            alt="Plot Hub"
+          />
+        </div>
+        <div class="flex flex-col items-center gap-y-4 sm:order-1">
+          <div
+            class="flex h-10 w-10 items-center justify-center rounded-full bg-black text-xl text-white"
+          >
+            3
+          </div>
+
+          <h3 class="text-center text-2xl font-medium">
+            Punkt, Punkt, Komma - Strich
+          </h3>
+          <p class="text-center">
+            Ob durchgezogen oder gestrichelt, ob schraffiert oder ausgefüllt;
+            Punkte und Farbe, all das bestimmt Du selbst für Deine Plots.
+          </p>
+        </div>
       </div>
     </div>
+  </ng-template>
+</lgw-section>
 
-    <div
-      class="grid grid-cols-1 gap-y-12 drop-shadow-xl sm:grid-cols-3 sm:gap-x-12"
-    >
-      <video
-        class="mx-auto h-auto sm:order-2"
-        autoplay
-        loop
-        muted
-        src="images/interaktiver-modus.mp4"
-      ></video>
-      <div class="col-span-2 flex flex-col space-y-4 sm:order-1">
-        <h3 class="text-2xl font-bold">Interaktiver Modus</h3>
-        <p>
-          Im interaktiven Modus kannst Du für Flächen, Punkte und Linien einfach
-          in den Plot klicken, um die Punkte zu bestimmen.
-        </p>
-      </div>
+<lgw-section headerSide="left">
+  <ng-template lgwSectionHandwritten>
+    <lgw-handwritten>Klingt gut, oder?</lgw-handwritten>
+  </ng-template>
+  <ng-template lgwSectionHeadline>
+    <h2>So könnte Dein Arbeitsblatt aussehen.</h2>
+  </ng-template>
+  <ng-template lgwSectionContent>
+    Mehrere Plots auf einer Seite, jeweils editierbar. LehrGrapht erkennt sie
+    wieder, wenn Du sie später anpassen willst.
+  </ng-template>
+  <ng-template lgwSectionSideContent>
+    <img
+      class="rounded-2xl drop-shadow-xl"
+      src="images/word-beispiel.png"
+      alt="LehrGrapht in Word"
+    />
+  </ng-template>
+</lgw-section>
+<lgw-section
+  headerSide="right"
+  variant="quadrille paper"
+>
+  <ng-template lgwSectionHandwritten>
+    <lgw-handwritten>Keine Zeit alles zu tippen?</lgw-handwritten>
+  </ng-template>
+  <ng-template lgwSectionHeadline>
+    <h2>Interaktiver Modus.</h2>
+  </ng-template>
+  <ng-template lgwSectionContent>
+    <div class="flex flex-col gap-4">
+      <p>
+        Im interaktiven Modus kannst Du für Flächen, Punkte und Linien einfach
+        in den Plot klicken, um die Punkte zu bestimmen.
+      </p>
+      <p>
+        Bei Funktionen kannst Du mit zwei Punkten automatisch die Gerade
+        berechnen lassen. Bei drei Punkten wird mittels der
+        Lagrange-Interpolation eine Parabel berechnet.
+      </p>
     </div>
+  </ng-template>
+  <ng-template lgwSectionSideContent>
+    <video
+      class="mx-auto rounded-2xl drop-shadow-xl"
+      autoplay
+      loop
+      muted
+      src="videos/interaktiver-modus.mp4"
+    ></video>
+  </ng-template>
+</lgw-section>
+<lgw-section headerSide="left">
+  <ng-template lgwSectionHandwritten>
+    <lgw-handwritten>Alles senkrecht oder was?</lgw-handwritten>
+  </ng-template>
+  <ng-template lgwSectionHeadline>
+    <h2>Schrägbilder.</h2>
+  </ng-template>
+  <ng-template lgwSectionContent>
+    Mit einem Klick kannst Du aus einer beliebigen Fläche ein Schrägbild
+    erzeugen lassen. Wie tief und in welche Richtung das Bild erzeugt wird,
+    bestimmt Du selbst.
+  </ng-template>
+  <ng-template lgwSectionSideContent>
+    <video
+      class="mx-auto rounded-2xl drop-shadow-xl"
+      autoplay
+      loop
+      muted
+      src="videos/schraegbild.mp4"
+    ></video>
+  </ng-template>
+</lgw-section>
+<lgw-section
+  headerSide="right"
+  variant="quadrille paper"
+>
+  <ng-template lgwSectionHandwritten>
+    <lgw-handwritten>Arbeitsblatt?</lgw-handwritten>
+  </ng-template>
+  <ng-template lgwSectionHeadline>
+    <h2>Lösungsblatt!</h2>
+  </ng-template>
+  <ng-template lgwSectionContent>
+    <div class="flex flex-col gap-4">
+      <p>
+        Bei Polygonen, Linien, Flächen und Spiegelungen kannst Du Elemente als
+        "Lösung" markieren. Diese Elemente werden dann im Plot nicht gezeichnet,
+        sodass Du Deinen Schüler:innen ein Arbeitsblatt austeilen kannst.
+      </p>
+      <p>
+        Aber mit einem Klick kann LehrGrapht Dir in allen Plots im Dokument die
+        Lösung einzeichnen, sodass Du Dir selbst ein Lösungsblatt erstellen
+        kannst.
+      </p>
+    </div>
+  </ng-template>
+  <ng-template lgwSectionSideContent>
+    <video
+      class="mx-auto rounded-2xl drop-shadow-xl"
+      autoplay
+      loop
+      muted
+      src="videos/loesungsblatt.mp4"
+    ></video>
+  </ng-template>
+</lgw-section>
+<lgw-section headerSide="left">
+  <ng-template lgwSectionHandwritten>
+    <lgw-handwritten>Spieglein, Spieglein an der Wand...</lgw-handwritten>
+  </ng-template>
+  <ng-template lgwSectionHeadline>
+    <h2>Punkt- &amp; Achsspiegelung.</h2>
+  </ng-template>
+  <ng-template lgwSectionContent>
+    Mit LehrGrapht kannst Du ganz einfach eine Punkt- oder Achsspiegelung im
+    Plot setzen. Bestehende Punkte, Polygone, Linien und Flächen werden
+    gespiegelt; Funktionen natürlich nicht.
+  </ng-template>
+  <ng-template lgwSectionSideContent>
+    <video
+      class="mx-auto rounded-2xl drop-shadow-xl"
+      autoplay
+      loop
+      muted
+      src="videos/spiegelung.mp4"
+    ></video>
+  </ng-template>
+</lgw-section>
+<lgw-section variant="quadrille paper">
+  <ng-template lgwSectionHandwritten>
+    <lgw-handwritten>Was ist drin?</lgw-handwritten>
+  </ng-template>
+  <ng-template lgwSectionHeadline>
+    <h2>Featureübersicht.</h2>
+  </ng-template>
+  <ng-template lgwSectionContent>
+    <div class="flex flex-col gap-4">
+      <p>Hier findest Du eine Übersicht über alles, was LehrGrapht kann.</p>
 
-    <div class="space-y-4">
-      <a id="word-for-web"><h2 class="text-2xl font-bold">Word for Web</h2></a>
+      <ul class="flex flex-col gap-1">
+        <li class="flex items-center gap-2">
+          <span
+            class="bg-brand mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full"
+          ></span>
+          <span>Liste aller Plots im Dokument</span>
+        </li>
+        <li class="flex items-center gap-2">
+          <span
+            class="bg-brand mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full"
+          ></span>
+          <span>Maßstabsgetreue Erstellung von Plots</span>
+        </li>
+        <li class="flex items-center gap-2">
+          <span
+            class="bg-brand mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full"
+          ></span>
+          <span>Funktionen (z.B. Geraden, Parabeln, Sinus/Cosinus, ...)</span>
+        </li>
+        <li class="flex items-center gap-2">
+          <span
+            class="bg-brand mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full"
+          ></span>
+          <span
+            >Anzeige von Legenden (<code>y=</code> oder
+            <code>f(x)=</code>)</span
+          >
+        </li>
+        <li class="flex items-center gap-2">
+          <span
+            class="bg-brand mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full"
+          ></span>
+          <span>Punkte</span>
+        </li>
+        <li class="flex items-center gap-2">
+          <span
+            class="bg-brand mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full"
+          ></span>
+          <span>Linien: gestrichelt und durchgezogen</span>
+        </li>
+        <li class="flex items-center gap-2">
+          <span
+            class="bg-brand mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full"
+          ></span>
+          <span>Flächen: Umriss, schraffiert oder ausgefüllt</span>
+        </li>
+        <li class="flex items-center gap-2">
+          <span
+            class="bg-brand mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full"
+          ></span>
+          <span>Schrägbilder</span>
+        </li>
+        <li class="flex items-center gap-2">
+          <span
+            class="bg-brand mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full"
+          ></span>
+          <span>Punkt- und Achsenspiegelung</span>
+        </li>
+        <li class="flex items-center gap-2">
+          <span
+            class="bg-brand mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full"
+          ></span>
+          <span
+            >Interaktiver Modus zum schnellen Erstellen von Flächen, Linien und
+            Punkten</span
+          >
+        </li>
+        <li class="flex items-center gap-2">
+          <span
+            class="bg-brand mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full"
+          ></span>
+          <span>Erstellung von Arbeitsblättern und Lösungsblättern</span>
+        </li>
+        <li class="flex items-center gap-2">
+          <span
+            class="bg-brand mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full"
+          ></span>
+          <span
+            >Verschiedene Einstellungen für Grenzen, Achsen oder
+            Schrittweite</span
+          >
+        </li>
+      </ul>
+    </div>
+  </ng-template>
+</lgw-section>
+
+<lgw-section>
+  <ng-template lgwSectionHandwritten>
+    <lgw-handwritten>Hier musst Du aufpassen!</lgw-handwritten>
+  </ng-template>
+  <ng-template lgwSectionHeadline>
+    <h2>Word for Web.</h2>
+  </ng-template>
+  <ng-template lgwSectionContent>
+    <div class="flex flex-col gap-4">
       <p>
         LehrGrapht wurde für die Desktop-Versionen von Word entwickelt, die auf
-        Windows, macOS oder iPad laufen. Du kannst LehrGrapht auch in Word for
-        Web benutzen, allerdings mit einer Einschränkung: Wenn Du die
+        Windows, macOS oder iPad laufen. Du kannst LehrGrapht auch in
+        <strong>Word for Web</strong>
+        benutzen, allerdings mit einer Einschränkung: Wenn Du die
         Textumbruch-Option veränderst und "Hinter dem Text" oder "Vor dem Text"
         nutzt, dann wird LehrGrapht den Plot nicht mehr zum Editieren erkennen
         können. Du siehst den Plot dann auch nicht mehr in der Liste aller Plots
@@ -154,101 +445,187 @@
         erkennen und editieren. Alternativ kannst Du natürlich den Plot mit
         einer anderen Layout-Option setzen, bspw. mit einer Tabelle.
       </p>
-      <p>
+      <p class="text-sm text-gray-400">
         Das ist leider eine technische Einschränkung seitens Microsoft. Sobald
         es sich ändert, wird LehrGrapht dahingehend verbessert.
       </p>
     </div>
+  </ng-template>
+</lgw-section>
 
+<lgw-section variant="quadrille paper">
+  <ng-template lgwSectionHandwritten>
+    <lgw-handwritten>Falls mal was nicht so funktioniert...</lgw-handwritten>
+  </ng-template>
+  <ng-template lgwSectionHeadline>
+    <h2 id="issues">Geplante Features & bekannte Fehler.</h2>
+  </ng-template>
+  <ng-template lgwSectionContent>
     <lgw-known-issues />
+  </ng-template>
+</lgw-section>
 
-    <div>
-      <a id="faq"
-        ><h2 class="text-2xl font-bold">Häufig gestellte Fragen</h2></a
+<lgw-section>
+  <ng-template lgwSectionHandwritten>
+    <lgw-handwritten>Fragen?</lgw-handwritten>
+  </ng-template>
+  <ng-template lgwSectionHeadline>
+    <h2>Gerne, hier sind die häufigsten.</h2>
+  </ng-template>
+  <ng-template lgwSectionContent>
+    <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+      <lgw-quadrille-paper
+        class="p-8 drop-shadow-xl"
+        hasBorder
       >
-      <dl class="mt-4">
-        <dt class="font-bold">
-          Welche Word-Versionen werden von LehrGrapht unterstützt?
-        </dt>
-        <dd>
-          LehrGrapht funktioniert auf allen Desktop-Varianten von Word (macOS,
-          Windows) und iPad. LehrGrapht funktioniert
-          <strong>eingeschränkt</strong> in der Web-Version von Word.
-        </dd>
-
-        <dt class="mt-4 font-bold">
-          Was unterscheidet LehrGraph von anderen Plottern, bspw. GeoGebra?
-        </dt>
-        <dd>
-          LehrGrapht ist maßstabsgetreu und generiert Plots für 5x5 mm
-          Karopapier, dass von den Schüler:innen nachgemessen werden kann.
-        </dd>
-
-        <dt class="mt-4 font-bold">Was kostet LehrGrapht?</dt>
-        <dd>
-          LehrGrapht ist kostenfrei und sogar Open Source auf
-          <lgs-github-link />! Der Entwickler freut sich jedoch über eine nette
-          E-Mail (<lgs-support-email-link />), eine kleine Spende via
-          <a href="https://ko-fi.com/BoundfoxStudios">
-            <fa-icon [icon]="faCoffee" />
-            <span class="pl-1 underline">Ko-Fi</span></a
-          >
-          oder einfach über das Weitererzählen an Deine Kolleg:innen!
-        </dd>
-
-        <dt class="mt-4 font-bold">
-          Was ist das für ein kryptischer Text im Feld "Alternativtext"?
-        </dt>
-        <dd>
-          Im Feld "Alternativtext" der Plots siehst einen für Dich kryptischen
-          Text wie <code>plot-7078a878-7039-4ddf-bcde-1089fc56b106</code>. Das
-          ist eine Identifikationsnummer für LehrGrapht, um die Einstellungen
-          für den Plot wieder zu finden, sodass Du ihn editieren kannst. Du
-          solltest dieses Feld am besten nicht verändern, sonst kann LehrGrapht
-          die Einstellungen zum Plot nicht mehr finden.
-        </dd>
-
-        <dt class="mt-4 font-bold">
-          Warum kann ich den Plot nicht anklicken und ihn dann direkt editieren?
-        </dt>
-        <dd>
-          Das ist leider eine technische Einschränkung seitens Microsoft. Ein
-          Add-In kann nicht erkennen, ob Du einen Plot selektiert hast. Daher
-          kann Dir LehrGrapht den Plot nicht direkt zum Editieren anbieten. Du
-          kannst aber jederzeit die Liste der Plots benutzen, um den Plot zu
-          editieren. Sobald es sich ändert, wird LehrGrapht dahingehend
-          verbessert.
-        </dd>
-
-        <dt class="mt-4 font-bold">Sammelt LehrGrapht Daten?</dt>
-        <dd>
-          Nein. LehrGrapht sammelt keinerlei Daten. Da LehrGrapht Open Source
-          ist, kannst Du dies auch jederzeit selbst nachprüfen. Du findest den
-          Source Code auf
-          <lgs-github-link />.
-        </dd>
-
-        <dt class="mt-4 font-bold">
-          Ich hab ein Problem, wohin kann ich mich wenden?
-        </dt>
-        <dd>
-          Du kannst bei Problemen entweder direkt einen Fehler bei
-          <lgs-github-link deepLink="issues" />
-          melden oder Du schreibst dem Entwickler eine E-Mail:
-          <lgs-support-email-link />
-        </dd>
-
-        <dt class="mt-4 font-bold">
-          Mir fehlt noch eine Funktion in LehrGrapht, was kann ich tun?
-        </dt>
-        <dd>
-          Falls Du noch Ideen für weitere Features in LehrGrapht hast, die Du
-          gerne hättest, kannst Du sie entweder auf
-          <lgs-github-link deepLink="issues" />
-          vorschlagen oder Du schreibst dem Entwickler eine E-Mail:
-          <lgs-support-email-link />
-        </dd>
-      </dl>
+        <div class="flex flex-1 flex-col">
+          <h3 class="mb-3 text-xl font-medium">
+            Welche Word-Versionen werden unterstützt?
+          </h3>
+          <p>
+            LehrGrapht funktioniert auf allen Desktop-Varianten von Word (macOS,
+            Windows) und iPad. LehrGrapht funktioniert
+            <strong>eingeschränkt</strong> in der Web-Version von Word.
+          </p>
+        </div>
+      </lgw-quadrille-paper>
+      <lgw-quadrille-paper
+        class="p-8 drop-shadow-xl"
+        hasBorder
+      >
+        <div class="flex flex-1 flex-col">
+          <h3 class="mb-3 text-xl font-medium">
+            Was unterscheidet LehrGraph von anderen Plottern, bspw. GeoGebra?
+          </h3>
+          <p>
+            LehrGrapht ist maßstabsgetreu und generiert Plots für
+            <span class="whitespace-nowrap">5x5 mm</span> Karopapier, dass von
+            den Schüler:innen nachgemessen werden kann.
+          </p>
+        </div>
+      </lgw-quadrille-paper>
+      <lgw-quadrille-paper
+        class="p-8 drop-shadow-xl"
+        hasBorder
+      >
+        <div class="flex flex-1 flex-col">
+          <h3 class="mb-3 text-xl font-medium">Was kostet LehrGrapht?</h3>
+          <p>
+            LehrGrapht ist kostenfrei und sogar Open Source auf
+            <lgs-github-link />! Der Entwickler freut sich jedoch über eine
+            nette E-Mail (<lgs-support-email-link />), eine kleine Spende via
+            <a href="https://ko-fi.com/BoundfoxStudios">
+              <fa-icon [icon]="faCoffee" />
+              <span class="pl-1 underline">Ko-Fi</span></a
+            >
+            oder einfach über das Weitererzählen an Deine Kolleg:innen!
+          </p>
+        </div>
+      </lgw-quadrille-paper>
+      <lgw-quadrille-paper
+        class="p-8 drop-shadow-xl"
+        hasBorder
+      >
+        <div class="flex flex-1 flex-col">
+          <h3 class="mb-3 text-xl font-medium">
+            Was ist das für ein kryptischer Text im Feld "Alternativtext"?
+          </h3>
+          <p>
+            Im Feld "Alternativtext" der Plots siehst einen für Dich kryptischen
+            Text wie <code>plot-7078a878-7039-4ddf-bcde-1089fc56b106</code>. Das
+            ist eine Identifikationsnummer für LehrGrapht, um die Einstellungen
+            für den Plot wieder zu finden, sodass Du ihn editieren kannst. Du
+            solltest dieses Feld am besten nicht verändern, sonst kann
+            LehrGrapht die Einstellungen zum Plot nicht mehr finden.
+          </p>
+        </div>
+      </lgw-quadrille-paper>
+      <lgw-quadrille-paper
+        class="p-8 drop-shadow-xl"
+        hasBorder
+      >
+        <div class="flex flex-1 flex-col">
+          <h3 class="mb-3 text-xl font-medium">
+            Warum kann ich den Plot nicht anklicken und ihn dann direkt
+            editieren?
+          </h3>
+          <p>
+            Das ist leider eine technische Einschränkung seitens Microsoft. Ein
+            Add-In kann nicht erkennen, ob Du einen Plot selektiert hast. Daher
+            kann Dir LehrGrapht den Plot nicht direkt zum Editieren anbieten. Du
+            kannst aber jederzeit die Liste der Plots benutzen, um den Plot zu
+            editieren. Sobald es sich ändert, wird LehrGrapht dahingehend
+            verbessert.
+          </p>
+        </div>
+      </lgw-quadrille-paper>
+      <lgw-quadrille-paper
+        class="p-8 drop-shadow-xl"
+        hasBorder
+      >
+        <div class="flex flex-1 flex-col">
+          <h3 class="mb-3 text-xl font-medium">
+            Meine Kolleg:in nutzt kein LehrGrapht, kann ich ihr dennoch mein
+            Arbeitsblatt schicken?
+          </h3>
+          <p>
+            Ja! Die von LehrGrapht erzeugten Plots sind im Word-Dokument einfach
+            nur ein Bild. Daher kannst Du das Arbeitsblatt an auch Kolleg:innen
+            schicken, die kein LehrGrapht verwenden. Sie können es sich dennoch
+            ansehen, aber nicht bearbeiten.
+          </p>
+          <p class="mt-2">
+            Kleiner Tipp: Gib den Kolleg:innen einfach den Link zu LehrGrapht.
+            <fa-icon [icon]="faFaceSmile" />
+          </p>
+        </div>
+      </lgw-quadrille-paper>
+      <lgw-quadrille-paper
+        class="p-8 drop-shadow-xl"
+        hasBorder
+      >
+        <div class="flex flex-1 flex-col">
+          <h3 class="mb-3 text-xl font-medium">Sammelt LehrGrapht Daten?</h3>
+          <p>
+            Nein. LehrGrapht sammelt keinerlei Daten. Da LehrGrapht Open Source
+            ist, kannst Du dies auch jederzeit selbst nachprüfen. Du findest den
+            Source Code auf <lgs-github-link />.
+          </p>
+        </div>
+      </lgw-quadrille-paper>
+      <lgw-quadrille-paper
+        class="p-8 drop-shadow-xl"
+        hasBorder
+      >
+        <div class="flex flex-1 flex-col">
+          <h3 class="mb-3 text-xl font-medium">
+            Ich hab ein Problem, wohin kann ich mich wenden?
+          </h3>
+          <p>
+            Du kannst bei Problemen entweder direkt einen Fehler bei
+            <lgs-github-link deepLink="issues" />
+            melden oder Du schreibst dem Entwickler eine E-Mail:
+            <lgs-support-email-link />
+          </p>
+        </div>
+      </lgw-quadrille-paper>
+      <lgw-quadrille-paper
+        class="p-8 drop-shadow-xl"
+        hasBorder
+      >
+        <div class="flex flex-1 flex-col">
+          <h3 class="mb-3 text-xl font-medium">
+            Ich hätte da noch eine Idee...
+          </h3>
+          <p>
+            Prima! Falls Du noch Ideen für weitere Features in LehrGrapht hast,
+            die Du gerne hättest, kannst Du sie entweder auf
+            <lgs-github-link deepLink="issues" />
+            vorschlagen oder Du schreibst dem Entwickler eine E-Mail:
+            <lgs-support-email-link />
+          </p>
+        </div>
+      </lgw-quadrille-paper>
     </div>
-  </div>
-</lgw-content-container>
+  </ng-template>
+</lgw-section>

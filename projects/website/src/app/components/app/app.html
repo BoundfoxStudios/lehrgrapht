@@ -1,63 +1,60 @@
-<header class="my-16 flex justify-center">
-  <h1 class="text-6xl font-bold">LehrGrapht</h1>
-</header>
-
-<nav class="flex justify-center">
-  <ul class="flex space-x-8">
-    <li>
-      <a
-        class="rounded-sm px-8 py-4"
-        [routerLinkActive]="['bg-brand', 'text-white']"
-        [routerLinkActiveOptions]="{ exact: true }"
-        [routerLink]="['/']"
-        >Start</a
-      >
-    </li>
-    <li>
-      <a
-        class="rounded-sm px-8 py-4"
-        [routerLinkActive]="['bg-brand', 'text-white']"
-        [routerLink]="['/changelog']"
-        >Versionshistorie</a
-      >
-    </li>
-    <li>
-      <a
-        class="rounded-sm px-8 py-4"
-        [routerLinkActive]="['bg-brand', 'text-white']"
-        [routerLink]="['/privacy-policy']"
-        >Datenschutzerklärung</a
-      >
-    </li>
-  </ul>
-</nav>
-
 <lgw-floating-scroll-to-top />
 
-<main class="my-12 flex-1">
+<main class="flex-1">
   <router-outlet />
 </main>
 
-<footer class="bg-dark mt-auto p-24 text-white">
+<footer class="bg-cream">
   <lgw-content-container>
-    <div class="flex flex-col space-y-4">
-      <h2 class="text-xl font-bold">Kontakt</h2>
-      <ul class="flex flex-col space-y-8">
-        <li class="flex space-x-12">
-          <h3 class="w-1/6 text-lg font-bold">Adresse</h3>
-          <p class="text-sm text-gray-400">
-            Boundfox Studios<br />
-            Fasaneriestr. 59<br />
-            66482 Zweibrücken
-          </p>
-        </li>
-        <li class="flex space-x-12">
-          <h3 class="w-1/6 text-lg font-bold">E-Mail</h3>
-          <p class="text-sm text-gray-400">
-            <lgs-support-email-link />
-          </p>
-        </li>
-      </ul>
+    <div class="flex flex-col-reverse justify-between gap-12 py-6 lg:flex-row">
+      <div class="flex flex-col gap-4">
+        <lgw-logo />
+        <p class="text-gray-400">
+          Boundfox Studios<br />
+          Flamingoweg 68<br />
+          70378 Stuttgart
+        </p>
+      </div>
+      <div class="grid grid-cols-2 gap-8 text-xs lg:grid-cols-3">
+        <div class="flex flex-col gap-4">
+          <h4 class="font-bold tracking-widest uppercase">LehrGrapht</h4>
+          <ul class="flex flex-col gap-1">
+            <li><a [routerLink]="['/changelog']">Versionshistorie</a></li>
+            <li>
+              <a
+                [routerLink]="['/']"
+                fragment="issues"
+                >Bekannte Fehler</a
+              >
+            </li>
+          </ul>
+        </div>
+        <div class="flex flex-col gap-4">
+          <h4 class="font-bold tracking-widest uppercase">Mehr</h4>
+          <ul class="flex flex-col gap-1">
+            <li><lgs-github-link [underline]="false" /></li>
+            <li>
+              <a href="https://ko-fi.com/BoundfoxStudios">
+                <fa-icon [icon]="faCoffee" /> Ko-Fi</a
+              >
+            </li>
+            <li><lgs-support-email-link [underline]="false" /></li>
+          </ul>
+        </div>
+        <div class="flex flex-col gap-4">
+          <h4 class="font-bold tracking-widest uppercase">Rechtliches</h4>
+          <ul class="flex flex-col gap-1">
+            <li><a [routerLink]="['/privacy-policy']">Datenschutz</a></li>
+            <li><a [routerLink]="['/imprint']">Impressum</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div
+      class="border-t-cream-line border-t py-6 text-center text-xs text-gray-400"
+    >
+      &copy; Boundfox Studios - Mit <fa-icon [icon]="faHeart" /> in Stuttgart
+      entwickelt.
     </div>
   </lgw-content-container>
 </footer>

@@ -35,14 +35,18 @@
             "outputMode": "server",
             "ssr": {
               "entry": "projects/website/src/server.ts"
-            }
+            },
+            "allowedCommonJsDependencies": [
+              "bottleneck/light.js",
+              "fast-content-type-parse"
+            ]
           },
           "configurations": {
             "production": {
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
+                  "maximumWarning": "800kB",
                   "maximumError": "1MB"
                 },
                 {
