@@ -112,6 +112,10 @@ export class PlotAnnotationsService {
     xValueMax: number,
     yValueMax: number,
   ): Partial<Annotations>[] {
+    if (!plot.showAxisArrows) {
+      return plot.showAxisLabels ? this.buildAxisLabels(plot) : [];
+    }
+
     const arrows: Partial<Annotations>[] = [
       {
         x: xValueMax,
@@ -140,30 +144,34 @@ export class PlotAnnotationsService {
     ];
 
     if (plot.showAxisLabels) {
-      arrows.push(
-        {
-          x: 0.1,
-          y: 1.01,
-          text: plot.axisLabelY || 'y',
-          showarrow: false,
-          yanchor: 'top',
-          xanchor: 'left',
-          xref: 'x',
-          yref: 'paper',
-        },
-        {
-          x: 1,
-          y: 0.55,
-          text: plot.axisLabelX || 'x',
-          showarrow: false,
-          yanchor: 'top',
-          xanchor: 'right',
-          xref: 'paper',
-          yref: 'y',
-        },
-      );
+      arrows.push(...this.buildAxisLabels(plot));
     }
 
     return arrows;
+  }
+
+  private buildAxisLabels(plot: Plot): Partial<Annotations>[] {
+    return [
+      {
+        x: 0.1,
+        y: 1.01,
+        text: plot.axisLabelY || 'y',
+        showarrow: false,
+        yanchor: 'top',
+        xanchor: 'left',
+        xref: 'x',
+        yref: 'paper',
+      },
+      {
+        x: 1,
+        y: 0.55,
+        text: plot.axisLabelX || 'x',
+        showarrow: false,
+        yanchor: 'top',
+        xanchor: 'right',
+        xref: 'paper',
+        yref: 'y',
+      },
+    ];
   }
 }

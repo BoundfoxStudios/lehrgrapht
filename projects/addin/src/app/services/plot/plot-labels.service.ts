@@ -42,7 +42,9 @@ export class PlotLabelsService {
       }
     }
 
-    if (edgeIdx === -1) return undefined;
+    if (edgeIdx === -1) {
+      return undefined;
+    }
 
     const outerIdx = fromStart ? edgeIdx - 1 : edgeIdx + 1;
     if (

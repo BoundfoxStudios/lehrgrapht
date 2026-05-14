@@ -15,6 +15,7 @@ export default tseslint.config(
       ...tseslint.configs.stylisticTypeChecked,
       ...tseslint.configs.strictTypeChecked,
       ...angular.configs.tsRecommended,
+      eslintConfigPrettier,
     ],
     processor: angular.processInlineTemplates,
     rules: {
@@ -45,6 +46,7 @@ export default tseslint.config(
           allowNumber: true,
         },
       ],
+      curly: 'error',
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': [
         'error',
@@ -59,12 +61,12 @@ export default tseslint.config(
     extends: [
       ...angular.configs.templateRecommended,
       ...angular.configs.templateAccessibility,
+      eslintConfigPrettier,
     ],
     rules: {
       '@angular-eslint/template/prefer-self-closing-tags': 'error',
     },
   },
-  eslintConfigPrettier,
   {
     languageOptions: {
       parserOptions: {

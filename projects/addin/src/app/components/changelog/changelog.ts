@@ -8,10 +8,17 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { Accordion } from '../accordion/accordion';
 import { AccordionPanel } from '../accordion/accordion-panel/accordion-panel';
 import { changelogData } from '@lehrgrapht/shared';
+import { ButtonDirective } from '../../ui/button/button.directive';
 
 @Component({
   selector: 'lg-changelog',
-  imports: [Header, ContentContainer, Accordion, AccordionPanel],
+  imports: [
+    Header,
+    ContentContainer,
+    Accordion,
+    AccordionPanel,
+    ButtonDirective,
+  ],
   templateUrl: './changelog.html',
   styleUrl: './changelog.css',
 })

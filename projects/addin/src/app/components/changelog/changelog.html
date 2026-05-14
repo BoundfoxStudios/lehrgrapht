@@ -17,7 +17,7 @@
       [title]="'Version ' + entry.version"
     >
       <lg-content-container>
-        <ul class="ml-4 list-disc space-y-1.5 text-sm text-gray-700">
+        <ul class="ml-4 list-disc gap-y-1.5 text-sm text-gray-700">
           @for (change of entry.changes; track change) {
             <li>{{ change }}</li>
           }
@@ -30,8 +30,9 @@
 <lg-content-container class="flex-col">
   <div class="pt-4">
     <button
-      class="app-button w-full"
+      class="w-full"
       (click)="proceed()"
+      lgButton
     >
       Weiter
     </button>

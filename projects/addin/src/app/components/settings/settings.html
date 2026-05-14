@@ -3,135 +3,134 @@
   title="Einstellungen"
 />
 
-<lg-content-container class="flex flex-col space-y-2">
-  <p>
-    Hier kannst Du Einstellungen tätigen, die sich auf neue Plots auswirken wird
-    oder wenn Du bestehende aktualisierst. Die Einstellungen sind zudem
-    dokumentübergreifend, d.h. im Idealfall stellst Du sie einmal ein, dass sie
-    für Deinen Geschmack und Drucker passen.
+<lg-content-container class="flex-col gap-y-3">
+  <p class="text-body text-xs leading-relaxed">
+    Hier kannst Du Einstellungen tätigen, die sich auf neue Plots auswirken oder
+    beim Aktualisieren bestehender. Die Einstellungen sind zudem
+    dokumentübergreifend — im Idealfall stellst Du sie einmal so ein, dass sie
+    zu Deinem Geschmack und Drucker passen.
   </p>
-  <p>Deine Änderungen werden sofort gespeichert.</p>
-</lg-content-container>
+  <p class="text-body-subtle text-2xs">
+    Deine Änderungen werden sofort gespeichert.
+  </p>
 
-<lg-accordion>
-  <lg-accordion-panel
-    [isExpanded]="true"
-    title="Linien"
-    persistenceId="settings-lines"
+  <!-- Linien -->
+  <section
+    class="border-default-medium rounded-base flex flex-col gap-3 border bg-white p-3"
   >
-    <lg-content-container class="flex flex-col space-y-4">
-      <div class="flex flex-1 flex-col">
-        <label
-          class="app-label"
-          for="zero-line-width"
-          >0-Linie Breite &amp; Farbe</label
-        >
-        <div class="flex items-center space-x-2">
-          <input
-            class="app-input"
-            id="zero-line-width"
-            [formField]="editorForm.zeroLineWidth"
-            type="number"
-            step="0.5"
-          />
-          <input
-            class="h-8 w-8 shrink-0 border-none"
-            [formField]="editorForm.zeroLineColor"
-            type="color"
-          />
-        </div>
-      </div>
-      <div class="flex flex-1 flex-col">
-        <label
-          class="app-label"
-          for="grid-line-width"
-          >Kästchen-Linie Breite &amp; Farbe</label
-        >
-        <div class="flex items-center space-x-2">
-          <input
-            class="app-input"
-            id="grid-line-width"
-            [formField]="editorForm.gridLineWidth"
-            type="number"
-            step="0.5"
-          />
-          <input
-            class="h-8 w-8 shrink-0 border-none"
-            [formField]="editorForm.gridLineColor"
-            type="color"
-          />
-        </div>
-      </div>
-      <div class="flex flex-1 flex-col">
-        <label
-          class="app-label"
-          for="plot-line-width"
-          >Graph-Linie Breite</label
-        >
-        <div class="flex items-center space-x-2">
-          <input
-            class="app-input"
-            id="plot-line-width"
-            [formField]="editorForm.plotLineWidth"
-            type="number"
-            step="0.5"
-          />
-        </div>
-      </div>
-    </lg-content-container>
-  </lg-accordion-panel>
-  <lg-accordion-panel
-    [isExpanded]="true"
-    title="Punkte"
-    persistenceId="settings-markers"
-  >
-    <lg-content-container class="flex flex-col space-y-4">
-      <div class="flex flex-1 flex-col">
-        <label
-          class="app-label"
-          for="marker-naming-scheme"
-          >Namensschema</label
-        >
-        <lg-dropdown
-          [formField]="editorForm.markerNamingScheme"
-          [options]="markerNamingSchemeOptions"
+    <div class="text-body-subtle text-2xs font-bold tracking-wider uppercase">
+      Linien
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label
+        class="text-heading mb-1 block text-sm font-medium"
+        for="zero-line-width"
+        >0-Linie · Breite &amp; Farbe</label
+      >
+      <div class="flex items-center gap-2">
+        <lg-input
+          class="flex-1"
+          id="zero-line-width"
+          [field]="editorForm.zeroLineWidth"
+          type="number"
+          step="0.5"
+        />
+        <input
+          class="h-10 w-10 shrink-0 cursor-pointer rounded border-none"
+          [formField]="editorForm.zeroLineColor"
+          type="color"
+          aria-label="0-Linie Farbe"
         />
       </div>
-    </lg-content-container>
-  </lg-accordion-panel>
-  <lg-accordion-panel
-    [isExpanded]="true"
-    title="Legende"
-    persistenceId="settings-legend"
-  >
-    <lg-content-container class="flex flex-col space-y-4">
-      <div class="flex flex-1 flex-col">
-        <label
-          class="app-label"
-          for="legend-label-format"
-          >Legendenformat</label
-        >
-        <lg-dropdown
-          [formField]="editorForm.legendLabelFormat"
-          [options]="legendLabelFormatOptions"
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label
+        class="text-heading mb-1 block text-sm font-medium"
+        for="grid-line-width"
+        >Kästchen-Linie · Breite &amp; Farbe</label
+      >
+      <div class="flex items-center gap-2">
+        <lg-input
+          class="flex-1"
+          id="grid-line-width"
+          [field]="editorForm.gridLineWidth"
+          type="number"
+          step="0.5"
+        />
+        <input
+          class="h-10 w-10 shrink-0 cursor-pointer rounded border-none"
+          [formField]="editorForm.gridLineColor"
+          type="color"
+          aria-label="Kästchen-Linie Farbe"
         />
       </div>
-    </lg-content-container>
-  </lg-accordion-panel>
-  <lg-accordion-panel
-    [isExpanded]="true"
-    persistenceId="settings-preview"
-    title="Vorschau"
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label
+        class="text-heading mb-1 block text-sm font-medium"
+        for="plot-line-width"
+        >Graph-Linie · Breite</label
+      >
+      <lg-input
+        id="plot-line-width"
+        [field]="editorForm.plotLineWidth"
+        type="number"
+        step="0.5"
+      />
+    </div>
+  </section>
+
+  <!-- Punkte -->
+  <section
+    class="border-default-medium rounded-base flex flex-col gap-3 border bg-white p-3"
   >
-    <div class="flex justify-center">
+    <div class="text-body-subtle text-2xs font-bold tracking-wider uppercase">
+      Punkte
+    </div>
+    <div class="flex flex-col gap-2">
+      <span class="text-heading mb-1 block text-sm font-medium"
+        >Namensschema</span
+      >
+      <lg-pill-switch
+        [options]="markerNamingSchemeOptions"
+        [formField]="editorForm.markerNamingScheme"
+        aria-label="Namensschema"
+      />
+    </div>
+  </section>
+
+  <!-- Legende -->
+  <section
+    class="border-default-medium rounded-base flex flex-col gap-3 border bg-white p-3"
+  >
+    <div class="text-body-subtle text-2xs font-bold tracking-wider uppercase">
+      Legende
+    </div>
+    <div class="flex flex-col gap-2">
+      <span class="text-heading mb-1 block text-sm font-medium">Format</span>
+      <lg-pill-switch
+        [options]="legendLabelFormatOptions"
+        [formField]="editorForm.legendLabelFormat"
+        aria-label="Legendenformat"
+      />
+    </div>
+  </section>
+
+  <!-- Vorschau -->
+  <section
+    class="border-default-medium rounded-base flex flex-col gap-3 border bg-white p-3"
+  >
+    <div class="text-body-subtle text-2xs font-bold tracking-wider uppercase">
+      Vorschau
+    </div>
+    <div class="flex justify-center gap-2">
       <lg-plot-preview
         [plot]="examplePlot1"
         [plotSettings]="editorModel()"
       />
-      <lg-plot-preview
-        [plot]="examplePlot2"
-        [plotSettings]="editorModel()"
-      />
     </div>
-  </lg-accordion-panel>
-</lg-accordion>
+  </section>
+</lg-content-container>

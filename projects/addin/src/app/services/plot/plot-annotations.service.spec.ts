@@ -17,8 +17,7 @@ const basePlot: Plot = {
   range: { x: { min: -3, max: 3 }, y: { min: -3, max: 3 } },
   fnx: [],
   markers: [],
-  areas: [],
-  lines: [],
+  polygons: [],
   showAxisLabels: true,
   showAxis: true,
   placeAxisLabelsInside: false,
@@ -27,6 +26,9 @@ const basePlot: Plot = {
   axisLabelX: 'x',
   axisLabelY: 'y',
   legendLabelFormat: 'none',
+  showAxisArrows: false,
+  gridStep: '1',
+  reflection: { kind: 'none' },
 };
 
 describe('PlotAnnotationsService', () => {
@@ -122,8 +124,39 @@ describe('PlotAnnotationsService', () => {
   });
 
   describe('buildArrows', () => {
-    it('should create x and y axis arrows', () => {
-      const arrows = service.buildArrows(basePlot, plotSettings, 5, 5);
+    it('returns empty when neither arrows nor labels are enabled', () => {
+      const plot: Plot = {
+        ...basePlot,
+        showAxisArrows: false,
+        showAxisLabels: false,
+      };
+      expect(service.buildArrows(plot, plotSettings, 5, 5)).toEqual([]);
+    });
+
+    it('returns labels only when showAxisArrows is false but showAxisLabels is true', () => {
+      const plot: Plot = {
+        ...basePlot,
+        showAxisArrows: false,
+        showAxisLabels: true,
+      };
+      const arrows = service.buildArrows(plot, plotSettings, 5, 5);
+      expect(arrows.length).toBe(2); // x-label + y-label, no arrow annotations
+      expect(arrows.every(a => a.showarrow === false)).toBe(true);
+    });
+
+    it('returns arrows and labels when both are enabled', () => {
+      const plot: Plot = {
+        ...basePlot,
+        showAxisArrows: true,
+        showAxisLabels: true,
+      };
+      const arrows = service.buildArrows(plot, plotSettings, 5, 5);
+      expect(arrows.length).toBe(4); // 2 arrows + 2 labels
+    });
+
+    it('should create x and y axis arrows when showAxisArrows is true', () => {
+      const plot: Plot = { ...basePlot, showAxisArrows: true };
+      const arrows = service.buildArrows(plot, plotSettings, 5, 5);
       expect(arrows.length).toBeGreaterThanOrEqual(2);
       expect(arrows[0].x).toBe(5);
       expect(arrows[0].y).toBe(0);
@@ -131,16 +164,10 @@ describe('PlotAnnotationsService', () => {
       expect(arrows[1].y).toBe(5);
     });
 
-    it('should add axis label annotations when showAxisLabels is true', () => {
-      const arrows = service.buildArrows(basePlot, plotSettings, 5, 5);
-      expect(arrows.length).toBe(4);
-      expect(arrows[2].text).toBe('y');
-      expect(arrows[3].text).toBe('x');
-    });
-
     it('should use custom axis labels', () => {
       const plot: Plot = {
         ...basePlot,
+        showAxisArrows: true,
         axisLabelX: 'Zeit',
         axisLabelY: 'Strecke',
       };
@@ -150,13 +177,18 @@ describe('PlotAnnotationsService', () => {
     });
 
     it('should not add axis label annotations when showAxisLabels is false', () => {
-      const plot: Plot = { ...basePlot, showAxisLabels: false };
+      const plot: Plot = {
+        ...basePlot,
+        showAxisArrows: true,
+        showAxisLabels: false,
+      };
       const arrows = service.buildArrows(plot, plotSettings, 5, 5);
       expect(arrows.length).toBe(2);
     });
 
     it('should use zeroLineColor for arrow color', () => {
-      const arrows = service.buildArrows(basePlot, plotSettings, 5, 5);
+      const plot: Plot = { ...basePlot, showAxisArrows: true };
+      const arrows = service.buildArrows(plot, plotSettings, 5, 5);
       expect(arrows[0].arrowcolor).toBe(plotSettings.zeroLineColor);
       expect(arrows[1].arrowcolor).toBe(plotSettings.zeroLineColor);
     });

@@ -6,6 +6,9 @@ export type LegendLabelFormat = 'none' | 'f(x)=' | 'y=';
 
 export type FunctionLineStyle = 'solid' | 'dashed';
 
+export type GridStep = '0.5' | '1';
+export type PolygonFillStyle = 'solid' | 'hatched' | 'outline';
+
 export interface MathFunction {
   fnx: string;
   color: string;
@@ -26,11 +29,22 @@ export type LabelPosition =
   | 'bottom right'
   | 'auto';
 
-export interface AreaPoint {
+export interface PolygonPoint {
   x: number;
   y: number;
   labelPosition: LabelPosition;
   labelText: string;
+}
+
+export interface Polygon {
+  points: PolygonPoint[];
+  connect: boolean;
+  lineColor: string;
+  fillColor: string | null;
+  lineStyle: FunctionLineStyle;
+  showPoints: boolean;
+  fillStyle: PolygonFillStyle;
+  isSolution: boolean;
 }
 
 export interface PlotSettings {
@@ -43,6 +57,28 @@ export interface PlotSettings {
   legendLabelFormat: LegendLabelFormat;
 }
 
+export interface ReflectionPoint {
+  x: number;
+  y: number;
+}
+
+export interface ReflectionAxis {
+  p1: { x: number; y: number };
+  p2: { x: number; y: number };
+}
+
+export type Reflection =
+  | { kind: 'none' }
+  | { kind: 'point'; point: ReflectionPoint; isSolution: boolean }
+  | {
+      kind: 'axis';
+      axis: ReflectionAxis;
+      isSolution: boolean;
+      color: string;
+      lineStyle: FunctionLineStyle;
+      extendBeyondPoints: boolean;
+    };
+
 export interface Plot {
   version: string;
   name: string;
@@ -53,19 +89,7 @@ export interface Plot {
     y: number;
     text: string;
   }[];
-  areas: {
-    points: AreaPoint[];
-    color: string;
-    showPoints: boolean;
-  }[];
-  lines: {
-    x1: number;
-    x2: number;
-    y1: number;
-    y2: number;
-    color: string;
-    lineStyle: FunctionLineStyle;
-  }[];
+  polygons: Polygon[];
   showAxisLabels: boolean;
   showAxis: boolean;
   placeAxisLabelsInside: boolean;
@@ -74,4 +98,7 @@ export interface Plot {
   axisLabelX: string;
   axisLabelY: string;
   legendLabelFormat: LegendLabelFormat;
+  showAxisArrows: boolean;
+  gridStep: GridStep;
+  reflection: Reflection;
 }

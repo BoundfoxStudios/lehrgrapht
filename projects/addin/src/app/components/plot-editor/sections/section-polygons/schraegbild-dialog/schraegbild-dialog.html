@@ -1,0 +1,59 @@
+<div
+  class="rounded-base flex w-88 max-w-full flex-col gap-3 bg-white p-4 shadow-xl"
+>
+  <h2
+    class="text-heading text-base font-semibold"
+    id="schraegbild-dialog-title"
+  >
+    Schrägbild erstellen
+  </h2>
+
+  <p class="text-body text-sm">
+    Aus „{{ data.polygonTitle }}" ein Schrägbild generieren.
+  </p>
+
+  <div class="flex flex-col gap-1.5">
+    <label
+      class="text-body-subtle text-2xs font-semibold"
+      for="schraegbild-depth"
+    >
+      Tiefe
+    </label>
+    <lg-input
+      id="schraegbild-depth"
+      [field]="schraegbildForm.depth"
+      [step]="step"
+      type="number"
+      autofocus
+    />
+  </div>
+
+  <div class="flex flex-col gap-1.5">
+    <span class="text-body-subtle text-2xs font-semibold">Richtung</span>
+    <lg-pill-switch
+      [options]="directionOptions"
+      [formField]="schraegbildForm.direction"
+      shape="pill"
+      aria-label="Richtung"
+    />
+  </div>
+
+  <div class="flex flex-wrap justify-end gap-2 pt-1">
+    <button
+      (click)="cancel()"
+      lgButton
+      variant="outline"
+      type="button"
+    >
+      Abbrechen
+    </button>
+    <button
+      [disabled]="hasErrors()"
+      (click)="confirm()"
+      lgButton
+      type="button"
+    >
+      Erstellen
+    </button>
+  </div>
+</div>

@@ -1,18 +1,38 @@
-import { Component, input } from '@angular/core';
+import {
+  booleanAttribute,
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  input,
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { faArrowCircleLeft } from '@fortawesome/free-solid-svg-icons';
+import {
+  faArrowLeft,
+  faCircleNotch,
+  faTriangleExclamation,
+} from '@fortawesome/free-solid-svg-icons';
+import { SolutionRenderService } from '../../services/solution-render.service';
+import { SolutionViewService } from '../../services/solution-view.service';
 
 @Component({
   selector: 'lg-header',
   imports: [RouterLink, FaIconComponent],
   templateUrl: './header.html',
   styleUrl: './header.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Header {
-  protected readonly faArrowCircleLeft = faArrowCircleLeft;
+  protected readonly faArrowLeft = faArrowLeft;
+  protected readonly faCircleNotch = faCircleNotch;
+  protected readonly faTriangleExclamation = faTriangleExclamation;
+
+  protected readonly solutionViewService = inject(SolutionViewService);
+  protected readonly solutionRenderService = inject(SolutionRenderService);
 
   readonly title = input.required<string>();
   readonly subtitle = input<string>();
   readonly backLink = input<unknown[]>();
+  readonly showLogo = input(false, { transform: booleanAttribute });
+  readonly loading = input(false);
 }

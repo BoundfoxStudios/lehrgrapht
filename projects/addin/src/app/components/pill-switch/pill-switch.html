@@ -1,0 +1,25 @@
+@for (group of groups(); track $index) {
+  <div class="flex gap-1">
+    @for (option of group; track option.value) {
+      @let active = option.value === value();
+      <button
+        class="focus-visible:ring-brand-medium flex-1 cursor-pointer border px-2 py-2.5 text-[11px] font-semibold whitespace-nowrap transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+        [class.rounded-base]="shape() === 'square'"
+        [class.rounded-full]="shape() === 'pill'"
+        [class.border-brand]="active"
+        [class.bg-brand-soft]="active"
+        [class.text-brand-strong]="active"
+        [class.border-default-medium]="!active"
+        [class.bg-white]="!active"
+        [class.text-body]="!active"
+        [disabled]="disabled()"
+        [attr.aria-checked]="active"
+        (click)="select(option)"
+        type="button"
+        role="radio"
+      >
+        {{ option.label }}
+      </button>
+    }
+  </div>
+}

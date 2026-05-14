@@ -1,0 +1,14 @@
+<label
+  class="flex-1 cursor-pointer"
+  [for]="inputId"
+>
+  <span class="text-heading block text-xs font-medium">{{ label() }}</span>
+  @if (sub(); as sub) {
+    <span class="text-body-subtle text-2xs block">{{ sub }}</span>
+  }
+</label>
+<lg-switch
+  [(value)]="value"
+  [disabled]="disabled()"
+  [inputId]="inputId"
+/>

@@ -3,10 +3,11 @@ import { Header } from '../header/header';
 import { ContentContainer } from '../content-container/content-container';
 import { Router } from '@angular/router';
 import { UserExperienceService } from '../../services/user-experience.service';
+import { ButtonDirective } from '../../ui/button/button.directive';
 
 @Component({
   selector: 'lg-word-for-web-notice',
-  imports: [Header, ContentContainer],
+  imports: [Header, ContentContainer, ButtonDirective],
   templateUrl: './word-for-web-notice.component.html',
   styleUrl: './word-for-web-notice.component.css',
 })

@@ -1,0 +1,23 @@
+<a
+  class="border-default-medium rounded-base hover:border-brand-medium flex min-h-19.5 flex-col gap-1.5 border bg-white p-2.5 text-left transition-colors"
+  [routerLink]="routerLink()"
+>
+  <div class="flex items-center justify-between">
+    <span
+      class="bg-brand-soft text-brand grid h-7 w-7 place-items-center rounded-md"
+      aria-hidden="true"
+    >
+      <fa-icon [icon]="icon()" />
+    </span>
+    @if (count() > 0) {
+      <span
+        class="bg-brand text-2xs inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 font-bold text-white"
+        >{{ count() }}</span
+      >
+    }
+  </div>
+  <div>
+    <div class="text-heading text-sm font-semibold">{{ title() }}</div>
+    <div class="text-body-subtle text-2xs mt-0.5">{{ subtitle() }}</div>
+  </div>
+</a>

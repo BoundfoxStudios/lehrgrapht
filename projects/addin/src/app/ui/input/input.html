@@ -1,0 +1,20 @@
+<input
+  class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body block w-full border px-3 py-2.5 text-sm shadow-xs transition-all duration-200 ease-in-out"
+  [formField]="field()"
+  [id]="id()"
+  [type]="type()"
+  [attr.step]="step()"
+  [placeholder]="placeholder()"
+  [attr.autocomplete]="autocomplete()"
+  [attr.autocorrect]="autocorrect()"
+  [attr.autocapitalize]="autocapitalize()"
+  [attr.spellcheck]="spellcheck()"
+  [lgAutofocus]="autofocus()"
+/>
+@if (errors().length > 0) {
+  <ul class="mt-2 text-xs text-red-600">
+    @for (error of errors(); track error) {
+      <li>{{ error.message }}</li>
+    }
+  </ul>
+}

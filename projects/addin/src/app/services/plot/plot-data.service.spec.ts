@@ -1,4 +1,4 @@
-import { AreaPoint, Plot, PlotSettings } from '../../models/plot';
+import { Plot, PlotSettings, Polygon, PolygonPoint } from '../../models/plot';
 import { PlotDataService } from './plot-data.service';
 import { PLOT_CONSTANTS } from './plot.types';
 
@@ -18,8 +18,7 @@ const basePlot: Plot = {
   range: { x: { min: -5, max: 5 }, y: { min: -5, max: 5 } },
   fnx: [],
   markers: [],
-  areas: [],
-  lines: [],
+  polygons: [],
   showAxisLabels: true,
   showAxis: true,
   placeAxisLabelsInside: false,
@@ -28,6 +27,9 @@ const basePlot: Plot = {
   axisLabelX: 'x',
   axisLabelY: 'y',
   legendLabelFormat: 'none',
+  showAxisArrows: false,
+  gridStep: '1',
+  reflection: { kind: 'none' },
 };
 
 describe('PlotDataService', () => {
@@ -143,77 +145,127 @@ describe('PlotDataService', () => {
     });
   });
 
-  describe('buildLineTraces', () => {
-    it('should return empty array when no lines', () => {
-      const result = service.buildLineTraces(basePlot, plotSettings);
+  describe('buildPolygonTraces', () => {
+    it('returns empty array when no polygons', () => {
+      const result = service.buildPolygonTraces(basePlot, plotSettings);
       expect(result).toEqual([]);
     });
 
-    it('should return one trace per line', () => {
+    it('renders an open polygon as a polyline without fill', () => {
       const plot: Plot = {
         ...basePlot,
-        lines: [
+        polygons: [
           {
-            x1: 0,
-            y1: 0,
-            x2: 1,
-            y2: 1,
-            color: '#ff0000',
+            points: [
+              { x: 0, y: 0, labelPosition: 'auto', labelText: '' },
+              { x: 1, y: 1, labelPosition: 'auto', labelText: '' },
+              { x: 2, y: 0, labelPosition: 'auto', labelText: '' },
+            ],
+            connect: false,
+            lineColor: '#ff0000',
+            fillColor: '#00ff00',
             lineStyle: 'solid',
-          },
-          {
-            x1: 2,
-            y1: 2,
-            x2: 3,
-            y2: 3,
-            color: '#00ff00',
-            lineStyle: 'solid',
+            showPoints: false,
+            fillStyle: 'solid',
+            isSolution: false,
           },
         ],
       };
-      const result = service.buildLineTraces(plot, plotSettings);
-      expect(result.length).toBe(2);
-      expect(result[0].x).toEqual([0, 1]);
-      expect(result[0].y).toEqual([0, 1]);
-      expect(result[0].line?.color).toBe('#ff0000');
+      const result = service.buildPolygonTraces(plot, plotSettings);
+      expect(result.length).toBe(1);
+      const trace = result[0];
+      expect(trace.fill).toBe('none');
+      expect(trace.line?.color).toBe('#ff0000');
+      expect(trace.x).toEqual([0, 1, 2]);
+      expect(trace.y).toEqual([0, 1, 0]);
     });
 
-    it('should use solid dash for solid lineStyle', () => {
+    it('renders a closed polygon with fill and closes the line', () => {
       const plot: Plot = {
         ...basePlot,
-        lines: [
+        polygons: [
           {
-            x1: 0,
-            y1: 0,
-            x2: 1,
-            y2: 1,
-            color: '#000',
+            points: [
+              { x: 0, y: 0, labelPosition: 'auto', labelText: '' },
+              { x: 1, y: 0, labelPosition: 'auto', labelText: '' },
+              { x: 0, y: 1, labelPosition: 'auto', labelText: '' },
+            ],
+            connect: true,
+            lineColor: '#000000',
+            fillColor: '#ff0000',
             lineStyle: 'solid',
+            showPoints: false,
+            fillStyle: 'solid',
+            isSolution: false,
           },
         ],
       };
-      const result = service.buildLineTraces(plot, plotSettings);
-      expect(result[0].line?.dash).toBe('solid');
+      const result = service.buildPolygonTraces(plot, plotSettings);
+      const trace = result[0];
+      expect(trace.fill).toBe('toself');
+      expect(trace.fillcolor).toBe('rgba(255, 0, 0, 0.7)');
+      expect(trace.line?.color).toBe('#000000');
+      expect(trace.line?.width).toBe(plotSettings.plotLineWidth);
+      const xs = trace.x as number[];
+      expect(xs.length).toBe(4);
+      expect(xs[0]).toBe(xs[3]);
     });
 
-    it('should use a custom px pattern for dashed lineStyle that divides the line length evenly', () => {
+    it('renders a closed polygon without fill as outline only', () => {
       const plot: Plot = {
         ...basePlot,
-        lines: [
+        polygons: [
           {
-            x1: 0,
-            y1: 0,
-            x2: 4,
-            y2: 0,
-            color: '#000',
+            points: [
+              { x: 0, y: 0, labelPosition: 'auto', labelText: '' },
+              { x: 1, y: 0, labelPosition: 'auto', labelText: '' },
+              { x: 0, y: 1, labelPosition: 'auto', labelText: '' },
+            ],
+            connect: true,
+            lineColor: '#0000ff',
+            fillColor: null,
+            lineStyle: 'solid',
+            showPoints: false,
+            fillStyle: 'outline',
+            isSolution: false,
+          },
+        ],
+      };
+      const result = service.buildPolygonTraces(plot, plotSettings);
+      const trace = result[0];
+      expect(trace.fill).toBe('none');
+      const xs = trace.x as number[];
+      expect(xs.length).toBe(4);
+      expect(xs[0]).toBe(xs[3]);
+    });
+
+    it('emits a dashed pattern over the full perimeter for dashed polygons', () => {
+      // 3-4-5 right triangle: perimeter = 3 + 4 + 5 = 12 units
+      const plot: Plot = {
+        ...basePlot,
+        polygons: [
+          {
+            points: [
+              { x: 0, y: 0, labelPosition: 'auto', labelText: '' },
+              { x: 4, y: 0, labelPosition: 'auto', labelText: '' },
+              { x: 4, y: 3, labelPosition: 'auto', labelText: '' },
+            ],
+            connect: true,
+            lineColor: '#000000',
+            fillColor: null,
             lineStyle: 'dashed',
+            showPoints: false,
+            fillStyle: 'solid',
+            isSolution: false,
           },
         ],
       };
-      const result = service.buildLineTraces(plot, plotSettings);
+      const result = service.buildPolygonTraces(plot, plotSettings);
       const dash = result[0].line?.dash as string;
       const match = /^([\d.]+)px,([\d.]+)px$/.exec(dash);
-      if (!match) throw new Error(`Unexpected dash pattern: ${dash}`);
+      if (!match) {
+        throw new Error(`Unexpected dash pattern: ${dash}`);
+      }
 
       const dashPx = parseFloat(match[1]);
       const gapPx = parseFloat(match[2]);
@@ -221,77 +273,134 @@ describe('PlotDataService', () => {
 
       const { dtick, mmPerTick, mmToInches, ppiBase } = PLOT_CONSTANTS;
       const pxPerUnit = (mmPerTick / dtick) * mmToInches * ppiBase;
-      const lineLengthPx = 4 * pxPerUnit;
-      const numPeriods = lineLengthPx / period;
+      const perimeterPx = 12 * pxPerUnit;
+      const numPeriods = perimeterPx / period;
 
       expect(numPeriods).toBeCloseTo(Math.round(numPeriods), 5);
     });
 
-    it('should fall back to "dash" for zero-length dashed lines', () => {
+    it('does not crash on an empty closed polygon', () => {
       const plot: Plot = {
         ...basePlot,
-        lines: [
+        polygons: [
           {
-            x1: 1,
-            y1: 1,
-            x2: 1,
-            y2: 1,
-            color: '#000',
-            lineStyle: 'dashed',
-          },
-        ],
-      };
-      const result = service.buildLineTraces(plot, plotSettings);
-      expect(result[0].line?.dash).toBe('dash');
-    });
-  });
-
-  describe('buildAreaTraces', () => {
-    it('should return empty array when no areas', () => {
-      const result = service.buildAreaTraces(basePlot, plotSettings);
-      expect(result).toEqual([]);
-    });
-
-    it('should create fill trace with closed polygon', () => {
-      const plot: Plot = {
-        ...basePlot,
-        areas: [
-          {
-            points: [
-              { x: 0, y: 0, labelPosition: 'auto', labelText: '' },
-              { x: 1, y: 0, labelPosition: 'auto', labelText: '' },
-              { x: 0, y: 1, labelPosition: 'auto', labelText: '' },
-            ],
-            color: '#ff0000',
+            points: [],
+            connect: true,
+            lineColor: '#000',
+            fillColor: null,
+            lineStyle: 'solid',
             showPoints: false,
+            fillStyle: 'solid',
+            isSolution: false,
           },
         ],
       };
-      const result = service.buildAreaTraces(plot, plotSettings);
-      expect(result.length).toBeGreaterThanOrEqual(1);
-      const trace = result[0];
-      const xArr = trace.x as number[];
-      expect(xArr.length).toBe(4);
-      expect(xArr[0]).toBe(xArr[3]);
+      expect(() =>
+        service.buildPolygonTraces(plot, plotSettings),
+      ).not.toThrow();
+      const result = service.buildPolygonTraces(plot, plotSettings);
+      expect(result.length).toBe(1);
+      expect(result[0].x).toEqual([]);
     });
 
-    it('should include area point marker traces when showPoints is true', () => {
+    it('includes point marker traces when showPoints is true', () => {
       const plot: Plot = {
         ...basePlot,
-        areas: [
+        polygons: [
           {
             points: [
               { x: 0, y: 0, labelPosition: 'auto', labelText: 'A' },
               { x: 1, y: 0, labelPosition: 'auto', labelText: 'B' },
               { x: 0, y: 1, labelPosition: 'auto', labelText: 'C' },
             ],
-            color: '#ff0000',
+            connect: true,
+            lineColor: '#000000',
+            fillColor: '#ff0000',
+            lineStyle: 'solid',
             showPoints: true,
+            fillStyle: 'solid',
+            isSolution: false,
           },
         ],
       };
-      const result = service.buildAreaTraces(plot, plotSettings);
+      const result = service.buildPolygonTraces(plot, plotSettings);
       expect(result.length).toBeGreaterThan(1);
+    });
+
+    describe('polygon fillStyle', () => {
+      it('emits no fill when fillStyle is outline, even on closed polygon', () => {
+        const plot: Plot = {
+          ...basePlot,
+          polygons: [
+            {
+              points: [
+                { x: 0, y: 0, labelPosition: 'auto', labelText: '' },
+                { x: 1, y: 0, labelPosition: 'auto', labelText: '' },
+                { x: 0, y: 1, labelPosition: 'auto', labelText: '' },
+              ],
+              connect: true,
+              lineColor: '#000',
+              fillColor: '#0f0',
+              lineStyle: 'solid',
+              showPoints: false,
+              fillStyle: 'outline',
+              isSolution: false,
+            },
+          ],
+        };
+        const [trace] = service.buildPolygonTraces(plot, plotSettings);
+        expect(trace.fill).toBe('none');
+      });
+
+      it('emits fillpattern when fillStyle is hatched on closed polygon', () => {
+        const plot: Plot = {
+          ...basePlot,
+          polygons: [
+            {
+              points: [
+                { x: 0, y: 0, labelPosition: 'auto', labelText: '' },
+                { x: 1, y: 0, labelPosition: 'auto', labelText: '' },
+                { x: 0, y: 1, labelPosition: 'auto', labelText: '' },
+              ],
+              connect: true,
+              lineColor: '#000',
+              fillColor: '#0f0',
+              lineStyle: 'solid',
+              showPoints: false,
+              fillStyle: 'hatched',
+              isSolution: false,
+            },
+          ],
+        };
+        const [trace] = service.buildPolygonTraces(plot, plotSettings);
+        expect(trace.fill).toBe('toself');
+        expect(
+          (trace as { fillpattern?: { shape: string } }).fillpattern?.shape,
+        ).toBe('/');
+      });
+
+      it('emits no fill on open polygon regardless of fillStyle', () => {
+        const plot: Plot = {
+          ...basePlot,
+          polygons: [
+            {
+              points: [
+                { x: 0, y: 0, labelPosition: 'auto', labelText: '' },
+                { x: 1, y: 1, labelPosition: 'auto', labelText: '' },
+              ],
+              connect: false,
+              lineColor: '#000',
+              fillColor: '#0f0',
+              lineStyle: 'solid',
+              showPoints: false,
+              fillStyle: 'solid',
+              isSolution: false,
+            },
+          ],
+        };
+        const [trace] = service.buildPolygonTraces(plot, plotSettings);
+        expect(trace.fill).toBe('none');
+      });
     });
   });
 
@@ -308,14 +417,19 @@ describe('PlotDataService', () => {
           },
         ],
         markers: [{ x: 1, y: 1, text: 'P' }],
-        lines: [
+        polygons: [
           {
-            x1: 0,
-            y1: 0,
-            x2: 1,
-            y2: 1,
-            color: '#000',
+            points: [
+              { x: 0, y: 0, labelPosition: 'auto', labelText: '' },
+              { x: 1, y: 1, labelPosition: 'auto', labelText: '' },
+            ],
+            connect: false,
+            lineColor: '#000',
+            fillColor: null,
             lineStyle: 'solid',
+            showPoints: false,
+            fillStyle: 'solid',
+            isSolution: false,
           },
         ],
       };
@@ -334,15 +448,154 @@ describe('PlotDataService', () => {
     });
   });
 
+  describe('buildReflectionTraces', () => {
+    it('returns empty array when reflection.kind === "none"', () => {
+      const result = service.buildReflectionTraces(basePlot, plotSettings);
+      expect(result).toEqual([]);
+    });
+
+    it('returns one marker trace for a reflection point', () => {
+      const plot: Plot = {
+        ...basePlot,
+        reflection: {
+          kind: 'point',
+          point: { x: 1, y: 2 },
+          isSolution: false,
+        },
+      };
+      const result = service.buildReflectionTraces(plot, plotSettings);
+      expect(result.length).toBe(1);
+      expect(result[0].mode).toBe('text+markers');
+      expect(result[0].x).toEqual([1]);
+      expect(result[0].y).toEqual([2]);
+    });
+
+    it('returns a line trace between p1 and p2 when extendBeyondPoints=false', () => {
+      const plot: Plot = {
+        ...basePlot,
+        reflection: {
+          kind: 'axis',
+          axis: { p1: { x: 0, y: 0 }, p2: { x: 1, y: 0 } },
+          isSolution: false,
+          color: '#ff0000',
+          lineStyle: 'solid',
+          extendBeyondPoints: false,
+        },
+      };
+      const result = service.buildReflectionTraces(plot, plotSettings);
+      expect(result.length).toBe(1);
+      expect(result[0].mode).toBe('lines');
+      expect(result[0].x).toEqual([0, 1]);
+      expect(result[0].y).toEqual([0, 0]);
+    });
+
+    it('returns empty array when extendBeyondPoints=false and the axis is degenerate', () => {
+      const plot: Plot = {
+        ...basePlot,
+        reflection: {
+          kind: 'axis',
+          axis: { p1: { x: 1, y: 1 }, p2: { x: 1, y: 1 } },
+          isSolution: false,
+          color: '#ff0000',
+          lineStyle: 'solid',
+          extendBeyondPoints: false,
+        },
+      };
+      expect(service.buildReflectionTraces(plot, plotSettings)).toEqual([]);
+    });
+
+    it('returns one line trace clipped to the range when extendBeyondPoints=true', () => {
+      const plot: Plot = {
+        ...basePlot,
+        reflection: {
+          kind: 'axis',
+          axis: { p1: { x: 0, y: 0 }, p2: { x: 1, y: 0 } },
+          isSolution: false,
+          color: '#ff0000',
+          lineStyle: 'solid',
+          extendBeyondPoints: true,
+        },
+      };
+      const result = service.buildReflectionTraces(plot, plotSettings);
+      expect(result.length).toBe(1);
+      expect(result[0].mode).toBe('lines');
+      expect(result[0].x).toEqual([basePlot.range.x.min, basePlot.range.x.max]);
+      expect(result[0].y).toEqual([0, 0]);
+    });
+
+    it('returns empty array when extendBeyondPoints=true and the axis is outside the range', () => {
+      const plot: Plot = {
+        ...basePlot,
+        reflection: {
+          kind: 'axis',
+          axis: { p1: { x: 100, y: 0 }, p2: { x: 100, y: 1 } },
+          isSolution: false,
+          color: '#ff0000',
+          lineStyle: 'solid',
+          extendBeyondPoints: true,
+        },
+      };
+      expect(service.buildReflectionTraces(plot, plotSettings)).toEqual([]);
+    });
+
+    it('uses axis.color for the line color', () => {
+      const plot: Plot = {
+        ...basePlot,
+        reflection: {
+          kind: 'axis',
+          axis: { p1: { x: 0, y: 0 }, p2: { x: 1, y: 0 } },
+          isSolution: false,
+          color: '#00ff00',
+          lineStyle: 'solid',
+          extendBeyondPoints: false,
+        },
+      };
+      const result = service.buildReflectionTraces(plot, plotSettings);
+      expect(result[0].line?.color).toBe('#00ff00');
+    });
+
+    it('uses solid dash for lineStyle=solid', () => {
+      const plot: Plot = {
+        ...basePlot,
+        reflection: {
+          kind: 'axis',
+          axis: { p1: { x: 0, y: 0 }, p2: { x: 1, y: 0 } },
+          isSolution: false,
+          color: '#ff0000',
+          lineStyle: 'solid',
+          extendBeyondPoints: false,
+        },
+      };
+      const result = service.buildReflectionTraces(plot, plotSettings);
+      expect(result[0].line?.dash).toBe('solid');
+    });
+
+    it('uses dash for lineStyle=dashed', () => {
+      const plot: Plot = {
+        ...basePlot,
+        reflection: {
+          kind: 'axis',
+          axis: { p1: { x: 0, y: 0 }, p2: { x: 1, y: 0 } },
+          isSolution: false,
+          color: '#ff0000',
+          lineStyle: 'dashed',
+          extendBeyondPoints: false,
+        },
+      };
+      const result = service.buildReflectionTraces(plot, plotSettings);
+      expect(result[0].line?.dash).toBe('dash');
+    });
+  });
+
   describe('calculateLabelPosition', () => {
-    const makePoint = (x: number, y: number): AreaPoint => ({
+    const makePoint = (x: number, y: number): PolygonPoint => ({
       x,
       y,
       labelPosition: 'auto',
       labelText: '',
     });
 
-    const triangle: AreaPoint[] = [
+    const triangle: PolygonPoint[] = [
       makePoint(0, 2),
       makePoint(-2, -1),
       makePoint(2, -1),
@@ -385,7 +638,7 @@ describe('PlotDataService', () => {
     });
 
     it('should handle all 8 directions', () => {
-      const square: AreaPoint[] = [
+      const square: PolygonPoint[] = [
         makePoint(1, 1),
         makePoint(-1, 1),
         makePoint(-1, -1),
@@ -416,6 +669,180 @@ describe('PlotDataService', () => {
       expect(service.calculateLabelPosition(makePoint(3, -3), square)).toBe(
         'bottom right',
       );
+    });
+  });
+
+  describe('mirrored polygons via showSolution', () => {
+    const polygon: Polygon = {
+      points: [
+        { x: 1, y: 1, labelPosition: 'auto', labelText: 'A' },
+        { x: 3, y: 1, labelPosition: 'auto', labelText: 'B' },
+      ],
+      connect: false,
+      lineColor: '#3737d0',
+      fillColor: null,
+      lineStyle: 'solid',
+      showPoints: false,
+      fillStyle: 'solid',
+      isSolution: false,
+    };
+
+    it('emits no mirrored trace when reflection.kind === "none"', () => {
+      const plot: Plot = { ...basePlot, polygons: [polygon] };
+      const original = service.buildPolygonTraces(plot, plotSettings, {
+        showSolution: true,
+      });
+      const withFalse = service.buildPolygonTraces(plot, plotSettings, {
+        showSolution: false,
+      });
+      expect(original.length).toBe(withFalse.length);
+    });
+
+    it('emits no mirrored trace when showSolution=false (with reflection defined)', () => {
+      const plot: Plot = {
+        ...basePlot,
+        polygons: [polygon],
+        reflection: {
+          kind: 'axis',
+          axis: { p1: { x: 0, y: 0 }, p2: { x: 1, y: 0 } },
+          isSolution: true,
+          color: '#ff0000',
+          lineStyle: 'solid',
+          extendBeyondPoints: false,
+        },
+      };
+      const baseline = service.buildPolygonTraces(
+        { ...basePlot, polygons: [polygon] },
+        plotSettings,
+        { showSolution: false },
+      );
+      const result = service.buildPolygonTraces(plot, plotSettings, {
+        showSolution: false,
+      });
+      expect(result.length).toBe(baseline.length);
+    });
+
+    it('emits one additional mirrored polygon trace when showSolution=true and reflection.isSolution=true', () => {
+      const plot: Plot = {
+        ...basePlot,
+        polygons: [polygon],
+        reflection: {
+          kind: 'axis',
+          axis: { p1: { x: 0, y: 0 }, p2: { x: 1, y: 0 } },
+          isSolution: true,
+          color: '#ff0000',
+          lineStyle: 'solid',
+          extendBeyondPoints: false,
+        },
+      };
+      const baseline = service.buildPolygonTraces(
+        { ...basePlot, polygons: [polygon] },
+        plotSettings,
+        { showSolution: false },
+      );
+      const result = service.buildPolygonTraces(plot, plotSettings, {
+        showSolution: true,
+      });
+      expect(result.length).toBe(baseline.length + 1);
+
+      const mirrored = result[result.length - 1];
+      expect(mirrored.x).toEqual([1, 3]);
+      expect(mirrored.y).toEqual([-1, -1]);
+    });
+
+    it('emits a mirrored polygon trace when reflection.isSolution=false regardless of showSolution', () => {
+      const plot: Plot = {
+        ...basePlot,
+        polygons: [polygon],
+        reflection: {
+          kind: 'axis',
+          axis: { p1: { x: 0, y: 0 }, p2: { x: 1, y: 0 } },
+          isSolution: false,
+          color: '#ff0000',
+          lineStyle: 'solid',
+          extendBeyondPoints: false,
+        },
+      };
+      const baseline = service.buildPolygonTraces(
+        { ...basePlot, polygons: [polygon] },
+        plotSettings,
+        { showSolution: false },
+      );
+
+      const previewResult = service.buildPolygonTraces(plot, plotSettings, {
+        showSolution: true,
+      });
+      expect(previewResult.length).toBe(baseline.length + 1);
+
+      const wordResult = service.buildPolygonTraces(plot, plotSettings, {
+        showSolution: false,
+      });
+      expect(wordResult.length).toBe(baseline.length + 1);
+    });
+  });
+
+  describe('mirrored markers via showSolution', () => {
+    const marker = { x: 2, y: 3, text: 'A' };
+
+    it('emits no mirrored trace when reflection.kind === "none"', () => {
+      const plot: Plot = { ...basePlot, markers: [marker] };
+      const result = service.buildMarkerTraces(plot, { showSolution: true });
+      expect(result.length).toBe(1);
+    });
+
+    it('emits no mirrored trace when showSolution=false (with reflection)', () => {
+      const plot: Plot = {
+        ...basePlot,
+        markers: [marker],
+        reflection: {
+          kind: 'point',
+          point: { x: 0, y: 0 },
+          isSolution: true,
+        },
+      };
+      const result = service.buildMarkerTraces(plot, { showSolution: false });
+      expect(result.length).toBe(1);
+    });
+
+    it('emits one additional mirrored marker trace with apostrophed labels when showSolution=true and reflection.isSolution=true', () => {
+      const plot: Plot = {
+        ...basePlot,
+        markers: [marker],
+        reflection: {
+          kind: 'point',
+          point: { x: 0, y: 0 },
+          isSolution: true,
+        },
+      };
+      const result = service.buildMarkerTraces(plot, { showSolution: true });
+      expect(result.length).toBe(2);
+
+      const mirrored = result[1];
+      expect(mirrored.x).toEqual([-2]);
+      expect(mirrored.y).toEqual([-3]);
+      expect(mirrored.text).toEqual(["A'"]);
+    });
+
+    it('emits a mirrored marker trace when reflection.isSolution=false regardless of showSolution', () => {
+      const plot: Plot = {
+        ...basePlot,
+        markers: [marker],
+        reflection: {
+          kind: 'point',
+          point: { x: 0, y: 0 },
+          isSolution: false,
+        },
+      };
+
+      const previewResult = service.buildMarkerTraces(plot, {
+        showSolution: true,
+      });
+      expect(previewResult.length).toBe(2);
+
+      const wordResult = service.buildMarkerTraces(plot, {
+        showSolution: false,
+      });
+      expect(wordResult.length).toBe(2);
     });
   });
 });

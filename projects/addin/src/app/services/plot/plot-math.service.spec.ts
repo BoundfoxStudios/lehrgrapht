@@ -9,8 +9,7 @@ const basePlot: Plot = {
   range: { x: { min: -5, max: 5 }, y: { min: -5, max: 5 } },
   fnx: [],
   markers: [],
-  areas: [],
-  lines: [],
+  polygons: [],
   showAxisLabels: true,
   showAxis: true,
   placeAxisLabelsInside: false,
@@ -19,6 +18,9 @@ const basePlot: Plot = {
   axisLabelX: 'x',
   axisLabelY: 'y',
   legendLabelFormat: 'none',
+  showAxisArrows: false,
+  gridStep: '1',
+  reflection: { kind: 'none' },
 };
 
 describe('PlotMathService', () => {

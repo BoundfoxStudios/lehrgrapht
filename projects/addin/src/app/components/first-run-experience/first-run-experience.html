@@ -1,6 +1,6 @@
 <lg-header title="Willkommen!" />
 
-<lg-content-container class="flex-col space-y-5">
+<lg-content-container class="flex-col gap-y-5">
   <div class="text-center">
     <h2 class="text-lg font-semibold text-gray-800">
       Willkommen zu LehrGrapht!
@@ -18,7 +18,7 @@
     />
   </div>
 
-  <ul class="space-y-2.5">
+  <ul class="gap-y-2.5">
     <li class="flex items-center gap-3 rounded-lg bg-gray-50 p-3">
       <span
         class="bg-brand/10 text-brand flex h-8 w-8 items-center justify-center rounded-full"
@@ -53,16 +53,35 @@
       >
         <fa-icon [icon]="faMapPin" />
       </span>
-      <span class="text-sm text-gray-700">Einzeichnen von Punkten</span>
+      <span class="text-sm text-gray-700"
+        >Einzeichnen von Punkten, Linien und Flächen</span
+      >
+    </li>
+    <li class="flex items-center gap-3 rounded-lg bg-gray-50 p-3">
+      <span
+        class="bg-brand/10 text-brand flex h-8 w-8 items-center justify-center rounded-full"
+      >
+        <fa-icon [icon]="faCube" />
+      </span>
+      <span class="text-sm text-gray-700">Erstellen von Schrägbildern</span>
+    </li>
+    <li class="flex items-center gap-3 rounded-lg bg-gray-50 p-3">
+      <span
+        class="bg-brand/10 text-brand flex h-8 w-8 items-center justify-center rounded-full"
+      >
+        <fa-icon [icon]="faLightbulb" />
+      </span>
+      <span class="text-sm text-gray-700">Ein-/Ausblenden von Lösungen</span>
     </li>
   </ul>
 
   <div class="pt-2">
     <button
-      class="app-button w-full"
+      class="w-full"
       (click)="proceed()"
+      lgButton
     >
-      Los geht's
+      Los geht's!
     </button>
   </div>
 </lg-content-container>
