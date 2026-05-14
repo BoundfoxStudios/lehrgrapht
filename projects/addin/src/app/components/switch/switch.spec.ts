@@ -87,7 +87,6 @@ describe('Switch', () => {
     const smallFixture = TestBed.createComponent(SmallHost);
     smallFixture.detectChanges();
     const button = queryButton(smallFixture);
-    expect(button.classList).toContain('lg-switch--small');
     expect(button.classList).toContain('h-4');
     expect(button.classList).toContain('w-7');
   });
@@ -96,6 +95,5 @@ describe('Switch', () => {
     const button = queryButton(fixture);
     expect(button.classList).toContain('h-5');
     expect(button.classList).toContain('w-9');
-    expect(button.classList).not.toContain('lg-switch--small');
   });
 });

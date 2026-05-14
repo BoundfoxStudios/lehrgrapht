@@ -12,7 +12,6 @@ export type SwitchSize = 'small' | 'medium';
   selector: 'lg-switch',
   imports: [],
   templateUrl: './switch.html',
-  styleUrl: './switch.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Switch implements FormValueControl<boolean> {
