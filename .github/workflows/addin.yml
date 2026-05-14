@@ -10,6 +10,8 @@ on:
       - 'manifest.xml'
       - 'package.json'
       - 'package-lock.json'
+      - '.github/workflows/addin.yml'
+      - '.github/actions/**'
   pull_request:
     paths: *paths
 
