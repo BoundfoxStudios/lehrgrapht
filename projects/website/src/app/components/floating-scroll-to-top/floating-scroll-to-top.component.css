@@ -1,5 +1,5 @@
 @reference 'tailwindcss';
 
 :host {
-  @apply fixed right-0 bottom-0 m-4;
+  @apply fixed right-0 bottom-0 z-50 m-4;
 }
