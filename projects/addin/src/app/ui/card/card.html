@@ -1,0 +1,41 @@
+<div
+  class="rounded-lg bg-white p-3 shadow-xs transition-shadow"
+  [class.border-2]="isNew()"
+  [class.border-brand]="isNew()"
+  [class.shadow-md]="isNew()"
+  [class.relative]="isNew()"
+  [class.border]="!isNew()"
+  [class.border-gray-200]="!isNew()"
+>
+  @if (isNew()) {
+    <span
+      class="bg-brand absolute -top-2.5 left-3 rounded-full px-2 py-0.5 text-[9px] font-bold tracking-wider text-white uppercase"
+      >NEU</span
+    >
+  }
+  <div
+    class="flex items-center justify-between"
+    [class.mb-3]="expanded()"
+  >
+    <button
+      class="flex flex-1 items-center gap-2 text-left"
+      [attr.aria-expanded]="expanded()"
+      [attr.aria-controls]="expanded() ? bodyId : null"
+      (click)="toggle()"
+      type="button"
+    >
+      <fa-icon
+        class="text-gray-400"
+        [icon]="expanded() ? faChevronDown : faChevronRight"
+      />
+      <ng-content select="[card-id]" />
+      <span class="text-body text-xs font-medium">{{ title() }}</span>
+    </button>
+    <ng-content select="[card-actions]" />
+  </div>
+  @if (expanded()) {
+    <div [id]="bodyId">
+      <ng-content />
+    </div>
+  }
+</div>

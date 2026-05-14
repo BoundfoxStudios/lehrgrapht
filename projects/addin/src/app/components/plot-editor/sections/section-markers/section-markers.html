@@ -1,0 +1,129 @@
+@let form = store.editorForm;
+@let markers = store.model().markers;
+
+<div class="flex flex-col gap-y-3 p-2">
+  @if (markers.length === 0) {
+    <lg-section-empty-state
+      [interactiveMode]="InteractiveMode.Marker"
+      (manualClick)="addManual()"
+      heading="Noch keine Punkte"
+      text="Markiere und beschrifte Punkte im Koordinatensystem."
+    >
+      <lg-section-markers-image />
+    </lg-section-empty-state>
+  } @else {
+    @if (markers.length >= 2) {
+      <div class="flex justify-end">
+        <button
+          (click)="toggleAll()"
+          lgButton
+          variant="outline"
+          size="small"
+          type="button"
+        >
+          {{ allCollapsed() ? 'Alle ausklappen' : 'Alle einklappen' }}
+        </button>
+      </div>
+    }
+    @for (control of form.markers; let index = $index; track index) {
+      <lg-card
+        [title]="markerTitle(markers[index], index)"
+        [expanded]="expandedSet().has(index)"
+        [isNew]="newItemIndex() === index"
+        (expandedChange)="store.toggleCardExpanded('markers', index)"
+        (cardFocusOut)="newItemIndex.set(null)"
+      >
+        <lg-id-pill
+          [index]="index"
+          card-id
+          prefix="P"
+        />
+        <div
+          class="flex items-center gap-2"
+          card-actions
+        >
+          <button
+            class="flex h-7 w-7 items-center justify-center rounded text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
+            (click)="store.removeMarker(index)"
+            type="button"
+            title="Punkt entfernen"
+          >
+            <fa-icon [icon]="faTrashCan" />
+          </button>
+        </div>
+
+        <div class="mb-2">
+          <label
+            class="mb-1 block text-xs text-gray-600"
+            [for]="'marker-text-' + index"
+            >Beschriftung</label
+          >
+          <lg-input
+            [field]="control.text"
+            [id]="'marker-text-' + index"
+            [autofocus]="newItemIndex() === index"
+            [spellcheck]="false"
+            type="text"
+            autocorrect="off"
+            autocomplete="off"
+            autocapitalize="off"
+            placeholder="z.B. P, A, ..."
+          />
+        </div>
+        <div class="flex gap-3">
+          <div class="flex-1">
+            <label
+              class="mb-1 block text-xs text-gray-600"
+              [for]="'marker-x-' + index"
+              >X</label
+            >
+            <lg-input
+              [field]="control.x"
+              [id]="'marker-x-' + index"
+              type="number"
+            />
+          </div>
+          <div class="flex-1">
+            <label
+              class="mb-1 block text-xs text-gray-600"
+              [for]="'marker-y-' + index"
+              >Y</label
+            >
+            <lg-input
+              [field]="control.y"
+              [id]="'marker-y-' + index"
+              type="number"
+            />
+          </div>
+        </div>
+      </lg-card>
+    }
+
+    <div class="flex gap-1.5">
+      <button
+        class="flex-[1.4]"
+        (click)="store.startInteractive(InteractiveMode.Marker)"
+        lgButton
+        size="cta"
+        type="button"
+      >
+        <fa-icon [icon]="faMousePointer" />
+        <span>Interaktiv</span>
+      </button>
+      <button
+        class="flex-1"
+        (click)="addManual()"
+        lgButton
+        variant="outline"
+        size="cta"
+        type="button"
+      >
+        <fa-icon [icon]="faPlusCircle" />
+        <span>Manuell</span>
+      </button>
+    </div>
+    <lg-section-hint>
+      Tipp: Im Interaktiv-Modus Punkte direkt im Plot setzen.
+    </lg-section-hint>
+  }
+</div>

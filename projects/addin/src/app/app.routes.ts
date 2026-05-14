@@ -1,6 +1,14 @@
 import { Routes } from '@angular/router';
 import { PlotList } from './components/plot-list/plot-list';
 import { PlotEditor } from './components/plot-editor/plot-editor';
+import { PlotEditorHub } from './components/plot-editor-hub/plot-editor-hub';
+import { SectionFnx } from './components/plot-editor/sections/section-fnx/section-fnx';
+import { SectionMarkers } from './components/plot-editor/sections/section-markers/section-markers';
+import { SectionPolygons } from './components/plot-editor/sections/section-polygons/section-polygons';
+import { SectionRange } from './components/plot-editor/sections/section-range/section-range';
+import { SectionReflection } from './components/plot-editor/sections/section-reflection/section-reflection';
+import { SectionSettings } from './components/plot-editor/sections/section-settings/section-settings';
+import { unsavedChangesGuard } from './components/plot-editor/unsaved-changes.guard';
 import { Info } from './components/info/info';
 import { FirstRunExperience } from './components/first-run-experience/first-run-experience';
 import { redirectToFirstRunExperience } from './components/first-run-experience/redirect-to-first-run-experience';
@@ -35,12 +43,45 @@ export const routes: Routes = [
         component: PlotList,
       },
       {
-        path: 'editor/:id',
-        component: PlotEditor,
+        path: 'editor',
+        pathMatch: 'full',
+        redirectTo: 'editor/new',
       },
       {
-        path: 'editor',
+        path: 'editor/:id',
         component: PlotEditor,
+        canDeactivate: [unsavedChangesGuard],
+        children: [
+          {
+            path: '',
+            pathMatch: 'full',
+            component: PlotEditorHub,
+          },
+          {
+            path: 'fnx',
+            component: SectionFnx,
+          },
+          {
+            path: 'markers',
+            component: SectionMarkers,
+          },
+          {
+            path: 'polygons',
+            component: SectionPolygons,
+          },
+          {
+            path: 'range',
+            component: SectionRange,
+          },
+          {
+            path: 'settings',
+            component: SectionSettings,
+          },
+          {
+            path: 'reflection',
+            component: SectionReflection,
+          },
+        ],
       },
       {
         path: 'info',

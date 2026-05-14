@@ -1,0 +1,293 @@
+@let form = store.editorForm;
+@let polygons = store.model().polygons;
+
+<div class="flex flex-col gap-y-3 p-2">
+  @if (polygons.length === 0) {
+    <lg-section-empty-state
+      [interactiveMode]="InteractiveMode.Polygon"
+      (manualClick)="addManual()"
+      heading="Noch keine Polygone / Flächen"
+      text="Platziere hier zwei oder mehr Punkte um daraus ein Polygon oder eine Fläche zu erstellen."
+    >
+      <lg-section-polygons-image />
+    </lg-section-empty-state>
+  } @else {
+    @if (polygons.length >= 2) {
+      <div class="flex justify-end">
+        <button
+          (click)="toggleAll()"
+          lgButton
+          variant="outline"
+          size="small"
+          type="button"
+        >
+          {{ allCollapsed() ? 'Alle ausklappen' : 'Alle einklappen' }}
+        </button>
+      </div>
+    }
+    @for (
+      control of form.polygons;
+      let polygonIndex = $index;
+      track polygonIndex
+    ) {
+      <lg-card
+        [title]="polygonTitle(polygons[polygonIndex], polygonIndex)"
+        [expanded]="expandedSet().has(polygonIndex)"
+        [isNew]="newItemIndex() === polygonIndex"
+        (expandedChange)="store.toggleCardExpanded('polygons', polygonIndex)"
+        (cardFocusOut)="newItemIndex.set(null)"
+        (mouseenter)="
+          store.setHoveredPolygon(
+            form.polygons.length > 1 ? polygonIndex : null
+          )
+        "
+        (mouseleave)="store.setHoveredPolygon(null)"
+      >
+        <lg-id-pill
+          [prefix]="polygonPrefix(polygons[polygonIndex])"
+          [index]="polygonIndex"
+          [color]="polygons[polygonIndex].lineColor"
+          card-id
+        />
+        <div
+          class="flex items-center gap-2"
+          card-actions
+        >
+          <label
+            class="text-body-subtle flex cursor-pointer items-center gap-1.5 text-xs"
+            [for]="'polygon-' + polygonIndex + '-is-solution'"
+          >
+            <span>Lösung</span>
+            <lg-switch
+              [value]="polygons[polygonIndex].isSolution"
+              [inputId]="'polygon-' + polygonIndex + '-is-solution'"
+              [ariaLabel]="
+                polygonTitle(polygons[polygonIndex], polygonIndex) +
+                ' als Lösung markieren'
+              "
+              (valueChange)="toggleIsSolution(polygonIndex)"
+              size="small"
+            />
+          </label>
+          <button
+            class="grid h-7 w-7 place-items-center rounded text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
+            [attr.aria-label]="
+              polygonTitle(polygons[polygonIndex], polygonIndex) + ' entfernen'
+            "
+            (click)="store.removePolygon(polygonIndex)"
+            type="button"
+            title="Polygon entfernen"
+          >
+            <fa-icon [icon]="faTrashCan" />
+          </button>
+        </div>
+
+        <div class="mb-2 flex flex-col gap-2">
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-body-subtle text-2xs font-semibold">Farben</span>
+            <div class="flex items-center gap-1.5">
+              <input
+                class="h-7 w-7 cursor-pointer rounded border-none"
+                [formField]="control.lineColor"
+                type="color"
+                title="Linienfarbe"
+                aria-label="Linienfarbe"
+              />
+              @if (
+                polygons[polygonIndex].connect &&
+                polygons[polygonIndex].points.length >= 3 &&
+                polygons[polygonIndex].fillStyle !== 'outline'
+              ) {
+                <input
+                  class="h-7 w-7 cursor-pointer rounded border-none"
+                  [value]="
+                    polygons[polygonIndex].fillColor ??
+                    polygons[polygonIndex].lineColor
+                  "
+                  (input)="
+                    onFillColorChange(polygonIndex, $any($event.target).value)
+                  "
+                  type="color"
+                  title="Füllfarbe"
+                  aria-label="Füllfarbe"
+                />
+              }
+            </div>
+          </div>
+          <div class="flex items-center justify-between">
+            <label
+              class="text-body-subtle text-2xs font-semibold"
+              [for]="'polygon-' + polygonIndex + '-show-points'"
+              >Punkte anzeigen</label
+            >
+            <input
+              class="h-4 w-4 cursor-pointer rounded border-gray-300"
+              [formField]="control.showPoints"
+              [id]="'polygon-' + polygonIndex + '-show-points'"
+              (change)="onShowPointsChange(polygonIndex, $event)"
+              type="checkbox"
+            />
+          </div>
+          @if (polygons[polygonIndex].points.length > 2) {
+            <div class="flex items-center justify-between">
+              <label
+                class="text-body-subtle text-2xs font-semibold"
+                [for]="'polygon-' + polygonIndex + '-connect'"
+                >Verbinden</label
+              >
+              <input
+                class="h-4 w-4 cursor-pointer rounded border-gray-300"
+                [formField]="control.connect"
+                [id]="'polygon-' + polygonIndex + '-connect'"
+                type="checkbox"
+              />
+            </div>
+          }
+          <div class="flex items-center justify-between">
+            <span class="text-body-subtle text-2xs font-semibold">Stil</span>
+            <lg-pill-switch
+              [options]="lineStyleOptions"
+              [formField]="control.lineStyle"
+              shape="pill"
+              aria-label="Linienstil"
+            />
+          </div>
+        </div>
+
+        @if (
+          polygons[polygonIndex].connect &&
+          polygons[polygonIndex].points.length >= 3
+        ) {
+          <div class="mb-2 flex items-center justify-between">
+            <span class="text-body-subtle text-2xs font-semibold">Füllung</span>
+            <lg-pill-switch
+              [options]="fillStyleOptions"
+              [formField]="control.fillStyle"
+              shape="pill"
+              aria-label="Füllung"
+            />
+          </div>
+        }
+
+        @if (polygons[polygonIndex].points.length < 3) {
+          <div class="text-body-subtle mb-2 text-xs">
+            Ab 3 Punkten entsteht eine Fläche.
+          </div>
+        }
+
+        <div class="text-body-subtle text-2xs mb-1">
+          Eckpunkte · in Reihenfolge
+        </div>
+        <div class="flex flex-col gap-1.5">
+          @for (
+            point of control.points;
+            let pointIndex = $index;
+            track pointIndex
+          ) {
+            <div
+              class="bg-neutral-secondary flex items-center gap-1.5 rounded-md p-1 pl-1.5"
+            >
+              <span
+                class="text-body-subtle grid h-[18px] w-[18px] shrink-0 place-items-center rounded bg-white text-[9px] font-bold"
+                >{{ pointIndex + 1 }}</span
+              >
+              <lg-input
+                class="flex-1"
+                [field]="point.x"
+                [id]="'polygon-' + polygonIndex + '-x-' + pointIndex"
+                [autofocus]="
+                  newItemIndex() === polygonIndex && pointIndex === 0
+                "
+                type="number"
+              />
+              <lg-input
+                class="flex-1"
+                [field]="point.y"
+                [id]="'polygon-' + polygonIndex + '-y-' + pointIndex"
+                type="number"
+              />
+              <button
+                class="grid h-8 w-8 shrink-0 place-items-center rounded text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500 disabled:opacity-30"
+                [disabled]="polygons[polygonIndex].points.length <= 2"
+                [attr.aria-label]="'Punkt ' + (pointIndex + 1) + ' entfernen'"
+                (click)="store.removePolygonPoint({ polygonIndex, pointIndex })"
+                type="button"
+                title="Punkt entfernen"
+              >
+                <fa-icon [icon]="faTrashCan" />
+              </button>
+            </div>
+            @if (control.showPoints().value()) {
+              <div class="flex gap-1.5 pl-6">
+                <lg-input
+                  class="flex-1"
+                  [field]="point.labelText"
+                  [id]="'polygon-' + polygonIndex + '-labeltext-' + pointIndex"
+                  type="text"
+                  placeholder="Beschriftung"
+                />
+                <lg-dropdown
+                  class="flex-1"
+                  [formField]="point.labelPosition"
+                  [options]="labelPositionOptions"
+                />
+              </div>
+            }
+          }
+        </div>
+
+        <button
+          class="bg-brand-soft text-brand-strong border-brand hover:bg-brand-soft/80 mt-2 flex w-full items-center justify-center gap-1 rounded-md border border-dashed px-2 py-1.5 text-[11px] font-semibold transition-colors"
+          (click)="store.addPolygonPoint(polygonIndex)"
+          type="button"
+        >
+          <fa-icon [icon]="faPlusCircle" />
+          <span>Eckpunkt hinzufügen</span>
+        </button>
+
+        @if (canCreateSchraegbild(polygons[polygonIndex])) {
+          <button
+            class="mt-2 w-full"
+            (click)="openSchraegbildDialog(polygonIndex)"
+            lgButton
+            variant="outline"
+            size="small"
+            type="button"
+          >
+            <fa-icon [icon]="faCube" />
+            <span>Schrägbild</span>
+          </button>
+        }
+      </lg-card>
+    }
+
+    <div class="flex gap-1.5">
+      <button
+        class="flex-[1.4]"
+        (click)="store.startInteractive(InteractiveMode.Polygon)"
+        lgButton
+        size="cta"
+        type="button"
+      >
+        <fa-icon [icon]="faMousePointer" />
+        <span>Interaktiv</span>
+      </button>
+      <button
+        class="flex-1"
+        (click)="addManual()"
+        lgButton
+        variant="outline"
+        size="cta"
+        type="button"
+      >
+        <fa-icon [icon]="faPlusCircle" />
+        <span>Manuell</span>
+      </button>
+    </div>
+
+    <lg-section-hint>
+      Tipp: Im Interaktiv-Modus Eckpunkte tippen, um eine Linie oder Fläche zu
+      zeichnen.
+    </lg-section-hint>
+  }
+</div>

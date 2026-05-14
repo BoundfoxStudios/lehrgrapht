@@ -1,0 +1,307 @@
+@let r = reflection();
+
+<div class="flex flex-col gap-y-3 p-2">
+  @if (r.kind === 'none') {
+    <div
+      class="rounded-base border-default-medium flex flex-col items-center gap-3 border bg-white p-4 text-center"
+    >
+      <fa-icon
+        class="text-brand text-3xl"
+        [icon]="faCircleDot"
+      />
+      <div>
+        <div class="text-heading text-sm font-semibold">
+          Noch keine Spiegelung
+        </div>
+        <div class="text-body-subtle mt-1 text-xs">
+          Definiere einen Spiegelpunkt oder eine Spiegelachse, an der Polygone
+          und Punkte gespiegelt werden.
+        </div>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <div class="flex gap-1.5">
+        <button
+          class="flex-[1.4]"
+          (click)="store.startInteractive(InteractiveMode.ReflectionPoint)"
+          lgButton
+          size="cta"
+          type="button"
+        >
+          <fa-icon [icon]="faMousePointer" />
+          <span>Punkt interaktiv</span>
+        </button>
+        <button
+          class="flex-1"
+          (click)="store.setReflectionPoint({ x: 0, y: 0 })"
+          lgButton
+          variant="outline"
+          size="cta"
+          type="button"
+        >
+          <fa-icon [icon]="faCircleDot" />
+          <span>Punkt manuell</span>
+        </button>
+      </div>
+      <div class="flex gap-1.5">
+        <button
+          class="flex-[1.4]"
+          (click)="store.startInteractive(InteractiveMode.ReflectionAxis)"
+          lgButton
+          size="cta"
+          type="button"
+        >
+          <fa-icon [icon]="faMousePointer" />
+          <span>Achse interaktiv</span>
+        </button>
+        <button
+          class="flex-1"
+          (click)="store.setReflectionAxis({ x: -1, y: 0 }, { x: 1, y: 0 })"
+          lgButton
+          variant="outline"
+          size="cta"
+          type="button"
+        >
+          <fa-icon [icon]="faArrowsLeftRightToLine" />
+          <span>Achse manuell</span>
+        </button>
+      </div>
+    </div>
+  }
+
+  @if (r.kind === 'point') {
+    <lg-card
+      [expanded]="true"
+      title="Spiegelpunkt"
+    >
+      <lg-id-pill
+        [prefix]="'Sp'"
+        [index]="0"
+        color="#666666"
+        card-id
+      />
+      <div
+        class="flex items-center gap-2"
+        card-actions
+      >
+        <label
+          class="text-body-subtle flex cursor-pointer items-center gap-1.5 text-xs"
+          for="reflection-is-solution"
+        >
+          <span>Lösung</span>
+          <lg-switch
+            [value]="r.isSolution"
+            (valueChange)="toggleIsSolution()"
+            inputId="reflection-is-solution"
+            ariaLabel="Spiegelpunkt als Lösung markieren"
+            size="small"
+          />
+        </label>
+        <button
+          class="grid h-7 w-7 place-items-center rounded text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
+          (click)="remove()"
+          type="button"
+          aria-label="Spiegelpunkt entfernen"
+          title="Spiegelpunkt entfernen"
+        >
+          <fa-icon [icon]="faTrashCan" />
+        </button>
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <div
+          class="bg-neutral-secondary flex items-center gap-1.5 rounded-md p-1 pl-1.5"
+        >
+          <span
+            class="text-body-subtle grid h-[18px] w-[18px] shrink-0 place-items-center rounded bg-white text-[9px] font-bold"
+            >S</span
+          >
+          <input
+            class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body w-full min-w-0 flex-1 border px-3 py-2.5 text-sm shadow-xs transition-all duration-200 ease-in-out"
+            id="reflection-point-x"
+            [value]="r.point.x"
+            (change)="onPointXChange($event)"
+            type="number"
+            step="0.5"
+            aria-label="Spiegelpunkt x"
+          />
+          <input
+            class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body w-full min-w-0 flex-1 border px-3 py-2.5 text-sm shadow-xs transition-all duration-200 ease-in-out"
+            id="reflection-point-y"
+            [value]="r.point.y"
+            (change)="onPointYChange($event)"
+            type="number"
+            step="0.5"
+            aria-label="Spiegelpunkt y"
+          />
+        </div>
+      </div>
+
+      <button
+        class="mt-2 w-full"
+        (click)="store.setReflectionAxis({ x: -1, y: 0 }, { x: 1, y: 0 })"
+        lgButton
+        variant="outline"
+        size="small"
+        type="button"
+      >
+        <fa-icon [icon]="faArrowsLeftRightToLine" />
+        <span>Zu Spiegelachse wechseln</span>
+      </button>
+    </lg-card>
+  }
+
+  @if (r.kind === 'axis') {
+    <lg-card
+      [expanded]="true"
+      title="Spiegelachse"
+    >
+      <lg-id-pill
+        [prefix]="'Sa'"
+        [index]="0"
+        [color]="r.color"
+        card-id
+      />
+      <div
+        class="flex items-center gap-2"
+        card-actions
+      >
+        <label
+          class="text-body-subtle flex cursor-pointer items-center gap-1.5 text-xs"
+          for="reflection-is-solution"
+        >
+          <span>Lösung</span>
+          <lg-switch
+            [value]="r.isSolution"
+            (valueChange)="toggleIsSolution()"
+            inputId="reflection-is-solution"
+            ariaLabel="Spiegelachse als Lösung markieren"
+            size="small"
+          />
+        </label>
+        <button
+          class="grid h-7 w-7 place-items-center rounded text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
+          (click)="remove()"
+          type="button"
+          aria-label="Spiegelachse entfernen"
+          title="Spiegelachse entfernen"
+        >
+          <fa-icon [icon]="faTrashCan" />
+        </button>
+      </div>
+
+      <div class="mb-2 flex flex-col gap-2">
+        <div class="flex items-center justify-between gap-2">
+          <span class="text-body-subtle text-2xs font-semibold">Farbe</span>
+          <input
+            class="h-7 w-7 cursor-pointer rounded border-none"
+            [value]="r.color"
+            (input)="onAxisColorChange($event)"
+            type="color"
+            title="Achsenfarbe"
+            aria-label="Achsenfarbe"
+          />
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-body-subtle text-2xs font-semibold">Stil</span>
+          <lg-pill-switch
+            [options]="lineStyleOptions"
+            [value]="r.lineStyle"
+            (valueChange)="onAxisLineStyleChange($event)"
+            shape="pill"
+            aria-label="Linienstil"
+          />
+        </div>
+        <label
+          class="flex cursor-pointer items-center justify-between"
+          for="reflection-axis-extend"
+        >
+          <span class="text-body-subtle text-2xs font-semibold"
+            >Als Gerade verlängern</span
+          >
+          <lg-switch
+            [value]="r.extendBeyondPoints"
+            (valueChange)="onAxisExtendBeyondPointsChange($event)"
+            inputId="reflection-axis-extend"
+            ariaLabel="Spiegelachse über die Punkte hinaus als Gerade zeichnen"
+            size="small"
+          />
+        </label>
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <div
+          class="bg-neutral-secondary flex items-center gap-1.5 rounded-md p-1 pl-1.5"
+        >
+          <span
+            class="text-body-subtle grid h-[18px] w-[18px] shrink-0 place-items-center rounded bg-white text-[9px] font-bold"
+            >A</span
+          >
+          <input
+            class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body w-full min-w-0 flex-1 border px-3 py-2.5 text-sm shadow-xs transition-all duration-200 ease-in-out"
+            id="reflection-axis-x1"
+            [value]="r.axis.p1.x"
+            (change)="onAxisX1Change($event)"
+            type="number"
+            step="0.5"
+            aria-label="Achsenpunkt A x"
+          />
+          <input
+            class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body w-full min-w-0 flex-1 border px-3 py-2.5 text-sm shadow-xs transition-all duration-200 ease-in-out"
+            id="reflection-axis-y1"
+            [value]="r.axis.p1.y"
+            (change)="onAxisY1Change($event)"
+            type="number"
+            step="0.5"
+            aria-label="Achsenpunkt A y"
+          />
+        </div>
+        <div
+          class="bg-neutral-secondary flex items-center gap-1.5 rounded-md p-1 pl-1.5"
+        >
+          <span
+            class="text-body-subtle grid h-[18px] w-[18px] shrink-0 place-items-center rounded bg-white text-[9px] font-bold"
+            >B</span
+          >
+          <input
+            class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body w-full min-w-0 flex-1 border px-3 py-2.5 text-sm shadow-xs transition-all duration-200 ease-in-out"
+            id="reflection-axis-x2"
+            [value]="r.axis.p2.x"
+            (change)="onAxisX2Change($event)"
+            type="number"
+            step="0.5"
+            aria-label="Achsenpunkt B x"
+          />
+          <input
+            class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body w-full min-w-0 flex-1 border px-3 py-2.5 text-sm shadow-xs transition-all duration-200 ease-in-out"
+            id="reflection-axis-y2"
+            [value]="r.axis.p2.y"
+            (change)="onAxisY2Change($event)"
+            type="number"
+            step="0.5"
+            aria-label="Achsenpunkt B y"
+          />
+        </div>
+      </div>
+
+      @if (axisIsDegenerate()) {
+        <div class="text-error mt-1 text-xs">
+          Die beiden Achsenpunkte müssen unterschiedlich sein.
+        </div>
+      }
+
+      <button
+        class="mt-2 w-full"
+        (click)="store.setReflectionPoint({ x: 0, y: 0 })"
+        lgButton
+        variant="outline"
+        size="small"
+        type="button"
+      >
+        <fa-icon [icon]="faCircleDot" />
+        <span>Zu Spiegelpunkt wechseln</span>
+      </button>
+    </lg-card>
+  }
+</div>

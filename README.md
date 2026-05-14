@@ -40,6 +40,12 @@ This will open Word and load the add-in.
 
 When you're done, run `npm run stop:office`.
 
+#### Shared Runtime & Ribbon Commands
+
+Das Add-in nutzt Office's Shared Runtime (`SharedRuntime 1.1`). Taskpane und Ribbon-Button-Handler laufen im selben JavaScript-Runtime — Ribbon-Aktionen können daher direkt Angular-Services aufrufen.
+
+Die Action `toggleSolutionView` wird in `projects/addin/src/main.ts` nach dem App-Bootstrap registriert. Beim Ribbon-Klick wird `SolutionViewService.toggle()` aufgerufen, was alle Plots im Dokument mit Spiegelung neu rendert.
+
 ## Development - Website
 
 You can start the development server for the website with `npm run start:website`.
@@ -47,3 +53,7 @@ You can start the development server for the website with `npm run start:website
 There's an environment variable `LEHRGRAPHT_WEBSITE_GITHUB_TOKEN`.
 You don't need to provide a value for it.
 If it's set with the correct permissions it will grab a list of issues from GitHub and displays it as a roadmap.
+
+## Icon Generation
+
+Use `npm run generate-icons` to regenerate the icons.

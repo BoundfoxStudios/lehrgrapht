@@ -47,6 +47,9 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Use the async pipe to handle observables
 - Do not assume globals like (`new Date()`) are available.
 - Do not write arrow functions in templates (they are not supported).
+- For buttons (`<button>`) and anchor buttons (`<a [routerLink]>`), use the `lgButton` directive (`projects/addin/src/app/ui/button/button.directive.ts`) with the appropriate `variant`, `size`, and `iconOnly` inputs. Do NOT write ad-hoc Tailwind button styles. If no existing variant fits, extend the directive instead of bypassing it.
+- For text/number inputs, use the `lg-input` component (`projects/addin/src/app/ui/input/input.ts`) wherever possible. Only fall back to a raw `<input>` when `lg-input` genuinely cannot fulfill the requirement.
+- For animating a `faIcon`, use the FontAwesome `animation` input (e.g. `animation="spin"`). Do NOT use Tailwind's `animate-spin` on a faIcon.
 
 ## Services
 
@@ -64,3 +67,7 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 
 - NEVER start the app or dev server (e.g., `ng serve`, `npm start`). The user runs the app themselves.
 - You MAY build (`ng build`) and lint (`ng lint`) for verification.
+
+## Critical Constraints
+
+- Changes to `projects/addin/src/app/services/plot/plot.service.ts` MUST NOT alter the `scaleanchor` configuration in any way. It is required for correct 5×5 mm grid rendering.

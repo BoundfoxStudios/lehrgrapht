@@ -3,11 +3,12 @@
   title="Debug"
 />
 
-<lg-content-container class="flex flex-col space-y-4">
+<lg-content-container class="flex flex-col gap-y-4">
   <div class="flex flex-1 justify-end">
     <button
-      class="app-button icon-only"
       (click)="plots.reload(); models.reload()"
+      lgButton
+      iconOnly
     >
       <fa-icon [icon]="faRefresh" />
     </button>
@@ -33,7 +34,7 @@
 
 @let allPlots = plots.value();
 
-<lg-content-container class="flex flex-col space-y-2">
+<lg-content-container class="flex flex-col gap-y-2">
   @if (plots.isLoading()) {
     <fa-icon
       [icon]="faRefresh"
@@ -63,7 +64,7 @@
   subtitle="Alle Modelle, auch deren Plots nicht mehr im Dokument sind."
 />
 
-<lg-content-container class="flex flex-col space-y-2">
+<lg-content-container class="flex flex-col gap-y-2">
   @if (models.isLoading() || !allPlots) {
     <fa-icon
       [icon]="faRefresh"

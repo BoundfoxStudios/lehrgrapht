@@ -2,7 +2,7 @@ import * as mathjs from 'mathjs';
 import { inject, Injectable } from '@angular/core';
 import Plotly, { Annotations, PlotData } from 'plotly.js-dist-min';
 import { LegendLabelFormat, Plot, PlotSettings } from '../../models/plot';
-import { modelIdPrefix } from '../word/word.service';
+import { modelIdPrefix } from '../office/plot/word-plot.service';
 import { v7 } from 'uuid';
 import {
   PLOT_CONSTANTS,
@@ -21,6 +21,13 @@ const devicePixelRatio = window.devicePixelRatio || 1;
 const effectiveDpi = 254 * devicePixelRatio;
 const scaleFactor = effectiveDpi / PLOT_CONSTANTS.ppiBase;
 
+interface RenderedLegendLabel {
+  index: number;
+  dataUrl: string;
+  widthPx: number;
+  heightPx: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class PlotService {
   private readonly plotMathService = inject(PlotMathService);
@@ -32,7 +39,11 @@ export class PlotService {
   async generate(
     plot: Plot,
     plotSettings: PlotSettings,
-    options: { applyScaleFactor: boolean },
+    options: {
+      applyScaleFactor: boolean;
+      showSolution: boolean;
+      highlightedPolygonIndex?: number | null;
+    },
   ): Promise<
     | {
         base64: string;
@@ -62,7 +73,14 @@ export class PlotService {
       valueRanges,
       plot,
     );
-    const margin = this.plotSizeService.calculateEffectiveMargin(plot);
+    const renderedLabels = await this.renderLegendLabels(plot);
+    const labelWidthsPx = new Map(
+      renderedLabels.map(r => [r.index, r.widthPx]),
+    );
+    const margin = this.plotSizeService.calculateEffectiveMargin(
+      plot,
+      labelWidthsPx,
+    );
     const sizeCalc = this.plotSizeService.calculatePlotSize(
       plot,
       cleanedValues,
@@ -73,8 +91,9 @@ export class PlotService {
       plot,
       plotSettings,
     );
-    const functionLabelImages = await this.buildFunctionLabelImages(
+    const functionLabelImages = this.buildLegendImages(
       plot,
+      renderedLabels,
       cleanedValues.xValuesArray,
       cleanedValues.yValuesArray,
       sizeCalc,
@@ -91,6 +110,10 @@ export class PlotService {
       plotSettings,
       cleanedValues.xValuesArray,
       cleanedValues.yValuesArray,
+      {
+        highlightedPolygonIndex: options.highlightedPolygonIndex ?? null,
+        showSolution: options.showSolution,
+      },
     );
 
     return this.renderPlot(
@@ -118,50 +141,74 @@ export class PlotService {
     return this.plotSizeService.calculatePlotSizeMm(plot);
   }
 
-  private async buildFunctionLabelImages(
+  private async renderLegendLabels(plot: Plot): Promise<RenderedLegendLabel[]> {
+    if (typeof MathJax === 'undefined') {
+      return [];
+    }
+
+    const rendered: RenderedLegendLabel[] = [];
+
+    for (let i = 0; i < plot.fnx.length; i++) {
+      const fn = plot.fnx[i];
+      if (fn.legendPosition === 'none') {
+        continue;
+      }
+
+      const result = await this.renderMathPng(
+        fn.fnx,
+        fn.color,
+        plot.legendLabelFormat,
+      );
+      if (!result) {
+        continue;
+      }
+
+      rendered.push({ index: i, ...result });
+    }
+
+    return rendered;
+  }
+
+  private buildLegendImages(
     plot: Plot,
+    renderedLabels: readonly RenderedLegendLabel[],
     xValuesArray: number[],
     yValuesArray: number[][],
     sizeCalc: PlotSizeCalculation,
     margin: PlotMarginMm,
-  ): Promise<Partial<Plotly.Image>[]> {
-    if (typeof MathJax === 'undefined') return [];
-
+  ): Partial<Plotly.Image>[] {
     const images: Partial<Plotly.Image>[] = [];
 
-    for (let i = 0; i < plot.fnx.length; i++) {
-      const fn = plot.fnx[i];
-      if (fn.legendPosition === 'none') continue;
+    for (const label of renderedLabels) {
+      const fn = plot.fnx[label.index];
+      if (fn.legendPosition === 'none') {
+        continue;
+      }
 
       const fromStart = fn.legendPosition === 'start';
       const pos = this.plotLabelsService.findLabelPosition(
         xValuesArray,
-        yValuesArray[i],
+        yValuesArray[label.index],
         sizeCalc.yValueMin,
         sizeCalc.yValueMax,
         fromStart,
       );
 
-      if (!pos) continue;
-
-      const rendered = await this.renderMathPng(
-        fn.fnx,
-        fn.color,
-        plot.legendLabelFormat,
-      );
-      if (!rendered) continue;
+      if (!pos) {
+        continue;
+      }
 
       const coords = this.plotLabelsService.calculateLabelImageCoordinates(
         pos,
-        rendered.widthPx,
-        rendered.heightPx,
+        label.widthPx,
+        label.heightPx,
         sizeCalc,
         margin,
         fromStart,
       );
 
       images.push({
-        source: rendered.dataUrl,
+        source: label.dataUrl,
         x: coords.x,
         y: coords.y,
         xref: 'paper',
@@ -198,7 +245,7 @@ export class PlotService {
       }
     | PlotGenerateErrorCode
   > {
-    const { dtick, mmToInches, ppiBase } = PLOT_CONSTANTS;
+    const { mmToInches, ppiBase } = PLOT_CONSTANTS;
     const {
       plotSizePx,
       plotSizePoints,
@@ -207,6 +254,7 @@ export class PlotService {
       yValueMin,
       yValueMax,
     } = sizeCalc;
+    const gridDtick = Number(plot.gridStep);
 
     const tempDiv = document.createElement('div');
     tempDiv.style.cssText = 'position:absolute;visibility:hidden';
@@ -238,7 +286,7 @@ export class PlotService {
             autorange: false,
             showticklabels: plot.showAxisLabels && !plot.placeAxisLabelsInside,
             tickmode: 'linear',
-            dtick,
+            dtick: gridDtick,
             scaleanchor: 'y',
             ticklabelstep: 2,
             gridcolor: plotSettings.gridLineColor,
@@ -256,7 +304,7 @@ export class PlotService {
             autorange: false,
             tickmode: 'linear',
             showticklabels: plot.showAxisLabels && !plot.placeAxisLabelsInside,
-            dtick,
+            dtick: gridDtick,
             ticklabelstep: 2,
             gridcolor: plotSettings.gridLineColor,
             gridwidth: plotSettings.gridLineWidth,
@@ -305,7 +353,9 @@ export class PlotService {
   > {
     try {
       const node = mathjs.parse(expression);
-      if (node.type === 'ConstantNode') return undefined;
+      if (node.type === 'ConstantNode') {
+        return undefined;
+      }
       let tex = node.toTex({ parenthesis: 'keep' });
 
       if (legendLabelFormat === 'f(x)=') {
@@ -355,7 +405,9 @@ export class PlotService {
         canvas.width = Math.ceil(widthPx * renderScale);
         canvas.height = Math.ceil(heightPx * renderScale);
         const ctx = canvas.getContext('2d');
-        if (!ctx) return undefined;
+        if (!ctx) {
+          return undefined;
+        }
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         return {
           dataUrl: canvas.toDataURL('image/png'),

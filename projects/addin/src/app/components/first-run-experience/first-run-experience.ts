@@ -4,20 +4,25 @@ import { ContentContainer } from '../content-container/content-container';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import {
   faChartLine,
+  faCube,
   faImages,
+  faLightbulb,
   faMapPin,
   faTableCells,
 } from '@fortawesome/free-solid-svg-icons';
 import { Router } from '@angular/router';
 import { UserExperienceService } from '../../services/user-experience.service';
+import { ButtonDirective } from '../../ui/button/button.directive';
 
 @Component({
   selector: 'lg-first-run-experience',
-  imports: [Header, ContentContainer, FaIconComponent],
+  imports: [Header, ContentContainer, FaIconComponent, ButtonDirective],
   templateUrl: './first-run-experience.html',
   styleUrl: './first-run-experience.css',
 })
 export class FirstRunExperience {
+  protected readonly faCube = faCube;
+  protected readonly faLightbulb = faLightbulb;
   protected readonly faTableCells = faTableCells;
   protected readonly faImages = faImages;
   protected readonly faChartLine = faChartLine;

@@ -67,26 +67,28 @@ export class PlotSizeService {
     };
   }
 
-  calculateEffectiveMargin(plot: Plot): PlotMarginMm {
+  calculateEffectiveMargin(
+    plot: Plot,
+    labelWidthsPx?: ReadonlyMap<number, number>,
+  ): PlotMarginMm {
     const base = PLOT_CONSTANTS.mmMargin;
     let extraLeft = 0;
     let extraRight = 0;
 
-    const pxPerChar = 6;
     const xshiftPx = 5;
     const pxToMm = 25.4 / PLOT_CONSTANTS.ppiBase;
 
-    for (const fn of plot.fnx) {
-      if (fn.legendPosition === 'none') continue;
-
-      let prefixChars = 0;
-      if (plot.legendLabelFormat === 'f(x)=') {
-        prefixChars = 8; // 5 characters + 3 spaces
-      } else if (plot.legendLabelFormat === 'y=') {
-        prefixChars = 4; // 2 characters + 2 spaces
+    for (let i = 0; i < plot.fnx.length; i++) {
+      const fn = plot.fnx[i];
+      if (fn.legendPosition === 'none') {
+        continue;
       }
+
+      const measuredPx = labelWidthsPx?.get(i);
       const textWidthMm =
-        ((fn.fnx.length + prefixChars) * pxPerChar + xshiftPx) * pxToMm;
+        measuredPx !== undefined
+          ? (measuredPx + xshiftPx) * pxToMm
+          : this.estimateLabelWidthMm(fn.fnx, plot.legendLabelFormat);
       const extraNeeded = Math.max(0, textWidthMm - base.l);
 
       if (fn.legendPosition === 'start') {
@@ -102,6 +104,28 @@ export class PlotSizeService {
       l: base.l + extraLeft,
       r: base.r + extraRight,
     };
+  }
+
+  private estimateLabelWidthMm(
+    expression: string,
+    format: Plot['legendLabelFormat'],
+  ): number {
+    // Conservative heuristic used when MathJax-measured widths are unavailable
+    // (e.g. live preview before async render). Math-mode rendering pads
+    // operators (`+`, `-`, `=`, `\cdot`) and renders multi-letter identifiers
+    // (`sin`, `cos`) in upright text, so the avg width per character is larger
+    // than plain text. Empirically ~8 px/char at 10 px font size.
+    const pxPerChar = 8;
+    const xshiftPx = 5;
+    const pxToMm = 25.4 / PLOT_CONSTANTS.ppiBase;
+
+    let prefixChars = 0;
+    if (format === 'f(x)=') {
+      prefixChars = 8;
+    } else if (format === 'y=') {
+      prefixChars = 4;
+    }
+    return ((expression.length + prefixChars) * pxPerChar + xshiftPx) * pxToMm;
   }
 
   calculatePlotSizeMm(plot: Plot): PlotSizeMm {

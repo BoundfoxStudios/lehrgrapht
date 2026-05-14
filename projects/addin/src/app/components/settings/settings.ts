@@ -1,4 +1,10 @@
-import { Component, effect, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { Header } from '../header/header';
 import {
   LegendLabelFormat,
@@ -7,41 +13,40 @@ import {
   PlotSettings,
 } from '../../models/plot';
 import { form, FormField, min } from '@angular/forms/signals';
-import { Accordion } from '../accordion/accordion';
-import { AccordionPanel } from '../accordion/accordion-panel/accordion-panel';
 import { ContentContainer } from '../content-container/content-container';
 import { PlotPreview } from '../plot-preview/plot-preview';
 import {
   defaultPlotSettings,
   PlotSettingsService,
 } from '../../services/plot-settings.service';
-import { Dropdown, DropdownOption } from '../dropdown/dropdown';
 import { lehrgraphtVersion } from '../../../version';
+import { Input } from '../../ui/input/input';
+import { PillSwitch, PillSwitchOption } from '../pill-switch/pill-switch';
 
 @Component({
   selector: 'lg-settings',
   imports: [
     Header,
-    Accordion,
-    AccordionPanel,
     ContentContainer,
     PlotPreview,
-    Dropdown,
     FormField,
+    Input,
+    PillSwitch,
   ],
   templateUrl: './settings.html',
   styleUrl: './settings.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Settings {
   private readonly plotSettingsService = inject(PlotSettingsService);
 
-  protected readonly markerNamingSchemeOptions: DropdownOption<MarkerNamingScheme>[] =
+  protected readonly markerNamingSchemeOptions: PillSwitchOption<MarkerNamingScheme>[] =
     [
-      { value: 'alphabetic', label: 'Alphabetisch (A, B, C, ...)' },
-      { value: 'numeric', label: 'Numerisch (P1, P2, P3, ...)' },
+      { value: 'alphabetic', label: 'A, B, C, …' },
+      { value: 'numeric', label: 'P1, P2, P3, …' },
     ];
 
-  protected readonly legendLabelFormatOptions: DropdownOption<LegendLabelFormat>[] =
+  protected readonly legendLabelFormatOptions: PillSwitchOption<LegendLabelFormat>[] =
     [
       { value: 'none', label: 'Keine' },
       { value: 'f(x)=', label: 'f(x)=' },
@@ -60,14 +65,8 @@ export class Settings {
     version: lehrgraphtVersion,
     name: 'Beispiel',
     range: {
-      x: {
-        min: -3,
-        max: 3,
-      },
-      y: {
-        min: -3,
-        max: 3,
-      },
+      x: { min: -3, max: 3 },
+      y: { min: -3, max: 3 },
     },
     fnx: [
       {
@@ -84,8 +83,7 @@ export class Settings {
       },
     ],
     markers: [],
-    areas: [],
-    lines: [],
+    polygons: [],
     showAxis: true,
     showAxisLabels: true,
     placeAxisLabelsInside: true,
@@ -94,46 +92,9 @@ export class Settings {
     axisLabelX: 'x',
     axisLabelY: 'y',
     legendLabelFormat: 'none',
-  };
-
-  protected readonly examplePlot2: Plot = {
-    version: lehrgraphtVersion,
-    name: 'Beispiel',
-    range: {
-      x: {
-        min: -3,
-        max: 3,
-      },
-      y: {
-        min: -3,
-        max: 3,
-      },
-    },
-    fnx: [
-      {
-        fnx: 'x',
-        color: '#3737d0',
-        legendPosition: 'none',
-        lineStyle: 'solid',
-      },
-      {
-        fnx: 'x^2-3',
-        color: '#af2c2c',
-        legendPosition: 'none',
-        lineStyle: 'solid',
-      },
-    ],
-    markers: [],
-    lines: [],
-    areas: [],
-    showAxis: true,
-    showAxisLabels: true,
-    placeAxisLabelsInside: false,
-    squarePlots: false,
-    automaticallyAdjustLimitsToValueRange: false,
-    axisLabelX: 'x',
-    axisLabelY: 'y',
-    legendLabelFormat: 'none',
+    showAxisArrows: true,
+    gridStep: '0.5',
+    reflection: { kind: 'none' },
   };
 
   constructor() {

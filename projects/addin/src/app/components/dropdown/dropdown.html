@@ -1,16 +1,16 @@
 <button
+  class="bg-neutral-secondary-medium border-default-medium text-heading rounded-base focus:ring-brand focus:border-brand placeholder:text-body flex w-full cursor-pointer items-center justify-between border px-3 py-2.5 text-left text-sm shadow-xs transition-all duration-200 ease-in-out"
   #triggerButton
-  class="app-input flex cursor-pointer items-center justify-between text-left"
-  cdkOverlayOrigin
   #trigger="cdkOverlayOrigin"
   [class.text-gray-400]="!selectedOption()"
   [disabled]="disabled()"
+  [attr.aria-expanded]="isOpen()"
+  [attr.aria-controls]="isOpen() ? 'dropdown-listbox' : null"
   (click)="toggle()"
+  cdkOverlayOrigin
   type="button"
   role="combobox"
   aria-haspopup="listbox"
-  [attr.aria-expanded]="isOpen()"
-  [attr.aria-controls]="isOpen() ? 'dropdown-listbox' : null"
 >
   <span>{{ displayLabel() }}</span>
   <fa-icon
@@ -21,17 +21,17 @@
 </button>
 
 <ng-template
-  cdkConnectedOverlay
   [cdkConnectedOverlayOrigin]="trigger"
   [cdkConnectedOverlayOpen]="isOpen()"
   [cdkConnectedOverlayPositions]="positions"
   [cdkConnectedOverlayMatchWidth]="true"
   (overlayOutsideClick)="close()"
+  cdkConnectedOverlay
 >
   <ul
-    #optionsList
+    class="z-50 box-border max-h-60 w-full overflow-auto rounded-lg border border-gray-200 bg-white py-1 shadow-lg"
     id="dropdown-listbox"
-    class="z-50 box-border w-full max-h-60 overflow-auto rounded-lg border border-gray-200 bg-white py-1 shadow-lg"
+    #optionsList
     role="listbox"
   >
     @for (option of options(); track option.value; let i = $index) {
@@ -41,12 +41,12 @@
         [class.font-medium]="option.value === value()"
         [class.text-blue-600]="option.value === value()"
         [attr.data-focused]="focusedIndex() === i"
+        [attr.aria-selected]="option.value === value()"
         (click)="selectOption(option)"
         (keydown.enter)="selectOption(option)"
         (mouseenter)="onOptionMouseEnter(i)"
         role="option"
         tabindex="0"
-        [attr.aria-selected]="option.value === value()"
       >
         @if (itemTemplate(); as template) {
           <ng-container

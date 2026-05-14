@@ -4,12 +4,14 @@ import {
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
-import { WordService } from './services/word/word.service';
+import { WordPlotService } from './services/office/plot/word-plot.service';
 import {
   RUN_CONFIGURATION,
   RunConfiguration,
 } from './models/run-configuration';
-import { wordServiceFactory } from './services/word/word-service.factory';
+import { wordPlotServiceFactory } from './services/office/plot/word-plot-service.factory';
+import { OfficeRibbonService } from './services/office/ribbon/office-ribbon.service';
+import { officeRibbonServiceFactory } from './services/office/ribbon/office-ribbon-service.factory';
 
 export const createAppConfig = (
   runConfiguration: RunConfiguration,
@@ -20,8 +22,12 @@ export const createAppConfig = (
       provideRouter(routes),
       { provide: RUN_CONFIGURATION, useValue: runConfiguration },
       {
-        provide: WordService,
-        useFactory: () => wordServiceFactory(runConfiguration),
+        provide: WordPlotService,
+        useFactory: wordPlotServiceFactory,
+      },
+      {
+        provide: OfficeRibbonService,
+        useFactory: officeRibbonServiceFactory,
       },
     ],
   };
