@@ -30,6 +30,8 @@ export interface TabStripItem {
   },
 })
 export class TabStrip {
+  protected readonly faCheck = faCheck;
+
   readonly tabs = input.required<TabStripItem[]>();
   readonly active = input.required<string>();
   readonly tabChange = output<string>();
@@ -39,6 +41,4 @@ export class TabStrip {
       this.tabChange.emit(id);
     }
   }
-
-  protected readonly faCheck = faCheck;
 }
