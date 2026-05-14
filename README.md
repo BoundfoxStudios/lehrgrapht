@@ -56,4 +56,4 @@ If it's set with the correct permissions it will grab a list of issues from GitH
 
 ## Icon Generation
 
-Use [SVG to PNG](https://vincerubinetti.github.io/svg-to-png/) for converting the SVG files to PNG.
+Use `npm run generate-icons` to regenerate the icons.

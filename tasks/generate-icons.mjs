@@ -43,7 +43,7 @@ export default gulp.parallel(
           source: icon.source,
           width: size,
           height: size,
-          target: join(destination, `${name}-${size}-${size}.${icon.type}`),
+          target: join(destination, `${name}-${size}x${size}.${icon.type}`),
         }),
       ),
     );
