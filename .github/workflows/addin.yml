@@ -92,10 +92,8 @@ jobs:
       - run: npm run prepare-deployment
         env:
           APP_VERSION: ${{ steps.version.outputs.value }}
-      - run: npm run validate:production
-        if: github.ref_name == 'main'
-      - run: npm run validate
-        if: github.ref_name != 'main'
+      - name: Validate manifest (always happens on dev manifest, prod needs FTP upload first)
+        run: npm run validate
       - uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         if: github.event_name != 'pull_request'
         with:
@@ -105,6 +103,8 @@ jobs:
           local-dir: dist/addin/browser/
           server-dir: addin/${{steps.version.outputs.value}}/
           protocol: ftp
+      - run: npm run validate:production
+        if: github.ref_name == 'main'
       - uses: actions/upload-artifact@v6
         if: github.event_name != 'pull_request'
         with:
