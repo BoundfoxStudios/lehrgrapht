@@ -101,6 +101,11 @@
               {
                 "glob": "**/*",
                 "input": "projects/addin/public"
+              },
+              {
+                "glob": "tex-svg.js",
+                "input": "node_modules/mathjax",
+                "output": "mathjax"
               }
             ],
             "styles": ["projects/addin/src/styles.css"],
