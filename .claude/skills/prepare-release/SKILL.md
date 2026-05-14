@@ -15,7 +15,7 @@ The new version number (e.g., `1.5.0`).
 
 ### 1. Determine previous version
 
-Read the current `version` from `package.json`. This is the **previous version** used for renaming migration files.
+Read the current `version` from `package.json`. This is the **previous version**, used later to scope the changelog (Step 7) — not for renaming migration files.
 
 ### 2. Bump version in package.json and package-lock.json
 
@@ -29,19 +29,19 @@ This updates both `package.json` and `package-lock.json` atomically.
 
 If `projects/addin/src/app/models/migrations/migrate-to-latest.ts` does not exist, skip to step 7 (changelog).
 
-Use `git mv` to preserve history:
+Use `git mv` to preserve history. **Rename to the new version**, because the migration brings plot data _to_ that version (see `version:` property in the file and the comparison in `migration.ts`):
 
 ```bash
-git mv projects/addin/src/app/models/migrations/migrate-to-latest.ts projects/addin/src/app/models/migrations/migrate-to-<previous-version>.ts
-git mv projects/addin/src/app/models/migrations/migrate-to-latest.spec.ts projects/addin/src/app/models/migrations/migrate-to-<previous-version>.spec.ts
+git mv projects/addin/src/app/models/migrations/migrate-to-latest.ts projects/addin/src/app/models/migrations/migrate-to-<new-version>.ts
+git mv projects/addin/src/app/models/migrations/migrate-to-latest.spec.ts projects/addin/src/app/models/migrations/migrate-to-<new-version>.spec.ts
 ```
 
 ### 4. Update the renamed migration file
 
-In `migrate-to-<previous-version>.ts`, make two changes:
+In `migrate-to-<new-version>.ts`, make two changes:
 
-- Change `version: 'latest'` to `version: '<previous-version>'`
-- Rename the export: `migrateToLatest` → `migrateTo<VersionDigits>`
+- Change `version: 'latest'` to `version: '<new-version>'`
+- Rename the export: `migrateToLatest` → `migrateTo<VersionDigits>` (digits of the new version)
 
 **Export naming convention:** Remove dots from the version. Examples:
 
@@ -51,10 +51,10 @@ In `migrate-to-<previous-version>.ts`, make two changes:
 
 ### 5. Update the renamed spec file
 
-In `migrate-to-<previous-version>.spec.ts`:
+In `migrate-to-<new-version>.spec.ts`:
 
 - Update the import path and name to match the renamed file and export
-- Update the `describe` block name to `migrate-to-<previous-version>`
+- Update the `describe` block name to `migrate-to-<new-version>`
 - Update the variable reference from `migrateToLatest` to the new export name
 
 ### 6. Update migration.ts
@@ -98,14 +98,15 @@ npx ng test addin --no-watch
 | 1    | Read previous version                    | `package.json`                           |
 | 2    | `npm version <new> --no-git-tag-version` | `package.json`, `package-lock.json`      |
 | 3    | `git mv` migration files                 | `migrations/migrate-to-latest.ts` + spec |
-| 4    | Update version + export name             | `migrations/migrate-to-<prev>.ts`        |
-| 5    | Update import + describe + variable      | `migrations/migrate-to-<prev>.spec.ts`   |
+| 4    | Update version + export name             | `migrations/migrate-to-<new>.ts`         |
+| 5    | Update import + describe + variable      | `migrations/migrate-to-<new>.spec.ts`    |
 | 6    | Update import + array                    | `migration.ts`                           |
 | 7    | Update changelog (user-facing only)      | `shared/src/lib/changelog-data.ts`       |
 | 8    | Run tests                                | —                                        |
 
 ## Common Mistakes
 
+- **Renaming `migrate-to-latest` after the previous version** — Use the NEW version. `migrate-to-X.ts` means "migrates plot data to version X"; the file carries `version: 'X'` and `migration.ts` applies it when stored data is older than X.
 - **Creating new empty migrate-to-latest files** — Do NOT. Its absence is intentional and signals no unreleased model changes.
 - **Forgetting to update migration.ts** — The import path, import name, and migrations array all need updating.
 - **Editing package-lock.json manually** — Use `npm version` instead; it handles both files.
