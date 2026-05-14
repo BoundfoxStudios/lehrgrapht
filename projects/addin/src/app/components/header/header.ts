@@ -9,14 +9,11 @@ import { RouterLink } from '@angular/router';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import {
   faArrowLeft,
-  faCheck,
   faCircleNotch,
   faTriangleExclamation,
 } from '@fortawesome/free-solid-svg-icons';
 import { SolutionRenderService } from '../../services/solution-render.service';
 import { SolutionViewService } from '../../services/solution-view.service';
-
-export type HeaderSaveState = 'idle' | 'saving' | 'saved';
 
 @Component({
   selector: 'lg-header',
@@ -27,7 +24,6 @@ export type HeaderSaveState = 'idle' | 'saving' | 'saved';
 })
 export class Header {
   protected readonly faArrowLeft = faArrowLeft;
-  protected readonly faCheck = faCheck;
   protected readonly faCircleNotch = faCircleNotch;
   protected readonly faTriangleExclamation = faTriangleExclamation;
 
@@ -38,6 +34,5 @@ export class Header {
   readonly subtitle = input<string>();
   readonly backLink = input<unknown[]>();
   readonly showLogo = input(false, { transform: booleanAttribute });
-  readonly saveState = input<HeaderSaveState>('idle');
   readonly loading = input(false);
 }

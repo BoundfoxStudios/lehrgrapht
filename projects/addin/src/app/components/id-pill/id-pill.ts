@@ -15,7 +15,7 @@ export type IdPillState = 'normal' | 'new';
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class:
-      'grid h-[22px] w-[22px] shrink-0 place-items-center text-[9px] font-bold text-white',
+      'grid h-5.5 w-5.5 shrink-0 place-items-center text-[9px] font-bold text-white',
     '[class.rounded-full]': 'isCircle()',
     '[class.rounded-md]': '!isCircle()',
     '[style.background]': 'color()',

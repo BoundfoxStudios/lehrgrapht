@@ -21,6 +21,8 @@ import { ButtonDirective } from '../../ui/button/button.directive';
   styleUrl: './first-run-experience.css',
 })
 export class FirstRunExperience {
+  protected readonly faCube = faCube;
+  protected readonly faLightbulb = faLightbulb;
   protected readonly faTableCells = faTableCells;
   protected readonly faImages = faImages;
   protected readonly faChartLine = faChartLine;
@@ -34,7 +36,4 @@ export class FirstRunExperience {
 
     void this.router.navigate(['/plot/list']);
   }
-
-  protected readonly faCube = faCube;
-  protected readonly faLightbulb = faLightbulb;
 }

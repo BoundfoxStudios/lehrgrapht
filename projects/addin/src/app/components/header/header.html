@@ -29,7 +29,6 @@
         @if (loading()) {
           <fa-icon
             [icon]="faCircleNotch"
-            style="font-size: 10px; opacity: 0.85"
             animation="spin"
             aria-hidden="true"
           />
@@ -40,30 +39,6 @@
   </div>
 
   <ng-content select="[headerActions]" />
-
-  @switch (saveState()) {
-    @case ('saving') {
-      <span
-        class="text-2xs flex shrink-0 items-center gap-1.5 text-white/85"
-        aria-live="polite"
-      >
-        <fa-icon
-          [icon]="faCircleNotch"
-          animation="spin"
-        />
-        <span>Wird gespeichert …</span>
-      </span>
-    }
-    @case ('saved') {
-      <span
-        class="text-2xs flex shrink-0 items-center gap-1.5 text-white/85"
-        aria-live="polite"
-      >
-        <fa-icon [icon]="faCheck" />
-        <span>Gespeichert</span>
-      </span>
-    }
-  }
 </header>
 
 @if (
