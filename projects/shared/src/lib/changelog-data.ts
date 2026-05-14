@@ -18,6 +18,7 @@ export const changelogData: ChangelogEntry[] = [
       'Verbesserte Darstellung mathematischer Ausdrücke.',
       'Fehler behoben, bei dem Beschriftungen nicht korrekt positioniert waren.',
     ],
+    date: '2026-05-14',
   },
   {
     version: '1.5.0',
