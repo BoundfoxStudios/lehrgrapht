@@ -5,6 +5,20 @@ export interface ChangelogEntry {
 
 export const changelogData: ChangelogEntry[] = [
   {
+    version: '1.6.0',
+    changes: [
+      'Überarbeitung des Designs.',
+      'Anzeige einer Funktionslegende mit konfigurierbarem Format (z.B. f(x)= oder y=).',
+      'Konfigurierbarer Linienstil (durchgezogen, gestrichelt, eigene Striche) für Linien und Funktionen.',
+      'Erstellung von Schrägbildern.',
+      'Schraffur oder Umriss für Flächen.',
+      'Definition von Punkt- und Spiegelachsen.',
+      'Anzeigen/Verstecken von Lösungen zur Erstellung von Arbeits- und Lösungsblättern.',
+      'Verbesserte Darstellung mathematischer Ausdrücke.',
+      'Fehler behoben, bei dem Beschriftungen nicht korrekt positioniert waren.',
+    ],
+  },
+  {
     version: '1.5.0',
     changes: [
       'Vorschaubilder der Plots in der Plot-Liste.',

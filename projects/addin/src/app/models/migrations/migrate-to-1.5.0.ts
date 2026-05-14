@@ -1,8 +1,7 @@
 import { Migration } from '../migration';
-import { lehrgraphtVersion } from '../../../version';
 
-export const migrateToLatest: Migration = {
-  version: lehrgraphtVersion,
+export const migrateTo150: Migration = {
+  version: '1.5.0',
   migrate: (plot: Record<string, unknown>): Record<string, unknown> => {
     const fnx = plot['fnx'] as Record<string, unknown>[] | undefined;
 
