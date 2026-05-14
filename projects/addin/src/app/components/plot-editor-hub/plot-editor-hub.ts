@@ -4,11 +4,8 @@ import {
   computed,
   inject,
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import {
   faArrowsLeftRightToLine,
-  faChevronRight,
   faDrawPolygon,
   faExpand,
   faLocationDot,
@@ -17,10 +14,12 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FormField } from '@angular/forms/signals';
 import { PlotEditorStore } from '../plot-editor/plot-editor.store';
+import { HubTileCard } from './hub-tile-card/hub-tile-card';
+import { HubLinkCard } from './hub-link-card/hub-link-card';
 
 @Component({
   selector: 'lg-plot-editor-hub',
-  imports: [FaIconComponent, FormField, RouterLink],
+  imports: [FormField, HubTileCard, HubLinkCard],
   templateUrl: './plot-editor-hub.html',
   styleUrl: './plot-editor-hub.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -28,13 +27,32 @@ import { PlotEditorStore } from '../plot-editor/plot-editor.store';
 export class PlotEditorHub {
   protected readonly faExpand = faExpand;
   protected readonly faSliders = faSliders;
-  protected readonly faChevronRight = faChevronRight;
   protected readonly faSquareRootVariable = faSquareRootVariable;
   protected readonly faLocationDot = faLocationDot;
   protected readonly faDrawPolygon = faDrawPolygon;
   protected readonly faArrowsLeftRightToLine = faArrowsLeftRightToLine;
 
   protected readonly store = inject(PlotEditorStore);
+
+  protected readonly fnxSubtitle = computed(() =>
+    formatObjectSubtitle(
+      this.store.model().fnx.length,
+      'Funktion',
+      'Funktionen',
+    ),
+  );
+
+  protected readonly markersSubtitle = computed(() =>
+    formatObjectSubtitle(this.store.model().markers.length, 'Punkt', 'Punkte'),
+  );
+
+  protected readonly polygonsSubtitle = computed(() =>
+    formatObjectSubtitle(
+      this.store.model().polygons.length,
+      'Polygon',
+      'Polygone',
+    ),
+  );
 
   protected readonly rangeSubtitle = computed(() => {
     const r = this.store.model().range;
@@ -53,4 +71,18 @@ export class PlotEditorHub {
     }
     return `Spiegelachse durch (${r.axis.p1.x}|${r.axis.p1.y})–(${r.axis.p2.x}|${r.axis.p2.y})`;
   });
+}
+
+function formatObjectSubtitle(
+  count: number,
+  singular: string,
+  plural: string,
+): string {
+  if (count === 0) {
+    return '+ hinzufügen';
+  }
+  if (count === 1) {
+    return `1 ${singular}`;
+  }
+  return `${count} ${plural}`;
 }

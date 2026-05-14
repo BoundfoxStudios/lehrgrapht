@@ -24,103 +24,29 @@
     Objekte
   </h3>
   <div class="grid grid-cols-2 gap-2">
-    <a
-      class="border-default-medium rounded-base hover:border-brand-medium flex min-h-19.5 flex-col gap-1.5 border bg-white p-2.5 text-left transition-colors"
+    <lg-hub-tile-card
+      [icon]="faSquareRootVariable"
+      [subtitle]="fnxSubtitle()"
+      [count]="model.fnx.length"
       [routerLink]="['/plot/editor', store.routeId(), 'fnx']"
-    >
-      <div class="flex items-center justify-between">
-        <span
-          class="bg-brand-soft text-brand grid h-7 w-7 place-items-center rounded-md"
-          aria-hidden="true"
-        >
-          <fa-icon [icon]="faSquareRootVariable" />
-        </span>
-        @if (model.fnx.length > 0) {
-          <span
-            class="bg-brand text-2xs inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 font-bold text-white"
-            >{{ model.fnx.length }}</span
-          >
-        }
-      </div>
-      <div>
-        <div class="text-heading text-sm font-semibold">Funktionen</div>
-        <div class="text-body-subtle text-2xs mt-0.5">
-          @if (model.fnx.length === 0) {
-            + hinzufügen
-          } @else if (model.fnx.length === 1) {
-            1 Funktion
-          } @else {
-            {{ model.fnx.length }} Funktionen
-          }
-        </div>
-      </div>
-    </a>
+      title="Funktionen"
+    />
 
-    <a
-      class="border-default-medium rounded-base hover:border-brand-medium flex min-h-[78px] flex-col gap-1.5 border bg-white p-2.5 text-left transition-colors"
+    <lg-hub-tile-card
+      [icon]="faLocationDot"
+      [subtitle]="markersSubtitle()"
+      [count]="model.markers.length"
       [routerLink]="['/plot/editor', store.routeId(), 'markers']"
-    >
-      <div class="flex items-center justify-between">
-        <span
-          class="bg-brand-soft text-brand grid h-7 w-7 place-items-center rounded-md"
-          aria-hidden="true"
-        >
-          <fa-icon [icon]="faLocationDot" />
-        </span>
-        @if (model.markers.length > 0) {
-          <span
-            class="bg-brand text-2xs inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 font-bold text-white"
-            >{{ model.markers.length }}</span
-          >
-        }
-      </div>
-      <div>
-        <div class="text-heading text-sm font-semibold">Punkte</div>
-        <div class="text-body-subtle text-2xs mt-0.5">
-          @if (model.markers.length === 0) {
-            + hinzufügen
-          } @else if (model.markers.length === 1) {
-            1 Punkt
-          } @else {
-            {{ model.markers.length }} Punkte
-          }
-        </div>
-      </div>
-    </a>
+      title="Punkte"
+    />
 
-    <a
-      class="border-default-medium rounded-base hover:border-brand-medium flex min-h-[78px] flex-col gap-1.5 border bg-white p-2.5 text-left transition-colors"
+    <lg-hub-tile-card
+      [icon]="faDrawPolygon"
+      [subtitle]="polygonsSubtitle()"
+      [count]="model.polygons.length"
       [routerLink]="['/plot/editor', store.routeId(), 'polygons']"
-    >
-      <div class="flex items-center justify-between">
-        <span
-          class="bg-brand-soft text-brand grid h-7 w-7 place-items-center rounded-md"
-          aria-hidden="true"
-        >
-          <fa-icon [icon]="faDrawPolygon" />
-        </span>
-        @if (model.polygons.length > 0) {
-          <span
-            class="bg-brand text-2xs inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 font-bold text-white"
-            >{{ model.polygons.length }}</span
-          >
-        }
-      </div>
-      <div>
-        <div class="text-heading text-sm font-semibold">
-          Polygone &amp; Flächen
-        </div>
-        <div class="text-body-subtle text-2xs mt-0.5">
-          @if (model.polygons.length === 0) {
-            + hinzufügen
-          } @else if (model.polygons.length === 1) {
-            1 Polygon
-          } @else {
-            {{ model.polygons.length }} Polygone
-          }
-        </div>
-      </div>
-    </a>
+      title="Polygone & Flächen"
+    />
   </div>
 
   <!-- WEITERE -->
@@ -130,72 +56,25 @@
     Weitere
   </h3>
 
-  <!-- Range / Achsen card -->
-  <a
-    class="border-default-medium rounded-base hover:border-brand-medium flex items-center gap-2.5 border bg-white p-2.5 text-left transition-colors"
+  <lg-hub-link-card
+    [icon]="faExpand"
+    [subtitle]="rangeSubtitle()"
     [routerLink]="['/plot/editor', store.routeId(), 'range']"
-  >
-    <span
-      class="bg-brand-soft text-brand grid h-9 w-9 shrink-0 place-items-center rounded-md"
-      aria-hidden="true"
-    >
-      <fa-icon [icon]="faExpand" />
-    </span>
-    <span class="min-w-0 flex-1">
-      <span class="text-heading block text-sm font-bold"
-        >Grenzen &amp; Achsen</span
-      >
-      <span class="text-body-subtle block text-xs tabular-nums">
-        {{ rangeSubtitle() }}
-      </span>
-    </span>
-    <fa-icon
-      class="text-body-subtle"
-      [icon]="faChevronRight"
-    />
-  </a>
+    title="Grenzen & Achsen"
+    tabularNums
+  />
 
-  <a
-    class="border-default-medium rounded-base hover:border-brand-medium flex items-center gap-2.5 border bg-white p-2.5 text-left transition-colors"
+  <lg-hub-link-card
+    [icon]="faArrowsLeftRightToLine"
+    [subtitle]="reflectionSubtitle()"
     [routerLink]="['/plot/editor', store.routeId(), 'reflection']"
-  >
-    <span
-      class="bg-brand-soft text-brand grid h-9 w-9 shrink-0 place-items-center rounded-md"
-      aria-hidden="true"
-    >
-      <fa-icon [icon]="faArrowsLeftRightToLine" />
-    </span>
-    <span class="min-w-0 flex-1">
-      <span class="text-heading block text-sm font-bold">Spiegelung</span>
-      <span class="text-body-subtle block text-xs">
-        {{ reflectionSubtitle() }}
-      </span>
-    </span>
-    <fa-icon
-      class="text-body-subtle"
-      [icon]="faChevronRight"
-    />
-  </a>
+    title="Spiegelung"
+  />
 
-  <a
-    class="border-default-medium rounded-base hover:border-brand-medium flex items-center gap-2.5 border bg-white p-2.5 text-left transition-colors"
+  <lg-hub-link-card
+    [icon]="faSliders"
     [routerLink]="['/plot/editor', store.routeId(), 'settings']"
-  >
-    <span
-      class="bg-brand-soft text-brand grid h-9 w-9 shrink-0 place-items-center rounded-md"
-      aria-hidden="true"
-    >
-      <fa-icon [icon]="faSliders" />
-    </span>
-    <span class="flex-1">
-      <span class="text-heading block text-sm font-bold">Darstellung</span>
-      <span class="text-body-subtle block text-xs"
-        >Achsen, Beschriftung, Format</span
-      >
-    </span>
-    <fa-icon
-      class="text-body-subtle"
-      [icon]="faChevronRight"
-    />
-  </a>
+    title="Darstellung"
+    subtitle="Achsen, Beschriftung, Format"
+  />
 </div>
