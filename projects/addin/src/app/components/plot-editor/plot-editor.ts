@@ -16,7 +16,6 @@ import {
   faArrowsLeftRightToLine,
   faCircleNotch,
   faDrawPolygon,
-  faExpand,
   faLocationDot,
   faSliders,
   faSquareRootVariable,
@@ -86,6 +85,11 @@ export class PlotEditor {
     const model = this.store.model();
     return [
       {
+        id: 'display',
+        label: 'Grenzen & Darstellung',
+        icon: faSliders,
+      },
+      {
         id: 'fnx',
         label: 'Funktionen',
         icon: faSquareRootVariable,
@@ -109,8 +113,6 @@ export class PlotEditor {
         icon: faArrowsLeftRightToLine,
         isEnabled: model.reflection.kind !== 'none',
       },
-      { id: 'range', label: 'Grenzen', icon: faExpand },
-      { id: 'settings', label: 'Darstellung', icon: faSliders },
     ];
   });
 

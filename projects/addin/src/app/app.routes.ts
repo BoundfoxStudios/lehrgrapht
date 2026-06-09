@@ -5,9 +5,8 @@ import { PlotEditorHub } from './components/plot-editor-hub/plot-editor-hub';
 import { SectionFnx } from './components/plot-editor/sections/section-fnx/section-fnx';
 import { SectionMarkers } from './components/plot-editor/sections/section-markers/section-markers';
 import { SectionPolygons } from './components/plot-editor/sections/section-polygons/section-polygons';
-import { SectionRange } from './components/plot-editor/sections/section-range/section-range';
+import { SectionDisplay } from './components/plot-editor/sections/section-display/section-display';
 import { SectionReflection } from './components/plot-editor/sections/section-reflection/section-reflection';
-import { SectionSettings } from './components/plot-editor/sections/section-settings/section-settings';
 import { unsavedChangesGuard } from './components/plot-editor/unsaved-changes.guard';
 import { Info } from './components/info/info';
 import { FirstRunExperience } from './components/first-run-experience/first-run-experience';
@@ -58,6 +57,10 @@ export const routes: Routes = [
             component: PlotEditorHub,
           },
           {
+            path: 'display',
+            component: SectionDisplay,
+          },
+          {
             path: 'fnx',
             component: SectionFnx,
           },
@@ -68,14 +71,6 @@ export const routes: Routes = [
           {
             path: 'polygons',
             component: SectionPolygons,
-          },
-          {
-            path: 'range',
-            component: SectionRange,
-          },
-          {
-            path: 'settings',
-            component: SectionSettings,
           },
           {
             path: 'reflection',
