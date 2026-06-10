@@ -6,6 +6,14 @@ export interface ChangelogEntry {
 
 export const changelogData: ChangelogEntry[] = [
   {
+    version: '1.7.0',
+    changes: [
+      'Schnelles Erstellen eines leeren Karopapiers direkt von der Startseite.',
+      'Die Bereiche "Grenzen & Achsen" und "Darstellung" sind jetzt zu "Grenzen & Darstellung" zusammengefasst.',
+    ],
+    date: '2026-06-10',
+  },
+  {
     version: '1.6.0',
     changes: [
       'Überarbeitung des Designs.',
