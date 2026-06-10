@@ -31,7 +31,11 @@ git log $(git describe --tags --abbrev=0)..HEAD --oneline
 
 Ask the user to confirm or override before proceeding.
 
-**Guard:** If the computed version equals the previous version from `package.json`, there is nothing release-worthy since the last tag — or the last release tag is missing or not reachable from this branch (tags must sit on develop-side commits, see the `release.yml` workflow). Stop and clarify with the user.
+**Guard:** If the computed version equals the previous version from `package.json`, stop and clarify with the user. Possible causes:
+
+- There is nothing release-worthy since the last tag (only commits whose type does not bump, e.g. `build`, `ci`, `docs` — see `cliff.toml`).
+- The release was already prepared but not yet merged and tagged (`package.json` already bumped).
+- The last release tag is missing or not reachable from this branch (tags must sit on develop-side commits, see the `release.yml` workflow).
 
 ### 2. Bump version in package.json and package-lock.json
 
@@ -107,6 +111,10 @@ Run tests to confirm nothing is broken:
 npx ng test addin --no-watch
 ```
 
+### 9. Hand-off
+
+Remind the user to merge `develop` into `main` promptly after the prepare commit lands. The `release.yml` workflow tags develop's head at merge time — commits landing on `develop` between the prepare commit and the merge would ship in the release unreviewed and be excluded from all future version calculations.
+
 ## Quick Reference
 
 | Step | Action                                                                         | Files                                    |
@@ -119,6 +127,7 @@ npx ng test addin --no-watch
 | 6    | Update import + array                                                          | `migration.ts`                           |
 | 7    | Update changelog (user-facing only)                                            | `shared/src/lib/changelog-data.ts`       |
 | 8    | Run tests                                                                      | —                                        |
+| 9    | Remind user to merge develop → main promptly                                   | —                                        |
 
 ## Common Mistakes
 
