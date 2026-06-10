@@ -1,0 +1,34 @@
+name: Tag Release
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Read version from package.json
+        id: version
+        run: echo "value=$(jq -r .version package.json)" >> "$GITHUB_OUTPUT"
+      - name: Create tag if missing
+        run: |
+          VERSION="${{ steps.version.outputs.value }}"
+          if git rev-parse -q --verify "refs/tags/$VERSION" > /dev/null; then
+            echo "Tag $VERSION already exists, nothing to do."
+            exit 0
+          fi
+          # Tag the develop-side parent of the release merge commit (fall back
+          # to HEAD on fast-forward) so the tag stays reachable from develop —
+          # version calculation via git-cliff depends on that.
+          TARGET=$(git rev-parse -q --verify HEAD^2 || git rev-parse HEAD)
+          git tag "$VERSION" "$TARGET"
+          git push origin "$VERSION"
+          echo "Created tag $VERSION on $TARGET."
