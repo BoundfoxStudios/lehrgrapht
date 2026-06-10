@@ -1,0 +1,13 @@
+# git-cliff configuration — used only for computing the next version
+# via `npm run version:next` (see .claude/skills/prepare-release).
+# https://git-cliff.org/docs/configuration
+
+[git]
+conventional_commits = true
+# Tags in this repo have no "v" prefix (e.g. 1.6.0).
+tag_pattern = '[0-9]+\.[0-9]+\.[0-9]+'
+
+[bump]
+# feat -> minor, fix -> patch, breaking change (! or BREAKING CHANGE:) -> major
+features_always_bump_minor = true
+breaking_always_bump_major = true
