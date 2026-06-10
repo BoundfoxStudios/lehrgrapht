@@ -1,6 +1,22 @@
-import { isPolygonClosingClick } from './plot-editor.store';
+import { isPolygonClosingClick, karopapierPlot } from './plot-editor.store';
 import { InteractiveMode } from './interactive-mode';
 import { dedupePolygonPoints } from './interactive-strategy';
+
+describe('karopapierPlot', () => {
+  it('switches every Darstellung toggle off', () => {
+    const plot = karopapierPlot();
+
+    expect(plot.showAxis).toBe(false);
+    expect(plot.showAxisLabels).toBe(false);
+    expect(plot.showAxisArrows).toBe(false);
+    expect(plot.placeAxisLabelsInside).toBe(false);
+    expect(plot.legendLabelFormat).toBe('none');
+  });
+
+  it('names the plot Karopapier', () => {
+    expect(karopapierPlot().name).toBe('Karopapier');
+  });
+});
 
 describe('isPolygonClosingClick', () => {
   it('returns false when mode is not Polygon', () => {
