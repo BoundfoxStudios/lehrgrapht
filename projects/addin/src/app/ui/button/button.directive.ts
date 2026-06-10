@@ -11,7 +11,7 @@ export type ButtonVariant =
 export type ButtonSize = 'default' | 'small' | 'cta';
 
 const BASE_CLASSES =
-  'box-border inline-flex cursor-pointer items-center justify-center gap-1.5 border border-transparent leading-5 transition-all duration-200 ease-in-out focus:ring-4 focus:outline-none active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100';
+  'box-border inline-flex cursor-pointer items-center justify-center gap-1.5 border border-transparent text-center leading-5 transition-all duration-200 ease-in-out focus:ring-4 focus:outline-none active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100';
 
 const VARIANT_CLASSES: Record<ButtonVariant, string> = {
   primary:
