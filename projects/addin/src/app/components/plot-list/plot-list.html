@@ -64,15 +64,24 @@
 @let isLoading = plots.isLoading();
 
 @if (visibleList.length) {
-  <div class="px-3 py-2.5">
+  <div class="flex flex-wrap gap-2 px-3 py-2.5">
     <a
-      class="w-full"
+      class="flex-auto"
       [routerLink]="'/plot/editor'"
       lgButton
       variant="outline"
     >
       <fa-icon [icon]="faPlus" />
       <span>Neuer Plot</span>
+    </a>
+    <a
+      class="flex-auto"
+      [routerLink]="karopapierLink"
+      lgButton
+      variant="outline"
+    >
+      <fa-icon [icon]="faTableCellsLarge" />
+      <span>Neues Karopapier</span>
     </a>
   </div>
 }
@@ -146,14 +155,23 @@
           möchtest.
         </div>
       </div>
-      <a
-        class="mt-2"
-        [routerLink]="'/plot/editor'"
-        lgButton
-      >
-        <fa-icon [icon]="faPlus" />
-        <span>Neuer Plot</span>
-      </a>
+      <div class="mt-2 flex flex-wrap justify-center gap-2">
+        <a
+          [routerLink]="'/plot/editor'"
+          lgButton
+        >
+          <fa-icon [icon]="faPlus" />
+          <span>Neuer Plot</span>
+        </a>
+        <a
+          [routerLink]="karopapierLink"
+          lgButton
+          variant="outline"
+        >
+          <fa-icon [icon]="faTableCellsLarge" />
+          <span>Neues Karopapier</span>
+        </a>
+      </div>
     </div>
     <div
       class="bg-brand-soft text-brand-strong rounded-base flex items-start gap-2 p-3 text-xs leading-relaxed"

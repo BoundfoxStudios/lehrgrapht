@@ -18,6 +18,7 @@ import {
   faPen,
   faPlus,
   faRotate,
+  faTableCellsLarge,
   faTrashCan,
 } from '@fortawesome/free-solid-svg-icons';
 import {
@@ -31,6 +32,7 @@ import {
   ConfirmDeleteDialog,
   ConfirmDeleteResult,
 } from './confirm-delete-dialog/confirm-delete-dialog';
+import { KAROPAPIER_PLOT_ID } from '../plot-editor/plot-editor.store';
 
 @Component({
   selector: 'lg-plot-list',
@@ -54,6 +56,13 @@ export class PlotList {
   protected readonly faGear = faGear;
   protected readonly faPlus = faPlus;
   protected readonly faRotate = faRotate;
+  protected readonly faTableCellsLarge = faTableCellsLarge;
+
+  protected readonly karopapierLink = [
+    '/plot/editor',
+    KAROPAPIER_PLOT_ID,
+    'display',
+  ];
 
   protected readonly wordService = inject(WordPlotService);
   private readonly router = inject(Router);

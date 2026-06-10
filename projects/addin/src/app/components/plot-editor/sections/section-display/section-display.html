@@ -1,13 +1,17 @@
 @let form = store.editorForm;
 @let plotSizeMm = store.plotSizeMm();
 
-<div class="flex flex-col gap-y-3 p-2">
-  <div class="rounded-lg border border-gray-200 bg-white p-3">
-    <div class="mb-2 text-xs font-medium text-gray-500">X-Achse</div>
+<div class="flex flex-col gap-2.5 p-2">
+  <section
+    class="border-default-medium flex flex-col gap-2 rounded-lg border bg-white p-2.5"
+  >
+    <h3 class="text-body-subtle text-2xs font-bold tracking-[.4px] uppercase">
+      X-Achse
+    </h3>
     <div class="flex gap-3">
       <div class="flex-1">
         <label
-          class="mb-1 block text-xs text-gray-600"
+          class="text-body-subtle text-2xs mb-1 block font-semibold"
           for="min-x"
           >Min</label
         >
@@ -20,7 +24,7 @@
       </div>
       <div class="flex-1">
         <label
-          class="mb-1 block text-xs text-gray-600"
+          class="text-body-subtle text-2xs mb-1 block font-semibold"
           for="max-x"
           >Max</label
         >
@@ -32,14 +36,18 @@
         />
       </div>
     </div>
-  </div>
+  </section>
 
-  <div class="rounded-lg border border-gray-200 bg-white p-3">
-    <div class="mb-2 text-xs font-medium text-gray-500">Y-Achse</div>
+  <section
+    class="border-default-medium flex flex-col gap-2 rounded-lg border bg-white p-2.5"
+  >
+    <h3 class="text-body-subtle text-2xs font-bold tracking-[.4px] uppercase">
+      Y-Achse
+    </h3>
     <div class="flex gap-3">
       <div class="flex-1">
         <label
-          class="mb-1 block text-xs text-gray-600"
+          class="text-body-subtle text-2xs mb-1 block font-semibold"
           for="min-y"
           >Min</label
         >
@@ -52,7 +60,7 @@
       </div>
       <div class="flex-1">
         <label
-          class="mb-1 block text-xs text-gray-600"
+          class="text-body-subtle text-2xs mb-1 block font-semibold"
           for="max-y"
           >Max</label
         >
@@ -64,7 +72,7 @@
         />
       </div>
     </div>
-  </div>
+  </section>
 
   <div class="flex items-center justify-between">
     <span
@@ -114,4 +122,70 @@
     Seite. Benötigt daher mindestens einen Punkt oder ein
     Polygon.</lg-section-hint
   >
+
+  <section
+    class="border-default-medium flex flex-col gap-2 rounded-lg border bg-white p-2.5"
+  >
+    <h3 class="text-body-subtle text-2xs font-bold tracking-[.4px] uppercase">
+      Achsen
+    </h3>
+    <lg-toggle-row
+      [formField]="form.showAxis"
+      label="Achsen anzeigen"
+      sub="X- und Y-Achse als Linie"
+    />
+    @if (form.showAxis().value()) {
+      <lg-toggle-row
+        [formField]="form.showAxisLabels"
+        label="Achsenbeschriftung"
+        sub="Zahlenwerte an den Gitterlinien"
+      />
+      <lg-toggle-row
+        [formField]="form.showAxisArrows"
+        label="Pfeilspitzen"
+        sub="An den Enden der Achsen"
+      />
+    }
+  </section>
+
+  <section
+    class="border-default-medium flex flex-col gap-2 rounded-lg border bg-white p-2.5"
+  >
+    <h3 class="text-body-subtle text-2xs font-bold tracking-[.4px] uppercase">
+      Gitter
+    </h3>
+    <lg-toggle-row
+      [formField]="form.placeAxisLabelsInside"
+      label="Achsenbeschriftung an 0-Linie"
+      sub="Beschriftung in die Achsen schieben"
+    />
+    <div>
+      <span class="text-body-subtle text-2xs mb-1 block font-semibold"
+        >Schrittweite</span
+      >
+      <lg-pill-switch
+        [options]="gridStepOptions"
+        [formField]="form.gridStep"
+        aria-label="Schrittweite"
+        shape="square"
+      />
+    </div>
+  </section>
+
+  <section
+    class="border-default-medium flex flex-col gap-2 rounded-lg border bg-white p-2.5"
+  >
+    <h3 class="text-body-subtle text-2xs font-bold tracking-[.4px] uppercase">
+      Legende
+    </h3>
+    <div>
+      <span class="text-body-subtle text-2xs mb-1 block font-semibold"
+        >Legendenformat</span
+      >
+      <lg-dropdown
+        [formField]="form.legendLabelFormat"
+        [options]="legendLabelFormatOptions"
+      />
+    </div>
+  </section>
 </div>
