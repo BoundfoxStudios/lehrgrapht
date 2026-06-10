@@ -1,7 +1,6 @@
 @let model = store.model();
 
 <div class="flex flex-col gap-2.5 p-2.5">
-  <!-- Plot name (inline rename) -->
   <div class="border-default-medium rounded-base border bg-white p-2.5">
     <label
       class="text-2xs text-body-subtle mb-0.5 block font-semibold uppercase"
@@ -17,7 +16,14 @@
     />
   </div>
 
-  <!-- OBJEKTE -->
+  <lg-hub-link-card
+    [icon]="faSliders"
+    [subtitle]="rangeSubtitle()"
+    [routerLink]="['/plot/editor', store.routeId(), 'display']"
+    title="Grenzen & Darstellung"
+    tabularNums
+  />
+
   <h3
     class="text-2xs text-body-subtle px-0.5 pt-1 font-bold tracking-wider uppercase"
   >
@@ -49,7 +55,6 @@
     />
   </div>
 
-  <!-- WEITERE -->
   <h3
     class="text-2xs text-body-subtle px-0.5 pt-1 font-bold tracking-wider uppercase"
   >
@@ -57,24 +62,9 @@
   </h3>
 
   <lg-hub-link-card
-    [icon]="faExpand"
-    [subtitle]="rangeSubtitle()"
-    [routerLink]="['/plot/editor', store.routeId(), 'range']"
-    title="Grenzen & Achsen"
-    tabularNums
-  />
-
-  <lg-hub-link-card
     [icon]="faArrowsLeftRightToLine"
     [subtitle]="reflectionSubtitle()"
     [routerLink]="['/plot/editor', store.routeId(), 'reflection']"
     title="Spiegelung"
-  />
-
-  <lg-hub-link-card
-    [icon]="faSliders"
-    [routerLink]="['/plot/editor', store.routeId(), 'settings']"
-    title="Darstellung"
-    subtitle="Achsen, Beschriftung, Format"
   />
 </div>

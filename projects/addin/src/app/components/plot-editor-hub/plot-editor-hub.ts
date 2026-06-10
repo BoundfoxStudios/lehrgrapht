@@ -7,7 +7,6 @@ import {
 import {
   faArrowsLeftRightToLine,
   faDrawPolygon,
-  faExpand,
   faLocationDot,
   faSliders,
   faSquareRootVariable,
@@ -25,7 +24,6 @@ import { HubLinkCard } from './hub-link-card/hub-link-card';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlotEditorHub {
-  protected readonly faExpand = faExpand;
   protected readonly faSliders = faSliders;
   protected readonly faSquareRootVariable = faSquareRootVariable;
   protected readonly faLocationDot = faLocationDot;
