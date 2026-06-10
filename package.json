@@ -102,5 +102,17 @@
       "@angular/common": "$@angular/common",
       "@angular/core": "$@angular/core"
     }
+  },
+  "allowScripts": {
+    "@azure/msal-node-extensions": true,
+    "@azure/msal-node-runtime": true,
+    "@microsoft/m365agentstoolkit-cli": true,
+    "@parcel/watcher": true,
+    "esbuild": true,
+    "keytar": true,
+    "lefthook": true,
+    "lmdb": true,
+    "msgpackr-extract": true,
+    "fsevents": true
   }
 }
