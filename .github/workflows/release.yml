@@ -1,0 +1,49 @@
+name: Tag Release
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Read version from package.json
+        id: version
+        run: echo "value=$(jq -r .version package.json)" >> "$GITHUB_OUTPUT"
+      - name: Create tag if missing
+        run: |
+          VERSION="${{ steps.version.outputs.value }}"
+          if git rev-parse -q --verify "refs/tags/$VERSION" > /dev/null; then
+            echo "Tag $VERSION already exists, nothing to do."
+            exit 0
+          fi
+          # The tag must stay reachable from develop — version calculation
+          # via git-cliff depends on that. On a fast-forward push main's tip
+          # is itself on develop; on a release merge ("git merge develop" on
+          # main) the develop-side parent is. Anything else (e.g. a hotfix
+          # branch merged directly into main) must fail loudly instead of
+          # creating a tag that develop can never see.
+          if git merge-base --is-ancestor HEAD origin/develop; then
+            TARGET=$(git rev-parse HEAD)
+          else
+            TARGET=$(git rev-parse -q --verify HEAD^2 || git rev-parse HEAD)
+            if ! git merge-base --is-ancestor "$TARGET" origin/develop; then
+              echo "::error::Tag target $TARGET is not reachable from origin/develop. Tag $VERSION manually on a develop-side commit."
+              exit 1
+            fi
+          fi
+          git tag "$VERSION" "$TARGET"
+          git push origin "$VERSION"
+          echo "Created tag $VERSION on $TARGET."
