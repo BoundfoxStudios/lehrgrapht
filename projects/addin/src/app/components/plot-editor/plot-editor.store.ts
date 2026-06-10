@@ -51,6 +51,7 @@ import {
 } from './interactive-strategy';
 
 export const NEW_PLOT_ID = 'new';
+export const KAROPAPIER_PLOT_ID = 'karopapier';
 
 const emptyPlot = (): Plot => ({
   version: lehrgraphtVersion,
@@ -73,6 +74,16 @@ const emptyPlot = (): Plot => ({
   showAxisArrows: true,
   gridStep: '0.5',
   reflection: { kind: 'none' },
+});
+
+export const karopapierPlot = (): Plot => ({
+  ...emptyPlot(),
+  name: 'Karopapier',
+  showAxis: false,
+  showAxisLabels: false,
+  placeAxisLabelsInside: false,
+  showAxisArrows: false,
+  legendLabelFormat: 'none',
 });
 
 export function isPolygonClosingClick(
@@ -111,6 +122,7 @@ export const PlotEditorStore = signalStore(
     const model = signal<Plot>(emptyPlot());
     const plotSettings = signal<PlotSettings>(defaultPlotSettings);
     const activeId = signal<string | null>(null);
+    const unsavedRouteId = signal(NEW_PLOT_ID);
     const isLoading = signal(false);
 
     const saveToDocument = async (): Promise<boolean> => {
@@ -181,6 +193,7 @@ export const PlotEditorStore = signalStore(
       editorForm,
       plotSettings,
       activeId,
+      unsavedRouteId,
       isLoading,
       saveToDocument,
     };
@@ -203,7 +216,7 @@ export const PlotEditorStore = signalStore(
         () => store.interactiveMode() !== InteractiveMode.Off,
       ),
       isEditMode: computed(() => store.activeId() !== null),
-      routeId: computed(() => store.activeId() ?? NEW_PLOT_ID),
+      routeId: computed(() => store.activeId() ?? store.unsavedRouteId()),
       isDirty: computed(() => store.editorForm().dirty()),
       hasErrors: computed(() => store.editorForm().errorSummary().length > 0),
       errorCount: computed(() => store.editorForm().errorSummary().length),
@@ -808,8 +821,14 @@ export const PlotEditorStore = signalStore(
 
       effect(() => {
         const id = idSignal();
-        if (!id || id === NEW_PLOT_ID) {
+        if (!id || id === NEW_PLOT_ID || id === KAROPAPIER_PLOT_ID) {
           store.activeId.set(null);
+          store.unsavedRouteId.set(
+            id === KAROPAPIER_PLOT_ID ? KAROPAPIER_PLOT_ID : NEW_PLOT_ID,
+          );
+          if (id === KAROPAPIER_PLOT_ID) {
+            store.editorForm().reset(karopapierPlot());
+          }
           return;
         }
         store.activeId.set(id);
