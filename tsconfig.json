@@ -3,7 +3,6 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "baseUrl": "./",
     "strict": true,
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
@@ -17,7 +16,7 @@
     "module": "preserve",
     "moduleResolution": "bundler",
     "paths": {
-      "@lehrgrapht/shared": ["projects/shared/src/public-api.ts"]
+      "@lehrgrapht/shared": ["./projects/shared/src/public-api.ts"]
     }
   },
   "angularCompilerOptions": {
