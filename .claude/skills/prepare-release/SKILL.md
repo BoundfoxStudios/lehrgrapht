@@ -5,17 +5,33 @@ description: Use when preparing a new release version - bumps package version, r
 
 # Prepare Release
 
-Prepares the codebase for a new version release. The user provides the new version number.
+Prepares the codebase for a new version release. The new version number is computed automatically from conventional commits; the user confirms or overrides it.
 
 ## Input
 
-The new version number (e.g., `1.5.0`).
+None required. The user may provide an explicit version number to override the computed one (e.g., to force a major bump).
 
 ## Steps
 
-### 1. Determine previous version
+### 1. Determine previous and new version
 
 Read the current `version` from `package.json`. This is the **previous version**, used later to scope the changelog (Step 7) — not for renaming migration files.
+
+Compute the proposed **new version** from the conventional commits since the last tag:
+
+```bash
+npm run version:next
+```
+
+Show the user the proposed version together with the commits driving it:
+
+```bash
+git log $(git describe --tags --abbrev=0)..HEAD --oneline
+```
+
+Ask the user to confirm or override before proceeding.
+
+**Guard:** If the computed version equals the previous version from `package.json`, there is nothing release-worthy since the last tag — or the last release tag is missing or not reachable from this branch (tags must sit on develop-side commits, see the `release.yml` workflow). Stop and clarify with the user.
 
 ### 2. Bump version in package.json and package-lock.json
 
@@ -93,19 +109,20 @@ npx ng test addin --no-watch
 
 ## Quick Reference
 
-| Step | Action                                   | Files                                    |
-| ---- | ---------------------------------------- | ---------------------------------------- |
-| 1    | Read previous version                    | `package.json`                           |
-| 2    | `npm version <new> --no-git-tag-version` | `package.json`, `package-lock.json`      |
-| 3    | `git mv` migration files                 | `migrations/migrate-to-latest.ts` + spec |
-| 4    | Update version + export name             | `migrations/migrate-to-<new>.ts`         |
-| 5    | Update import + describe + variable      | `migrations/migrate-to-<new>.spec.ts`    |
-| 6    | Update import + array                    | `migration.ts`                           |
-| 7    | Update changelog (user-facing only)      | `shared/src/lib/changelog-data.ts`       |
-| 8    | Run tests                                | —                                        |
+| Step | Action                                                                         | Files                                    |
+| ---- | ------------------------------------------------------------------------------ | ---------------------------------------- |
+| 1    | Read previous version, compute new one (`npm run version:next`), user confirms | `package.json`                           |
+| 2    | `npm version <new> --no-git-tag-version`                                       | `package.json`, `package-lock.json`      |
+| 3    | `git mv` migration files                                                       | `migrations/migrate-to-latest.ts` + spec |
+| 4    | Update version + export name                                                   | `migrations/migrate-to-<new>.ts`         |
+| 5    | Update import + describe + variable                                            | `migrations/migrate-to-<new>.spec.ts`    |
+| 6    | Update import + array                                                          | `migration.ts`                           |
+| 7    | Update changelog (user-facing only)                                            | `shared/src/lib/changelog-data.ts`       |
+| 8    | Run tests                                                                      | —                                        |
 
 ## Common Mistakes
 
+- **Skipping the version confirmation** — Always show the user the computed version and the driving commits before bumping. A misplaced or missing tag silently produces a wrong version.
 - **Renaming `migrate-to-latest` after the previous version** — Use the NEW version. `migrate-to-X.ts` means "migrates plot data to version X"; the file carries `version: 'X'` and `migration.ts` applies it when stored data is older than X.
 - **Creating new empty migrate-to-latest files** — Do NOT. Its absence is intentional and signals no unreleased model changes.
 - **Forgetting to update migration.ts** — The import path, import name, and migrations array all need updating.
