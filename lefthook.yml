@@ -9,3 +9,8 @@ pre-commit:
       run: npx eslint --fix {staged_files}
       stage_fixed: true
       glob: '*.ts'
+
+commit-msg:
+  jobs:
+    - name: Lint commit message
+      run: npx commitlint --edit {1}

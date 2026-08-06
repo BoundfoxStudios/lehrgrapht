@@ -28,12 +28,6 @@
   "files": [],
   "references": [
     {
-      "path": "./tsconfig.app.json"
-    },
-    {
-      "path": "./tsconfig.spec.json"
-    },
-    {
       "path": "./projects/website/tsconfig.app.json"
     },
     {

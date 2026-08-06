@@ -1,0 +1,25 @@
+# git-cliff configuration — used only for computing the next version
+# via `npm run version:next` (see .claude/skills/prepare-release).
+# https://git-cliff.org/docs/configuration
+
+[git]
+conventional_commits = true
+# Tags in this repo have no "v" prefix (e.g. 1.6.0). Anchored so that tags
+# merely containing a semver-like substring (e.g. 1.8.0-rc.1) are ignored.
+tag_pattern = '^[0-9]+\.[0-9]+\.[0-9]+$'
+# Only feat and fix drive version bumps; everything else (build, ci, docs,
+# refactor, chore, test) is skipped — otherwise git-cliff counts any
+# conventional commit as at least a patch bump.
+commit_parsers = [
+  { message = "^feat", group = "feat" },
+  { message = "^fix", group = "fix" },
+  { message = ".*", skip = true },
+]
+# Keep breaking changes (e.g. "chore!:") visible to the bump logic even
+# though their type is skipped above.
+protect_breaking_commits = true
+
+[bump]
+# feat -> minor, fix -> patch, breaking change (! or BREAKING CHANGE:) -> major
+features_always_bump_minor = true
+breaking_always_bump_major = true
