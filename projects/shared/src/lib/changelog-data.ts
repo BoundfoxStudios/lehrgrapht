@@ -6,6 +6,11 @@ export interface ChangelogEntry {
 
 export const changelogData: ChangelogEntry[] = [
   {
+    version: '1.7.1',
+    changes: ['Technische Verbesserungen und Aktualisierungen.'],
+    date: '2026-08-06',
+  },
+  {
     version: '1.7.0',
     changes: [
       'Schnelles Erstellen eines leeren Karopapiers direkt von der Startseite.',
