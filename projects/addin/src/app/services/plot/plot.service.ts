@@ -5,6 +5,7 @@ import { LegendLabelFormat, Plot, PlotSettings } from '../../models/plot';
 import { modelIdPrefix } from '../office/plot/word-plot.service';
 import { v7 } from 'uuid';
 import {
+  FunctionSeries,
   PLOT_CONSTANTS,
   PlotGenerateErrorCode,
   PlotMarginMm,
@@ -60,16 +61,16 @@ export class PlotService {
     }
 
     const valueRanges = this.plotMathService.createRanges(plot);
-    const yValues = this.plotMathService.evaluateExpressions(
+    const series = this.plotMathService.evaluateExpressions(
       expressions,
       valueRanges,
     );
-    if (yValues === PlotGenerateErrorCode.evaluate) {
+    if (series === PlotGenerateErrorCode.evaluate) {
       return PlotGenerateErrorCode.evaluate;
     }
 
     const cleanedValues = this.plotMathService.cleanUpValues(
-      yValues,
+      series,
       valueRanges,
       plot,
     );
@@ -94,8 +95,7 @@ export class PlotService {
     const functionLabelImages = this.buildLegendImages(
       plot,
       renderedLabels,
-      cleanedValues.xValuesArray,
-      cleanedValues.yValuesArray,
+      series,
       sizeCalc,
       margin,
     );
@@ -108,8 +108,7 @@ export class PlotService {
     const data = this.plotDataService.buildPlotData(
       plot,
       plotSettings,
-      cleanedValues.xValuesArray,
-      cleanedValues.yValuesArray,
+      series,
       {
         highlightedPolygonIndex: options.highlightedPolygonIndex ?? null,
         showSolution: options.showSolution,
@@ -172,8 +171,7 @@ export class PlotService {
   private buildLegendImages(
     plot: Plot,
     renderedLabels: readonly RenderedLegendLabel[],
-    xValuesArray: number[],
-    yValuesArray: number[][],
+    series: readonly FunctionSeries[],
     sizeCalc: PlotSizeCalculation,
     margin: PlotMarginMm,
   ): Partial<Plotly.Image>[] {
@@ -187,8 +185,8 @@ export class PlotService {
 
       const fromStart = fn.legendPosition === 'start';
       const pos = this.plotLabelsService.findLabelPosition(
-        xValuesArray,
-        yValuesArray[label.index],
+        series[label.index].x,
+        series[label.index].y,
         sizeCalc.yValueMin,
         sizeCalc.yValueMax,
         fromStart,

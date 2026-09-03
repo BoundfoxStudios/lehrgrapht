@@ -1,5 +1,5 @@
 import { Plot } from '../../models/plot';
-import { PlotGenerateErrorCode, ValueRanges } from './plot.types';
+import { FunctionSeries, PlotGenerateErrorCode } from './plot.types';
 import { PlotMathService } from './plot-math.service';
 import * as mathjs from 'mathjs';
 
@@ -79,74 +79,143 @@ describe('PlotMathService', () => {
   });
 
   describe('evaluateExpressions', () => {
-    it('should evaluate compiled expressions over a range', () => {
+    const sampleFunction = (
+      fnx: string,
+      xMin: number,
+      xMax: number,
+      yRange: Plot['range']['y'] = basePlot.range.y,
+    ): { series: FunctionSeries; xNumbers: number[] } => {
       const compiled = service.compileExpressions([
-        {
-          fnx: 'x^2',
-          color: '#000',
-          legendPosition: 'end',
-          lineStyle: 'solid',
-        },
+        { fnx, color: '#000', legendPosition: 'end', lineStyle: 'solid' },
       ]);
-      expect(Array.isArray(compiled)).toBe(true);
-
       const ranges = service.createRanges({
         ...basePlot,
-        fnx: [
-          {
-            fnx: 'x^2',
-            color: '#000',
-            legendPosition: 'end',
-            lineStyle: 'solid',
-          },
-        ],
+        range: { x: { min: xMin, max: xMax }, y: yRange },
       });
       const result = service.evaluateExpressions(
         compiled as mathjs.EvalFunction[],
         ranges,
       );
       expect(Array.isArray(result)).toBe(true);
+      return {
+        series: (result as FunctionSeries[])[0],
+        xNumbers: ranges.xNumbers,
+      };
+    };
 
-      const yValues = (result as mathjs.Matrix[])[0].toArray() as number[];
-      // x=0 should produce y=0 (find closest to 0 due to floating point)
-      const zeroIdx = ranges.xNumbers.findIndex(x => Math.abs(x) < 0.001);
+    it('should evaluate compiled expressions over a range', () => {
+      const { series, xNumbers } = sampleFunction('x^2', -5, 5);
+
+      const zeroIdx = xNumbers.findIndex(x => Math.abs(x) < 0.001);
       expect(zeroIdx).toBeGreaterThanOrEqual(0);
-      expect(yValues[zeroIdx]).toBeCloseTo(0);
+      expect(series.y[zeroIdx]).toBeCloseTo(0);
     });
 
-    it('should return y range when no functions are provided', () => {
+    it('should return no series when no functions are provided', () => {
       const ranges = service.createRanges(basePlot);
       const result = service.evaluateExpressions([], ranges);
-      expect(Array.isArray(result)).toBe(true);
-      expect((result as mathjs.Matrix[]).length).toBe(1);
+      expect(result).toEqual([]);
     });
 
     it('should return evaluate error for expressions that fail at runtime', () => {
       const compiled = service.compileExpressions([
-        { fnx: 'x', color: '#000', legendPosition: 'end', lineStyle: 'solid' },
+        { fnx: 'y', color: '#000', legendPosition: 'end', lineStyle: 'solid' },
       ]);
       expect(Array.isArray(compiled)).toBe(true);
 
-      const brokenRanges = {
-        x: {
-          map: () => {
-            throw new Error('boom');
-          },
-        },
-        y: mathjs.range(-5, 5, 0.1, true),
-        xNumbers: [],
-        xMin: -5,
-        xMax: 5,
-        yNumbers: [],
-        yMin: -5,
-        yMax: 5,
-      } as unknown as ValueRanges;
-
       const result = service.evaluateExpressions(
         compiled as mathjs.EvalFunction[],
-        brokenRanges,
+        service.createRanges(basePlot),
       );
       expect(result).toBe(PlotGenerateErrorCode.evaluate);
+    });
+
+    it('should insert a gap at the pole of 12/x', () => {
+      const { series, xNumbers } = sampleFunction('12/x', -3, 3);
+
+      expect(series.y.filter(value => value === null)).toHaveLength(1);
+      expect(series.x).toHaveLength(series.y.length);
+      expect(series.y).toHaveLength(xNumbers.length + 1);
+      expect(Math.abs(series.x[series.y.indexOf(null)])).toBeLessThan(0.1);
+    });
+
+    it('should insert a gap at the pole of a vertically shifted hyperbola', () => {
+      const { series } = sampleFunction('1/x + 11', -3, 3);
+
+      expect(series.y.filter(value => value === null)).toHaveLength(1);
+      expect(Math.abs(series.x[series.y.indexOf(null)])).toBeLessThan(0.1);
+    });
+
+    it('should insert a gap at the pole of a downward shifted hyperbola', () => {
+      const { series } = sampleFunction('11 - 1/x', -5, 5);
+
+      expect(series.y.filter(value => value === null)).toHaveLength(1);
+      expect(Math.abs(series.x[series.y.indexOf(null)])).toBeLessThan(0.1);
+    });
+
+    it('should insert a gap at a pole between two grid points of a shifted hyperbola', () => {
+      const { series } = sampleFunction('1/(4x-1) + 6', -3, 3, {
+        min: -6,
+        max: 6,
+      });
+
+      expect(series.y.filter(value => value === null)).toHaveLength(1);
+      const gapX = series.x[series.y.indexOf(null)];
+      expect(gapX).toBeGreaterThan(0.2);
+      expect(gapX).toBeLessThan(0.3);
+    });
+
+    it('should insert a gap when the pole sits on a sample midpoint', () => {
+      const { series, xNumbers } = sampleFunction('1/(x-0.05)', 0, 3);
+
+      expect(series.y.filter(value => value === null)).toHaveLength(1);
+      expect(series.x[series.y.indexOf(null)]).toBeCloseTo(0.05);
+      expect(series.y).toHaveLength(xNumbers.length + 1);
+    });
+
+    it('should turn a division by zero into a gap', () => {
+      const { series, xNumbers } = sampleFunction('12/x', 0, 3);
+
+      expect(series.y[0]).toBeNull();
+      expect(series.y.filter(value => value === null)).toHaveLength(1);
+      expect(series.y).toHaveLength(xNumbers.length);
+    });
+
+    it('should insert a gap at the asymptote of tan(x)', () => {
+      const { series } = sampleFunction('tan(x)', 0, 3);
+
+      expect(series.y.filter(value => value === null)).toHaveLength(1);
+      const gapX = series.x[series.y.indexOf(null)];
+      expect(gapX).toBeGreaterThan(1.5);
+      expect(gapX).toBeLessThan(1.6);
+    });
+
+    it('should not insert a gap for a steep zero crossing', () => {
+      const { series, xNumbers } = sampleFunction('100*x', -3, 3);
+
+      expect(series.y).not.toContain(null);
+      expect(series.y).toHaveLength(xNumbers.length);
+    });
+
+    it('should not insert a gap when a sample is exactly zero', () => {
+      const { series } = sampleFunction('x - 10x^2', 0, 3);
+
+      expect(series.y).not.toContain(null);
+    });
+
+    it('should not insert a gap between two adjacent roots', () => {
+      const { series } = sampleFunction('(x-2)(x-2.1)', 0, 3);
+
+      expect(series.y).not.toContain(null);
+    });
+
+    it('should turn complex results into gaps', () => {
+      const { series, xNumbers } = sampleFunction('sqrt(x)', -3, 3);
+
+      expect(series.y).toHaveLength(xNumbers.length);
+      for (let index = 0; index < series.x.length; index++) {
+        expect(series.y[index] === null).toBe(series.x[index] < 0);
+      }
     });
   });
 
@@ -154,8 +223,6 @@ describe('PlotMathService', () => {
     it('should create ranges from plot config', () => {
       const ranges = service.createRanges(basePlot);
 
-      expect(ranges.xMin).toBeCloseTo(-5);
-      expect(ranges.xMax).toBeCloseTo(5);
       expect(ranges.yMin).toBeCloseTo(-5);
       expect(ranges.yMax).toBeCloseTo(5);
       expect(ranges.xNumbers.length).toBeGreaterThan(0);
@@ -191,7 +258,7 @@ describe('PlotMathService', () => {
       );
 
       const result = service.cleanUpValues(
-        yValues as mathjs.Matrix[],
+        yValues as FunctionSeries[],
         ranges,
         plot,
       );
@@ -208,11 +275,22 @@ describe('PlotMathService', () => {
       const yValues = service.evaluateExpressions([], ranges);
 
       const result = service.cleanUpValues(
-        yValues as mathjs.Matrix[],
+        yValues as FunctionSeries[],
         ranges,
         plot,
       );
       expect(result.cleanXValues.length).toBe(ranges.xNumbers.length);
+    });
+
+    it('should skip gaps', () => {
+      const result = service.cleanUpValues(
+        [{ x: [0, 0.5, 1, 2], y: [1, null, 3, 20] }],
+        service.createRanges(basePlot),
+        basePlot,
+      );
+
+      expect(result.cleanYValues).toEqual([[1, 3]]);
+      expect(result.cleanXValues).toEqual([0, 1]);
     });
   });
 });

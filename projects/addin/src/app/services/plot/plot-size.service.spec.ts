@@ -204,16 +204,10 @@ describe('PlotSizeService', () => {
       const cleanedValues: CleanedValues = {
         cleanXValues: xNumbers,
         cleanYValues: [yNumbers],
-        xValuesArray: xNumbers,
-        yValuesArray: [yNumbers],
       };
 
       const valueRanges: ValueRanges = {
-        x: mathjs.range(-5, 5, 0.1, true),
         xNumbers,
-        xMin: -5,
-        xMax: 5,
-        y: mathjs.range(-5, 5, 0.1, true),
         yNumbers,
         yMin: -5,
         yMax: 5,
@@ -249,15 +243,9 @@ describe('PlotSizeService', () => {
       const cleanedValues: CleanedValues = {
         cleanXValues: xNumbers,
         cleanYValues: [yNumbers],
-        xValuesArray: xNumbers,
-        yValuesArray: [yNumbers],
       };
       const valueRanges: ValueRanges = {
-        x: mathjs.range(-2, 2, 0.1, true),
         xNumbers,
-        xMin: -2,
-        xMax: 2,
-        y: mathjs.range(-5, 5, 0.1, true),
         yNumbers,
         yMin: -5,
         yMax: 5,

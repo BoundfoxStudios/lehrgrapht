@@ -12,7 +12,7 @@ import {
   reflectPoint,
   reflectPolygonPoints,
 } from './reflection';
-import { hexToRgba, PLOT_CONSTANTS } from './plot.types';
+import { FunctionSeries, hexToRgba, PLOT_CONSTANTS } from './plot.types';
 
 const DASH_TARGET_PERIOD_UNITS = 0.5;
 const DASH_RATIO = 0.6;
@@ -30,17 +30,11 @@ export class PlotDataService {
   buildPlotData(
     plot: Plot,
     plotSettings: PlotSettings,
-    xValuesArray: number[],
-    yValuesArray: number[][],
+    series: FunctionSeries[],
     options: PolygonRenderOptions = {},
   ): Partial<PlotData>[] {
     return [
-      ...this.buildFunctionTraces(
-        plot,
-        plotSettings,
-        xValuesArray,
-        yValuesArray,
-      ),
+      ...this.buildFunctionTraces(plot, plotSettings, series),
       ...this.buildMarkerTraces(plot, { showSolution: options.showSolution }),
       ...this.buildPolygonTraces(plot, plotSettings, options),
       ...this.buildReflectionTraces(plot, plotSettings),
@@ -50,21 +44,17 @@ export class PlotDataService {
   buildFunctionTraces(
     plot: Plot,
     plotSettings: PlotSettings,
-    xValuesArray: number[],
-    yValuesArray: number[][],
+    series: FunctionSeries[],
   ): Partial<PlotData>[] {
-    if (!plot.fnx.length) {
-      return [];
-    }
-
-    return yValuesArray.map((y, i) => ({
+    return series.map((functionSeries, index) => ({
       type: 'scatter',
-      x: xValuesArray,
-      y,
+      x: functionSeries.x,
+      y: functionSeries.y,
+      connectgaps: false,
       line: {
-        color: plot.fnx[i].color,
+        color: plot.fnx[index].color,
         width: plotSettings.plotLineWidth,
-        dash: plot.fnx[i].lineStyle === 'dashed' ? 'dash' : 'solid',
+        dash: plot.fnx[index].lineStyle === 'dashed' ? 'dash' : 'solid',
       },
     }));
   }

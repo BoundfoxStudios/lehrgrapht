@@ -1,9 +1,11 @@
 import * as mathjs from 'mathjs';
-import { EvalFunction, Matrix } from 'mathjs';
+import { EvalFunction } from 'mathjs';
 import { Injectable } from '@angular/core';
 import { MathFunction, Plot } from '../../models/plot';
 import {
   CleanedValues,
+  FunctionSeries,
+  isFiniteNumber,
   PlotGenerateErrorCode,
   ValueRanges,
 } from './plot.types';
@@ -30,64 +32,116 @@ export class PlotMathService {
   evaluateExpressions(
     functions: EvalFunction[],
     valueRanges: ValueRanges,
-  ): Matrix[] | PlotGenerateErrorCode.evaluate {
-    let yValues: Matrix[] | undefined;
-
+  ): FunctionSeries[] | PlotGenerateErrorCode.evaluate {
     try {
-      if (functions.length) {
-        yValues = functions.map(expression =>
-          valueRanges.x.map((x: number): number => expression.evaluate({ x })),
-        );
-      } else {
-        yValues = [valueRanges.y];
-      }
+      const yRange = valueRanges.yMax - valueRanges.yMin;
+      return functions.map(expression =>
+        this.sampleExpression(expression, valueRanges.xNumbers, yRange),
+      );
     } catch {
       return PlotGenerateErrorCode.evaluate;
     }
-
-    return yValues;
   }
 
   createRanges(plot: Plot): ValueRanges {
-    const x = mathjs.range(plot.range.x.min, plot.range.x.max, 0.1, true);
-    const y = mathjs.range(plot.range.y.min, plot.range.y.max, 0.1, true);
+    const xNumbers = mathjs
+      .range(plot.range.x.min, plot.range.x.max, 0.1, true)
+      .toArray() as number[];
+    const yNumbers = mathjs
+      .range(plot.range.y.min, plot.range.y.max, 0.1, true)
+      .toArray() as number[];
 
     return {
-      x,
-      xNumbers: x.toArray() as number[],
-      xMin: mathjs.min(x) as number,
-      xMax: mathjs.max(x) as number,
-      y,
-      yNumbers: y.toArray() as number[],
-      yMin: mathjs.min(y) as number,
-      yMax: mathjs.max(y) as number,
+      xNumbers,
+      yNumbers,
+      yMin: mathjs.min(yNumbers),
+      yMax: mathjs.max(yNumbers),
     };
   }
 
   cleanUpValues(
-    yValues: Matrix[],
+    series: FunctionSeries[],
     valueRanges: ValueRanges,
     plot: Plot,
   ): CleanedValues {
-    let cleanXValues: number[] = [];
-    let cleanYValues: number[][] = yValues.map(() => []);
-    const xValuesArray = valueRanges.xNumbers;
-    const yValuesArray = yValues.map(y => y.toArray() as number[]);
+    if (series.length === 0) {
+      return {
+        cleanXValues: valueRanges.xNumbers,
+        cleanYValues: [valueRanges.yNumbers],
+      };
+    }
 
-    if (plot.fnx.length) {
-      for (let i = 0; i < yValuesArray.length; i++) {
-        for (let ii = 0; ii < yValuesArray[i].length; ii++) {
-          const y = yValuesArray[i][ii];
-          if (y >= plot.range.y.min && y <= plot.range.y.max) {
-            cleanXValues.push(xValuesArray[ii]);
-            cleanYValues[i].push(yValuesArray[i][ii]);
-          }
+    const cleanXValues: number[] = [];
+    const cleanYValues: number[][] = series.map(() => []);
+
+    for (let seriesIndex = 0; seriesIndex < series.length; seriesIndex++) {
+      const functionSeries = series[seriesIndex];
+      for (
+        let sampleIndex = 0;
+        sampleIndex < functionSeries.y.length;
+        sampleIndex++
+      ) {
+        const y = functionSeries.y[sampleIndex];
+        if (
+          isFiniteNumber(y) &&
+          y >= plot.range.y.min &&
+          y <= plot.range.y.max
+        ) {
+          cleanXValues.push(functionSeries.x[sampleIndex]);
+          cleanYValues[seriesIndex].push(y);
         }
       }
-    } else {
-      cleanXValues = valueRanges.xNumbers;
-      cleanYValues = [yValues[0].toArray() as number[]];
     }
-    return { cleanXValues, cleanYValues, xValuesArray, yValuesArray };
+
+    return { cleanXValues, cleanYValues };
+  }
+
+  private sampleExpression(
+    expression: EvalFunction,
+    xValues: number[],
+    yRange: number,
+  ): FunctionSeries {
+    const evaluateAt = (x: number): number | null => {
+      const value: unknown = expression.evaluate({ x });
+      return isFiniteNumber(value) ? value : null;
+    };
+    const samples = xValues.map(evaluateAt);
+    const x: number[] = [];
+    const y: (number | null)[] = [];
+
+    for (let index = 0; index < xValues.length; index++) {
+      x.push(xValues[index]);
+      y.push(samples[index]);
+
+      if (index === xValues.length - 1) {
+        continue;
+      }
+
+      const left = samples[index];
+      const right = samples[index + 1];
+      if (left === null || right === null) {
+        continue;
+      }
+
+      const middleX = (xValues[index] + xValues[index + 1]) / 2;
+      const middle = evaluateAt(middleX);
+      const low = Math.min(left, right);
+      const high = Math.max(left, right);
+      const overshoot =
+        middle === null ? Infinity : Math.max(low - middle, middle - high);
+      const changesSign =
+        left * right < 0 &&
+        Math.min(Math.abs(left), Math.abs(right)) > yRange * 1e-9;
+      // Poles leave the sample interval at the midpoint. Zero crossings stay inside; extrema between samples overshoot by far less than the plot height
+      const isPole =
+        overshoot > 0 &&
+        (changesSign || high - low > yRange || overshoot > yRange);
+      if (isPole) {
+        x.push(middleX);
+        y.push(null);
+      }
+    }
+
+    return { x, y };
   }
 }
