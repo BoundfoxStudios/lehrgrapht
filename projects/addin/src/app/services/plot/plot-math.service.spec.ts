@@ -260,6 +260,19 @@ describe('PlotMathService', () => {
       expect(ranges.xNumbers[0]).toBeCloseTo(-5);
       expect(ranges.xNumbers[ranges.xNumbers.length - 1]).toBeCloseTo(5);
     });
+
+    it('should keep the samples per square constant when the axis scales differ', () => {
+      const ranges = service.createRanges({
+        ...basePlot,
+        range: { x: { min: 9, max: 20 }, y: { min: 0, max: 200 } },
+        unitsPerSquare: { x: 1, y: 20 },
+      });
+
+      expect(ranges.xNumbers).toHaveLength(11 * 5 + 1);
+      expect(ranges.yNumbers).toHaveLength(10 * 5 + 1);
+      expect(ranges.xNumbers[ranges.xNumbers.length - 1]).toBeCloseTo(20);
+      expect(ranges.yNumbers[ranges.yNumbers.length - 1]).toBeCloseTo(200);
+    });
   });
 
   describe('cleanUpValues', () => {
