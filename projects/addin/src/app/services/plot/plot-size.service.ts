@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Plot } from '../../models/plot';
 import { math } from '../../utils/math';
+import { squareCounts } from './plot-geometry';
 import {
   A4_USABLE_HEIGHT_MM,
   A4_USABLE_WIDTH_MM,
@@ -20,8 +21,7 @@ export class PlotSizeService {
     valueRanges: ValueRanges,
     margin: PlotMarginMm,
   ): PlotSizeCalculation {
-    const { dtick, mmPerTick, mmToInches, mmToPoints, ppiBase } =
-      PLOT_CONSTANTS;
+    const { mmPerSquare, mmToInches, mmToPoints, ppiBase } = PLOT_CONSTANTS;
 
     const xValueFlat = plot.automaticallyAdjustLimitsToValueRange
       ? cleanedValues.cleanXValues
@@ -37,18 +37,11 @@ export class PlotSizeService {
     const yValueMax = math.max(yValueFlat);
     const yValueRange = yValueMax - yValueMin;
 
-    const tickSquares = {
-      x: plot.squarePlots
-        ? Math.max(xValueRange, yValueRange) / dtick
-        : xValueRange / dtick,
-      y: plot.squarePlots
-        ? Math.max(xValueRange, yValueRange) / dtick
-        : yValueRange / dtick,
-    };
+    const squares = squareCounts(xValueRange, yValueRange, plot.squarePlots);
 
     const plotSizeMm = {
-      width: tickSquares.x * mmPerTick + margin.l + margin.r,
-      height: tickSquares.y * mmPerTick + margin.t + margin.b,
+      width: squares.x * mmPerSquare + margin.l + margin.r,
+      height: squares.y * mmPerSquare + margin.t + margin.b,
     };
 
     return {
@@ -129,20 +122,15 @@ export class PlotSizeService {
   }
 
   calculatePlotSizeMm(plot: Plot): PlotSizeMm {
-    const { dtick, mmPerTick } = PLOT_CONSTANTS;
     const margin = this.calculateEffectiveMargin(plot);
-    const xRange = plot.range.x.max - plot.range.x.min;
-    const yRange = plot.range.y.max - plot.range.y.min;
+    const squares = squareCounts(
+      plot.range.x.max - plot.range.x.min,
+      plot.range.y.max - plot.range.y.min,
+      plot.squarePlots,
+    );
 
-    const tickSquaresX = plot.squarePlots
-      ? Math.max(xRange, yRange) / dtick
-      : xRange / dtick;
-    const tickSquaresY = plot.squarePlots
-      ? Math.max(xRange, yRange) / dtick
-      : yRange / dtick;
-
-    const width = tickSquaresX * mmPerTick + margin.l + margin.r;
-    const height = tickSquaresY * mmPerTick + margin.t + margin.b;
+    const width = squares.x * PLOT_CONSTANTS.mmPerSquare + margin.l + margin.r;
+    const height = squares.y * PLOT_CONSTANTS.mmPerSquare + margin.t + margin.b;
 
     const exceedsWidth = width > A4_USABLE_WIDTH_MM;
     const exceedsHeight = height > A4_USABLE_HEIGHT_MM;

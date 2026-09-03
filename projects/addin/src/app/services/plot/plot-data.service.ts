@@ -351,10 +351,12 @@ export class PlotDataService {
     );
     const periodUnits = perimeter / numPeriods;
 
-    const { dtick, mmPerTick, mmToInches, ppiBase } = PLOT_CONSTANTS;
-    const pxPerUnit = (mmPerTick / dtick) * mmToInches * ppiBase;
-    const dashPx = periodUnits * DASH_RATIO * pxPerUnit;
-    const gapPx = periodUnits * (1 - DASH_RATIO) * pxPerUnit;
+    const { renderUnitsPerSquare, mmPerSquare, mmToInches, ppiBase } =
+      PLOT_CONSTANTS;
+    const pxPerRenderUnit =
+      (mmPerSquare / renderUnitsPerSquare) * mmToInches * ppiBase;
+    const dashPx = periodUnits * DASH_RATIO * pxPerRenderUnit;
+    const gapPx = periodUnits * (1 - DASH_RATIO) * pxPerRenderUnit;
 
     return `${dashPx}px,${gapPx}px` as Dash;
   }

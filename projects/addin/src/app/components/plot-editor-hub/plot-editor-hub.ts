@@ -15,6 +15,7 @@ import { FormField } from '@angular/forms/signals';
 import { PlotEditorStore } from '../plot-editor/plot-editor.store';
 import { HubTileCard } from './hub-tile-card/hub-tile-card';
 import { HubLinkCard } from './hub-link-card/hub-link-card';
+import { squareCounts } from '../../services/plot/plot-geometry';
 
 @Component({
   selector: 'lg-plot-editor-hub',
@@ -54,9 +55,8 @@ export class PlotEditorHub {
 
   protected readonly rangeSubtitle = computed(() => {
     const r = this.store.model().range;
-    const xCount = (r.x.max - r.x.min) * 2;
-    const yCount = (r.y.max - r.y.min) * 2;
-    return `x: ${r.x.min} / ${r.x.max} · y: ${r.y.min} / ${r.y.max} · ${xCount}×${yCount} K.`;
+    const squares = squareCounts(r.x.max - r.x.min, r.y.max - r.y.min, false);
+    return `x: ${r.x.min} / ${r.x.max} · y: ${r.y.min} / ${r.y.max} · ${squares.x}×${squares.y} K.`;
   });
 
   protected readonly reflectionSubtitle = computed(() => {

@@ -12,6 +12,7 @@ import {
   PlotGenerateErrorCode,
   plotHasErrorCode,
 } from '../../services/plot/plot.types';
+import { squareCounts } from '../../services/plot/plot-geometry';
 import { switchMap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { Plot, PlotSettings } from '../../models/plot';
@@ -82,19 +83,13 @@ export class PlotPreview {
     const xRange = range.x.max - range.x.min;
     const yRange = range.y.max - range.y.min;
 
-    const mmPerTick = 5;
-    const dtick = 0.5;
+    const mmPerSquare = 5;
     const mmMargin = 7.5;
 
-    const tickSquaresX = plot.squarePlots
-      ? Math.max(xRange, yRange) / dtick
-      : xRange / dtick;
-    const tickSquaresY = plot.squarePlots
-      ? Math.max(xRange, yRange) / dtick
-      : yRange / dtick;
+    const squares = squareCounts(xRange, yRange, plot.squarePlots);
 
-    const plotWidthMm = tickSquaresX * mmPerTick + mmMargin * 2;
-    const plotHeightMm = tickSquaresY * mmPerTick + mmMargin * 2;
+    const plotWidthMm = squares.x * mmPerSquare + mmMargin * 2;
+    const plotHeightMm = squares.y * mmPerSquare + mmMargin * 2;
 
     const marginPercentX = mmMargin / plotWidthMm;
     const marginPercentY = mmMargin / plotHeightMm;

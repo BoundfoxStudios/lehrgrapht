@@ -16,6 +16,7 @@ import { PillSwitch, PillSwitchOption } from '../../../pill-switch/pill-switch';
 import { ToggleRow } from '../../../toggle-row/toggle-row';
 import { legendLabelFormatOptions } from '../../dropdown-options';
 import { GridStep } from '../../../../models/plot';
+import { squareCounts } from '../../../../services/plot/plot-geometry';
 
 @Component({
   selector: 'lg-section-display',
@@ -46,8 +47,11 @@ export class SectionDisplay {
 
   protected readonly squareCount = computed(() => {
     const range = this.store.model().range;
-    const x = (range.x.max - range.x.min) * 2;
-    const y = (range.y.max - range.y.min) * 2;
-    return `${x} / ${y}`;
+    const squares = squareCounts(
+      range.x.max - range.x.min,
+      range.y.max - range.y.min,
+      false,
+    );
+    return `${squares.x} / ${squares.y}`;
   });
 }

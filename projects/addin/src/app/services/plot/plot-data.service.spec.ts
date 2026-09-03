@@ -248,9 +248,11 @@ describe('PlotDataService', () => {
       const gapPx = parseFloat(match[2]);
       const period = dashPx + gapPx;
 
-      const { dtick, mmPerTick, mmToInches, ppiBase } = PLOT_CONSTANTS;
-      const pxPerUnit = (mmPerTick / dtick) * mmToInches * ppiBase;
-      const perimeterPx = 12 * pxPerUnit;
+      const { renderUnitsPerSquare, mmPerSquare, mmToInches, ppiBase } =
+        PLOT_CONSTANTS;
+      const pxPerRenderUnit =
+        (mmPerSquare / renderUnitsPerSquare) * mmToInches * ppiBase;
+      const perimeterPx = 12 * pxPerRenderUnit;
       const numPeriods = perimeterPx / period;
 
       expect(numPeriods).toBeCloseTo(Math.round(numPeriods), 5);
