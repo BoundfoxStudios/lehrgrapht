@@ -79,10 +79,16 @@ export type Reflection =
       extendBeyondPoints: boolean;
     };
 
+export interface UnitsPerSquare {
+  x: number;
+  y: number;
+}
+
 export interface Plot {
   version: string;
   name: string;
   range: PlotRange;
+  unitsPerSquare: UnitsPerSquare;
   fnx: MathFunction[];
   markers: {
     x: number;
