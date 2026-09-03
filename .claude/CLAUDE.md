@@ -31,6 +31,7 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Set `changeDetection: ChangeDetectionStrategy.OnPush` in `@Component` decorator
 - Always use external templates (separate `.html` files) and external styles (separate `.css` files), never inline templates or styles
 - Always use signal forms. Do NOT use Reactive forms or Template-driven forms
+- Before working with signal forms, fetch the current Signal Forms documentation (context7 or angular.dev)
 - Do NOT use `ngClass`, use `class` bindings instead
 - Do NOT use `ngStyle`, use `style` bindings instead
 - When using external templates/styles, use paths relative to the component TS file.
@@ -49,6 +50,7 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Use the async pipe to handle observables
 - Do not assume globals like (`new Date()`) are available.
 - Do not write arrow functions in templates (they are not supported).
+- Do NOT use `ngSubmit` or `(submit)` on the `form` tag. Submit runs through the `formRoot` directive.
 - For buttons (`<button>`) and anchor buttons (`<a [routerLink]>`), use the `lgButton` directive (`projects/addin/src/app/ui/button/button.directive.ts`) with the appropriate `variant`, `size`, and `iconOnly` inputs. Do NOT write ad-hoc Tailwind button styles. If no existing variant fits, extend the directive instead of bypassing it.
 - For text/number inputs, use the `lg-input` component (`projects/addin/src/app/ui/input/input.ts`) wherever possible. Only fall back to a raw `<input>` when `lg-input` genuinely cannot fulfill the requirement.
 - For animating a `faIcon`, use the FontAwesome `animation` input (e.g. `animation="spin"`). Do NOT use Tailwind's `animate-spin` on a faIcon.
