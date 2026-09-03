@@ -25,6 +25,13 @@ export const effectiveUnitsPerSquare = (
   };
 };
 
+export const snapToSquare = (value: number, unitsPerSquare: number): number => {
+  const squareIndex = Math.round(value / unitsPerSquare);
+
+  // 3 * 0.2 is 0.6000000000000001, and such a value breaks the exact collinearity test of dedupePolygonPoints
+  return Number((squareIndex * unitsPerSquare).toPrecision(12));
+};
+
 export const squareCounts = (
   xRange: number,
   yRange: number,

@@ -27,6 +27,7 @@ import {
 import { reflectPoint } from '../../services/plot/reflection';
 import { PlotService } from '../../services/plot/plot.service';
 import { plotHasErrorCode, PlotSizeMm } from '../../services/plot/plot.types';
+import { effectiveUnitsPerSquare } from '../../services/plot/plot-geometry';
 import { SolutionViewService } from '../../services/solution-view.service';
 import { WordPlotService } from '../../services/office/plot/word-plot.service';
 import { PlotClickEvent } from '../plot-preview/plot-preview';
@@ -587,11 +588,19 @@ export const PlotEditorStore = signalStore(
           }
         }
 
+        const unitsPerSquare = effectiveUnitsPerSquare(m.unitsPerSquare);
+
         store.editorForm().controlValue.update(model => ({
           ...model,
           range: {
-            x: { min: minX - 1, max: maxX + 1 },
-            y: { min: minY - 1, max: maxY + 1 },
+            x: {
+              min: minX - 2 * unitsPerSquare.x,
+              max: maxX + 2 * unitsPerSquare.x,
+            },
+            y: {
+              min: minY - 2 * unitsPerSquare.y,
+              max: maxY + 2 * unitsPerSquare.y,
+            },
           },
         }));
       },

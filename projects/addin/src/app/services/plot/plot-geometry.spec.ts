@@ -4,6 +4,7 @@ import {
   formatAxisValue,
   gridMultipliers,
   renderScale,
+  snapToSquare,
   squareCounts,
 } from './plot-geometry';
 
@@ -53,6 +54,27 @@ describe('squareCounts', () => {
     expect(
       squareCounts(4, 10, undefined as unknown as UnitsPerSquare, false),
     ).toEqual({ x: 8, y: 20 });
+  });
+});
+
+describe('snapToSquare', () => {
+  it('should move a value to the nearest square boundary', () => {
+    expect(snapToSquare(1.4, 0.5)).toBe(1.5);
+    expect(snapToSquare(-1.4, 0.5)).toBe(-1.5);
+    expect(snapToSquare(63, 20)).toBe(60);
+  });
+
+  it('should snap a value on a non-dyadic grid without floating point noise', () => {
+    expect(snapToSquare(0.55, 0.2)).toBe(0.6);
+    expect(snapToSquare(1.4, 0.3)).toBe(1.5);
+  });
+
+  it('should stay identical to the half unit grid for the default scale', () => {
+    const values = [-3.26, -0.74, 0, 0.24, 1.4, 7.13];
+
+    expect(values.map(value => snapToSquare(value, 0.5))).toEqual(
+      values.map(value => Math.round(value * 2) / 2),
+    );
   });
 });
 

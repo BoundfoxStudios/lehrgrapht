@@ -12,7 +12,11 @@ import {
   PlotGenerateErrorCode,
   plotHasErrorCode,
 } from '../../services/plot/plot.types';
-import { squareCounts } from '../../services/plot/plot-geometry';
+import {
+  effectiveUnitsPerSquare,
+  snapToSquare,
+  squareCounts,
+} from '../../services/plot/plot-geometry';
 import { switchMap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { Plot, PlotSettings } from '../../models/plot';
@@ -110,8 +114,10 @@ export class PlotPreview {
     let x = range.x.min + relativeX * xRange;
     let y = range.y.min + relativeY * yRange;
 
-    x = Math.round(x * 2) / 2;
-    y = Math.round(y * 2) / 2;
+    const unitsPerSquare = effectiveUnitsPerSquare(plot.unitsPerSquare);
+
+    x = snapToSquare(x, unitsPerSquare.x);
+    y = snapToSquare(y, unitsPerSquare.y);
 
     x = Math.max(range.x.min, Math.min(range.x.max, x));
     y = Math.max(range.y.min, Math.min(range.y.max, y));
