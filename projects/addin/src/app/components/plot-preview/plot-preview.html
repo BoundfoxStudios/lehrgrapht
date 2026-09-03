@@ -12,7 +12,7 @@
         }
 
         @case (PlotGenerateErrorCode.evaluate) {
-          Die Funktoinen können nicht berechnet werden. Schaue bitte, ob Deine
+          Die Funktionen können nicht berechnet werden. Schaue bitte, ob Deine
           Grenzen passen oder in den Funktionen Fehler sind.
         }
 
@@ -33,11 +33,11 @@
         [class.ring-2]="interactive()"
         [class.ring-brand]="interactive()"
         [class.ring-offset-2]="interactive()"
+        [tabindex]="interactive() ? 0 : -1"
         (click)="onImageClick($event)"
         (keydown.enter)="$event.preventDefault()"
         (mousemove)="onImageMouseMove($event)"
         (mouseleave)="onImageMouseLeave()"
-        [tabindex]="interactive() ? 0 : -1"
         alt="Preview"
       />
       @if (interactive() && hoverPosition(); as pos) {

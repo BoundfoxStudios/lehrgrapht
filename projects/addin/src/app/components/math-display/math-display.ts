@@ -6,8 +6,7 @@ import {
   inject,
   input,
 } from '@angular/core';
-import * as mathjs from 'mathjs';
-import { ConstantNode } from 'mathjs';
+import { math } from '../../utils/math';
 
 @Component({
   selector: 'lg-math-display',
@@ -24,14 +23,14 @@ export class MathDisplay {
 
   constructor() {
     effect(() => {
-      const math = this.math();
+      const expression = this.math();
 
       try {
-        const parsedMath = mathjs.parse(math);
+        const parsedMath = math.parse(expression);
 
         this.elementRef.nativeElement.innerHTML = '';
 
-        if (parsedMath instanceof ConstantNode) {
+        if (parsedMath.type === 'ConstantNode') {
           return;
         }
 

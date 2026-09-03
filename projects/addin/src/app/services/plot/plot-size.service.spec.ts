@@ -1,7 +1,7 @@
 import { Plot } from '../../models/plot';
 import { CleanedValues, PLOT_CONSTANTS, ValueRanges } from './plot.types';
 import { PlotSizeService } from './plot-size.service';
-import * as mathjs from 'mathjs';
+import { math } from '../../utils/math';
 
 const basePlot: Plot = {
   version: '1.0',
@@ -198,22 +198,16 @@ describe('PlotSizeService', () => {
 
   describe('calculatePlotSize', () => {
     it('should calculate size in px and points', () => {
-      const xNumbers = mathjs.range(-5, 5, 0.1, true).toArray() as number[];
-      const yNumbers = mathjs.range(-5, 5, 0.1, true).toArray() as number[];
+      const xNumbers = math.range(-5, 5, 0.1, true).toArray() as number[];
+      const yNumbers = math.range(-5, 5, 0.1, true).toArray() as number[];
 
       const cleanedValues: CleanedValues = {
         cleanXValues: xNumbers,
         cleanYValues: [yNumbers],
-        xValuesArray: xNumbers,
-        yValuesArray: [yNumbers],
       };
 
       const valueRanges: ValueRanges = {
-        x: mathjs.range(-5, 5, 0.1, true),
         xNumbers,
-        xMin: -5,
-        xMax: 5,
-        y: mathjs.range(-5, 5, 0.1, true),
         yNumbers,
         yMin: -5,
         yMax: 5,
@@ -243,21 +237,15 @@ describe('PlotSizeService', () => {
         squarePlots: true,
         range: { x: { min: -2, max: 2 }, y: { min: -5, max: 5 } },
       };
-      const xNumbers = mathjs.range(-2, 2, 0.1, true).toArray() as number[];
-      const yNumbers = mathjs.range(-5, 5, 0.1, true).toArray() as number[];
+      const xNumbers = math.range(-2, 2, 0.1, true).toArray() as number[];
+      const yNumbers = math.range(-5, 5, 0.1, true).toArray() as number[];
 
       const cleanedValues: CleanedValues = {
         cleanXValues: xNumbers,
         cleanYValues: [yNumbers],
-        xValuesArray: xNumbers,
-        yValuesArray: [yNumbers],
       };
       const valueRanges: ValueRanges = {
-        x: mathjs.range(-2, 2, 0.1, true),
         xNumbers,
-        xMin: -2,
-        xMax: 2,
-        y: mathjs.range(-5, 5, 0.1, true),
         yNumbers,
         yMin: -5,
         yMax: 5,

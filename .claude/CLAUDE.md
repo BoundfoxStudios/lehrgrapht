@@ -1,3 +1,5 @@
+@general-conventions.md
+
 You are an expert in TypeScript, Angular, and scalable web application development. You write functional, maintainable, performant, and accessible code following Angular and TypeScript best practices.
 
 ## TypeScript Best Practices
@@ -6,62 +8,27 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Prefer type inference when the type is obvious
 - Avoid the `any` type; use `unknown` when type is uncertain
 
-## Angular Best Practices
+## Angular
 
-- Always use standalone components over NgModules
-- Must NOT set `standalone: true` inside Angular decorators. It's the default in Angular v20+.
-- Use signals for state management
-- Implement lazy loading for feature routes
-- Do NOT use the `@HostBinding` and `@HostListener` decorators. Put host bindings inside the `host` object of the `@Component` or `@Directive` decorator instead
-- Use `NgOptimizedImage` for all static images.
-  - `NgOptimizedImage` does not work for inline base64 images.
+- All Angular conventions live in the `angular-conventions` skill (`.claude/skills/angular-conventions/SKILL.md`). Load it before any Angular work.
+
+## Math Engine
+
+- All mathjs usage goes through the shared instance in `projects/addin/src/app/utils/math.ts` (own `create(all)` instance that adds `ln` and `lg`). Never call functions or use classes from the `mathjs` package directly in app code: node classes are instance-specific, so `instanceof` against `mathjs` exports is false for nodes parsed by our instance. Type-only imports from `mathjs` are fine. ESLint enforces this via `no-restricted-imports`.
 
 ## Accessibility Requirements
 
 - It MUST pass all AXE checks.
 - It MUST follow all WCAG AA minimums, including focus management, color contrast, and ARIA attributes.
 
-### Components
-
-- Keep components small and focused on a single responsibility
-- Use `input()` and `output()` functions instead of decorators
-- Use `computed()` for derived state
-- Set `changeDetection: ChangeDetectionStrategy.OnPush` in `@Component` decorator
-- Always use external templates (separate `.html` files) and external styles (separate `.css` files), never inline templates or styles
-- Always use signal forms. Do NOT use Reactive forms or Template-driven forms
-- Do NOT use `ngClass`, use `class` bindings instead
-- Do NOT use `ngStyle`, use `style` bindings instead
-- When using external templates/styles, use paths relative to the component TS file.
-
-## State Management
-
-- Use signals for local component state
-- Use `computed()` for derived state
-- Keep state transformations pure and predictable
-- Do NOT use `mutate` on signals, use `update` or `set` instead
-
-## Templates
-
-- Keep templates simple and avoid complex logic
-- Use native control flow (`@if`, `@for`, `@switch`) instead of `*ngIf`, `*ngFor`, `*ngSwitch`
-- Use the async pipe to handle observables
-- Do not assume globals like (`new Date()`) are available.
-- Do not write arrow functions in templates (they are not supported).
-- For buttons (`<button>`) and anchor buttons (`<a [routerLink]>`), use the `lgButton` directive (`projects/addin/src/app/ui/button/button.directive.ts`) with the appropriate `variant`, `size`, and `iconOnly` inputs. Do NOT write ad-hoc Tailwind button styles. If no existing variant fits, extend the directive instead of bypassing it.
-- For text/number inputs, use the `lg-input` component (`projects/addin/src/app/ui/input/input.ts`) wherever possible. Only fall back to a raw `<input>` when `lg-input` genuinely cannot fulfill the requirement.
-- For animating a `faIcon`, use the FontAwesome `animation` input (e.g. `animation="spin"`). Do NOT use Tailwind's `animate-spin` on a faIcon.
-
-## Services
-
-- Design services around a single responsibility
-- Use the `providedIn: 'root'` option for singleton services
-- Use the `inject()` function instead of constructor injection
-
 ## Git
 
 - Make small, independent commits — each commit should represent a single logical change
 - Do NOT bundle unrelated changes into one commit
-- When an issue number is available, reference it in the commit body (not the title) using GitHub keywords (e.g., `closes #26`, `fixes #42`)
+
+## Issues & Pull Requests
+
+- Issues and pull request descriptions are written in German. Pull request titles and commit messages stay in English.
 
 ## Local Workflow
 

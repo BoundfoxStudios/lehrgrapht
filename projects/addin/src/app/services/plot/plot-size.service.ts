@@ -1,6 +1,6 @@
-import * as mathjs from 'mathjs';
 import { Injectable } from '@angular/core';
 import { Plot } from '../../models/plot';
+import { math } from '../../utils/math';
 import {
   A4_USABLE_HEIGHT_MM,
   A4_USABLE_WIDTH_MM,
@@ -26,15 +26,15 @@ export class PlotSizeService {
     const xValueFlat = plot.automaticallyAdjustLimitsToValueRange
       ? cleanedValues.cleanXValues
       : valueRanges.xNumbers;
-    const xValueMin = mathjs.min(xValueFlat);
-    const xValueMax = mathjs.max(xValueFlat);
+    const xValueMin = math.min(xValueFlat);
+    const xValueMax = math.max(xValueFlat);
     const xValueRange = xValueMax - xValueMin;
 
     const yValueFlat = plot.automaticallyAdjustLimitsToValueRange
       ? cleanedValues.cleanYValues.flatMap(y => y)
       : valueRanges.yNumbers;
-    const yValueMin = mathjs.min(yValueFlat);
-    const yValueMax = mathjs.max(yValueFlat);
+    const yValueMin = math.min(yValueFlat);
+    const yValueMax = math.max(yValueFlat);
     const yValueRange = yValueMax - yValueMin;
 
     const tickSquares = {

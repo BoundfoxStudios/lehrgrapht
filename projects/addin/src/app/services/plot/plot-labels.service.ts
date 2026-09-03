@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import {
+  isFiniteNumber,
   PLOT_CONSTANTS,
   PlotMarginMm,
   PlotSizeCalculation,
@@ -17,13 +18,15 @@ export interface LabelImageCoordinates {
 export class PlotLabelsService {
   findLabelPosition(
     xValues: number[],
-    yValues: number[],
+    yValues: (number | null)[],
     yMin: number,
     yMax: number,
     fromStart: boolean,
   ): { x: number; y: number } | undefined {
-    const isVisible = (i: number): boolean =>
-      Number.isFinite(yValues[i]) && yValues[i] >= yMin && yValues[i] <= yMax;
+    const isVisible = (index: number): boolean => {
+      const value = yValues[index];
+      return isFiniteNumber(value) && value >= yMin && value <= yMax;
+    };
 
     let edgeIdx = -1;
     if (fromStart) {
@@ -42,27 +45,24 @@ export class PlotLabelsService {
       }
     }
 
-    if (edgeIdx === -1) {
+    const edge = yValues[edgeIdx];
+    if (!isFiniteNumber(edge)) {
       return undefined;
     }
 
     const outerIdx = fromStart ? edgeIdx - 1 : edgeIdx + 1;
-    if (
-      outerIdx >= 0 &&
-      outerIdx < yValues.length &&
-      Number.isFinite(yValues[outerIdx]) &&
-      !isVisible(outerIdx)
-    ) {
-      const yBoundary = yValues[outerIdx] > yMax ? yMax : yMin;
-      const dy = yValues[outerIdx] - yValues[edgeIdx];
+    const outer = yValues[outerIdx];
+    if (isFiniteNumber(outer) && !isVisible(outerIdx)) {
+      const yBoundary = outer > yMax ? yMax : yMin;
+      const dy = outer - edge;
       if (dy !== 0) {
-        const t = (yBoundary - yValues[edgeIdx]) / dy;
+        const t = (yBoundary - edge) / dy;
         const x = xValues[edgeIdx] + t * (xValues[outerIdx] - xValues[edgeIdx]);
         return { x, y: yBoundary };
       }
     }
 
-    return { x: xValues[edgeIdx], y: yValues[edgeIdx] };
+    return { x: xValues[edgeIdx], y: edge };
   }
 
   calculateLabelImageCoordinates(
