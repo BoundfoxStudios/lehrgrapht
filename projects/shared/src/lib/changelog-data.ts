@@ -6,6 +6,14 @@ export interface ChangelogEntry {
 
 export const changelogData: ChangelogEntry[] = [
   {
+    version: '1.8.0',
+    changes: [
+      'Unterstützung der Logarithmen ln und lg in Funktionstermen.',
+      'Polstellen von Funktionen werden als Lücke dargestellt statt durchgezeichnet.',
+    ],
+    date: '2026-09-03',
+  },
+  {
     version: '1.7.1',
     changes: ['Technische Verbesserungen und Aktualisierungen.'],
     date: '2026-08-06',
