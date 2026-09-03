@@ -1,7 +1,7 @@
-import * as mathjs from 'mathjs';
 import { Injectable } from '@angular/core';
 import { Annotations } from 'plotly.js-dist-min';
 import { Plot, PlotSettings } from '../../models/plot';
+import { math } from '../../utils/math';
 
 @Injectable({ providedIn: 'root' })
 export class PlotAnnotationsService {
@@ -9,11 +9,11 @@ export class PlotAnnotationsService {
     plot: Plot,
     plotSettings: PlotSettings,
   ): Partial<Annotations>[] {
-    const xAnnotationRange = mathjs
+    const xAnnotationRange = math
       .range(plot.range.x.min, plot.range.x.max, 1, true)
       .toArray() as number[];
 
-    let yAnnotationRange = mathjs
+    let yAnnotationRange = math
       .range(plot.range.y.min, plot.range.y.max, 1, true)
       .toArray() as number[];
 

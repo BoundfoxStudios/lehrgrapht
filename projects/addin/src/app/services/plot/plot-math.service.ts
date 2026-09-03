@@ -1,7 +1,7 @@
-import * as mathjs from 'mathjs';
-import { EvalFunction } from 'mathjs';
+import type { EvalFunction } from 'mathjs';
 import { Injectable } from '@angular/core';
 import { MathFunction, Plot } from '../../models/plot';
+import { math } from '../../utils/math';
 import {
   CleanedValues,
   FunctionSeries,
@@ -19,7 +19,7 @@ export class PlotMathService {
 
     try {
       for (const f of fnx) {
-        const expression = mathjs.compile(f.fnx);
+        const expression = math.compile(f.fnx);
         expressions.push(expression);
       }
     } catch {
@@ -44,18 +44,18 @@ export class PlotMathService {
   }
 
   createRanges(plot: Plot): ValueRanges {
-    const xNumbers = mathjs
+    const xNumbers = math
       .range(plot.range.x.min, plot.range.x.max, 0.1, true)
       .toArray() as number[];
-    const yNumbers = mathjs
+    const yNumbers = math
       .range(plot.range.y.min, plot.range.y.max, 0.1, true)
       .toArray() as number[];
 
     return {
       xNumbers,
       yNumbers,
-      yMin: mathjs.min(yNumbers),
-      yMax: mathjs.max(yNumbers),
+      yMin: math.min(yNumbers),
+      yMax: math.max(yNumbers),
     };
   }
 

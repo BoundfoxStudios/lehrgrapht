@@ -1,7 +1,7 @@
 import { Plot } from '../../models/plot';
 import { FunctionSeries, PlotGenerateErrorCode } from './plot.types';
 import { PlotMathService } from './plot-math.service';
-import * as mathjs from 'mathjs';
+import type { EvalFunction } from 'mathjs';
 
 const basePlot: Plot = {
   version: '1.0',
@@ -93,7 +93,7 @@ describe('PlotMathService', () => {
         range: { x: { min: xMin, max: xMax }, y: yRange },
       });
       const result = service.evaluateExpressions(
-        compiled as mathjs.EvalFunction[],
+        compiled as EvalFunction[],
         ranges,
       );
       expect(Array.isArray(result)).toBe(true);
@@ -124,7 +124,7 @@ describe('PlotMathService', () => {
       expect(Array.isArray(compiled)).toBe(true);
 
       const result = service.evaluateExpressions(
-        compiled as mathjs.EvalFunction[],
+        compiled as EvalFunction[],
         service.createRanges(basePlot),
       );
       expect(result).toBe(PlotGenerateErrorCode.evaluate);
@@ -217,6 +217,31 @@ describe('PlotMathService', () => {
         expect(series.y[index] === null).toBe(series.x[index] < 0);
       }
     });
+
+    it('should evaluate ln and lg through the shared math instance', () => {
+      const ln = sampleFunction('ln(x)', 1, 3);
+      const lg = sampleFunction('lg(x)', 1, 10);
+
+      expect(ln.series.y[0]).toBeCloseTo(0);
+      expect(lg.series.y[lg.series.y.length - 1]).toBeCloseTo(1);
+    });
+
+    it('should turn ln of a non-positive argument into gaps', () => {
+      const { series, xNumbers } = sampleFunction('ln(x)', -3, 3);
+
+      expect(series.y).toHaveLength(xNumbers.length);
+      for (let index = 0; index < series.x.length; index++) {
+        expect(series.y[index] === null).toBe(series.x[index] <= 0);
+      }
+    });
+
+    it('should turn ln of a complex intermediate value into gaps', () => {
+      const { series } = sampleFunction('ln(sqrt(x))', -3, 3);
+
+      for (let index = 0; index < series.x.length; index++) {
+        expect(series.y[index] === null).toBe(series.x[index] <= 0);
+      }
+    });
   });
 
   describe('createRanges', () => {
@@ -253,7 +278,7 @@ describe('PlotMathService', () => {
       const ranges = service.createRanges(plot);
       const compiled = service.compileExpressions(plot.fnx);
       const yValues = service.evaluateExpressions(
-        compiled as mathjs.EvalFunction[],
+        compiled as EvalFunction[],
         ranges,
       );
 
