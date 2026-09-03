@@ -75,10 +75,7 @@ jobs:
       - name: Read version from package.json
         id: read_version
         if: github.ref == 'refs/heads/main'
-        uses: ActionsTools/read-json-action@main
-        with:
-          file_path: package.json
-          prop_path: version
+        run: echo "value=$(jq -r .version package.json)" >> "$GITHUB_OUTPUT"
       - name: Set version
         id: version
         run: echo "value=${{ steps.read_version.outputs.value || 'develop' }}" >> $GITHUB_OUTPUT
