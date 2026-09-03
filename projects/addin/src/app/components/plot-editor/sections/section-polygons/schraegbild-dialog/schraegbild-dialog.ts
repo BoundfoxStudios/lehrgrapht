@@ -13,39 +13,41 @@ import {
   PillSwitch,
   PillSwitchOption,
 } from '../../../../pill-switch/pill-switch';
+import { UnitsPerSquare } from '../../../../../models/plot';
 
 export type SchraegbildDirection =
-  | 'right-up'
-  | 'right-down'
-  | 'left-up'
-  | 'left-down';
+  'right-up' | 'right-down' | 'left-up' | 'left-down';
 
 export interface SchraegbildData {
   polygonTitle: string;
 }
 
 export interface SchraegbildResult {
-  depth: number;
+  depthInSquares: number;
   direction: SchraegbildDirection;
 }
 
-export const SCHRAEGBILD_MIN_DEPTH = 0.5;
-export const SCHRAEGBILD_MAX_DEPTH = 5;
-export const SCHRAEGBILD_STEP = 0.5;
-export const SCHRAEGBILD_DEFAULT_DEPTH = 1;
+export const SCHRAEGBILD_MIN_DEPTH_IN_SQUARES = 1;
+export const SCHRAEGBILD_MAX_DEPTH_IN_SQUARES = 10;
+export const SCHRAEGBILD_STEP_IN_SQUARES = 1;
+export const SCHRAEGBILD_DEFAULT_DEPTH_IN_SQUARES = 2;
 export const SCHRAEGBILD_DEFAULT_DIRECTION: SchraegbildDirection = 'right-up';
 
 export function schraegbildDirectionToOffset(
   direction: SchraegbildDirection,
-  depth: number,
+  depthInSquares: number,
+  unitsPerSquare: UnitsPerSquare,
 ): { x: number; y: number } {
   const xSign = direction === 'right-up' || direction === 'right-down' ? 1 : -1;
   const ySign = direction === 'right-up' || direction === 'left-up' ? 1 : -1;
-  return { x: xSign * depth, y: ySign * depth };
+  return {
+    x: xSign * depthInSquares * unitsPerSquare.x,
+    y: ySign * depthInSquares * unitsPerSquare.y,
+  };
 }
 
 interface SchraegbildFormValue {
-  depth: number;
+  depthInSquares: number;
   direction: SchraegbildDirection;
 }
 
@@ -60,7 +62,7 @@ export class SchraegbildDialog {
   protected readonly data = inject<SchraegbildData>(DIALOG_DATA);
   private readonly dialogRef = inject<DialogRef<SchraegbildResult>>(DialogRef);
 
-  protected readonly step = SCHRAEGBILD_STEP;
+  protected readonly step = SCHRAEGBILD_STEP_IN_SQUARES;
 
   protected readonly directionOptions: PillSwitchOption<SchraegbildDirection>[][] =
     [
@@ -75,18 +77,18 @@ export class SchraegbildDialog {
     ];
 
   private readonly state = signal<SchraegbildFormValue>({
-    depth: SCHRAEGBILD_DEFAULT_DEPTH,
+    depthInSquares: SCHRAEGBILD_DEFAULT_DEPTH_IN_SQUARES,
     direction: SCHRAEGBILD_DEFAULT_DIRECTION,
   });
 
   protected readonly schraegbildForm = form<SchraegbildFormValue>(
     this.state,
     schema => {
-      min(schema.depth, SCHRAEGBILD_MIN_DEPTH, {
-        message: `Tiefe muss mindestens ${SCHRAEGBILD_MIN_DEPTH} sein.`,
+      min(schema.depthInSquares, SCHRAEGBILD_MIN_DEPTH_IN_SQUARES, {
+        message: `Tiefe muss mindestens ${SCHRAEGBILD_MIN_DEPTH_IN_SQUARES} Kästchen sein.`,
       });
-      max(schema.depth, SCHRAEGBILD_MAX_DEPTH, {
-        message: `Tiefe darf höchstens ${SCHRAEGBILD_MAX_DEPTH} sein.`,
+      max(schema.depthInSquares, SCHRAEGBILD_MAX_DEPTH_IN_SQUARES, {
+        message: `Tiefe darf höchstens ${SCHRAEGBILD_MAX_DEPTH_IN_SQUARES} Kästchen sein.`,
       });
     },
   );
@@ -105,7 +107,7 @@ export class SchraegbildDialog {
     }
     const value = this.state();
     this.dialogRef.close({
-      depth: value.depth,
+      depthInSquares: value.depthInSquares,
       direction: value.direction,
     });
   }

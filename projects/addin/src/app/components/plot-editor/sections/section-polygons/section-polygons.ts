@@ -35,6 +35,7 @@ import {
   SchraegbildResult,
   schraegbildDirectionToOffset,
 } from './schraegbild-dialog/schraegbild-dialog';
+import { effectiveUnitsPerSquare } from '../../../../services/plot/plot-geometry';
 
 @Component({
   selector: 'lg-section-polygons',
@@ -170,7 +171,11 @@ export class SectionPolygons {
       return;
     }
 
-    const offset = schraegbildDirectionToOffset(result.direction, result.depth);
+    const offset = schraegbildDirectionToOffset(
+      result.direction,
+      result.depthInSquares,
+      effectiveUnitsPerSquare(this.store.model().unitsPerSquare),
+    );
     this.store.createObliqueProjection({ polygonIndex, offset });
   }
 }
