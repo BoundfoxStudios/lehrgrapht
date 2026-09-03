@@ -51,3 +51,68 @@ export const renderScale = (plot: Plot): RenderScale => {
     y: renderUnitsPerSquare / scale.y,
   };
 };
+
+export const gridMultipliers = (
+  min: number,
+  max: number,
+  step: number,
+): number[] => {
+  if (!isFiniteNumber(step) || step <= 0) {
+    return [];
+  }
+
+  const epsilon = (max - min) * 1e-9;
+  const firstMultiplier = Math.ceil((min - epsilon) / step);
+  const lastMultiplier = Math.floor((max + epsilon) / step);
+  const multipliers: number[] = [];
+
+  // Math.ceil returns -0 for a range starting just below zero, and Plotly drops the grid line only on exactly 0
+  for (
+    let multiplier = firstMultiplier === 0 ? 0 : firstMultiplier;
+    multiplier <= lastMultiplier;
+    multiplier++
+  ) {
+    multipliers.push(multiplier);
+  }
+
+  return multipliers;
+};
+
+// Plotly writes negative tick labels with U+2212, but skips its own number formatting for tickmode 'array'
+export const formatAxisValue = (value: number): string => {
+  const text = `${Number(value.toPrecision(12))}`;
+
+  return text.startsWith('-') ? `−${text.slice(1)}` : text;
+};
+
+export interface AxisTicks {
+  tickvals: number[];
+  ticktext: string[];
+}
+
+export const buildAxisTicks = (
+  dataMin: number,
+  dataMax: number,
+  dataStep: number,
+  factor: number,
+): AxisTicks => {
+  if (!isFiniteNumber(dataStep) || dataStep <= 0) {
+    return { tickvals: [], ticktext: [] };
+  }
+
+  if (dataMin === dataMax) {
+    return {
+      tickvals: [dataMin * factor],
+      ticktext: [formatAxisValue(dataMin)],
+    };
+  }
+
+  const multipliers = gridMultipliers(dataMin, dataMax, dataStep);
+
+  return {
+    tickvals: multipliers.map(multiplier => multiplier * dataStep * factor),
+    ticktext: multipliers.map(multiplier =>
+      multiplier % 2 === 0 ? formatAxisValue(multiplier * dataStep) : '',
+    ),
+  };
+};
