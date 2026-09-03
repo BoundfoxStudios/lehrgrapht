@@ -1,5 +1,3 @@
-import { Matrix } from 'mathjs';
-
 export enum PlotGenerateErrorCode {
   /**
    * Happens during the compilation of the math expressions.
@@ -27,6 +25,9 @@ export const plotHasErrorCode = (
   );
 };
 
+export const isFiniteNumber = (value: unknown): value is number =>
+  typeof value === 'number' && Number.isFinite(value);
+
 export const A4_USABLE_WIDTH_MM = 180;
 export const A4_USABLE_HEIGHT_MM = 267;
 
@@ -39,14 +40,15 @@ export interface PlotSizeMm {
 }
 
 export interface ValueRanges {
-  x: Matrix;
   xNumbers: number[];
-  xMin: number;
-  xMax: number;
-  y: Matrix;
   yNumbers: number[];
   yMin: number;
   yMax: number;
+}
+
+export interface FunctionSeries {
+  x: number[];
+  y: (number | null)[];
 }
 
 export interface PlotSizeCalculation {
@@ -61,8 +63,6 @@ export interface PlotSizeCalculation {
 export interface CleanedValues {
   cleanXValues: number[];
   cleanYValues: number[][];
-  xValuesArray: number[];
-  yValuesArray: number[][];
 }
 
 export interface PlotMarginMm {

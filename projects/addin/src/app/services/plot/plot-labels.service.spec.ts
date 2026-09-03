@@ -40,11 +40,11 @@ describe('PlotLabelsService', () => {
       expect(result).toEqual({ x: 1, y: 5 });
     });
 
-    it('should handle NaN/Infinity values', () => {
-      const xValues = [0, 1, 2, 3];
-      const yValues = [NaN, Infinity, 2, 3];
+    it('should skip gaps and non-finite values', () => {
+      const xValues = [0, 1, 2, 3, 4];
+      const yValues: (number | null)[] = [null, NaN, Infinity, 2, 3];
       const result = service.findLabelPosition(xValues, yValues, 0, 5, true);
-      expect(result).toEqual({ x: 2, y: 2 });
+      expect(result).toEqual({ x: 3, y: 2 });
     });
 
     it('should return edge point when no adjacent out-of-range point', () => {

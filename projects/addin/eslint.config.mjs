@@ -23,6 +23,25 @@ export default defineConfig([
           style: 'kebab-case',
         },
       ],
+      '@typescript-eslint/no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: 'mathjs',
+              message:
+                'Use the shared instance from src/app/utils/math instead.',
+              allowTypeImports: true,
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    files: ['**/src/app/utils/math.ts'],
+    rules: {
+      '@typescript-eslint/no-restricted-imports': 'off',
     },
   },
   {

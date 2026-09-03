@@ -12,6 +12,10 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 
 - All Angular conventions live in the `angular-conventions` skill (`.claude/skills/angular-conventions/SKILL.md`). Load it before any Angular work.
 
+## Math Engine
+
+- All mathjs usage goes through the shared instance in `projects/addin/src/app/utils/math.ts` (own `create(all)` instance that adds `ln` and `lg`). Never call functions or use classes from the `mathjs` package directly in app code: node classes are instance-specific, so `instanceof` against `mathjs` exports is false for nodes parsed by our instance. Type-only imports from `mathjs` are fine. ESLint enforces this via `no-restricted-imports`.
+
 ## Accessibility Requirements
 
 - It MUST pass all AXE checks.

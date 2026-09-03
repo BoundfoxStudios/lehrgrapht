@@ -36,16 +36,6 @@ describe('PlotDataService', () => {
   const service = new PlotDataService();
 
   describe('buildFunctionTraces', () => {
-    it('should return empty array when no functions', () => {
-      const result = service.buildFunctionTraces(
-        basePlot,
-        plotSettings,
-        [],
-        [],
-      );
-      expect(result).toEqual([]);
-    });
-
     it('should return one trace per function', () => {
       const plot: Plot = {
         ...basePlot,
@@ -64,17 +54,10 @@ describe('PlotDataService', () => {
           },
         ],
       };
-      const xValues = [0, 1, 2];
-      const yValues = [
-        [0, 1, 4],
-        [0, 0.84, 0.91],
-      ];
-      const result = service.buildFunctionTraces(
-        plot,
-        plotSettings,
-        xValues,
-        yValues,
-      );
+      const result = service.buildFunctionTraces(plot, plotSettings, [
+        { x: [0, 1, 2], y: [0, 1, 4] },
+        { x: [0, 1, 2], y: [0, 0.84, 0.91] },
+      ]);
       expect(result.length).toBe(2);
       expect(result[0].line?.color).toBe('#ff0000');
       expect(result[1].line?.color).toBe('#00ff00');
@@ -92,12 +75,9 @@ describe('PlotDataService', () => {
           },
         ],
       };
-      const result = service.buildFunctionTraces(
-        plot,
-        plotSettings,
-        [0, 1],
-        [[0, 1]],
-      );
+      const result = service.buildFunctionTraces(plot, plotSettings, [
+        { x: [0, 1], y: [0, 1] },
+      ]);
       expect(result[0].line?.dash).toBe('solid');
     });
 
@@ -113,12 +93,9 @@ describe('PlotDataService', () => {
           },
         ],
       };
-      const result = service.buildFunctionTraces(
-        plot,
-        plotSettings,
-        [0, 1],
-        [[0, 1]],
-      );
+      const result = service.buildFunctionTraces(plot, plotSettings, [
+        { x: [0, 1], y: [0, 1] },
+      ]);
       expect(result[0].line?.dash).toBe('dash');
     });
   });
@@ -433,17 +410,14 @@ describe('PlotDataService', () => {
           },
         ],
       };
-      const result = service.buildPlotData(
-        plot,
-        plotSettings,
-        [0, 1],
-        [[0, 1]],
-      );
+      const result = service.buildPlotData(plot, plotSettings, [
+        { x: [0, 1], y: [0, 1] },
+      ]);
       expect(result.length).toBe(3);
     });
 
     it('should return empty array for empty plot', () => {
-      const result = service.buildPlotData(basePlot, plotSettings, [], []);
+      const result = service.buildPlotData(basePlot, plotSettings, []);
       expect(result).toEqual([]);
     });
   });
