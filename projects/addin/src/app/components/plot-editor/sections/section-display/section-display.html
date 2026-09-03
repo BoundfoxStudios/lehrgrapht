@@ -19,7 +19,7 @@
           id="min-x"
           [field]="form.range.x.min"
           type="number"
-          step="1"
+          step="any"
         />
       </div>
       <div class="flex-1">
@@ -32,9 +32,22 @@
           id="max-x"
           [field]="form.range.x.max"
           type="number"
-          step="1"
+          step="any"
         />
       </div>
+    </div>
+    <div>
+      <label
+        class="text-body-subtle text-2xs mb-1 block font-semibold"
+        for="units-per-square-x"
+        >Einheiten pro Kästchen</label
+      >
+      <lg-input
+        id="units-per-square-x"
+        [field]="form.unitsPerSquare.x"
+        type="number"
+        step="any"
+      />
     </div>
   </section>
 
@@ -55,7 +68,7 @@
           id="min-y"
           [field]="form.range.y.min"
           type="number"
-          step="1"
+          step="any"
         />
       </div>
       <div class="flex-1">
@@ -68,9 +81,22 @@
           id="max-y"
           [field]="form.range.y.max"
           type="number"
-          step="1"
+          step="any"
         />
       </div>
+    </div>
+    <div>
+      <label
+        class="text-body-subtle text-2xs mb-1 block font-semibold"
+        for="units-per-square-y"
+        >Einheiten pro Kästchen</label
+      >
+      <lg-input
+        id="units-per-square-y"
+        [field]="form.unitsPerSquare.y"
+        type="number"
+        step="any"
+      />
     </div>
   </section>
 
@@ -118,7 +144,7 @@
   </button>
   <lg-section-hint [icon]="faInfoCircle"
     >"Grenzen automatisch anpassen" passt die Grenzen so an, dass alle Punkte
-    und Polygone im Schaubild sichtbar sind + 1 weiteres Kästchen auf jeder
+    und Polygone im Schaubild sichtbar sind + 2 weitere Kästchen auf jeder
     Seite. Benötigt daher mindestens einen Punkt oder ein
     Polygon.</lg-section-hint
   >
@@ -161,12 +187,12 @@
     />
     <div>
       <span class="text-body-subtle text-2xs mb-1 block font-semibold"
-        >Schrittweite</span
+        >Schrittweite (Kästchen)</span
       >
       <lg-pill-switch
         [options]="gridStepOptions"
         [formField]="form.gridStep"
-        aria-label="Schrittweite"
+        aria-label="Schrittweite in Kästchen"
         shape="square"
       />
     </div>

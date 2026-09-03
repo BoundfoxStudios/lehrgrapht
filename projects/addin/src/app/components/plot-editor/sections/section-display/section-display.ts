@@ -41,8 +41,8 @@ export class SectionDisplay {
   protected readonly store = inject(PlotEditorStore);
 
   protected readonly gridStepOptions: PillSwitchOption<GridStep>[] = [
-    { value: '0.5', label: '0,5' },
-    { value: '1', label: '1' },
+    { value: '0.5', label: 'jedes' },
+    { value: '1', label: 'jedes 2.' },
   ];
 
   protected readonly squareCount = computed(() => {
