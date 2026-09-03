@@ -1,5 +1,5 @@
 import { Plot } from '../../models/plot';
-import { CleanedValues, PLOT_CONSTANTS, ValueRanges } from './plot.types';
+import { CleanedValues, PLOT_CONSTANTS } from './plot.types';
 import { PlotSizeService } from './plot-size.service';
 import { math } from '../../utils/math';
 
@@ -207,20 +207,8 @@ describe('PlotSizeService', () => {
         cleanYValues: [yNumbers],
       };
 
-      const valueRanges: ValueRanges = {
-        xNumbers,
-        yNumbers,
-        yMin: -5,
-        yMax: 5,
-      };
-
       const margin = { t: 7.5, b: 7.5, l: 7.5, r: 7.5 };
-      const result = service.calculatePlotSize(
-        basePlot,
-        cleanedValues,
-        valueRanges,
-        margin,
-      );
+      const result = service.calculatePlotSize(basePlot, cleanedValues, margin);
 
       expect(result.xValueMin).toBeCloseTo(-5);
       expect(result.xValueMax).toBeCloseTo(5);
@@ -245,19 +233,8 @@ describe('PlotSizeService', () => {
         cleanXValues: xNumbers,
         cleanYValues: [yNumbers],
       };
-      const valueRanges: ValueRanges = {
-        xNumbers,
-        yNumbers,
-        yMin: -5,
-        yMax: 5,
-      };
       const margin = { t: 7.5, b: 7.5, l: 7.5, r: 7.5 };
-      const result = service.calculatePlotSize(
-        plot,
-        cleanedValues,
-        valueRanges,
-        margin,
-      );
+      const result = service.calculatePlotSize(plot, cleanedValues, margin);
 
       expect(result.plotSizePx.width).toBeCloseTo(result.plotSizePx.height, 5);
     });
@@ -272,7 +249,6 @@ describe('PlotSizeService', () => {
           range: { x: { min: -5, max: 5 }, y: { min: -1, max: 1 } },
         },
         { cleanXValues: xNumbers, cleanYValues: [yNumbers] },
-        { xNumbers, yNumbers, yMin: -1, yMax: 1 },
         { t: 7.5, b: 7.5, l: 7.5, r: 7.5 },
       );
 
@@ -291,7 +267,6 @@ describe('PlotSizeService', () => {
           range: { x: { min: -3, max: 3 }, y: { min: -1, max: 1 } },
         },
         { cleanXValues: xNumbers, cleanYValues: [yNumbers] },
-        { xNumbers, yNumbers, yMin: -1, yMax: 1 },
         { t: 7.5, b: 7.5, l: 7.5, r: 7.5 },
       );
 
@@ -299,6 +274,21 @@ describe('PlotSizeService', () => {
       expect(result.axisRange.y).toEqual({ min: -3, max: 3 });
       expect(result.yValueMin).toBe(-1);
       expect(result.yValueMax).toBe(1);
+    });
+
+    it('should keep the axis range in data units when the axis scales differ', () => {
+      const result = service.calculatePlotSize(
+        {
+          ...basePlot,
+          range: { x: { min: 9, max: 20 }, y: { min: 0, max: 200 } },
+          unitsPerSquare: { x: 1, y: 20 },
+        },
+        { cleanXValues: [], cleanYValues: [[]] },
+        { t: 7.5, b: 7.5, l: 7.5, r: 7.5 },
+      );
+
+      expect(result.axisRange.x).toEqual({ min: 9, max: 20 });
+      expect(result.axisRange.y).toEqual({ min: 0, max: 200 });
     });
   });
 
@@ -335,6 +325,31 @@ describe('PlotSizeService', () => {
       const result = service.calculatePlotSizeMm(plot);
       expect(result.exceedsWidth).toBe(true);
       expect(result.exceedsHeight).toBe(false);
+    });
+
+    it('should size each axis from its own units per square', () => {
+      const plot: Plot = {
+        ...basePlot,
+        range: { x: { min: 9, max: 20 }, y: { min: 0, max: 200 } },
+        unitsPerSquare: { x: 1, y: 20 },
+      };
+      const result = service.calculatePlotSizeMm(plot);
+
+      expect(result.width).toBeCloseTo(11 * 5 + 15, 5);
+      expect(result.height).toBeCloseTo(10 * 5 + 15, 5);
+    });
+
+    it('should produce equal dimensions for square plots whose axis scales differ', () => {
+      const plot: Plot = {
+        ...basePlot,
+        squarePlots: true,
+        range: { x: { min: 9, max: 20 }, y: { min: 0, max: 200 } },
+        unitsPerSquare: { x: 1, y: 20 },
+      };
+      const result = service.calculatePlotSizeMm(plot);
+
+      expect(result.width).toBeCloseTo(result.height, 5);
+      expect(result.width).toBeCloseTo(11 * 5 + 15, 5);
     });
 
     it('should produce equal dimensions for square plots with equal ranges', () => {

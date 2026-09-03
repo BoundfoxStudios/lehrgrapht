@@ -5,17 +5,48 @@ const plotWithUnitsPerSquare = (
   unitsPerSquare: Partial<UnitsPerSquare> | undefined,
 ): Plot => ({ unitsPerSquare }) as Plot;
 
+const defaultUnitsPerSquare: UnitsPerSquare = { x: 0.5, y: 0.5 };
+
 describe('squareCounts', () => {
   it('should count each axis from its own range when square plots are off', () => {
-    expect(squareCounts(4, 10, false)).toEqual({ x: 8, y: 20 });
+    expect(squareCounts(4, 10, defaultUnitsPerSquare, false)).toEqual({
+      x: 8,
+      y: 20,
+    });
   });
 
   it('should count both axes from the larger range when square plots are on', () => {
-    expect(squareCounts(4, 10, true)).toEqual({ x: 20, y: 20 });
+    expect(squareCounts(4, 10, defaultUnitsPerSquare, true)).toEqual({
+      x: 20,
+      y: 20,
+    });
   });
 
   it('should turn a range of six units into twelve squares', () => {
-    expect(squareCounts(6, 6, false)).toEqual({ x: 12, y: 12 });
+    expect(squareCounts(6, 6, defaultUnitsPerSquare, false)).toEqual({
+      x: 12,
+      y: 12,
+    });
+  });
+
+  it('should count each axis with its own units per square', () => {
+    expect(squareCounts(11, 200, { x: 1, y: 20 }, false)).toEqual({
+      x: 11,
+      y: 10,
+    });
+  });
+
+  it('should level the square counts instead of the ranges when square plots are on', () => {
+    expect(squareCounts(11, 200, { x: 1, y: 20 }, true)).toEqual({
+      x: 11,
+      y: 11,
+    });
+  });
+
+  it('should fall back to the default scale when units per square are missing', () => {
+    expect(
+      squareCounts(4, 10, undefined as unknown as UnitsPerSquare, false),
+    ).toEqual({ x: 8, y: 20 });
   });
 });
 

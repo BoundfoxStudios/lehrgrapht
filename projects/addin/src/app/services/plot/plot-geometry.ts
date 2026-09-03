@@ -11,31 +11,43 @@ export interface RenderScale {
   y: number;
 }
 
+// Plots saved by a dev build carry version 0.0.0 and skip every migration, so the field can be missing
+export const effectiveUnitsPerSquare = (
+  unitsPerSquare: Partial<UnitsPerSquare> | undefined,
+): UnitsPerSquare => {
+  const { renderUnitsPerSquare } = PLOT_CONSTANTS;
+  const usableOrDefault = (units: number | undefined): number =>
+    isFiniteNumber(units) && units > 0 ? units : renderUnitsPerSquare;
+
+  return {
+    x: usableOrDefault(unitsPerSquare?.x),
+    y: usableOrDefault(unitsPerSquare?.y),
+  };
+};
+
 export const squareCounts = (
   xRange: number,
   yRange: number,
+  unitsPerSquare: UnitsPerSquare,
   squarePlots: boolean,
 ): SquareCounts => {
-  const { renderUnitsPerSquare } = PLOT_CONSTANTS;
-  const largerRange = Math.max(xRange, yRange);
+  const scale = effectiveUnitsPerSquare(unitsPerSquare);
+  const xCount = xRange / scale.x;
+  const yCount = yRange / scale.y;
+  const largerCount = Math.max(xCount, yCount);
 
   return {
-    x: (squarePlots ? largerRange : xRange) / renderUnitsPerSquare,
-    y: (squarePlots ? largerRange : yRange) / renderUnitsPerSquare,
+    x: squarePlots ? largerCount : xCount,
+    y: squarePlots ? largerCount : yCount,
   };
 };
 
 export const renderScale = (plot: Plot): RenderScale => {
   const { renderUnitsPerSquare } = PLOT_CONSTANTS;
-
-  // Plots saved by a dev build carry version 0.0.0 and skip every migration, so the field can be missing
-  const stored = plot.unitsPerSquare as Partial<UnitsPerSquare> | undefined;
-
-  const clamp = (units: number | undefined): number =>
-    isFiniteNumber(units) && units > 0 ? units : renderUnitsPerSquare;
+  const scale = effectiveUnitsPerSquare(plot.unitsPerSquare);
 
   return {
-    x: renderUnitsPerSquare / clamp(stored?.x),
-    y: renderUnitsPerSquare / clamp(stored?.y),
+    x: renderUnitsPerSquare / scale.x,
+    y: renderUnitsPerSquare / scale.y,
   };
 };

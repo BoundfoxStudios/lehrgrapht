@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Plot } from '../../models/plot';
 import { math } from '../../utils/math';
-import { squareCounts } from './plot-geometry';
+import { effectiveUnitsPerSquare, squareCounts } from './plot-geometry';
 import {
   A4_USABLE_HEIGHT_MM,
   A4_USABLE_WIDTH_MM,
@@ -10,7 +10,6 @@ import {
   PlotMarginMm,
   PlotSizeCalculation,
   PlotSizeMm,
-  ValueRanges,
 } from './plot.types';
 
 @Injectable({ providedIn: 'root' })
@@ -18,16 +17,10 @@ export class PlotSizeService {
   calculatePlotSize(
     plot: Plot,
     cleanedValues: CleanedValues,
-    valueRanges: ValueRanges,
     margin: PlotMarginMm,
   ): PlotSizeCalculation {
-    const {
-      mmPerSquare,
-      renderUnitsPerSquare,
-      mmToInches,
-      mmToPoints,
-      ppiBase,
-    } = PLOT_CONSTANTS;
+    const { mmPerSquare, mmToInches, mmToPoints, ppiBase } = PLOT_CONSTANTS;
+    const unitsPerSquare = effectiveUnitsPerSquare(plot.unitsPerSquare);
 
     const { min: xValueMin, max: xValueMax } =
       plot.automaticallyAdjustLimitsToValueRange
@@ -41,7 +34,12 @@ export class PlotSizeService {
         : plot.range.y;
     const yValueRange = yValueMax - yValueMin;
 
-    const squares = squareCounts(xValueRange, yValueRange, plot.squarePlots);
+    const squares = squareCounts(
+      xValueRange,
+      yValueRange,
+      unitsPerSquare,
+      plot.squarePlots,
+    );
 
     const plotSizeMm = {
       width: squares.x * mmPerSquare + margin.l + margin.r,
@@ -57,12 +55,12 @@ export class PlotSizeService {
         x: this.stretchAroundCenter(
           xValueMin,
           xValueMax,
-          squares.x * renderUnitsPerSquare,
+          squares.x * unitsPerSquare.x,
         ),
         y: this.stretchAroundCenter(
           yValueMin,
           yValueMax,
-          squares.y * renderUnitsPerSquare,
+          squares.y * unitsPerSquare.y,
         ),
       },
       plotSizePx: {
@@ -155,6 +153,7 @@ export class PlotSizeService {
     const squares = squareCounts(
       plot.range.x.max - plot.range.x.min,
       plot.range.y.max - plot.range.y.min,
+      plot.unitsPerSquare,
       plot.squarePlots,
     );
 

@@ -85,7 +85,6 @@ export class PlotService {
     const sizeCalc = this.plotSizeService.calculatePlotSize(
       plot,
       cleanedValues,
-      valueRanges,
       margin,
     );
     const annotations = this.plotAnnotationsService.buildAnnotations(

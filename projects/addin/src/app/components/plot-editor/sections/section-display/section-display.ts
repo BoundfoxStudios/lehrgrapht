@@ -46,10 +46,12 @@ export class SectionDisplay {
   ];
 
   protected readonly squareCount = computed(() => {
-    const range = this.store.model().range;
+    const model = this.store.model();
+    const range = model.range;
     const squares = squareCounts(
       range.x.max - range.x.min,
       range.y.max - range.y.min,
+      model.unitsPerSquare,
       false,
     );
     return `${squares.x} / ${squares.y}`;

@@ -86,7 +86,12 @@ export class PlotPreview {
     const mmPerSquare = 5;
     const mmMargin = 7.5;
 
-    const squares = squareCounts(xRange, yRange, plot.squarePlots);
+    const squares = squareCounts(
+      xRange,
+      yRange,
+      plot.unitsPerSquare,
+      plot.squarePlots,
+    );
 
     const plotWidthMm = squares.x * mmPerSquare + mmMargin * 2;
     const plotHeightMm = squares.y * mmPerSquare + mmMargin * 2;
