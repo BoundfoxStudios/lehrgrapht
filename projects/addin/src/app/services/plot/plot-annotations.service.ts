@@ -1,7 +1,27 @@
 import { Injectable } from '@angular/core';
 import { Annotations } from 'plotly.js-dist-min';
 import { Plot, PlotSettings } from '../../models/plot';
-import { math } from '../../utils/math';
+import {
+  effectiveUnitsPerSquare,
+  formatAxisValue,
+  gridMultipliers,
+} from './plot-geometry';
+
+interface AxisBounds {
+  min: number;
+  max: number;
+}
+
+const gridValues = (bounds: AxisBounds, step: number): number[] =>
+  gridMultipliers(bounds.min, bounds.max, step).map(
+    multiplier => multiplier * step,
+  );
+
+const withoutBounds = (values: number[], bounds: AxisBounds): number[] =>
+  values.filter(value => value > bounds.min && value < bounds.max);
+
+const withoutMaximum = (values: number[], bounds: AxisBounds): number[] =>
+  values.filter(value => value < bounds.max);
 
 @Injectable({ providedIn: 'root' })
 export class PlotAnnotationsService {
@@ -9,31 +29,34 @@ export class PlotAnnotationsService {
     plot: Plot,
     plotSettings: PlotSettings,
   ): Partial<Annotations>[] {
-    const xAnnotationRange = math
-      .range(plot.range.x.min, plot.range.x.max, 1, true)
-      .toArray() as number[];
+    const unitsPerSquare = effectiveUnitsPerSquare(plot.unitsPerSquare);
+    const xAnnotationRange = gridValues(plot.range.x, 2 * unitsPerSquare.x);
 
-    let yAnnotationRange = math
-      .range(plot.range.y.min, plot.range.y.max, 1, true)
-      .toArray() as number[];
+    let yAnnotationRange = gridValues(plot.range.y, 2 * unitsPerSquare.y);
 
     if (xAnnotationRange.includes(0) && yAnnotationRange.includes(0)) {
       yAnnotationRange = yAnnotationRange.filter(y => y !== 0);
     }
 
     return [
-      ...this.buildXLabels(xAnnotationRange),
-      ...this.buildXTickLines(xAnnotationRange, plotSettings),
-      ...this.buildYLabels(yAnnotationRange),
-      ...this.buildYTickLines(yAnnotationRange, plotSettings),
+      ...this.buildXLabels(withoutBounds(xAnnotationRange, plot.range.x)),
+      ...this.buildXTickLines(
+        withoutMaximum(xAnnotationRange, plot.range.x),
+        plotSettings,
+      ),
+      ...this.buildYLabels(withoutBounds(yAnnotationRange, plot.range.y)),
+      ...this.buildYTickLines(
+        withoutMaximum(yAnnotationRange, plot.range.y),
+        plotSettings,
+      ),
     ];
   }
 
   buildXLabels(xRange: number[]): Partial<Annotations>[] {
-    return xRange.slice(1, xRange.length - 1).map(x => ({
+    return xRange.map(x => ({
       x,
       y: 0,
-      text: `${x}`,
+      text: formatAxisValue(x),
       xref: 'x',
       yref: 'y',
       showarrow: false,
@@ -50,7 +73,6 @@ export class PlotAnnotationsService {
     plotSettings: PlotSettings,
   ): Partial<Annotations>[] {
     return xRange
-      .slice(0, xRange.length - 1)
       .filter(x => x !== 0)
       .map(x => ({
         x,
@@ -69,10 +91,10 @@ export class PlotAnnotationsService {
   }
 
   buildYLabels(yRange: number[]): Partial<Annotations>[] {
-    return yRange.slice(1, yRange.length - 1).map(y => ({
+    return yRange.map(y => ({
       x: 0,
       y,
-      text: `${y}`,
+      text: formatAxisValue(y),
       xref: 'x',
       yref: 'y',
       xshift: -4,
@@ -88,7 +110,6 @@ export class PlotAnnotationsService {
     plotSettings: PlotSettings,
   ): Partial<Annotations>[] {
     return yRange
-      .slice(0, yRange.length - 1)
       .filter(y => y !== 0)
       .map(y => ({
         x: 0,
@@ -151,9 +172,11 @@ export class PlotAnnotationsService {
   }
 
   private buildAxisLabels(plot: Plot): Partial<Annotations>[] {
+    const unitsPerSquare = effectiveUnitsPerSquare(plot.unitsPerSquare);
+
     return [
       {
-        x: 0.1,
+        x: 0.2 * unitsPerSquare.x,
         y: 1.01,
         text: plot.axisLabelY || 'y',
         showarrow: false,
@@ -164,7 +187,7 @@ export class PlotAnnotationsService {
       },
       {
         x: 1,
-        y: 0.55,
+        y: 1.1 * unitsPerSquare.y,
         text: plot.axisLabelX || 'x',
         showarrow: false,
         yanchor: 'top',

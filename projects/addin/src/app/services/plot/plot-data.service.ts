@@ -13,6 +13,7 @@ import {
   reflectPolygonPoints,
 } from './reflection';
 import { FunctionSeries, hexToRgba, PLOT_CONSTANTS } from './plot.types';
+import { RenderScale, renderScale } from './plot-geometry';
 import { PlotTrace } from './render-space';
 
 const DASH_TARGET_PERIOD_UNITS = 0.5;
@@ -125,6 +126,7 @@ export class PlotDataService {
     }
 
     const highlightedIndex = options.highlightedPolygonIndex ?? null;
+    const scale = renderScale(plot);
 
     const isVisible = (polygon: Polygon): boolean =>
       !polygon.isSolution || options.showSolution === true;
@@ -192,7 +194,7 @@ export class PlotDataService {
           width: lineWidth,
           dash:
             polygon.lineStyle === 'dashed'
-              ? this.calculatePolygonDashPattern(polygon.points, closed)
+              ? this.calculatePolygonDashPattern(polygon.points, closed, scale)
               : 'solid',
         },
       });
@@ -246,7 +248,11 @@ export class PlotDataService {
             width: plotSettings.plotLineWidth,
             dash:
               polygon.lineStyle === 'dashed'
-                ? this.calculatePolygonDashPattern(mirroredPoints, closed)
+                ? this.calculatePolygonDashPattern(
+                    mirroredPoints,
+                    closed,
+                    scale,
+                  )
                 : 'solid',
           },
         });
@@ -257,7 +263,7 @@ export class PlotDataService {
       ...haloTraces,
       ...polygonTraces,
       ...mirroredTraces,
-      ...this.buildPolygonPointMarkerTraces(plot, options),
+      ...this.buildPolygonPointMarkerTraces(plot, scale, options),
     ];
   }
 
@@ -326,17 +332,21 @@ export class PlotDataService {
   private calculatePolygonDashPattern(
     points: readonly PolygonPoint[],
     closed: boolean,
+    scale: RenderScale,
   ): Dash {
+    const edgeLength = (from: PolygonPoint, to: PolygonPoint): number => {
+      const dx = (to.x - from.x) * scale.x;
+      const dy = (to.y - from.y) * scale.y;
+
+      return Math.sqrt(dx * dx + dy * dy);
+    };
+
     let perimeter = 0;
-    for (let i = 0; i < points.length - 1; i++) {
-      const dx = points[i + 1].x - points[i].x;
-      const dy = points[i + 1].y - points[i].y;
-      perimeter += Math.sqrt(dx * dx + dy * dy);
+    for (let index = 0; index < points.length - 1; index++) {
+      perimeter += edgeLength(points[index], points[index + 1]);
     }
     if (closed && points.length > 0) {
-      const dx = points[0].x - points[points.length - 1].x;
-      const dy = points[0].y - points[points.length - 1].y;
-      perimeter += Math.sqrt(dx * dx + dy * dy);
+      perimeter += edgeLength(points[points.length - 1], points[0]);
     }
 
     if (perimeter === 0) {
@@ -361,6 +371,7 @@ export class PlotDataService {
 
   private buildPolygonPointMarkerTraces(
     plot: Plot,
+    scale: RenderScale,
     options: PolygonRenderOptions = {},
   ): PlotTrace[] {
     const polygonPointMarkers: {
@@ -382,7 +393,7 @@ export class PlotDataService {
         const position =
           point.labelPosition !== 'auto'
             ? point.labelPosition
-            : this.calculateLabelPosition(point, polygon.points);
+            : this.calculateLabelPosition(point, polygon.points, scale);
         polygonPointMarkers.push({
           x: point.x,
           y: point.y,
@@ -437,14 +448,15 @@ export class PlotDataService {
   calculateLabelPosition(
     point: PolygonPoint,
     polygonPoints: PolygonPoint[],
+    scale: RenderScale,
   ): Exclude<LabelPosition, 'auto'> {
     const centroid = {
       x: polygonPoints.reduce((sum, p) => sum + p.x, 0) / polygonPoints.length,
       y: polygonPoints.reduce((sum, p) => sum + p.y, 0) / polygonPoints.length,
     };
 
-    const dx = point.x - centroid.x;
-    const dy = point.y - centroid.y;
+    const dx = (point.x - centroid.x) * scale.x;
+    const dy = (point.y - centroid.y) * scale.y;
     const angle = Math.atan2(dy, dx) * (180 / Math.PI);
 
     if (angle >= -22.5 && angle < 22.5) {

@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import Plotly, { Annotations, PlotData } from 'plotly.js-dist-min';
+import Plotly, { Annotations } from 'plotly.js-dist-min';
 import { LegendLabelFormat, Plot, PlotSettings } from '../../models/plot';
 import { math } from '../../utils/math';
 import { modelIdPrefix } from '../office/plot/word-plot.service';
@@ -17,6 +17,12 @@ import { PlotSizeService } from './plot-size.service';
 import { PlotAnnotationsService } from './plot-annotations.service';
 import { PlotDataService } from './plot-data.service';
 import { PlotLabelsService } from './plot-labels.service';
+import {
+  buildAxisTicks,
+  effectiveUnitsPerSquare,
+  renderScale,
+} from './plot-geometry';
+import { PlotTrace, toRenderAnnotations, toRenderTraces } from './render-space';
 
 const devicePixelRatio = window.devicePixelRatio || 1;
 const effectiveDpi = 254 * devicePixelRatio;
@@ -229,7 +235,7 @@ export class PlotService {
     margin: PlotMarginMm,
     annotations: Partial<Annotations>[],
     arrows: Partial<Annotations>[],
-    data: Partial<PlotData>[],
+    data: PlotTrace[],
     functionLabelImages: Partial<Plotly.Image>[],
     applyScaleFactor: boolean,
   ): Promise<
@@ -244,7 +250,25 @@ export class PlotService {
   > {
     const { mmToInches, ppiBase } = PLOT_CONSTANTS;
     const { plotSizePx, plotSizePoints, axisRange } = sizeCalc;
-    const gridDtick = Number(plot.gridStep);
+    const scale = renderScale(plot);
+    const unitsPerSquare = effectiveUnitsPerSquare(plot.unitsPerSquare);
+    const gridStep = Number(plot.gridStep);
+    const xTicks = buildAxisTicks(
+      axisRange.x.min,
+      axisRange.x.max,
+      2 * gridStep * unitsPerSquare.x,
+      scale.x,
+    );
+    const yTicks = buildAxisTicks(
+      axisRange.y.min,
+      axisRange.y.max,
+      2 * gridStep * unitsPerSquare.y,
+      scale.y,
+    );
+    const axisAnnotations =
+      plot.showAxisLabels && plot.placeAxisLabelsInside
+        ? [...annotations, ...arrows]
+        : arrows;
 
     const tempDiv = document.createElement('div');
     tempDiv.style.cssText = 'position:absolute;visibility:hidden';
@@ -253,18 +277,16 @@ export class PlotService {
     try {
       await Plotly.newPlot(
         tempDiv,
-        data,
+        toRenderTraces(data, scale),
         {
           autosize: false,
           showlegend: false,
           width: plotSizePx.width,
           height: plotSizePx.height,
           images: functionLabelImages.length ? functionLabelImages : undefined,
-          annotations: !plot.showAxis
-            ? undefined
-            : plot.showAxisLabels && plot.placeAxisLabelsInside
-              ? [...annotations, ...arrows]
-              : arrows,
+          annotations: plot.showAxis
+            ? toRenderAnnotations(axisAnnotations, scale)
+            : undefined,
           margin: {
             t: margin.t * mmToInches * ppiBase,
             b: margin.b * mmToInches * ppiBase,
@@ -272,13 +294,13 @@ export class PlotService {
             r: margin.r * mmToInches * ppiBase,
           },
           xaxis: {
-            range: [axisRange.x.min, axisRange.x.max],
+            range: [axisRange.x.min * scale.x, axisRange.x.max * scale.x],
             autorange: false,
             showticklabels: plot.showAxisLabels && !plot.placeAxisLabelsInside,
-            tickmode: 'linear',
-            dtick: gridDtick,
+            tickmode: 'array',
+            tickvals: xTicks.tickvals,
+            ticktext: xTicks.ticktext,
             scaleanchor: 'y',
-            ticklabelstep: 2,
             gridcolor: plotSettings.gridLineColor,
             gridwidth: plotSettings.gridLineWidth,
             tickfont: { size: 10 },
@@ -290,12 +312,12 @@ export class PlotService {
             mirror: true,
           },
           yaxis: {
-            range: [axisRange.y.min, axisRange.y.max],
+            range: [axisRange.y.min * scale.y, axisRange.y.max * scale.y],
             autorange: false,
-            tickmode: 'linear',
+            tickmode: 'array',
             showticklabels: plot.showAxisLabels && !plot.placeAxisLabelsInside,
-            dtick: gridDtick,
-            ticklabelstep: 2,
+            tickvals: yTicks.tickvals,
+            ticktext: yTicks.ticktext,
             gridcolor: plotSettings.gridLineColor,
             gridwidth: plotSettings.gridLineWidth,
             tickfont: { size: 10 },
