@@ -244,14 +244,7 @@ export class PlotService {
     | PlotGenerateErrorCode
   > {
     const { mmToInches, ppiBase } = PLOT_CONSTANTS;
-    const {
-      plotSizePx,
-      plotSizePoints,
-      xValueMin,
-      xValueMax,
-      yValueMin,
-      yValueMax,
-    } = sizeCalc;
+    const { plotSizePx, plotSizePoints, axisRange } = sizeCalc;
     const gridDtick = Number(plot.gridStep);
 
     const tempDiv = document.createElement('div');
@@ -280,7 +273,7 @@ export class PlotService {
             r: margin.r * mmToInches * ppiBase,
           },
           xaxis: {
-            range: [xValueMin, xValueMax],
+            range: [axisRange.x.min, axisRange.x.max],
             autorange: false,
             showticklabels: plot.showAxisLabels && !plot.placeAxisLabelsInside,
             tickmode: 'linear',
@@ -298,7 +291,7 @@ export class PlotService {
             mirror: true,
           },
           yaxis: {
-            range: [yValueMin, yValueMax],
+            range: [axisRange.y.min, axisRange.y.max],
             autorange: false,
             tickmode: 'linear',
             showticklabels: plot.showAxisLabels && !plot.placeAxisLabelsInside,

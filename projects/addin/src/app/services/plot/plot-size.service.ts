@@ -21,20 +21,24 @@ export class PlotSizeService {
     valueRanges: ValueRanges,
     margin: PlotMarginMm,
   ): PlotSizeCalculation {
-    const { mmPerSquare, mmToInches, mmToPoints, ppiBase } = PLOT_CONSTANTS;
+    const {
+      mmPerSquare,
+      renderUnitsPerSquare,
+      mmToInches,
+      mmToPoints,
+      ppiBase,
+    } = PLOT_CONSTANTS;
 
-    const xValueFlat = plot.automaticallyAdjustLimitsToValueRange
-      ? cleanedValues.cleanXValues
-      : valueRanges.xNumbers;
-    const xValueMin = math.min(xValueFlat);
-    const xValueMax = math.max(xValueFlat);
+    const { min: xValueMin, max: xValueMax } =
+      plot.automaticallyAdjustLimitsToValueRange
+        ? this.boundsOf(cleanedValues.cleanXValues)
+        : plot.range.x;
     const xValueRange = xValueMax - xValueMin;
 
-    const yValueFlat = plot.automaticallyAdjustLimitsToValueRange
-      ? cleanedValues.cleanYValues.flatMap(y => y)
-      : valueRanges.yNumbers;
-    const yValueMin = math.min(yValueFlat);
-    const yValueMax = math.max(yValueFlat);
+    const { min: yValueMin, max: yValueMax } =
+      plot.automaticallyAdjustLimitsToValueRange
+        ? this.boundsOf(cleanedValues.cleanYValues.flatMap(values => values))
+        : plot.range.y;
     const yValueRange = yValueMax - yValueMin;
 
     const squares = squareCounts(xValueRange, yValueRange, plot.squarePlots);
@@ -49,6 +53,18 @@ export class PlotSizeService {
       xValueMax,
       yValueMin,
       yValueMax,
+      axisRange: {
+        x: this.stretchAroundCenter(
+          xValueMin,
+          xValueMax,
+          squares.x * renderUnitsPerSquare,
+        ),
+        y: this.stretchAroundCenter(
+          yValueMin,
+          yValueMax,
+          squares.y * renderUnitsPerSquare,
+        ),
+      },
       plotSizePx: {
         width: plotSizeMm.width * mmToInches * ppiBase,
         height: plotSizeMm.height * mmToInches * ppiBase,
@@ -58,6 +74,19 @@ export class PlotSizeService {
         height: plotSizeMm.height * mmToPoints,
       },
     };
+  }
+
+  private boundsOf(values: number[]): { min: number; max: number } {
+    return { min: math.min(values), max: math.max(values) };
+  }
+
+  private stretchAroundCenter(
+    min: number,
+    max: number,
+    targetLength: number,
+  ): { min: number; max: number } {
+    const padding = (targetLength - (max - min)) / 2;
+    return { min: min - padding, max: max + padding };
   }
 
   calculateEffectiveMargin(

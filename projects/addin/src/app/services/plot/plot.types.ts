@@ -56,6 +56,10 @@ export interface PlotSizeCalculation {
   xValueMax: number;
   yValueMin: number;
   yValueMax: number;
+  axisRange: {
+    x: { min: number; max: number };
+    y: { min: number; max: number };
+  };
   plotSizePx: { width: number; height: number };
   plotSizePoints: { width: number; height: number };
 }

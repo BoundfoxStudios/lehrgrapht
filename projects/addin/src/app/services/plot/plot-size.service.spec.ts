@@ -260,6 +260,45 @@ describe('PlotSizeService', () => {
 
       expect(result.plotSizePx.width).toBeCloseTo(result.plotSizePx.height, 5);
     });
+
+    it('should keep the axis range at the value bounds for non-square plots', () => {
+      const xNumbers = math.range(-5, 5, 0.1, true).toArray() as number[];
+      const yNumbers = math.range(-1, 1, 0.1, true).toArray() as number[];
+
+      const result = service.calculatePlotSize(
+        {
+          ...basePlot,
+          range: { x: { min: -5, max: 5 }, y: { min: -1, max: 1 } },
+        },
+        { cleanXValues: xNumbers, cleanYValues: [yNumbers] },
+        { xNumbers, yNumbers, yMin: -1, yMax: 1 },
+        { t: 7.5, b: 7.5, l: 7.5, r: 7.5 },
+      );
+
+      expect(result.axisRange.x).toEqual({ min: -5, max: 5 });
+      expect(result.axisRange.y).toEqual({ min: -1, max: 1 });
+    });
+
+    it('should stretch the shorter axis around its center for square plots', () => {
+      const xNumbers = math.range(-3, 3, 0.1, true).toArray() as number[];
+      const yNumbers = math.range(-1, 1, 0.1, true).toArray() as number[];
+
+      const result = service.calculatePlotSize(
+        {
+          ...basePlot,
+          squarePlots: true,
+          range: { x: { min: -3, max: 3 }, y: { min: -1, max: 1 } },
+        },
+        { cleanXValues: xNumbers, cleanYValues: [yNumbers] },
+        { xNumbers, yNumbers, yMin: -1, yMax: 1 },
+        { t: 7.5, b: 7.5, l: 7.5, r: 7.5 },
+      );
+
+      expect(result.axisRange.x).toEqual({ min: -3, max: 3 });
+      expect(result.axisRange.y).toEqual({ min: -3, max: 3 });
+      expect(result.yValueMin).toBe(-1);
+      expect(result.yValueMax).toBe(1);
+    });
   });
 
   describe('calculatePlotSizeMm', () => {
