@@ -1,299 +1,286 @@
-# Allgemeine Konventionen
+# General Conventions
 
-Stack-unabhängige Regeln für dieses Projekt. Definiert das Repo an anderer
-Stelle (CLAUDE.md, spezifischere Skills) eine abweichende Konvention, geht
-die vor.
+Stack-independent rules for this project. If the repo defines a different
+convention elsewhere (CLAUDE.md, more specific skills), that one takes
+precedence.
 
-## Arbeitsweise
+## Way of Working
 
-- Alignment vor Aktion: Bei nicht-trivialen Aufgaben vor der Umsetzung in
-  wenigen Sätzen (1) Verständnis, (2) geplanten Ansatz und (3) Trade-offs
-  bzw. Risiken zusammenfassen und die Bestätigung abwarten. Bei Aufgaben über
-  3+ Dateien oder mit Architektur-Entscheidungen in den Plan-Modus gehen.
-  Ausnahme: Verlangt der Auftrag ausdrücklich autonome Umsetzung oder läuft
-  die Session unbeaufsichtigt, Annahmen explizit nennen und weiterarbeiten
-  statt zu blockieren.
-- Schlägt der User nach einer Implementierung einen anderen Ansatz vor, alt
-  und neu mit konkreten Pros und Cons vergleichen, bevor gewechselt wird –
-  erhebliche Nachteile klar benennen, damit die Wahl informiert ist.
-- Läuft ein Ansatz gegen die Wand (wiederholte Fehlschläge, widerlegte
-  Annahmen), anhalten und neu planen statt weiterzudrücken.
-- Codebase-Exploration und Recherche an Subagents auslagern – der
-  Haupt-Kontext hält Entscheidungen und Ergebnisse, nicht den Suchprozess.
-- Jede Programmierarbeit läuft über einen Subagent, nie im Haupt-Kontext –
-  auch bei kleinen Änderungen. Der Haupt-Kontext recherchiert, entscheidet
-  und schneidet die Aufträge zu; mehrstufige Arbeit wird in eigene
-  Subagent-Schritte zerlegt (Implementierung, Tests, Review-Fixes).
-- Der Auftrag an einen solchen Subagent ist strikt und abschließend: die zu
-  ändernden Dateien mit Pfaden, das gewünschte Zielverhalten, die Ergebnisse
-  der Vorab-Recherche (API-Signaturen, bestehende Muster im Repo,
-  Doku-Auszüge), die geltenden Konventionen sowie die Akzeptanzkriterien
-  samt der Befehle, die sie prüfen. Was nicht im Auftrag steht, wird nicht
-  angefasst.
-- Diese Subagents forschen nicht mehr – Exploration und Recherche sind
-  vorher passiert und stecken im Auftrag. Fehlt etwas oder widerspricht die
-  Vorgabe dem Code, meldet der Subagent das zurück, statt selbst zu suchen,
-  zu entscheiden oder zu raten.
-- Vor Änderungen an nebenläufigem Code identifizieren: geteilter
-  veränderlicher Zustand, Ordering-Garantien beim Verschränken von
-  Operationen, bestehende Synchronisationsgrenzen; bei async-Code zusätzlich
-  Cancellation-Propagation, Backpressure und Atomicity.
-- Selbst-Review vor der Fertigmeldung: geänderte Dateien erneut lesen (nicht
-  aus dem Gedächtnis), auf unbenutzte Variablen, fehlende Null-Checks,
-  inkonsistente Benennung und unbehandelte Edge-Cases prüfen; bauen und die
-  betroffenen Tests ausführen.
-- Simplicity-Check vor der Fertigmeldung: jede neue Variable, jeder Wrapper,
-  jede Zwischen-Collection und jeder Parameter muss sein Gewicht tragen –
-  einmal sofort benutzte Werte inlinen; wirkt etwas over-engineered, zuerst
-  vereinfachen.
+- Alignment before action: For non-trivial tasks, before implementing,
+  summarize in a few sentences (1) your understanding, (2) the planned
+  approach and (3) trade-offs or risks, and wait for confirmation. For tasks
+  spanning 3+ files or involving architecture decisions, enter plan mode.
+  Exception: If the assignment expressly calls for autonomous execution or
+  the session runs unattended, state assumptions explicitly and keep working
+  instead of blocking.
+- If the user suggests a different approach after an implementation, compare
+  old and new with concrete pros and cons before switching – name significant
+  drawbacks clearly so the choice is an informed one.
+- If an approach hits a wall (repeated failures, disproven assumptions), stop
+  and re-plan instead of pushing on.
+- Offload codebase exploration and research to subagents – the main context
+  holds decisions and results, not the search process.
+- All programming work runs in a subagent, never in the main context –
+  even for small changes. The main context researches, decides and scopes
+  the assignments; multi-step work is split into separate subagent steps
+  (implementation, tests, review fixes).
+- The assignment to such a subagent is strict and self-contained: the files to
+  change with paths, the desired target behavior, the results of the upfront
+  research (API signatures, existing patterns in the repo, documentation
+  excerpts), the applicable conventions, and the acceptance criteria along
+  with the commands that verify them. Whatever is not in the assignment is
+  not touched.
+- These subagents do no further research – exploration and research have
+  happened beforehand and are part of the assignment. If something is missing
+  or the specification contradicts the code, the subagent reports that back
+  instead of searching, deciding or guessing on its own.
+- Before changing concurrent code, identify: shared mutable state, ordering
+  guarantees when operations interleave, existing synchronization boundaries;
+  for async code, also cancellation propagation, backpressure and atomicity.
+- Self-review before reporting completion: re-read the changed files (not
+  from memory), check for unused variables, missing null checks, inconsistent
+  naming and unhandled edge cases; build and run the affected tests.
+- Simplicity check before reporting completion: every new variable, wrapper,
+  intermediate collection and parameter must pull its weight – inline values
+  that are used once and immediately; if something looks over-engineered,
+  simplify first.
 
-## Code-Stil
+## Code Style
 
-- Standard ist null Kommentare. Ein Kommentar wird nur geschrieben, wenn er
-  etwas nennt, das der Leser dem Code nicht ansehen kann: einen nicht
-  offensichtlichen Algorithmus, einen behandelten Edge-Case, einen Workaround
-  oder eine bewusste Entscheidung gegen das Naheliegende – im Zweifel
-  weglassen. Dann nur die Essenz, so kurz wie möglich, z.B.
+- The default is zero comments. A comment is written only if it states
+  something the reader cannot see from the code: a non-obvious algorithm, a
+  handled edge case, a workaround or a deliberate decision against the
+  obvious choice – when in doubt, leave it out. Even then, only the essence,
+  as short as possible, e.g.
   `// Safari fires pagehide twice; the guard drops the second call`.
-- Wirkt Code ohne Kommentar unklar, zuerst Namen verbessern oder eine
-  Funktion extrahieren – ein Kommentar ist nur erlaubt, wenn beides die
-  Information nicht tragen kann.
-- Verbotene Kommentar-Muster – niemals schreiben, auch nicht in Varianten;
-  die Liste ist beispielhaft, nicht abschließend:
-  - Paraphrase von Code oder Namen: kein `// enables the cooking mode` an
-    `isCookingModeEnabled`, kein `// save the user` über
+- If code looks unclear without a comment, first improve names or extract a
+  function – a comment is only allowed if neither can carry the information.
+- Forbidden comment patterns – never write them, not even in variations;
+  the list is illustrative, not exhaustive:
+  - Paraphrasing code or names: no `// enables the cooking mode` on
+    `isCookingModeEnabled`, no `// save the user` above
     `repository.save(user)`.
-  - Schritt- und Abschnitts-Erzählung: kein `// Validate input`, `// Setup`,
-    `// Main logic`, `// --- Helpers ---`; in Tests kein `// Arrange` /
+  - Step and section narration: no `// Validate input`, `// Setup`,
+    `// Main logic`, `// --- Helpers ---`; in tests no `// Arrange` /
     `// Act` / `// Assert`.
-  - Änderungs-Erzählung: kein `// now uses the new API`,
-    `// changed to async`, `// as requested` – die Änderung erzählen Diff
-    und Commit-Message, nicht der Code.
-  - Signatur-Echo: kein JSDoc/XML-Doc/Docstring, der nur Name, Parameter und
-    Rückgabetyp umformuliert. Doc-Comments nur, wo das Projekt oder die
-    Aufgabe sie verlangt – und dann ohne Parameter-/Return-Echos, nur mit
-    Inhalt jenseits der Signatur (Einheiten, Fehlerverhalten,
-    Nebenwirkungen).
-- Maschinen-Direktiven (`// eslint-disable-next-line`, `# type: ignore`,
-  Pragmas, Lizenz-Header) zählen nicht als Kommentare im Sinne dieser Regel.
-- Die Regel gilt für selbst geschriebene Kommentare – bestehende Kommentare
-  in fremdem Code bleiben unangetastet.
-- Keine Abkürzungen in Bezeichnern – Worte immer ausschreiben: `index` statt
-  `i` in Schleifen, `template` statt `tpl`. Ausgeschriebene Namen sind besser
-  lesbar.
-- Jeder Code ist Produktionscode: sauber, vollständig und wartbar – keine
-  Provisorien, keine auskommentierten Reste, keine "TODO später"-Lösungen.
-  Ausnahme nur, wenn explizit Prototyp- oder Wegwerfcode angefordert wird.
-- Generierte Artefakte nie von Hand editieren – Generator, Template oder
-  Quelle ändern und neu generieren. Sind generierte Dateien committet, das
-  regenerierte Ergebnis zusammen mit der auslösenden Änderung committen.
-  Generator-Fehlschläge sichtbar machen (Fehler-Artefakt oder harter
-  Abbruch), nie still verschlucken.
-- In zeitabhängiger Logik, deren Verhalten Tests kontrollieren müssen, die
-  Systemzeit nicht direkt lesen – eine testbar kontrollierbare Uhr verwenden
-  (die injizierte Abstraktion, wo der Stack eine bietet).
-- Nutzt das Projekt strukturiertes Logging, loggt dasselbe Konzept immer
-  unter demselben Property-Namen, damit Logs zuverlässig abfragbar bleiben.
+  - Change narration: no `// now uses the new API`,
+    `// changed to async`, `// as requested` – the diff and the commit
+    message tell the story of the change, not the code.
+  - Signature echo: no JSDoc/XML doc/docstring that merely rephrases name,
+    parameters and return type. Doc comments only where the project or the
+    task requires them – and then without parameter/return echoes, only with
+    content beyond the signature (units, error behavior, side effects).
+- Machine directives (`// eslint-disable-next-line`, `# type: ignore`,
+  pragmas, license headers) do not count as comments under this rule.
+- The rule applies to comments you write yourself – existing comments in
+  other people's code stay untouched.
+- No abbreviations in identifiers – always spell words out: `index` instead
+  of `i` in loops, `template` instead of `tpl`. Spelled-out names are easier
+  to read.
+- All code is production code: clean, complete and maintainable – no
+  stopgaps, no commented-out leftovers, no "TODO later" solutions. The only
+  exception is when prototype or throwaway code is explicitly requested.
+- Never hand-edit generated artifacts – change the generator, template or
+  source and regenerate. If generated files are committed, commit the
+  regenerated result together with the triggering change. Make generator
+  failures visible (error artifact or hard abort), never swallow them
+  silently.
+- In time-dependent logic whose behavior must be controllable from tests, do
+  not read the system time directly – use a clock that tests can control
+  (the injected abstraction where the stack provides one).
+- If the project uses structured logging, always log the same concept under
+  the same property name so logs remain reliably queryable.
 
 ## Testing
 
-- Tests prüfen ausschließlich eigenes Anwendungsverhalten: Geschäftslogik,
-  Edge-Cases, Fehlerpfade. Niemals das zugrunde liegende Framework testen –
-  z.B. kein Test, ob eine Variable sauber ans UI gebunden wird, ob ein Getter
-  den gesetzten Wert liefert oder ob ein Framework-Feature funktioniert; das
-  deckt das Framework selbst ab.
-- Leitfrage vor jedem Test: Welches Verhalten der Anwendung bricht, wenn
-  dieser Test rot wird? Gibt es keine konkrete Antwort, den Test nicht
-  schreiben.
-- Kein Test-only-Code in Produktion: keine Member, Konstruktoren oder
-  Factories, deren einziger Aufrufer ein Test ist (kein `CreateForTesting`,
-  keine Seed-/Reset-Methoden nur für Test-Setups) – solche Helfer gehören
-  in den Test-Code (Testprojekt bzw. Test-Verzeichnis).
-- Sichtbarkeit nie für Tests erweitern: ein Member wird nicht `public` oder
-  `internal` (bzw. das Äquivalent des Stacks), nur um testbar zu sein – über
-  die bestehende öffentliche Oberfläche testen oder die Logik in einen
-  eigenen Typ extrahieren, dessen Sichtbarkeit produktiv begründet ist.
-- Vor jedem Mock oder Fake die echte Implementierung ansehen: den echten Typ
-  verwenden, wenn er billig zu konstruieren ist (keine I/O, kein globaler
-  Zustand, kein DI-Graph) oder nennenswerte Logik trägt – ein abweichender
-  Stub maskiert Bugs oder erfindet Fehler, die produktiv nie auftreten.
-  Mocken nur, wenn der echte Typ schwere Abhängigkeiten zieht (Datenbank,
-  Netzwerk, externe Services); im Zweifel den User fragen statt einen Stub
-  zu erfinden.
-- "Keine Seiteneffekte"-Assertions dürfen nicht konstruktionsbedingt
-  tautologisch wahr sein: Kann der Input-Typ die Daten für den Seiteneffekt
-  strukturell gar nicht tragen, prüft der Test nichts – weglassen, wenn ein
-  echter Kontrast-Test (gemischter Erfolgs- und Fehlerfall) existiert.
-- Organisation: zuerst nach einer bestehenden Testdatei bzw. -Suite für
-  denselben Member bzw. dasselbe Feature suchen und dort ergänzen; eine neue
-  Datei nur bei echtem neuen Schnitt. Gemeinsame Setup-Infrastruktur
-  (Basisklasse, Fixture, geteilter Hook) erst, wenn 2+ Stellen Setup
-  duplizieren – nie auf Vorrat.
-- Gemeinsames Setup in die Setup-Mechanismen des Frameworks (Konstruktor,
-  Setup-Hooks, Fixtures, Helper) – der Arrange-Teil eines Tests enthält nur
-  szenariospezifische Werte.
-- Pro Repo genau eine Assertion- und genau eine Mocking-Bibliothek.
-  Legacy-Muster (alte Assertion-Lib, alter Namensstil) bekommen keine neuen
-  Verwendungen – auch beim Ergänzen in Legacy-Dateien den kanonischen Stil
-  verwenden.
-- Testnamen nennen getestetes Verhalten, Szenario und erwartetes Ergebnis
-  (z.B. `AddRow_EmptyTable_AddsRow` – sinngemäß je Test-Framework).
+- Tests verify only the application's own behavior: business logic, edge
+  cases, error paths. Never test the underlying framework – e.g. do not test
+  whether a variable is properly bound to the UI, whether a getter returns
+  the value that was set or whether a framework feature works; the framework
+  itself covers that.
+- Guiding question before every test: Which behavior of the application
+  breaks if this test turns red? If there is no concrete answer, do not write
+  the test.
+- No test-only code in production: no members, constructors or factories
+  whose only caller is a test (no `CreateForTesting`, no seed/reset methods
+  only for test setups) – such helpers belong in the test code (test project
+  or test directory).
+- Never widen visibility for tests: a member does not become `public` or
+  `internal` (or the stack's equivalent) just to be testable – test through
+  the existing public surface or extract the logic into its own type whose
+  visibility is justified by production needs.
+- Before every mock or fake, look at the real implementation: use the real
+  type if it is cheap to construct (no I/O, no global state, no DI graph) or
+  carries notable logic – a diverging stub masks bugs or invents failures
+  that never occur in production. Mock only if the real type pulls in heavy
+  dependencies (database, network, external services); when in doubt, ask the
+  user instead of inventing a stub.
+- "No side effects" assertions must not be tautologically true by
+  construction: if the input type structurally cannot carry the data for the
+  side effect at all, the test verifies nothing – leave it out if a real
+  contrast test (mixed success and failure case) exists.
+- Organization: first look for an existing test file or suite for the same
+  member or the same feature and add the test there; a new file only for a
+  genuinely new concern. Shared setup infrastructure (base class, fixture,
+  shared hook) only once 2+ places duplicate setup – never speculatively.
+- Shared setup goes into the framework's setup mechanisms (constructor, setup
+  hooks, fixtures, helpers) – the arrange part of a test contains only
+  scenario-specific values.
+- Exactly one assertion library and exactly one mocking library per repo.
+  Legacy patterns (old assertion library, old naming style) must not gain new
+  usages – use the canonical style even when adding to legacy files.
+- Test names state the tested behavior, the scenario and the expected result
+  (e.g. `AddRow_EmptyTable_AddsRow` – adapted to each test framework).
 
-## Branches & Commit-Messages
+## Branches & Commit Messages
 
-- Branch-Namen beim Anlegen: nur die Prefixe `feature/`, `fix/` und `release/`,
-  immer ausgeschrieben (`feature/abc`, nicht `feat/abc`); andere Prefixe nur
-  auf explizite Anweisung.
-- Gehört der Branch zu einem GitHub-Issue, steht dessen Nummer direkt nach
-  dem Prefix vor dem beschreibenden Namen: `feature/123-add-retry-logic`.
-  Nummern nie raten – nur verwenden, wenn das Issue in der Aufgabe genannt
-  oder vorher nachgeschlagen wurde.
-- Commit-Messages bestehen ausschließlich aus dem Titel (eine Zeile) und sind
-  immer auf Englisch – einzige Ausnahme ist die Issue-Referenz unten.
-- Commit-Messages folgen Conventional Commits – außer das Repo beschreibt eine
-  eigene Konvention, dann gilt die. Standard ist `type: beschreibung`; einen
-  Scope (`type(scope): beschreibung`) nur verwenden, wenn das Repo Scopes
-  definiert.
-- Erlaubte Typen – genau diese, keine anderen:
-  - `build`: Änderungen am Build-System oder an externen Dependencies
-  - `ci`: Änderungen an CI-Konfiguration und -Skripten
-  - `docs`: reine Dokumentations-Änderungen
-  - `feat`: ein neues Feature
-  - `fix`: ein Bugfix
-  - `perf`: eine Code-Änderung, die die Performance verbessert
-  - `refactor`: eine Code-Änderung, die weder einen Bug behebt noch ein
-    Feature hinzufügt
-  - `style`: Änderungen ohne Einfluss auf die Bedeutung des Codes
-    (Whitespace, Formatierung, fehlende Semikolons, …)
-  - `test`: fehlende Tests ergänzen oder bestehende Tests korrigieren
-- Niemals einen Commit-Body schreiben – auch keine Footer/Trailer wie
-  `Co-Authored-By` oder "Generated with"-Zeilen.
-- Ausnahme: Gehört ein Commit zu einem GitHub-Issue, besteht der Body aus genau
-  einer Zeile `Refs #123`; mehrere Issues bekommen je eine eigene Zeile. Kein
-  Closing-Keyword im Commit – das gehört in die PR-Beschreibung (siehe unten).
-  Nummern nie raten: nur referenzieren, wenn das Issue in der Aufgabe genannt
-  oder vorher nachgeschlagen wurde.
+- When creating branches, use only the prefixes `feature/`, `fix/` and
+  `release/`, always spelled out (`feature/abc`, not `feat/abc`); other
+  prefixes only on explicit instruction.
+- If the branch belongs to a GitHub issue, its number goes directly after the
+  prefix, before the descriptive name: `feature/123-add-retry-logic`. Never
+  guess numbers – use them only if the issue was named in the task or looked
+  up beforehand.
+- Commit messages consist solely of the title (one line) and are always in
+  English – the only exception is the issue reference below.
+- Commit messages follow Conventional Commits – unless the repo describes its
+  own convention, in which case that applies. The default is
+  `type: description`; use a scope (`type(scope): description`) only if the
+  repo defines scopes.
+- Allowed types – exactly these, no others:
+  - `build`: changes to the build system or to external dependencies
+  - `ci`: changes to CI configuration and scripts
+  - `docs`: documentation-only changes
+  - `feat`: a new feature
+  - `fix`: a bug fix
+  - `perf`: a code change that improves performance
+  - `refactor`: a code change that neither fixes a bug nor adds a feature
+  - `style`: changes that do not affect the meaning of the code (whitespace,
+    formatting, missing semicolons, …)
+  - `test`: adding missing tests or correcting existing tests
+- Never write a commit body – no footers/trailers either, such as
+  `Co-Authored-By` or "Generated with" lines.
+- Exception: If a commit belongs to a GitHub issue, the body consists of
+  exactly one line `Refs #123`; multiple issues each get their own line. No
+  closing keyword in the commit – that belongs in the PR description (see
+  below). Never guess numbers: reference only if the issue was named in the
+  task or looked up beforehand.
 
-## GitHub-Issues
+## GitHub Issues
 
-- Issues beschreiben Problem bzw. Anforderung rein fachlich: was, für wen,
-  warum, erwartetes Verhalten, Akzeptanzkriterien. Kein Lösungsweg und keine
-  Implementierungsskizze – außer der Ansatz wurde vorher explizit gemeinsam
-  erarbeitet, dann kommt genau dieser abgestimmte Stand hinein.
-- Keine Referenzen auf Dateien, Klassen oder andere Code-Stellen: Issues
-  entstehen oft lange vor der Umsetzung, der Code bewegt sich weiter und die
-  Referenzen veralten. Fachliche Begriffe statt Code-Symbole verwenden.
-- Fließtext ohne harte Zeilenumbrüche schreiben – ein Absatz ist eine Zeile,
-  GitHub bricht beim Rendern selbst um. Zeilenumbrüche nur, wo Markdown sie
-  braucht (Absatzwechsel, Listen, Code-Blöcke).
-- Vor dem Anlegen die fachliche Konzeption im Dialog schärfen: Unklarheiten,
-  Edge-Cases und offene Entscheidungen aktiv ansprechen und klären – ein
-  Issue wird erst angelegt, wenn keine Fragen offen sind.
-- Hat ein Eltern-Issue Kinder (Epic mit Teilaufgaben), die Kinder als
-  GitHub-Sub-Issues verknüpfen – nicht als Markdown-Liste oder Task-Liste
-  mit `#123`-Links im Body: `gh issue create --parent <eltern-nummer>` beim
-  Anlegen bzw. `gh issue edit <eltern-nummer> --add-sub-issue <nummer>`
-  nachträglich.
+- Issues describe the problem or requirement purely from a domain
+  perspective: what, for whom, why, expected behavior, acceptance criteria.
+  No proposed solution and no implementation sketch – unless the approach
+  was explicitly worked out together beforehand, in which case exactly that
+  agreed approach goes in.
+- No references to files, classes or other code locations: issues are often
+  created long before implementation, the code moves on and the references
+  go stale. Use domain terms instead of code symbols.
+- Write prose without hard line breaks – one paragraph is one line, GitHub
+  wraps on its own when rendering. Line breaks only where Markdown needs
+  them (paragraph breaks, lists, code blocks).
+- Before creating an issue, refine the domain concept in conversation:
+  actively raise and clarify ambiguities, edge cases and open decisions – an
+  issue is created only once no questions remain open.
+- If a parent issue has children (an epic with subtasks), link the children
+  as GitHub sub-issues – not as a Markdown list or task list with `#123`
+  links in the body: `gh issue create --parent <parent-number>` when
+  creating, or `gh issue edit <parent-number> --add-sub-issue <number>`
+  afterwards.
 
 ## Pull Requests
 
-- PR-Titel sind immer auf Englisch und folgen nicht Conventional Commits –
-  kein `feat:`/`fix:`-Prefix, sondern ein normaler beschreibender Titel
-  (z.B. "Add retry logic to the sync job" statt "feat: add retry logic to
-  the sync job").
-- Für PR-Beschreibungen gilt wie bei Issues: Fließtext ohne harte
-  Zeilenumbrüche – GitHub bricht beim Rendern selbst um.
-- Gehört ein PR zu einem GitHub-Issue, steht das Closing-Keyword in der
-  PR-Beschreibung – `Fixes #123` bei Bugs, sonst `Closes #123`; mehrere
-  Issues bekommen je eine eigene Zeile.
-- Standard ist eine leere PR-Beschreibung. Hinein kommen nur das
-  Closing-Keyword (oben) und, soweit Titel, verlinktes Issue und Diff es
-  nicht schon sagen, ein bis wenige Sätze zu Was und Warum sowie
-  Reviewer-Wissen, das dem Diff nicht anzusehen ist: Breaking Changes,
-  Migrations- oder Deploy-Schritte, manuell zu prüfendes Verhalten, bewusste
-  Entscheidungen gegen das Naheliegende. Leitfrage vor jedem Satz: Sagt es
-  Titel, Issue oder Diff schon? Wenn ja, weglassen – auch wenn die
-  Beschreibung dann nur aus dem Closing-Keyword besteht oder leer bleibt.
-- Verbotene Muster in PR-Beschreibungen – niemals schreiben, auch nicht in
-  Varianten; die Liste ist beispielhaft, nicht abschließend:
-  Boilerplate-Überschriften (`## Summary`, `## Changes`, `## Test plan`),
-  Nacherzählung der Änderungen als Bullets oder Fließtext, Listen geänderter
-  Dateien, Wiederholung von PR-Titel oder Issue-Text, Protokoll des eigenen
-  Vorgehens oder Testens, Checklisten, Emojis, "Generated with"-Footer.
-- Hängen die referenzierten Issues an einem Milestone, den PR demselben
-  Milestone zuordnen (`gh pr edit <nummer> --milestone <titel>`). GitHub
-  erlaubt nur einen Milestone pro PR – verteilen sich die Issues auf
-  mehrere, nachfragen statt raten.
-- Kommen nach dem Erstellen eines PRs weitere Anmerkungen, die thematisch zu
-  diesem PR gehören, zuerst prüfen, ob der PR schon im Review ist:
-  `gh pr view <nummer> --json reviewRequests,reviews`. Sind beide leer, den
-  bestehenden PR aktualisieren (auf denselben Branch pushen) statt einen neuen
-  zu eröffnen. Ist ein Reviewer assigned oder ein Review abgegeben, den PR
-  nicht mehr anfassen, sondern die Änderung als neuen PR machen.
+- PR titles are always in English and do not follow Conventional Commits –
+  no `feat:`/`fix:` prefix, just a normal descriptive title (e.g. "Add retry
+  logic to the sync job" instead of "feat: add retry logic to the sync
+  job").
+- For PR descriptions, the same applies as for issues: prose without hard
+  line breaks – GitHub wraps on its own when rendering.
+- If a PR belongs to a GitHub issue, the closing keyword goes in the PR
+  description – `Fixes #123` for bugs, otherwise `Closes #123`; multiple
+  issues each get their own line.
+- The default is an empty PR description. The only things that go in are the
+  closing keyword (above) and, where the title, linked issue and diff do not
+  already cover it, one to a few sentences on what and why, plus reviewer
+  knowledge that cannot be seen from the diff: breaking changes, migration or
+  deploy steps, behavior to verify manually, deliberate decisions against the
+  obvious choice. Guiding question before every sentence: Does the title,
+  issue or diff already say it? If yes, leave it out – even if the
+  description then consists only of the closing keyword or stays empty.
+- Forbidden patterns in PR descriptions – never write them, not even in
+  variations; the list is illustrative, not exhaustive: boilerplate headings
+  (`## Summary`, `## Changes`, `## Test plan`), retelling the changes as
+  bullets or prose, lists of changed files, repetition of PR title or issue
+  text, a log of your own process or testing, checklists, emojis,
+  "Generated with" footers.
+- If the referenced issues are attached to a milestone, assign the PR to the
+  same milestone (`gh pr edit <number> --milestone <title>`). GitHub allows
+  only one milestone per PR – if the issues are spread across several, ask
+  instead of guessing.
+- If follow-up remarks that belong to the same topic as a PR arrive after it
+  was created, first check whether the PR is already under review:
+  `gh pr view <number> --json reviewRequests,reviews`. If both are empty,
+  update the existing PR (push to the same branch) instead of opening a new
+  one. If a reviewer is assigned or a review has been submitted, leave the
+  PR alone; make the change as a new PR instead.
 
-## Dependencies & Versionen
+## Dependencies & Versions
 
-- Beim Hinzufügen oder Aktualisieren von Dependencies (npm, NuGet, pip, …)
-  niemals Versionen aus dem Trainingswissen übernehmen – immer zuerst die
-  aktuell neueste Version ermitteln (z.B. `npm view <paket> version`,
-  `dotnet package search`, PyPI-/Registry-Abfrage) und diese verwenden.
-- Gleiches gilt für GitHub Actions (`uses:`-Referenzen), Basis-Images in
-  Dockerfiles und Tool-Versionen in CI-Konfigurationen: vor dem Schreiben die
-  neueste Major-Version bzw. das neueste Release nachschlagen (z.B. via
-  `gh api repos/<owner>/<repo>/releases/latest`), nicht raten.
-- Und für API-Oberflächen: bei Unsicherheit über Signaturen, Parameter oder
-  Framework-Verhalten nie raten – aktuelle Doku nachschlagen und bestehende
-  Verwendungen im Repo lesen.
+- When adding or updating dependencies (npm, NuGet, pip, …), never take
+  versions from training knowledge – always determine the current latest
+  version first (e.g. `npm view <package> version`, `dotnet package search`,
+  PyPI/registry query) and use that.
+- The same applies to GitHub Actions (`uses:` references), base images in
+  Dockerfiles and tool versions in CI configurations: before writing, look up
+  the latest major version or the latest release (e.g. via
+  `gh api repos/<owner>/<repo>/releases/latest`), do not guess.
+- The same goes for API surfaces: when unsure about signatures, parameters
+  or framework behavior, never guess – look up current documentation and
+  read existing usages in the repo.
 
-## Agent-Dokumentation
+## Agent Documentation
 
-Regeln für CLAUDE.md und weitere Agent-Instruktionsdateien im Repo.
+Rules for CLAUDE.md and other agent instruction files in the repo.
 
-- Die Instruktionen sind Teil des Deliverables: Ändert eine Aufgabe
-  Architektur, Konventionen, Datenstrukturen oder Verhalten, das dort
-  beschrieben ist, den betroffenen Abschnitt im selben Arbeitsgang
-  aktualisieren – Doku und Code driften nie auseinander.
-- Die Doku beschreibt den Ist-Zustand des Codes, nie das Soll. Entschiedenes,
-  aber noch nicht Gebautes explizit als solches markieren – samt der
-  Bedingung, wann die Notiz entfällt.
-- Kuratierte Landkarte, kein Code-Spiegel: Ein nur im Code sichtbarer Fakt
-  kommt nur hinein, wenn mehrere Kriterien zutreffen – wiederkehrend
-  gebraucht, querschnittlich oder tragend (Contract/Invariante), nicht
-  offensichtlich (Footgun), stabil, teuer herzuleiten. Lokale, leicht
-  auffindbare Mechanik bleibt im Code; nie Signaturen auf Vorrat kopieren.
-- Netto-Disziplin: Jede Ergänzung hat einen benannten Zielort. Zuerst
-  prüfen, ob ein bestehender Eintrag das Wissen schon trägt, und dort
-  schärfen statt daneben zu ergänzen; Redundantes oder Veraltetes im selben
-  Zug entfernen.
-- Nach einer User-Korrektur an einem projektweiten Muster die betroffene
-  Stelle als konkrete Regel aktualisieren – nicht als vage Lektion irgendwo
-  anhängen.
-- Entscheidungen dort dokumentieren, wo ein künftiger Leser sie erneut
-  vorschlagen würde: verworfene Alternativen mit Grund, bewusste
-  Abweichungen vom Naheliegenden als beabsichtigt markiert, widerlegte
-  (Optimierungs-)Hypothesen mit Datum, Messung und dem Vermerk, sie nicht
-  erneut zu versuchen.
-- Negativ-Wissen festhalten: plausibel klingende, aber nicht (mehr)
-  existierende APIs explizit als "X existiert nicht – nutze Y" dokumentieren,
-  genau dort, wo ein Agent danach suchen würde.
-- Projektmanagement-Inhalte (Termine, Meeting-Notizen, organisatorische
-  Fragen) bleiben draußen – die Instruktionen handeln vom Code.
-- Wächst die Doku, lohnen eigene Dateien: ein Glossar (eine kurze,
-  verlinkbare Definition pro Fachbegriff, am Code-Symbol verankert, beim
-  Antreffen unbekannter Begriffe sofort ergänzt) und ein
-  Invarianten-Register (tragende Contracts mit Aussage, Begründung,
-  Enforcement-Ort – Code oder nur Konvention – und Symptom einer Verletzung;
-  nach einem Bugfix, dessen Ursache ein unerzwungener Contract war, kommt
-  ein Eintrag dazu).
+- The instructions are part of the deliverable: If a task changes
+  architecture, conventions, data structures or behavior described there,
+  update the affected section in the same pass – documentation and code
+  never drift apart.
+- The documentation describes the current state of the code, never the
+  target state. Explicitly mark anything decided but not yet built as such –
+  including the condition under which the note goes away.
+- Curated map, not a code mirror: A fact visible only in the code goes in
+  only if several criteria apply – needed repeatedly, cross-cutting or
+  load-bearing (contract/invariant), non-obvious (footgun), stable, expensive
+  to derive. Local, easily discoverable mechanics stay in the code; never
+  copy signatures just in case.
+- Net-zero discipline: Every addition has a named target location. First
+  check whether an existing entry already carries the knowledge, and sharpen
+  it there instead of adding next to it; remove redundant or outdated
+  content in the same pass.
+- After a user correction to a project-wide pattern, update the affected
+  spot as a concrete rule – rather than tacking a vague lesson on somewhere.
+- Document decisions where a future reader would propose them again:
+  discarded alternatives with the reason, deliberate deviations from the
+  obvious approach marked as intentional, disproven (optimization) hypotheses
+  with date, measurement and the note not to try them again.
+- Record negative knowledge: explicitly document plausible-sounding APIs
+  that do not (or no longer) exist as "X does not exist – use Y", exactly
+  where an agent would look for them.
+- Project management content (deadlines, meeting notes, organizational
+  questions) stays out – the instructions are about the code.
+- If the documentation grows, separate files pay off: a glossary (one short,
+  linkable definition per domain term, anchored to the code symbol, added
+  immediately when unknown terms are encountered) and an invariants register
+  (load-bearing contracts with statement, rationale, enforcement location –
+  code, or merely convention – and symptom of a violation; after a bug fix
+  whose cause was an unenforced contract, an entry is added).
 
 ## Memory
 
-- Maschinenlokales Projekt-Wissen bringt im Team nichts – niemals schreiben,
-  du hättest dir etwas gemerkt, wenn es nur lokal gespeichert ist.
-- Repo-bezogene Erkenntnisse gehören ins Repo (z.B. in dessen CLAUDE.md)
-  und werden committet.
-- Globale Erkenntnisse (Arbeitsweise, Vorlieben, Umgebung) stattdessen dem
-  User mitteilen, damit er sie in seiner persönlichen Konfiguration
-  verankert.
-
-<!-- TODO: Eigene Konventionen ergänzen (projektspezifischer Stil, Review-Regeln, ...) -->
+- Machine-local project knowledge is of no use to the team – never claim
+  to have remembered something if it is only stored locally.
+- Repo-related insights belong in the repo (e.g. in its CLAUDE.md) and are
+  committed.
+- Communicate global insights (way of working, preferences, environment) to
+  the user instead, so they can anchor them in their personal configuration.

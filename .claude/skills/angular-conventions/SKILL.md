@@ -1,71 +1,70 @@
 ---
 name: angular-conventions
-description: Bei Angular-Entwicklung nutzen – Komponenten, Signals, Routing, Forms, Tests. Enthält die Angular-Konventionen dieses Projekts.
+description: Use for Angular development – components, signals, routing, forms, tests. Contains the Angular conventions of this project.
 ---
 
-# Angular-Konventionen
+# Angular Conventions
 
-## Grundlagen
+## Fundamentals
 
-- Standalone Components, keine NgModules
-- `standalone: true` niemals in Angular-Decorators setzen – seit Angular v20
-  ist das der Standard
-- Signals bevorzugen (`signal`, `computed`, `input()`, `output()`)
-- `changeDetection: ChangeDetectionStrategy.OnPush` im `@Component`-Decorator
-  setzen
-- Formulare mit Signal Forms, keine Template-driven oder Reactive Forms;
-  vor der Arbeit damit immer die aktuelle Signal-Forms-Doku ziehen
-  (context7 bzw. angular.dev)
-- Kein `ngSubmit`/`(submit)` auf dem `form`-Tag – Submit läuft über die
-  `formRoot`-Directive
-- Feature-Routen per Lazy Loading laden
-- Keine `@HostBinding`- und `@HostListener`-Decorators – Host-Bindings
-  gehören in das `host`-Objekt des `@Component`- bzw. `@Directive`-Decorators
-- `NgOptimizedImage` für alle statischen Bilder
-  - `NgOptimizedImage` funktioniert nicht für Inline-base64-Bilder
+- Standalone components, no NgModules
+- Never set `standalone: true` in Angular decorators – it has been the
+  default since Angular v20
+- Prefer signals (`signal`, `computed`, `input()`, `output()`)
+- Set `changeDetection: ChangeDetectionStrategy.OnPush` in the `@Component`
+  decorator
+- Build forms with Signal Forms, not template-driven or reactive forms;
+  always pull the current Signal Forms docs before working with them
+  (context7 or angular.dev)
+- No `ngSubmit`/`(submit)` on the `form` tag – submit runs through the
+  `formRoot` directive
+- Load feature routes via lazy loading
+- No `@HostBinding` or `@HostListener` decorators – host bindings belong
+  in the `host` object of the `@Component` or `@Directive` decorator
+- `NgOptimizedImage` for all static images
+  - `NgOptimizedImage` does not work for inline base64 images
 
-## Komponenten
+## Components
 
-- Komponenten klein halten und auf eine einzige Verantwortung fokussieren
-- `input()`- und `output()`-Funktionen statt Decorators
-- Immer externe Templates (eigene `.html`-Dateien) und externe Styles
-  (eigene `.css`-Dateien), nie Inline-Templates oder -Styles
-- Kein `ngClass`, stattdessen `class`-Bindings
-- Kein `ngStyle`, stattdessen `style`-Bindings
-- Pfade zu externen Templates/Styles relativ zur TS-Datei der Komponente
-  angeben
+- Keep components small and focused on a single responsibility
+- `input()` and `output()` functions instead of decorators
+- Always external templates (separate `.html` files) and external styles
+  (separate `.css` files), never inline templates or styles
+- No `ngClass`, use `class` bindings instead
+- No `ngStyle`, use `style` bindings instead
+- Specify paths to external templates/styles relative to the component's
+  TS file
 
 ## State Management
 
-- Signals für lokalen Komponenten-State
-- `computed()` für abgeleiteten State
-- State-Transformationen pur und vorhersagbar halten
-- Kein `mutate` auf Signals, stattdessen `update` oder `set`
+- Signals for local component state
+- `computed()` for derived state
+- Keep state transformations pure and predictable
+- No `mutate` on signals, use `update` or `set` instead
 
 ## Templates
 
-- Templates einfach halten und komplexe Logik vermeiden
-- Native Control Flow (`@if`, `@for`, `@switch`) statt `*ngIf`, `*ngFor`,
-  `*ngSwitch`
-- Observables über die async-Pipe verarbeiten
-- Nicht davon ausgehen, dass Globals wie `new Date()` verfügbar sind
-- Keine Arrow Functions in Templates schreiben (werden nicht unterstützt)
-- Für Buttons (`<button>`) und Anchor-Buttons (`<a [routerLink]>`) die
-  `lgButton`-Directive
-  (`projects/addin/src/app/ui/button/button.directive.ts`) mit den passenden
-  Inputs `variant`, `size` und `iconOnly` verwenden. Keine
-  Ad-hoc-Tailwind-Button-Styles schreiben. Passt keine bestehende Variante,
-  die Directive erweitern statt sie zu umgehen.
-- Für Text-/Zahlen-Inputs wo immer möglich die `lg-input`-Komponente
-  (`projects/addin/src/app/ui/input/input.ts`) verwenden. Auf ein rohes
-  `<input>` nur ausweichen, wenn `lg-input` die Anforderung wirklich nicht
-  erfüllen kann.
-- Für die Animation eines `faIcon` den FontAwesome-Input `animation`
-  verwenden (z.B. `animation="spin"`). Kein Tailwind-`animate-spin` auf einem
-  `faIcon`.
+- Keep templates simple and avoid complex logic
+- Native control flow (`@if`, `@for`, `@switch`) instead of `*ngIf`,
+  `*ngFor`, `*ngSwitch`
+- Handle observables via the async pipe
+- Do not assume that globals like `new Date()` are available
+- Do not write arrow functions in templates (they are not supported)
+- For buttons (`<button>`) and anchor buttons (`<a [routerLink]>`), use the
+  `lgButton` directive
+  (`projects/addin/src/app/ui/button/button.directive.ts`) with the
+  appropriate `variant`, `size` and `iconOnly` inputs. Do not write ad-hoc
+  Tailwind button styles. If no existing variant fits, extend the directive
+  instead of bypassing it.
+- For text/number inputs, use the `lg-input` component
+  (`projects/addin/src/app/ui/input/input.ts`) wherever possible. Only fall
+  back to a raw `<input>` when `lg-input` genuinely cannot fulfill the
+  requirement.
+- For animating a `faIcon`, use the FontAwesome `animation` input (e.g.
+  `animation="spin"`). No Tailwind `animate-spin` on a `faIcon`.
 
 ## Services
 
-- Services um eine einzige Verantwortung herum entwerfen
-- `providedIn: 'root'` für Singleton-Services
-- `inject()`-Funktion statt Constructor Injection
+- Design services around a single responsibility
+- `providedIn: 'root'` for singleton services
+- `inject()` function instead of constructor injection
