@@ -41,6 +41,7 @@ import {
   isPolygonCCW,
   mergeContiguousSubsegments,
 } from '../../utils/polygon-utils';
+import { greaterThanZeroValidator } from '../../utils/greater-than-zero.validator';
 import { lessThanValidator } from '../../utils/less-than.validator';
 import {
   ApplyContext,
@@ -168,6 +169,14 @@ export const PlotEditorStore = signalStore(
           schema.range.y.min,
           schema.range.y.max,
           'Y Min muss kleiner sein als Y Max',
+        );
+        greaterThanZeroValidator(
+          schema.unitsPerSquare.x,
+          'Einheiten pro Kästchen (X) muss größer als 0 sein',
+        );
+        greaterThanZeroValidator(
+          schema.unitsPerSquare.y,
+          'Einheiten pro Kästchen (Y) muss größer als 0 sein',
         );
       },
       {
