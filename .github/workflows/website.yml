@@ -25,7 +25,7 @@ jobs:
   cve-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/read-node-version-from-nvmrc
         id: version
       - uses: OWASP/cve-lite-cli@v1
@@ -37,7 +37,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/read-node-version-from-nvmrc
         id: node-version
       - uses: ./.github/actions/prepare-node
@@ -52,11 +52,11 @@ jobs:
       - cve-check
       - lint
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         if: github.event_name != 'pull_request'
         with:
           ref: main
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         if: github.event_name == 'pull_request'
       - uses: ./.github/actions/read-node-version-from-nvmrc
         id: version
