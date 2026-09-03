@@ -184,7 +184,7 @@ describe('PlotDataService', () => {
       expect(trace.fillcolor).toBe('rgba(255, 0, 0, 0.7)');
       expect(trace.line?.color).toBe('#000000');
       expect(trace.line?.width).toBe(plotSettings.plotLineWidth);
-      const xs = trace.x as number[];
+      const xs = trace.x;
       expect(xs.length).toBe(4);
       expect(xs[0]).toBe(xs[3]);
     });
@@ -212,7 +212,7 @@ describe('PlotDataService', () => {
       const result = service.buildPolygonTraces(plot, plotSettings);
       const trace = result[0];
       expect(trace.fill).toBe('none');
-      const xs = trace.x as number[];
+      const xs = trace.x;
       expect(xs.length).toBe(4);
       expect(xs[0]).toBe(xs[3]);
     });

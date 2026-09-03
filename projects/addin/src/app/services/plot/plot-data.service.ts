@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Dash, PlotData } from 'plotly.js-dist-min';
+import { Dash } from 'plotly.js-dist-min';
 import {
   LabelPosition,
   Plot,
@@ -13,6 +13,7 @@ import {
   reflectPolygonPoints,
 } from './reflection';
 import { FunctionSeries, hexToRgba, PLOT_CONSTANTS } from './plot.types';
+import { PlotTrace } from './render-space';
 
 const DASH_TARGET_PERIOD_UNITS = 0.5;
 const DASH_RATIO = 0.6;
@@ -32,7 +33,7 @@ export class PlotDataService {
     plotSettings: PlotSettings,
     series: FunctionSeries[],
     options: PolygonRenderOptions = {},
-  ): Partial<PlotData>[] {
+  ): PlotTrace[] {
     return [
       ...this.buildFunctionTraces(plot, plotSettings, series),
       ...this.buildMarkerTraces(plot, { showSolution: options.showSolution }),
@@ -45,7 +46,7 @@ export class PlotDataService {
     plot: Plot,
     plotSettings: PlotSettings,
     series: FunctionSeries[],
-  ): Partial<PlotData>[] {
+  ): PlotTrace[] {
     return series.map((functionSeries, index) => ({
       type: 'scatter',
       x: functionSeries.x,
@@ -62,8 +63,8 @@ export class PlotDataService {
   buildMarkerTraces(
     plot: Plot,
     options: { showSolution?: boolean } = {},
-  ): Partial<PlotData>[] {
-    const traces: Partial<PlotData>[] = [];
+  ): PlotTrace[] {
+    const traces: PlotTrace[] = [];
 
     if (plot.markers.length) {
       traces.push({
@@ -118,7 +119,7 @@ export class PlotDataService {
     plot: Plot,
     plotSettings: PlotSettings,
     options: PolygonRenderOptions = {},
-  ): Partial<PlotData>[] {
+  ): PlotTrace[] {
     if (!plot.polygons.length) {
       return [];
     }
@@ -128,8 +129,8 @@ export class PlotDataService {
     const isVisible = (polygon: Polygon): boolean =>
       !polygon.isSolution || options.showSolution === true;
 
-    const haloTraces: Partial<PlotData>[] = [];
-    const polygonTraces: Partial<PlotData>[] = [];
+    const haloTraces: PlotTrace[] = [];
+    const polygonTraces: PlotTrace[] = [];
     plot.polygons.forEach((polygon, i) => {
       if (!isVisible(polygon)) {
         return;
@@ -197,7 +198,7 @@ export class PlotDataService {
       });
     });
 
-    const mirroredTraces: Partial<PlotData>[] = [];
+    const mirroredTraces: PlotTrace[] = [];
     if (
       plot.reflection.kind !== 'none' &&
       (!plot.reflection.isSolution || options.showSolution === true)
@@ -260,10 +261,7 @@ export class PlotDataService {
     ];
   }
 
-  buildReflectionTraces(
-    plot: Plot,
-    plotSettings: PlotSettings,
-  ): Partial<PlotData>[] {
+  buildReflectionTraces(plot: Plot, plotSettings: PlotSettings): PlotTrace[] {
     if (plot.reflection.kind === 'none') {
       return [];
     }
@@ -364,7 +362,7 @@ export class PlotDataService {
   private buildPolygonPointMarkerTraces(
     plot: Plot,
     options: PolygonRenderOptions = {},
-  ): Partial<PlotData>[] {
+  ): PlotTrace[] {
     const polygonPointMarkers: {
       x: number;
       y: number;
@@ -412,7 +410,7 @@ export class PlotDataService {
       }
     }
 
-    const traces: Partial<PlotData>[] = [];
+    const traces: PlotTrace[] = [];
 
     for (const [position, markers] of groupedByPosition) {
       traces.push({
