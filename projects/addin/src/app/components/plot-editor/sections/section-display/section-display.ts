@@ -17,6 +17,7 @@ import { ToggleRow } from '../../../toggle-row/toggle-row';
 import { legendLabelFormatOptions } from '../../dropdown-options';
 import { GridStep, SquareRounding } from '../../../../models/plot';
 import {
+  formatAxisValue,
   snapRangesToGrid,
   squareCounts,
 } from '../../../../services/plot/plot-geometry';
@@ -79,20 +80,25 @@ export class SectionDisplay {
     return `${squares.x} / ${squares.y}`;
   });
 
-  protected readonly roundedMaximumHint = computed(() => {
+  protected readonly drawnRangeHint = computed(() => {
     const range = this.store.model().range;
     const drawn = this.drawnRange();
     const axes: string[] = [];
 
-    if (drawn.x.max !== range.x.max) {
-      axes.push(`x bis ${drawn.x.max}`);
+    if (drawn.x.min !== range.x.min || drawn.x.max !== range.x.max) {
+      axes.push(
+        `x von ${formatBound(drawn.x.min)} bis ${formatBound(drawn.x.max)}`,
+      );
     }
-    if (drawn.y.max !== range.y.max) {
-      axes.push(`y bis ${drawn.y.max}`);
+    if (drawn.y.min !== range.y.min || drawn.y.max !== range.y.max) {
+      axes.push(
+        `y von ${formatBound(drawn.y.min)} bis ${formatBound(drawn.y.max)}`,
+      );
     }
 
-    return axes.length
-      ? `Für ganze Kästchen gezeichnet: ${axes.join(', ')}`
-      : null;
+    return axes.length ? `Am Gitter ausgerichtet: ${axes.join(', ')}` : null;
   });
 }
+
+const formatBound = (value: number): string =>
+  formatAxisValue(value).replace('.', ',');
