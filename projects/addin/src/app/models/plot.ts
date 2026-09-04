@@ -84,11 +84,19 @@ export interface UnitsPerSquare {
   y: number;
 }
 
+export type SquareRounding = 'up' | 'down';
+
+export interface SquareRoundingPerAxis {
+  x: SquareRounding;
+  y: SquareRounding;
+}
+
 export interface Plot {
   version: string;
   name: string;
   range: PlotRange;
   unitsPerSquare: UnitsPerSquare;
+  squareRounding: SquareRoundingPerAxis;
   fnx: MathFunction[];
   markers: {
     x: number;

@@ -14,4 +14,16 @@ describe('migrate-to-latest', () => {
 
     expect(result['unitsPerSquare']).toEqual({ x: 1, y: 20 });
   });
+
+  it('should backfill squareRounding with rounding up per axis', () => {
+    const result = migrate({});
+
+    expect(result['squareRounding']).toEqual({ x: 'up', y: 'up' });
+  });
+
+  it('should preserve an existing squareRounding', () => {
+    const result = migrate({ squareRounding: { x: 'down', y: 'up' } });
+
+    expect(result['squareRounding']).toEqual({ x: 'down', y: 'up' });
+  });
 });

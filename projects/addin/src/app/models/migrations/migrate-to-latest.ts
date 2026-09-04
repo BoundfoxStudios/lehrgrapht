@@ -6,6 +6,7 @@ export const migrateToLatest: Migration = {
     return {
       ...plot,
       unitsPerSquare: plot['unitsPerSquare'] ?? { x: 0.5, y: 0.5 },
+      squareRounding: plot['squareRounding'] ?? { x: 'up', y: 'up' },
     };
   },
 };

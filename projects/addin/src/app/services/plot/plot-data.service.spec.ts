@@ -20,6 +20,7 @@ const basePlot: Plot = {
   name: 'test',
   range: { x: { min: -5, max: 5 }, y: { min: -5, max: 5 } },
   unitsPerSquare: { x: 0.5, y: 0.5 },
+  squareRounding: { x: 'up', y: 'up' },
   fnx: [],
   markers: [],
   polygons: [],
