@@ -15,8 +15,12 @@ import { Dropdown } from '../../../dropdown/dropdown';
 import { PillSwitch, PillSwitchOption } from '../../../pill-switch/pill-switch';
 import { ToggleRow } from '../../../toggle-row/toggle-row';
 import { legendLabelFormatOptions } from '../../dropdown-options';
-import { GridStep } from '../../../../models/plot';
-import { squareCounts } from '../../../../services/plot/plot-geometry';
+import { GridStep, SquareRounding } from '../../../../models/plot';
+import {
+  drawnAxisRange,
+  effectiveUnitsPerSquare,
+  squareCounts,
+} from '../../../../services/plot/plot-geometry';
 
 @Component({
   selector: 'lg-section-display',
@@ -45,9 +49,16 @@ export class SectionDisplay {
     { value: '1', label: 'jedes 2.' },
   ];
 
-  protected readonly squareCount = computed(() => {
+  protected readonly squareRoundingOptions: PillSwitchOption<SquareRounding>[] =
+    [
+      { value: 'up', label: 'Auf' },
+      { value: 'down', label: 'Ab' },
+    ];
+
+  private readonly drawnRange = computed(() => {
     const model = this.store.model();
     const range = model.range;
+    const unitsPerSquare = effectiveUnitsPerSquare(model.unitsPerSquare);
     const squares = squareCounts({
       xRange: range.x.max - range.x.min,
       yRange: range.y.max - range.y.min,
@@ -55,6 +66,33 @@ export class SectionDisplay {
       squareRounding: model.squareRounding,
       squarePlots: false,
     });
+
+    return {
+      squares,
+      x: drawnAxisRange(range.x.min, squares.x, unitsPerSquare.x),
+      y: drawnAxisRange(range.y.min, squares.y, unitsPerSquare.y),
+    };
+  });
+
+  protected readonly squareCount = computed(() => {
+    const squares = this.drawnRange().squares;
     return `${squares.x} / ${squares.y}`;
+  });
+
+  protected readonly roundedMaximumHint = computed(() => {
+    const range = this.store.model().range;
+    const drawn = this.drawnRange();
+    const axes: string[] = [];
+
+    if (drawn.x.max !== range.x.max) {
+      axes.push(`x bis ${drawn.x.max}`);
+    }
+    if (drawn.y.max !== range.y.max) {
+      axes.push(`y bis ${drawn.y.max}`);
+    }
+
+    return axes.length
+      ? `Für ganze Kästchen gezeichnet: ${axes.join(', ')}`
+      : null;
   });
 }

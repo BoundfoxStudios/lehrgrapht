@@ -36,18 +36,31 @@
         />
       </div>
     </div>
-    <div>
-      <label
-        class="text-body-subtle text-2xs mb-1 block font-semibold"
-        for="units-per-square-x"
-        >Einheiten pro Kästchen</label
-      >
-      <lg-input
-        id="units-per-square-x"
-        [field]="form.unitsPerSquare.x"
-        type="number"
-        step="any"
-      />
+    <div class="flex items-start gap-3">
+      <div class="flex-1">
+        <label
+          class="text-body-subtle text-2xs mb-1 block font-semibold"
+          for="units-per-square-x"
+          >Einheiten pro Kästchen</label
+        >
+        <lg-input
+          id="units-per-square-x"
+          [field]="form.unitsPerSquare.x"
+          type="number"
+          step="0.5"
+        />
+      </div>
+      <div class="shrink-0">
+        <span class="text-body-subtle text-2xs mb-1 block font-semibold"
+          >Runden</span
+        >
+        <lg-pill-switch
+          [options]="squareRoundingOptions"
+          [formField]="form.squareRounding.x"
+          aria-label="Runden der Kästchen, X-Achse"
+          shape="square"
+        />
+      </div>
     </div>
   </section>
 
@@ -85,18 +98,31 @@
         />
       </div>
     </div>
-    <div>
-      <label
-        class="text-body-subtle text-2xs mb-1 block font-semibold"
-        for="units-per-square-y"
-        >Einheiten pro Kästchen</label
-      >
-      <lg-input
-        id="units-per-square-y"
-        [field]="form.unitsPerSquare.y"
-        type="number"
-        step="any"
-      />
+    <div class="flex items-start gap-3">
+      <div class="flex-1">
+        <label
+          class="text-body-subtle text-2xs mb-1 block font-semibold"
+          for="units-per-square-y"
+          >Einheiten pro Kästchen</label
+        >
+        <lg-input
+          id="units-per-square-y"
+          [field]="form.unitsPerSquare.y"
+          type="number"
+          step="0.5"
+        />
+      </div>
+      <div class="shrink-0">
+        <span class="text-body-subtle text-2xs mb-1 block font-semibold"
+          >Runden</span
+        >
+        <lg-pill-switch
+          [options]="squareRoundingOptions"
+          [formField]="form.squareRounding.y"
+          aria-label="Runden der Kästchen, Y-Achse"
+          shape="square"
+        />
+      </div>
     </div>
   </section>
 
@@ -112,6 +138,10 @@
       {{ squareCount() }}
     </span>
   </div>
+
+  @if (roundedMaximumHint(); as hint) {
+    <lg-section-hint [icon]="faInfoCircle">{{ hint }}</lg-section-hint>
+  }
 
   @if (plotSizeMm.exceedsA4) {
     <div
