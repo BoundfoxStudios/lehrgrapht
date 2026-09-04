@@ -1,6 +1,11 @@
-import type { Plot, UnitsPerSquare } from '../../models/plot';
+import type {
+  Plot,
+  SquareRoundingPerAxis,
+  UnitsPerSquare,
+} from '../../models/plot';
 import {
   buildAxisTicks,
+  drawnAxisRange,
   formatAxisValue,
   gridMultipliers,
   renderScale,
@@ -14,46 +19,150 @@ const plotWithUnitsPerSquare = (
 
 const defaultUnitsPerSquare: UnitsPerSquare = { x: 0.5, y: 0.5 };
 
+const roundUp: SquareRoundingPerAxis = { x: 'up', y: 'up' };
+
 describe('squareCounts', () => {
   it('should count each axis from its own range when square plots are off', () => {
-    expect(squareCounts(4, 10, defaultUnitsPerSquare, false)).toEqual({
-      x: 8,
-      y: 20,
-    });
+    expect(
+      squareCounts({
+        xRange: 4,
+        yRange: 10,
+        unitsPerSquare: defaultUnitsPerSquare,
+        squareRounding: roundUp,
+        squarePlots: false,
+      }),
+    ).toEqual({ x: 8, y: 20 });
   });
 
   it('should count both axes from the larger range when square plots are on', () => {
-    expect(squareCounts(4, 10, defaultUnitsPerSquare, true)).toEqual({
-      x: 20,
-      y: 20,
-    });
+    expect(
+      squareCounts({
+        xRange: 4,
+        yRange: 10,
+        unitsPerSquare: defaultUnitsPerSquare,
+        squareRounding: roundUp,
+        squarePlots: true,
+      }),
+    ).toEqual({ x: 20, y: 20 });
   });
 
   it('should turn a range of six units into twelve squares', () => {
-    expect(squareCounts(6, 6, defaultUnitsPerSquare, false)).toEqual({
-      x: 12,
-      y: 12,
-    });
+    expect(
+      squareCounts({
+        xRange: 6,
+        yRange: 6,
+        unitsPerSquare: defaultUnitsPerSquare,
+        squareRounding: roundUp,
+        squarePlots: false,
+      }),
+    ).toEqual({ x: 12, y: 12 });
   });
 
   it('should count each axis with its own units per square', () => {
-    expect(squareCounts(11, 200, { x: 1, y: 20 }, false)).toEqual({
-      x: 11,
-      y: 10,
-    });
+    expect(
+      squareCounts({
+        xRange: 11,
+        yRange: 200,
+        unitsPerSquare: { x: 1, y: 20 },
+        squareRounding: roundUp,
+        squarePlots: false,
+      }),
+    ).toEqual({ x: 11, y: 10 });
   });
 
   it('should level the square counts instead of the ranges when square plots are on', () => {
-    expect(squareCounts(11, 200, { x: 1, y: 20 }, true)).toEqual({
-      x: 11,
-      y: 11,
-    });
+    expect(
+      squareCounts({
+        xRange: 11,
+        yRange: 200,
+        unitsPerSquare: { x: 1, y: 20 },
+        squareRounding: roundUp,
+        squarePlots: true,
+      }),
+    ).toEqual({ x: 11, y: 11 });
   });
 
   it('should fall back to the default scale when units per square are missing', () => {
     expect(
-      squareCounts(4, 10, undefined as unknown as UnitsPerSquare, false),
+      squareCounts({
+        xRange: 4,
+        yRange: 10,
+        unitsPerSquare: undefined as unknown as UnitsPerSquare,
+        squareRounding: roundUp,
+        squarePlots: false,
+      }),
     ).toEqual({ x: 8, y: 20 });
+  });
+
+  it('should round a partial square up when the axis rounds up', () => {
+    expect(
+      squareCounts({
+        xRange: 6,
+        yRange: 150,
+        unitsPerSquare: { x: 0.5, y: 20 },
+        squareRounding: roundUp,
+        squarePlots: false,
+      }),
+    ).toEqual({ x: 12, y: 8 });
+  });
+
+  it('should round each axis with its own rounding mode', () => {
+    expect(
+      squareCounts({
+        xRange: 6.2,
+        yRange: 150,
+        unitsPerSquare: { x: 0.5, y: 20 },
+        squareRounding: { x: 'up', y: 'down' },
+        squarePlots: false,
+      }),
+    ).toEqual({ x: 13, y: 7 });
+  });
+
+  it('should keep a single square when rounding down would leave none', () => {
+    expect(
+      squareCounts({
+        xRange: 0.4,
+        yRange: 0,
+        unitsPerSquare: defaultUnitsPerSquare,
+        squareRounding: { x: 'down', y: 'down' },
+        squarePlots: false,
+      }),
+    ).toEqual({ x: 1, y: 1 });
+  });
+
+  it('should not add a square for a count that misses a whole number only by floating point noise', () => {
+    expect(
+      squareCounts({
+        xRange: 6,
+        yRange: 6,
+        unitsPerSquare: { x: 0.4, y: 0.4 },
+        squareRounding: roundUp,
+        squarePlots: false,
+      }),
+    ).toEqual({ x: 15, y: 15 });
+  });
+
+  it('should round up when the rounding mode is missing', () => {
+    expect(
+      squareCounts({
+        xRange: 150,
+        yRange: 150,
+        unitsPerSquare: { x: 20, y: 20 },
+        squareRounding: undefined as unknown as SquareRoundingPerAxis,
+        squarePlots: false,
+      }),
+    ).toEqual({ x: 8, y: 8 });
+  });
+});
+
+describe('drawnAxisRange', () => {
+  it('should keep the minimum and move the maximum to the last whole square', () => {
+    expect(drawnAxisRange(0, 8, 20)).toEqual({ min: 0, max: 160 });
+    expect(drawnAxisRange(0, 7, 20)).toEqual({ min: 0, max: 140 });
+  });
+
+  it('should end a non-dyadic scale without floating point noise', () => {
+    expect(drawnAxisRange(-3, 8, 0.8)).toEqual({ min: -3, max: 3.4 });
   });
 });
 

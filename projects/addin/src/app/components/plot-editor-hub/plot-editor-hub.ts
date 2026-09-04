@@ -56,12 +56,13 @@ export class PlotEditorHub {
   protected readonly rangeSubtitle = computed(() => {
     const model = this.store.model();
     const r = model.range;
-    const squares = squareCounts(
-      r.x.max - r.x.min,
-      r.y.max - r.y.min,
-      model.unitsPerSquare,
-      false,
-    );
+    const squares = squareCounts({
+      xRange: r.x.max - r.x.min,
+      yRange: r.y.max - r.y.min,
+      unitsPerSquare: model.unitsPerSquare,
+      squareRounding: model.squareRounding,
+      squarePlots: false,
+    });
     return `x: ${r.x.min} / ${r.x.max} · y: ${r.y.min} / ${r.y.max} · ${squares.x}×${squares.y} K.`;
   });
 

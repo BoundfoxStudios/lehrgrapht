@@ -1,4 +1,9 @@
-import type { Plot, UnitsPerSquare } from '../../models/plot';
+import type {
+  Plot,
+  SquareRounding,
+  SquareRoundingPerAxis,
+  UnitsPerSquare,
+} from '../../models/plot';
 import { isFiniteNumber, PLOT_CONSTANTS } from './plot.types';
 
 export interface SquareCounts {
@@ -9,6 +14,19 @@ export interface SquareCounts {
 export interface RenderScale {
   x: number;
   y: number;
+}
+
+export interface AxisRange {
+  min: number;
+  max: number;
+}
+
+export interface SquareCountsInput {
+  xRange: number;
+  yRange: number;
+  unitsPerSquare: UnitsPerSquare;
+  squareRounding: SquareRoundingPerAxis;
+  squarePlots: boolean;
 }
 
 // Plots saved by a dev build carry version 0.0.0 and skip every migration, so the field can be missing
@@ -32,15 +50,36 @@ export const snapToSquare = (value: number, unitsPerSquare: number): number => {
   return Number((squareIndex * unitsPerSquare).toPrecision(12));
 };
 
-export const squareCounts = (
-  xRange: number,
-  yRange: number,
-  unitsPerSquare: UnitsPerSquare,
-  squarePlots: boolean,
-): SquareCounts => {
+const effectiveSquareRounding = (
+  squareRounding: Partial<SquareRoundingPerAxis> | undefined,
+): SquareRoundingPerAxis => ({
+  x: squareRounding?.x === 'down' ? 'down' : 'up',
+  y: squareRounding?.y === 'down' ? 'down' : 'up',
+});
+
+const wholeSquares = (count: number, rounding: SquareRounding): number => {
+  // 6 / 0.4 is 14.999999999999998, and rounding that up would add a square the range does not need
+  const withoutFloatingPointNoise = Number(count.toPrecision(12));
+
+  return Math.max(
+    1,
+    rounding === 'down'
+      ? Math.floor(withoutFloatingPointNoise)
+      : Math.ceil(withoutFloatingPointNoise),
+  );
+};
+
+export const squareCounts = ({
+  xRange,
+  yRange,
+  unitsPerSquare,
+  squareRounding,
+  squarePlots,
+}: SquareCountsInput): SquareCounts => {
   const scale = effectiveUnitsPerSquare(unitsPerSquare);
-  const xCount = xRange / scale.x;
-  const yCount = yRange / scale.y;
+  const rounding = effectiveSquareRounding(squareRounding);
+  const xCount = wholeSquares(xRange / scale.x, rounding.x);
+  const yCount = wholeSquares(yRange / scale.y, rounding.y);
   const largerCount = Math.max(xCount, yCount);
 
   return {
@@ -48,6 +87,16 @@ export const squareCounts = (
     y: squarePlots ? largerCount : yCount,
   };
 };
+
+// The whole square count moves the maximum, so the entered minimum always stays where the user put it
+export const drawnAxisRange = (
+  min: number,
+  squares: number,
+  unitsPerSquare: number,
+): AxisRange => ({
+  min,
+  max: Number((min + squares * unitsPerSquare).toPrecision(12)),
+});
 
 export const renderScale = (plot: Plot): RenderScale => {
   const { renderUnitsPerSquare } = PLOT_CONSTANTS;

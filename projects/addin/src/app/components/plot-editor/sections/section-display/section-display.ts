@@ -48,12 +48,13 @@ export class SectionDisplay {
   protected readonly squareCount = computed(() => {
     const model = this.store.model();
     const range = model.range;
-    const squares = squareCounts(
-      range.x.max - range.x.min,
-      range.y.max - range.y.min,
-      model.unitsPerSquare,
-      false,
-    );
+    const squares = squareCounts({
+      xRange: range.x.max - range.x.min,
+      yRange: range.y.max - range.y.min,
+      unitsPerSquare: model.unitsPerSquare,
+      squareRounding: model.squareRounding,
+      squarePlots: false,
+    });
     return `${squares.x} / ${squares.y}`;
   });
 }

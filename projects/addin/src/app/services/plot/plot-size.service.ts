@@ -1,7 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Plot } from '../../models/plot';
 import { math } from '../../utils/math';
-import { effectiveUnitsPerSquare, squareCounts } from './plot-geometry';
+import {
+  drawnAxisRange,
+  effectiveUnitsPerSquare,
+  squareCounts,
+} from './plot-geometry';
 import {
   A4_USABLE_HEIGHT_MM,
   A4_USABLE_WIDTH_MM,
@@ -34,12 +38,13 @@ export class PlotSizeService {
         : plot.range.y;
     const yValueRange = yValueMax - yValueMin;
 
-    const squares = squareCounts(
-      xValueRange,
-      yValueRange,
-      unitsPerSquare,
-      plot.squarePlots,
-    );
+    const squares = squareCounts({
+      xRange: xValueRange,
+      yRange: yValueRange,
+      unitsPerSquare: plot.unitsPerSquare,
+      squareRounding: plot.squareRounding,
+      squarePlots: plot.squarePlots,
+    });
 
     const plotSizeMm = {
       width: squares.x * mmPerSquare + margin.l + margin.r,
@@ -52,16 +57,8 @@ export class PlotSizeService {
       yValueMin,
       yValueMax,
       axisRange: {
-        x: this.stretchAroundCenter(
-          xValueMin,
-          xValueMax,
-          squares.x * unitsPerSquare.x,
-        ),
-        y: this.stretchAroundCenter(
-          yValueMin,
-          yValueMax,
-          squares.y * unitsPerSquare.y,
-        ),
+        x: drawnAxisRange(xValueMin, squares.x, unitsPerSquare.x),
+        y: drawnAxisRange(yValueMin, squares.y, unitsPerSquare.y),
       },
       plotSizePx: {
         width: plotSizeMm.width * mmToInches * ppiBase,
@@ -76,15 +73,6 @@ export class PlotSizeService {
 
   private boundsOf(values: number[]): { min: number; max: number } {
     return { min: math.min(values), max: math.max(values) };
-  }
-
-  private stretchAroundCenter(
-    min: number,
-    max: number,
-    targetLength: number,
-  ): { min: number; max: number } {
-    const padding = (targetLength - (max - min)) / 2;
-    return { min: min - padding, max: max + padding };
   }
 
   calculateEffectiveMargin(
@@ -150,12 +138,13 @@ export class PlotSizeService {
 
   calculatePlotSizeMm(plot: Plot): PlotSizeMm {
     const margin = this.calculateEffectiveMargin(plot);
-    const squares = squareCounts(
-      plot.range.x.max - plot.range.x.min,
-      plot.range.y.max - plot.range.y.min,
-      plot.unitsPerSquare,
-      plot.squarePlots,
-    );
+    const squares = squareCounts({
+      xRange: plot.range.x.max - plot.range.x.min,
+      yRange: plot.range.y.max - plot.range.y.min,
+      unitsPerSquare: plot.unitsPerSquare,
+      squareRounding: plot.squareRounding,
+      squarePlots: plot.squarePlots,
+    });
 
     const width = squares.x * PLOT_CONSTANTS.mmPerSquare + margin.l + margin.r;
     const height = squares.y * PLOT_CONSTANTS.mmPerSquare + margin.t + margin.b;

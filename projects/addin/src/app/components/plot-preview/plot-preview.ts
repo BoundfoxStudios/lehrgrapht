@@ -13,6 +13,7 @@ import {
   plotHasErrorCode,
 } from '../../services/plot/plot.types';
 import {
+  drawnAxisRange,
   effectiveUnitsPerSquare,
   snapToSquare,
   squareCounts,
@@ -82,20 +83,31 @@ export class PlotPreview {
     const imageHeight = rect.height;
 
     const plot = this.plot();
-    const range = plot.range;
-
-    const xRange = range.x.max - range.x.min;
-    const yRange = range.y.max - range.y.min;
+    const unitsPerSquare = effectiveUnitsPerSquare(plot.unitsPerSquare);
 
     const mmPerSquare = 5;
     const mmMargin = 7.5;
 
-    const squares = squareCounts(
-      xRange,
-      yRange,
-      plot.unitsPerSquare,
-      plot.squarePlots,
+    const squares = squareCounts({
+      xRange: plot.range.x.max - plot.range.x.min,
+      yRange: plot.range.y.max - plot.range.y.min,
+      unitsPerSquare: plot.unitsPerSquare,
+      squareRounding: plot.squareRounding,
+      squarePlots: plot.squarePlots,
+    });
+
+    const drawnX = drawnAxisRange(
+      plot.range.x.min,
+      squares.x,
+      unitsPerSquare.x,
     );
+    const drawnY = drawnAxisRange(
+      plot.range.y.min,
+      squares.y,
+      unitsPerSquare.y,
+    );
+    const xRange = drawnX.max - drawnX.min;
+    const yRange = drawnY.max - drawnY.min;
 
     const plotWidthMm = squares.x * mmPerSquare + mmMargin * 2;
     const plotHeightMm = squares.y * mmPerSquare + mmMargin * 2;
@@ -111,19 +123,17 @@ export class PlotPreview {
     const relativeX = (clickX - marginX) / effectiveWidth;
     const relativeY = 1 - (clickY - marginY) / effectiveHeight;
 
-    let x = range.x.min + relativeX * xRange;
-    let y = range.y.min + relativeY * yRange;
-
-    const unitsPerSquare = effectiveUnitsPerSquare(plot.unitsPerSquare);
+    let x = drawnX.min + relativeX * xRange;
+    let y = drawnY.min + relativeY * yRange;
 
     x = snapToSquare(x, unitsPerSquare.x);
     y = snapToSquare(y, unitsPerSquare.y);
 
-    x = Math.max(range.x.min, Math.min(range.x.max, x));
-    y = Math.max(range.y.min, Math.min(range.y.max, y));
+    x = Math.max(drawnX.min, Math.min(drawnX.max, x));
+    y = Math.max(drawnY.min, Math.min(drawnY.max, y));
 
-    const snappedRelativeX = (x - range.x.min) / xRange;
-    const snappedRelativeY = (y - range.y.min) / yRange;
+    const snappedRelativeX = (x - drawnX.min) / xRange;
+    const snappedRelativeY = (y - drawnY.min) / yRange;
     const percentX =
       (marginPercentX + snappedRelativeX * (1 - 2 * marginPercentX)) * 100;
     const percentY =

@@ -257,7 +257,7 @@ describe('PlotSizeService', () => {
       expect(result.axisRange.y).toEqual({ min: -1, max: 1 });
     });
 
-    it('should stretch the shorter axis around its center for square plots', () => {
+    it('should extend the shorter axis at its maximum for square plots', () => {
       const xNumbers = math.range(-3, 3, 0.1, true).toArray() as number[];
       const yNumbers = math.range(-1, 1, 0.1, true).toArray() as number[];
 
@@ -272,9 +272,40 @@ describe('PlotSizeService', () => {
       );
 
       expect(result.axisRange.x).toEqual({ min: -3, max: 3 });
-      expect(result.axisRange.y).toEqual({ min: -3, max: 3 });
+      expect(result.axisRange.y).toEqual({ min: -1, max: 5 });
       expect(result.yValueMin).toBe(-1);
       expect(result.yValueMax).toBe(1);
+    });
+
+    it('should raise the maximum of an axis that rounds up to a whole square', () => {
+      const result = service.calculatePlotSize(
+        {
+          ...basePlot,
+          range: { x: { min: -3, max: 3 }, y: { min: 0, max: 150 } },
+          unitsPerSquare: { x: 0.5, y: 20 },
+        },
+        { cleanXValues: [], cleanYValues: [[]] },
+        { t: 7.5, b: 7.5, l: 7.5, r: 7.5 },
+      );
+
+      expect(result.axisRange.y).toEqual({ min: 0, max: 160 });
+      expect(result.yValueMax).toBe(150);
+    });
+
+    it('should lower the maximum of an axis that rounds down to a whole square', () => {
+      const result = service.calculatePlotSize(
+        {
+          ...basePlot,
+          range: { x: { min: -3, max: 3 }, y: { min: 0, max: 150 } },
+          unitsPerSquare: { x: 0.5, y: 20 },
+          squareRounding: { x: 'up', y: 'down' },
+        },
+        { cleanXValues: [], cleanYValues: [[]] },
+        { t: 7.5, b: 7.5, l: 7.5, r: 7.5 },
+      );
+
+      expect(result.axisRange.y).toEqual({ min: 0, max: 140 });
+      expect(result.yValueMax).toBe(150);
     });
 
     it('should keep the axis range in data units when the axis scales differ', () => {
@@ -351,6 +382,23 @@ describe('PlotSizeService', () => {
 
       expect(result.width).toBeCloseTo(result.height, 5);
       expect(result.width).toBeCloseTo(11 * 5 + 15, 5);
+    });
+
+    it('should size a partial square up or down according to the rounding mode', () => {
+      const roundedUp = service.calculatePlotSizeMm({
+        ...basePlot,
+        range: { x: { min: -3, max: 3 }, y: { min: 0, max: 150 } },
+        unitsPerSquare: { x: 0.5, y: 20 },
+      });
+      const roundedDown = service.calculatePlotSizeMm({
+        ...basePlot,
+        range: { x: { min: -3, max: 3 }, y: { min: 0, max: 150 } },
+        unitsPerSquare: { x: 0.5, y: 20 },
+        squareRounding: { x: 'up', y: 'down' },
+      });
+
+      expect(roundedUp.height).toBeCloseTo(8 * 5 + 15, 5);
+      expect(roundedDown.height).toBeCloseTo(7 * 5 + 15, 5);
     });
 
     it('should produce equal dimensions for square plots with equal ranges', () => {
