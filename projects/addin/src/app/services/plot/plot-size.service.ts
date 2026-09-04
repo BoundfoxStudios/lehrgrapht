@@ -4,6 +4,7 @@ import { math } from '../../utils/math';
 import {
   drawnAxisRange,
   effectiveUnitsPerSquare,
+  snapRangesToGrid,
   squareCounts,
 } from './plot-geometry';
 import {
@@ -30,19 +31,23 @@ export class PlotSizeService {
       plot.automaticallyAdjustLimitsToValueRange
         ? this.boundsOf(cleanedValues.cleanXValues)
         : plot.range.x;
-    const xValueRange = xValueMax - xValueMin;
 
     const { min: yValueMin, max: yValueMax } =
       plot.automaticallyAdjustLimitsToValueRange
         ? this.boundsOf(cleanedValues.cleanYValues.flatMap(values => values))
         : plot.range.y;
-    const yValueRange = yValueMax - yValueMin;
+
+    const snapped = snapRangesToGrid({
+      x: { min: xValueMin, max: xValueMax },
+      y: { min: yValueMin, max: yValueMax },
+      unitsPerSquare: plot.unitsPerSquare,
+      gridStep: plot.gridStep,
+      squareRounding: plot.squareRounding,
+    });
 
     const squares = squareCounts({
-      xRange: xValueRange,
-      yRange: yValueRange,
+      ...snapped,
       unitsPerSquare: plot.unitsPerSquare,
-      squareRounding: plot.squareRounding,
       squarePlots: plot.squarePlots,
     });
 
@@ -57,8 +62,8 @@ export class PlotSizeService {
       yValueMin,
       yValueMax,
       axisRange: {
-        x: drawnAxisRange(xValueMin, squares.x, unitsPerSquare.x),
-        y: drawnAxisRange(yValueMin, squares.y, unitsPerSquare.y),
+        x: drawnAxisRange(snapped.x.min, squares.x, unitsPerSquare.x),
+        y: drawnAxisRange(snapped.y.min, squares.y, unitsPerSquare.y),
       },
       plotSizePx: {
         width: plotSizeMm.width * mmToInches * ppiBase,
@@ -139,10 +144,14 @@ export class PlotSizeService {
   calculatePlotSizeMm(plot: Plot): PlotSizeMm {
     const margin = this.calculateEffectiveMargin(plot);
     const squares = squareCounts({
-      xRange: plot.range.x.max - plot.range.x.min,
-      yRange: plot.range.y.max - plot.range.y.min,
+      ...snapRangesToGrid({
+        x: plot.range.x,
+        y: plot.range.y,
+        unitsPerSquare: plot.unitsPerSquare,
+        gridStep: plot.gridStep,
+        squareRounding: plot.squareRounding,
+      }),
       unitsPerSquare: plot.unitsPerSquare,
-      squareRounding: plot.squareRounding,
       squarePlots: plot.squarePlots,
     });
 

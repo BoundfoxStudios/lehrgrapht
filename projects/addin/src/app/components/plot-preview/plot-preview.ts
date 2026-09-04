@@ -15,6 +15,7 @@ import {
 import {
   drawnAxisRange,
   effectiveUnitsPerSquare,
+  snapRangesToGrid,
   snapToSquare,
   squareCounts,
 } from '../../services/plot/plot-geometry';
@@ -88,24 +89,22 @@ export class PlotPreview {
     const mmPerSquare = 5;
     const mmMargin = 7.5;
 
-    const squares = squareCounts({
-      xRange: plot.range.x.max - plot.range.x.min,
-      yRange: plot.range.y.max - plot.range.y.min,
+    const snapped = snapRangesToGrid({
+      x: plot.range.x,
+      y: plot.range.y,
       unitsPerSquare: plot.unitsPerSquare,
+      gridStep: plot.gridStep,
       squareRounding: plot.squareRounding,
+    });
+
+    const squares = squareCounts({
+      ...snapped,
+      unitsPerSquare: plot.unitsPerSquare,
       squarePlots: plot.squarePlots,
     });
 
-    const drawnX = drawnAxisRange(
-      plot.range.x.min,
-      squares.x,
-      unitsPerSquare.x,
-    );
-    const drawnY = drawnAxisRange(
-      plot.range.y.min,
-      squares.y,
-      unitsPerSquare.y,
-    );
+    const drawnX = drawnAxisRange(snapped.x.min, squares.x, unitsPerSquare.x);
+    const drawnY = drawnAxisRange(snapped.y.min, squares.y, unitsPerSquare.y);
     const xRange = drawnX.max - drawnX.min;
     const yRange = drawnY.max - drawnY.min;
 

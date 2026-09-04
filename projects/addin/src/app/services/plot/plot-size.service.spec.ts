@@ -283,6 +283,7 @@ describe('PlotSizeService', () => {
           ...basePlot,
           range: { x: { min: -3, max: 3 }, y: { min: 0, max: 150 } },
           unitsPerSquare: { x: 0.5, y: 20 },
+          gridStep: '0.5',
         },
         { cleanXValues: [], cleanYValues: [[]] },
         { t: 7.5, b: 7.5, l: 7.5, r: 7.5 },
@@ -299,6 +300,7 @@ describe('PlotSizeService', () => {
           range: { x: { min: -3, max: 3 }, y: { min: 0, max: 150 } },
           unitsPerSquare: { x: 0.5, y: 20 },
           squareRounding: { x: 'up', y: 'down' },
+          gridStep: '0.5',
         },
         { cleanXValues: [], cleanYValues: [[]] },
         { t: 7.5, b: 7.5, l: 7.5, r: 7.5 },
@@ -314,12 +316,54 @@ describe('PlotSizeService', () => {
           ...basePlot,
           range: { x: { min: 9, max: 20 }, y: { min: 0, max: 200 } },
           unitsPerSquare: { x: 1, y: 20 },
+          gridStep: '0.5',
         },
         { cleanXValues: [], cleanYValues: [[]] },
         { t: 7.5, b: 7.5, l: 7.5, r: 7.5 },
       );
 
       expect(result.axisRange.x).toEqual({ min: 9, max: 20 });
+      expect(result.axisRange.y).toEqual({ min: 0, max: 200 });
+    });
+
+    it('should draw both bounds of a scaled axis on a grid line', () => {
+      const plot: Plot = {
+        ...basePlot,
+        range: { x: { min: -8, max: 10 }, y: { min: -5, max: 5 } },
+        unitsPerSquare: { x: 1.5, y: 0.5 },
+        gridStep: '0.5',
+      };
+      const cleanedValues: CleanedValues = {
+        cleanXValues: [],
+        cleanYValues: [[]],
+      };
+      const margin = { t: 7.5, b: 7.5, l: 7.5, r: 7.5 };
+
+      expect(
+        service.calculatePlotSize(plot, cleanedValues, margin).axisRange.x,
+      ).toEqual({ min: -9, max: 10.5 });
+      expect(
+        service.calculatePlotSize(
+          { ...plot, squareRounding: { x: 'down', y: 'up' } },
+          cleanedValues,
+          margin,
+        ).axisRange.x,
+      ).toEqual({ min: -7.5, max: 9 });
+    });
+
+    it('should snap to every second square when a grid line is drawn only there', () => {
+      const result = service.calculatePlotSize(
+        {
+          ...basePlot,
+          range: { x: { min: 9, max: 20 }, y: { min: 0, max: 200 } },
+          unitsPerSquare: { x: 1, y: 20 },
+          gridStep: '1',
+        },
+        { cleanXValues: [], cleanYValues: [[]] },
+        { t: 7.5, b: 7.5, l: 7.5, r: 7.5 },
+      );
+
+      expect(result.axisRange.x).toEqual({ min: 8, max: 20 });
       expect(result.axisRange.y).toEqual({ min: 0, max: 200 });
     });
   });
@@ -364,11 +408,24 @@ describe('PlotSizeService', () => {
         ...basePlot,
         range: { x: { min: 9, max: 20 }, y: { min: 0, max: 200 } },
         unitsPerSquare: { x: 1, y: 20 },
+        gridStep: '0.5',
       };
       const result = service.calculatePlotSizeMm(plot);
 
       expect(result.width).toBeCloseTo(11 * 5 + 15, 5);
       expect(result.height).toBeCloseTo(10 * 5 + 15, 5);
+    });
+
+    it('should size an axis whose bounds snap outwards from the entered range', () => {
+      const plot: Plot = {
+        ...basePlot,
+        range: { x: { min: -8, max: 10 }, y: { min: -5, max: 5 } },
+        unitsPerSquare: { x: 1.5, y: 0.5 },
+        gridStep: '0.5',
+      };
+      const result = service.calculatePlotSizeMm(plot);
+
+      expect(result.width).toBeCloseTo(13 * 5 + 15, 5);
     });
 
     it('should produce equal dimensions for square plots whose axis scales differ', () => {
@@ -377,6 +434,7 @@ describe('PlotSizeService', () => {
         squarePlots: true,
         range: { x: { min: 9, max: 20 }, y: { min: 0, max: 200 } },
         unitsPerSquare: { x: 1, y: 20 },
+        gridStep: '0.5',
       };
       const result = service.calculatePlotSizeMm(plot);
 
@@ -389,12 +447,14 @@ describe('PlotSizeService', () => {
         ...basePlot,
         range: { x: { min: -3, max: 3 }, y: { min: 0, max: 150 } },
         unitsPerSquare: { x: 0.5, y: 20 },
+        gridStep: '0.5',
       });
       const roundedDown = service.calculatePlotSizeMm({
         ...basePlot,
         range: { x: { min: -3, max: 3 }, y: { min: 0, max: 150 } },
         unitsPerSquare: { x: 0.5, y: 20 },
         squareRounding: { x: 'up', y: 'down' },
+        gridStep: '0.5',
       });
 
       expect(roundedUp.height).toBeCloseTo(8 * 5 + 15, 5);

@@ -15,7 +15,10 @@ import { FormField } from '@angular/forms/signals';
 import { PlotEditorStore } from '../plot-editor/plot-editor.store';
 import { HubTileCard } from './hub-tile-card/hub-tile-card';
 import { HubLinkCard } from './hub-link-card/hub-link-card';
-import { squareCounts } from '../../services/plot/plot-geometry';
+import {
+  snapRangesToGrid,
+  squareCounts,
+} from '../../services/plot/plot-geometry';
 
 @Component({
   selector: 'lg-plot-editor-hub',
@@ -57,10 +60,14 @@ export class PlotEditorHub {
     const model = this.store.model();
     const r = model.range;
     const squares = squareCounts({
-      xRange: r.x.max - r.x.min,
-      yRange: r.y.max - r.y.min,
+      ...snapRangesToGrid({
+        x: r.x,
+        y: r.y,
+        unitsPerSquare: model.unitsPerSquare,
+        gridStep: model.gridStep,
+        squareRounding: model.squareRounding,
+      }),
       unitsPerSquare: model.unitsPerSquare,
-      squareRounding: model.squareRounding,
       squarePlots: false,
     });
     return `x: ${r.x.min} / ${r.x.max} · y: ${r.y.min} / ${r.y.max} · ${squares.x}×${squares.y} K.`;

@@ -17,8 +17,7 @@ import { ToggleRow } from '../../../toggle-row/toggle-row';
 import { legendLabelFormatOptions } from '../../dropdown-options';
 import { GridStep, SquareRounding } from '../../../../models/plot';
 import {
-  drawnAxisRange,
-  effectiveUnitsPerSquare,
+  snapRangesToGrid,
   squareCounts,
 } from '../../../../services/plot/plot-geometry';
 
@@ -57,20 +56,21 @@ export class SectionDisplay {
 
   private readonly drawnRange = computed(() => {
     const model = this.store.model();
-    const range = model.range;
-    const unitsPerSquare = effectiveUnitsPerSquare(model.unitsPerSquare);
-    const squares = squareCounts({
-      xRange: range.x.max - range.x.min,
-      yRange: range.y.max - range.y.min,
+    const snapped = snapRangesToGrid({
+      x: model.range.x,
+      y: model.range.y,
       unitsPerSquare: model.unitsPerSquare,
+      gridStep: model.gridStep,
       squareRounding: model.squareRounding,
-      squarePlots: false,
     });
 
     return {
-      squares,
-      x: drawnAxisRange(range.x.min, squares.x, unitsPerSquare.x),
-      y: drawnAxisRange(range.y.min, squares.y, unitsPerSquare.y),
+      ...snapped,
+      squares: squareCounts({
+        ...snapped,
+        unitsPerSquare: model.unitsPerSquare,
+        squarePlots: false,
+      }),
     };
   });
 

@@ -1,4 +1,5 @@
 import type {
+  GridStep,
   Plot,
   SquareRounding,
   SquareRoundingPerAxis,
@@ -21,25 +22,36 @@ export interface AxisRange {
   max: number;
 }
 
-export interface SquareCountsInput {
-  xRange: number;
-  yRange: number;
-  unitsPerSquare: UnitsPerSquare;
-  squareRounding: SquareRoundingPerAxis;
+export interface AxisRanges {
+  x: AxisRange;
+  y: AxisRange;
+}
+
+export interface SquareCountsInput extends AxisRanges {
+  unitsPerSquare: Partial<UnitsPerSquare> | undefined;
   squarePlots: boolean;
 }
 
-// Plots saved by a dev build carry version 0.0.0 and skip every migration, so the field can be missing
+export interface SnapRangesToGridInput extends AxisRanges {
+  unitsPerSquare: Partial<UnitsPerSquare> | undefined;
+  gridStep: GridStep;
+  squareRounding: Partial<SquareRoundingPerAxis> | undefined;
+}
+
+// Plots saved by a dev build carry version 0.0.0 and skip every migration, so a field can be missing
+const usableOrDefault = (
+  value: number | undefined,
+  fallback: number,
+): number => (isFiniteNumber(value) && value > 0 ? value : fallback);
+
 export const effectiveUnitsPerSquare = (
   unitsPerSquare: Partial<UnitsPerSquare> | undefined,
 ): UnitsPerSquare => {
   const { renderUnitsPerSquare } = PLOT_CONSTANTS;
-  const usableOrDefault = (units: number | undefined): number =>
-    isFiniteNumber(units) && units > 0 ? units : renderUnitsPerSquare;
 
   return {
-    x: usableOrDefault(unitsPerSquare?.x),
-    y: usableOrDefault(unitsPerSquare?.y),
+    x: usableOrDefault(unitsPerSquare?.x, renderUnitsPerSquare),
+    y: usableOrDefault(unitsPerSquare?.y, renderUnitsPerSquare),
   };
 };
 
@@ -57,29 +69,67 @@ const effectiveSquareRounding = (
   y: squareRounding?.y === 'down' ? 'down' : 'up',
 });
 
-const wholeSquares = (count: number, rounding: SquareRounding): number => {
-  // 6 / 0.4 is 14.999999999999998, and rounding that up would add a square the range does not need
-  const withoutFloatingPointNoise = Number(count.toPrecision(12));
+// Plotly anchors the grid lines at zero, so a bound between two of them leaves a clipped grid cell at the edge
+const snapAxisRange = (
+  { min, max }: AxisRange,
+  unitsPerSquare: number,
+  gridStep: GridStep,
+  rounding: SquareRounding,
+): AxisRange => {
+  const gridInterval =
+    2 * usableOrDefault(Number(gridStep), 1) * unitsPerSquare;
 
-  return Math.max(
-    1,
-    rounding === 'down'
-      ? Math.floor(withoutFloatingPointNoise)
-      : Math.ceil(withoutFloatingPointNoise),
-  );
+  // 1.2 / 0.1 is 11.999999999999998 and 3 * 0.1 is 0.30000000000000004, and either moves a bound off its grid line
+  const multiplierAt = (bound: number): number =>
+    Number((bound / gridInterval).toPrecision(12));
+  const boundAt = (multiplier: number): number =>
+    Number((multiplier * gridInterval).toPrecision(12));
+
+  const roundsInwards = rounding === 'down';
+  const minMultiplier = roundsInwards
+    ? Math.ceil(multiplierAt(min))
+    : Math.floor(multiplierAt(min));
+  const maxMultiplier = roundsInwards
+    ? Math.floor(multiplierAt(max))
+    : Math.ceil(multiplierAt(max));
+
+  return {
+    min: boundAt(minMultiplier),
+    // Rounding inwards can pull the maximum past the minimum, and an axis without extent has no grid at all
+    max: boundAt(Math.max(maxMultiplier, minMultiplier + 1)),
+  };
+};
+
+export const snapRangesToGrid = ({
+  x,
+  y,
+  unitsPerSquare,
+  gridStep,
+  squareRounding,
+}: SnapRangesToGridInput): AxisRanges => {
+  const scale = effectiveUnitsPerSquare(unitsPerSquare);
+  const rounding = effectiveSquareRounding(squareRounding);
+
+  return {
+    x: snapAxisRange(x, scale.x, gridStep, rounding.x),
+    y: snapAxisRange(y, scale.y, gridStep, rounding.y),
+  };
 };
 
 export const squareCounts = ({
-  xRange,
-  yRange,
+  x,
+  y,
   unitsPerSquare,
-  squareRounding,
   squarePlots,
 }: SquareCountsInput): SquareCounts => {
   const scale = effectiveUnitsPerSquare(unitsPerSquare);
-  const rounding = effectiveSquareRounding(squareRounding);
-  const xCount = wholeSquares(xRange / scale.x, rounding.x);
-  const yCount = wholeSquares(yRange / scale.y, rounding.y);
+
+  // A snapped range spans whole squares, yet (0.3 - 0) / 0.1 is 2.9999999999999996 and would size the plot in fractions of a millimeter
+  const countOf = (range: AxisRange, units: number): number =>
+    Number(((range.max - range.min) / units).toPrecision(12));
+
+  const xCount = countOf(x, scale.x);
+  const yCount = countOf(y, scale.y);
   const largerCount = Math.max(xCount, yCount);
 
   return {
@@ -88,7 +138,7 @@ export const squareCounts = ({
   };
 };
 
-// The whole square count moves the maximum, so the entered minimum always stays where the user put it
+// Square plots level the counts, and the added squares extend the maximum so the snapped minimum stays put
 export const drawnAxisRange = (
   min: number,
   squares: number,

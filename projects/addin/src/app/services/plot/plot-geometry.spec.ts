@@ -1,14 +1,17 @@
 import type {
+  GridStep,
   Plot,
-  SquareRoundingPerAxis,
+  SquareRounding,
   UnitsPerSquare,
 } from '../../models/plot';
 import {
+  AxisRange,
   buildAxisTicks,
   drawnAxisRange,
   formatAxisValue,
   gridMultipliers,
   renderScale,
+  snapRangesToGrid,
   snapToSquare,
   squareCounts,
 } from './plot-geometry';
@@ -19,16 +22,119 @@ const plotWithUnitsPerSquare = (
 
 const defaultUnitsPerSquare: UnitsPerSquare = { x: 0.5, y: 0.5 };
 
-const roundUp: SquareRoundingPerAxis = { x: 'up', y: 'up' };
+const snappedAxis = (
+  range: AxisRange,
+  unitsPerSquare: number,
+  gridStep: GridStep,
+  rounding: SquareRounding = 'up',
+): AxisRange =>
+  snapRangesToGrid({
+    x: range,
+    y: range,
+    unitsPerSquare: { x: unitsPerSquare, y: unitsPerSquare },
+    gridStep,
+    squareRounding: { x: rounding, y: rounding },
+  }).x;
+
+describe('snapRangesToGrid', () => {
+  it('should widen both bounds to the enclosing grid lines when the axis rounds up', () => {
+    expect(snappedAxis({ min: -8, max: 10 }, 1.5, '0.5')).toEqual({
+      min: -9,
+      max: 10.5,
+    });
+  });
+
+  it('should narrow both bounds to the enclosed grid lines when the axis rounds down', () => {
+    expect(snappedAxis({ min: -8, max: 10 }, 1.5, '0.5', 'down')).toEqual({
+      min: -7.5,
+      max: 9,
+    });
+  });
+
+  it('should leave bounds that already sit on a grid line', () => {
+    expect(
+      snapRangesToGrid({
+        x: { min: 9, max: 20 },
+        y: { min: 0, max: 200 },
+        unitsPerSquare: { x: 1, y: 20 },
+        gridStep: '0.5',
+        squareRounding: { x: 'up', y: 'up' },
+      }),
+    ).toEqual({ x: { min: 9, max: 20 }, y: { min: 0, max: 200 } });
+  });
+
+  it('should snap to every second square when a grid line is drawn only there', () => {
+    expect(snappedAxis({ min: 9, max: 20 }, 1, '1')).toEqual({
+      min: 8,
+      max: 20,
+    });
+  });
+
+  it('should keep one grid interval when rounding down would leave none', () => {
+    expect(snappedAxis({ min: 1, max: 2 }, 1.5, '1', 'down')).toEqual({
+      min: 3,
+      max: 6,
+    });
+  });
+
+  it('should snap each axis with its own scale and rounding mode', () => {
+    expect(
+      snapRangesToGrid({
+        x: { min: -8, max: 10 },
+        y: { min: 10, max: 150 },
+        unitsPerSquare: { x: 1.5, y: 20 },
+        gridStep: '0.5',
+        squareRounding: { x: 'up', y: 'down' },
+      }),
+    ).toEqual({ x: { min: -9, max: 10.5 }, y: { min: 20, max: 140 } });
+  });
+
+  it('should round outwards when the rounding mode is missing', () => {
+    expect(
+      snapRangesToGrid({
+        x: { min: -8, max: 10 },
+        y: { min: -8, max: 10 },
+        unitsPerSquare: { x: 1.5, y: 1.5 },
+        gridStep: '0.5',
+        squareRounding: undefined,
+      }).x,
+    ).toEqual({ min: -9, max: 10.5 });
+  });
+
+  it('should fall back to the default scale when units per square are missing', () => {
+    expect(
+      snapRangesToGrid({
+        x: { min: -1.2, max: 1.2 },
+        y: { min: -1.2, max: 1.2 },
+        unitsPerSquare: undefined,
+        gridStep: '0.5',
+        squareRounding: { x: 'up', y: 'up' },
+      }).x,
+    ).toEqual({ min: -1.5, max: 1.5 });
+  });
+
+  it('should keep bounds that miss their grid line only by floating point noise', () => {
+    expect(snappedAxis({ min: 1.2, max: 2.4 }, 0.1, '0.5')).toEqual({
+      min: 1.2,
+      max: 2.4,
+    });
+  });
+
+  it('should land on a grid line without floating point noise', () => {
+    expect(snappedAxis({ min: 0, max: 0.25 }, 0.1, '0.5')).toEqual({
+      min: 0,
+      max: 0.3,
+    });
+  });
+});
 
 describe('squareCounts', () => {
   it('should count each axis from its own range when square plots are off', () => {
     expect(
       squareCounts({
-        xRange: 4,
-        yRange: 10,
+        x: { min: -2, max: 2 },
+        y: { min: -5, max: 5 },
         unitsPerSquare: defaultUnitsPerSquare,
-        squareRounding: roundUp,
         squarePlots: false,
       }),
     ).toEqual({ x: 8, y: 20 });
@@ -37,34 +143,20 @@ describe('squareCounts', () => {
   it('should count both axes from the larger range when square plots are on', () => {
     expect(
       squareCounts({
-        xRange: 4,
-        yRange: 10,
+        x: { min: -2, max: 2 },
+        y: { min: -5, max: 5 },
         unitsPerSquare: defaultUnitsPerSquare,
-        squareRounding: roundUp,
         squarePlots: true,
       }),
     ).toEqual({ x: 20, y: 20 });
   });
 
-  it('should turn a range of six units into twelve squares', () => {
-    expect(
-      squareCounts({
-        xRange: 6,
-        yRange: 6,
-        unitsPerSquare: defaultUnitsPerSquare,
-        squareRounding: roundUp,
-        squarePlots: false,
-      }),
-    ).toEqual({ x: 12, y: 12 });
-  });
-
   it('should count each axis with its own units per square', () => {
     expect(
       squareCounts({
-        xRange: 11,
-        yRange: 200,
+        x: { min: 9, max: 20 },
+        y: { min: 0, max: 200 },
         unitsPerSquare: { x: 1, y: 20 },
-        squareRounding: roundUp,
         squarePlots: false,
       }),
     ).toEqual({ x: 11, y: 10 });
@@ -73,10 +165,9 @@ describe('squareCounts', () => {
   it('should level the square counts instead of the ranges when square plots are on', () => {
     expect(
       squareCounts({
-        xRange: 11,
-        yRange: 200,
+        x: { min: 9, max: 20 },
+        y: { min: 0, max: 200 },
         unitsPerSquare: { x: 1, y: 20 },
-        squareRounding: roundUp,
         squarePlots: true,
       }),
     ).toEqual({ x: 11, y: 11 });
@@ -85,73 +176,23 @@ describe('squareCounts', () => {
   it('should fall back to the default scale when units per square are missing', () => {
     expect(
       squareCounts({
-        xRange: 4,
-        yRange: 10,
-        unitsPerSquare: undefined as unknown as UnitsPerSquare,
-        squareRounding: roundUp,
+        x: { min: -2, max: 2 },
+        y: { min: -5, max: 5 },
+        unitsPerSquare: undefined,
         squarePlots: false,
       }),
     ).toEqual({ x: 8, y: 20 });
   });
 
-  it('should round a partial square up when the axis rounds up', () => {
+  it('should count a range that divides into whole squares only up to floating point noise', () => {
     expect(
       squareCounts({
-        xRange: 6,
-        yRange: 150,
-        unitsPerSquare: { x: 0.5, y: 20 },
-        squareRounding: roundUp,
+        x: { min: 0, max: 0.3 },
+        y: { min: -9, max: 10.5 },
+        unitsPerSquare: { x: 0.1, y: 1.5 },
         squarePlots: false,
       }),
-    ).toEqual({ x: 12, y: 8 });
-  });
-
-  it('should round each axis with its own rounding mode', () => {
-    expect(
-      squareCounts({
-        xRange: 6.2,
-        yRange: 150,
-        unitsPerSquare: { x: 0.5, y: 20 },
-        squareRounding: { x: 'up', y: 'down' },
-        squarePlots: false,
-      }),
-    ).toEqual({ x: 13, y: 7 });
-  });
-
-  it('should keep a single square when rounding down would leave none', () => {
-    expect(
-      squareCounts({
-        xRange: 0.4,
-        yRange: 0,
-        unitsPerSquare: defaultUnitsPerSquare,
-        squareRounding: { x: 'down', y: 'down' },
-        squarePlots: false,
-      }),
-    ).toEqual({ x: 1, y: 1 });
-  });
-
-  it('should not add a square for a count that misses a whole number only by floating point noise', () => {
-    expect(
-      squareCounts({
-        xRange: 6,
-        yRange: 6,
-        unitsPerSquare: { x: 0.4, y: 0.4 },
-        squareRounding: roundUp,
-        squarePlots: false,
-      }),
-    ).toEqual({ x: 15, y: 15 });
-  });
-
-  it('should round up when the rounding mode is missing', () => {
-    expect(
-      squareCounts({
-        xRange: 150,
-        yRange: 150,
-        unitsPerSquare: { x: 20, y: 20 },
-        squareRounding: undefined as unknown as SquareRoundingPerAxis,
-        squarePlots: false,
-      }),
-    ).toEqual({ x: 8, y: 8 });
+    ).toEqual({ x: 3, y: 13 });
   });
 });
 
