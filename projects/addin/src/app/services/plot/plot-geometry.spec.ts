@@ -1,7 +1,7 @@
 import type {
+  AxisSnapping,
   GridStep,
   Plot,
-  SquareRounding,
   UnitsPerSquare,
 } from '../../models/plot';
 import {
@@ -26,26 +26,26 @@ const snappedAxis = (
   range: AxisRange,
   unitsPerSquare: number,
   gridStep: GridStep,
-  rounding: SquareRounding = 'up',
+  snapping: AxisSnapping = 'extend',
 ): AxisRange =>
   snapRangesToGrid({
     x: range,
     y: range,
     unitsPerSquare: { x: unitsPerSquare, y: unitsPerSquare },
     gridStep,
-    squareRounding: { x: rounding, y: rounding },
+    axisSnapping: { x: snapping, y: snapping },
   }).x;
 
 describe('snapRangesToGrid', () => {
-  it('should widen both bounds to the enclosing grid lines when the axis rounds up', () => {
+  it('should widen both bounds to the enclosing grid lines when the axis extends', () => {
     expect(snappedAxis({ min: -8, max: 10 }, 1.5, '0.5')).toEqual({
       min: -9,
       max: 10.5,
     });
   });
 
-  it('should narrow both bounds to the enclosed grid lines when the axis rounds down', () => {
-    expect(snappedAxis({ min: -8, max: 10 }, 1.5, '0.5', 'down')).toEqual({
+  it('should narrow both bounds to the enclosed grid lines when the axis shrinks', () => {
+    expect(snappedAxis({ min: -8, max: 10 }, 1.5, '0.5', 'shrink')).toEqual({
       min: -7.5,
       max: 9,
     });
@@ -58,7 +58,7 @@ describe('snapRangesToGrid', () => {
         y: { min: 0, max: 200 },
         unitsPerSquare: { x: 1, y: 20 },
         gridStep: '0.5',
-        squareRounding: { x: 'up', y: 'up' },
+        axisSnapping: { x: 'extend', y: 'extend' },
       }),
     ).toEqual({ x: { min: 9, max: 20 }, y: { min: 0, max: 200 } });
   });
@@ -70,33 +70,33 @@ describe('snapRangesToGrid', () => {
     });
   });
 
-  it('should keep one grid interval when rounding down would leave none', () => {
-    expect(snappedAxis({ min: 1, max: 2 }, 1.5, '1', 'down')).toEqual({
+  it('should keep one grid interval when shrinking would leave none', () => {
+    expect(snappedAxis({ min: 1, max: 2 }, 1.5, '1', 'shrink')).toEqual({
       min: 3,
       max: 6,
     });
   });
 
-  it('should snap each axis with its own scale and rounding mode', () => {
+  it('should snap each axis with its own scale and snapping mode', () => {
     expect(
       snapRangesToGrid({
         x: { min: -8, max: 10 },
         y: { min: 10, max: 150 },
         unitsPerSquare: { x: 1.5, y: 20 },
         gridStep: '0.5',
-        squareRounding: { x: 'up', y: 'down' },
+        axisSnapping: { x: 'extend', y: 'shrink' },
       }),
     ).toEqual({ x: { min: -9, max: 10.5 }, y: { min: 20, max: 140 } });
   });
 
-  it('should round outwards when the rounding mode is missing', () => {
+  it('should extend outwards when the snapping mode is missing', () => {
     expect(
       snapRangesToGrid({
         x: { min: -8, max: 10 },
         y: { min: -8, max: 10 },
         unitsPerSquare: { x: 1.5, y: 1.5 },
         gridStep: '0.5',
-        squareRounding: undefined,
+        axisSnapping: undefined,
       }).x,
     ).toEqual({ min: -9, max: 10.5 });
   });
@@ -108,7 +108,7 @@ describe('snapRangesToGrid', () => {
         y: { min: -1.2, max: 1.2 },
         unitsPerSquare: undefined,
         gridStep: '0.5',
-        squareRounding: { x: 'up', y: 'up' },
+        axisSnapping: { x: 'extend', y: 'extend' },
       }).x,
     ).toEqual({ min: -1.5, max: 1.5 });
   });

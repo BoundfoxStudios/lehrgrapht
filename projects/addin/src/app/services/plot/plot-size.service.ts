@@ -42,7 +42,7 @@ export class PlotSizeService {
       y: { min: yValueMin, max: yValueMax },
       unitsPerSquare: plot.unitsPerSquare,
       gridStep: plot.gridStep,
-      squareRounding: plot.squareRounding,
+      axisSnapping: plot.axisSnapping,
     });
 
     const squares = squareCounts({
@@ -149,7 +149,7 @@ export class PlotSizeService {
         y: plot.range.y,
         unitsPerSquare: plot.unitsPerSquare,
         gridStep: plot.gridStep,
-        squareRounding: plot.squareRounding,
+        axisSnapping: plot.axisSnapping,
       }),
       unitsPerSquare: plot.unitsPerSquare,
       squarePlots: plot.squarePlots,

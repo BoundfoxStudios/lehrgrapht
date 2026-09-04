@@ -84,11 +84,11 @@ export interface UnitsPerSquare {
   y: number;
 }
 
-export type SquareRounding = 'up' | 'down';
+export type AxisSnapping = 'extend' | 'shrink';
 
-export interface SquareRoundingPerAxis {
-  x: SquareRounding;
-  y: SquareRounding;
+export interface AxisSnappingPerAxis {
+  x: AxisSnapping;
+  y: AxisSnapping;
 }
 
 export interface Plot {
@@ -96,7 +96,7 @@ export interface Plot {
   name: string;
   range: PlotRange;
   unitsPerSquare: UnitsPerSquare;
-  squareRounding: SquareRoundingPerAxis;
+  axisSnapping: AxisSnappingPerAxis;
   fnx: MathFunction[];
   markers: {
     x: number;

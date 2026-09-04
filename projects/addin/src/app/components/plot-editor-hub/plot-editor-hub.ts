@@ -65,7 +65,7 @@ export class PlotEditorHub {
         y: r.y,
         unitsPerSquare: model.unitsPerSquare,
         gridStep: model.gridStep,
-        squareRounding: model.squareRounding,
+        axisSnapping: model.axisSnapping,
       }),
       unitsPerSquare: model.unitsPerSquare,
       squarePlots: false,

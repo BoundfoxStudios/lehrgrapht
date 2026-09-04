@@ -7,7 +7,7 @@ describe('MigrationService', () => {
     const result = service.migrate({ version: '1.8.0' });
 
     expect(result.plot.unitsPerSquare).toEqual({ x: 0.5, y: 0.5 });
-    expect(result.plot.squareRounding).toEqual({ x: 'up', y: 'up' });
+    expect(result.plot.axisSnapping).toEqual({ x: 'extend', y: 'extend' });
     expect(result.wasMigrated).toBe(true);
   });
 });

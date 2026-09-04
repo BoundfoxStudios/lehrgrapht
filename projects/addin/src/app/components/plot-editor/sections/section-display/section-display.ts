@@ -15,7 +15,7 @@ import { Dropdown } from '../../../dropdown/dropdown';
 import { PillSwitch, PillSwitchOption } from '../../../pill-switch/pill-switch';
 import { ToggleRow } from '../../../toggle-row/toggle-row';
 import { legendLabelFormatOptions } from '../../dropdown-options';
-import { GridStep, SquareRounding } from '../../../../models/plot';
+import { AxisSnapping, GridStep } from '../../../../models/plot';
 import {
   formatAxisValue,
   snapRangesToGrid,
@@ -49,11 +49,10 @@ export class SectionDisplay {
     { value: '1', label: 'jedes 2.' },
   ];
 
-  protected readonly squareRoundingOptions: PillSwitchOption<SquareRounding>[] =
-    [
-      { value: 'up', label: 'Auf' },
-      { value: 'down', label: 'Ab' },
-    ];
+  protected readonly axisSnappingOptions: PillSwitchOption<AxisSnapping>[] = [
+    { value: 'extend', label: 'Erweitern' },
+    { value: 'shrink', label: 'Kürzen' },
+  ];
 
   private readonly drawnRange = computed(() => {
     const model = this.store.model();
@@ -62,7 +61,7 @@ export class SectionDisplay {
       y: model.range.y,
       unitsPerSquare: model.unitsPerSquare,
       gridStep: model.gridStep,
-      squareRounding: model.squareRounding,
+      axisSnapping: model.axisSnapping,
     });
 
     return {

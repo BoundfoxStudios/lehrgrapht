@@ -94,7 +94,7 @@ export class PlotPreview {
       y: plot.range.y,
       unitsPerSquare: plot.unitsPerSquare,
       gridStep: plot.gridStep,
-      squareRounding: plot.squareRounding,
+      axisSnapping: plot.axisSnapping,
     });
 
     const squares = squareCounts({

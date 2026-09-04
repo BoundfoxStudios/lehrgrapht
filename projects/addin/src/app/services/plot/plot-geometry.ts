@@ -1,8 +1,8 @@
 import type {
+  AxisSnapping,
+  AxisSnappingPerAxis,
   GridStep,
   Plot,
-  SquareRounding,
-  SquareRoundingPerAxis,
   UnitsPerSquare,
 } from '../../models/plot';
 import { isFiniteNumber, PLOT_CONSTANTS } from './plot.types';
@@ -35,7 +35,7 @@ export interface SquareCountsInput extends AxisRanges {
 export interface SnapRangesToGridInput extends AxisRanges {
   unitsPerSquare: Partial<UnitsPerSquare> | undefined;
   gridStep: GridStep;
-  squareRounding: Partial<SquareRoundingPerAxis> | undefined;
+  axisSnapping: Partial<AxisSnappingPerAxis> | undefined;
 }
 
 // Plots saved by a dev build carry version 0.0.0 and skip every migration, so a field can be missing
@@ -62,11 +62,11 @@ export const snapToSquare = (value: number, unitsPerSquare: number): number => {
   return Number((squareIndex * unitsPerSquare).toPrecision(12));
 };
 
-const effectiveSquareRounding = (
-  squareRounding: Partial<SquareRoundingPerAxis> | undefined,
-): SquareRoundingPerAxis => ({
-  x: squareRounding?.x === 'down' ? 'down' : 'up',
-  y: squareRounding?.y === 'down' ? 'down' : 'up',
+const effectiveAxisSnapping = (
+  axisSnapping: Partial<AxisSnappingPerAxis> | undefined,
+): AxisSnappingPerAxis => ({
+  x: axisSnapping?.x === 'shrink' ? 'shrink' : 'extend',
+  y: axisSnapping?.y === 'shrink' ? 'shrink' : 'extend',
 });
 
 // Plotly anchors the grid lines at zero, so a bound between two of them leaves a clipped grid cell at the edge
@@ -74,7 +74,7 @@ const snapAxisRange = (
   { min, max }: AxisRange,
   unitsPerSquare: number,
   gridStep: GridStep,
-  rounding: SquareRounding,
+  snapping: AxisSnapping,
 ): AxisRange => {
   const gridInterval =
     2 * usableOrDefault(Number(gridStep), 1) * unitsPerSquare;
@@ -85,17 +85,17 @@ const snapAxisRange = (
   const boundAt = (multiplier: number): number =>
     Number((multiplier * gridInterval).toPrecision(12));
 
-  const roundsInwards = rounding === 'down';
-  const minMultiplier = roundsInwards
+  const snapsInwards = snapping === 'shrink';
+  const minMultiplier = snapsInwards
     ? Math.ceil(multiplierAt(min))
     : Math.floor(multiplierAt(min));
-  const maxMultiplier = roundsInwards
+  const maxMultiplier = snapsInwards
     ? Math.floor(multiplierAt(max))
     : Math.ceil(multiplierAt(max));
 
   return {
     min: boundAt(minMultiplier),
-    // Rounding inwards can pull the maximum past the minimum, and an axis without extent has no grid at all
+    // Snapping inwards can pull the maximum past the minimum, and an axis without extent has no grid at all
     max: boundAt(Math.max(maxMultiplier, minMultiplier + 1)),
   };
 };
@@ -105,14 +105,14 @@ export const snapRangesToGrid = ({
   y,
   unitsPerSquare,
   gridStep,
-  squareRounding,
+  axisSnapping,
 }: SnapRangesToGridInput): AxisRanges => {
   const scale = effectiveUnitsPerSquare(unitsPerSquare);
-  const rounding = effectiveSquareRounding(squareRounding);
+  const snapping = effectiveAxisSnapping(axisSnapping);
 
   return {
-    x: snapAxisRange(x, scale.x, gridStep, rounding.x),
-    y: snapAxisRange(y, scale.y, gridStep, rounding.y),
+    x: snapAxisRange(x, scale.x, gridStep, snapping.x),
+    y: snapAxisRange(y, scale.y, gridStep, snapping.y),
   };
 };
 

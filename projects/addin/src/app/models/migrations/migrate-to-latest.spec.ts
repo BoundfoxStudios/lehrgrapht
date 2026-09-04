@@ -15,15 +15,15 @@ describe('migrate-to-latest', () => {
     expect(result['unitsPerSquare']).toEqual({ x: 1, y: 20 });
   });
 
-  it('should backfill squareRounding with rounding up per axis', () => {
+  it('should backfill axisSnapping with extending per axis', () => {
     const result = migrate({});
 
-    expect(result['squareRounding']).toEqual({ x: 'up', y: 'up' });
+    expect(result['axisSnapping']).toEqual({ x: 'extend', y: 'extend' });
   });
 
-  it('should preserve an existing squareRounding', () => {
-    const result = migrate({ squareRounding: { x: 'down', y: 'up' } });
+  it('should preserve an existing axisSnapping', () => {
+    const result = migrate({ axisSnapping: { x: 'shrink', y: 'extend' } });
 
-    expect(result['squareRounding']).toEqual({ x: 'down', y: 'up' });
+    expect(result['axisSnapping']).toEqual({ x: 'shrink', y: 'extend' });
   });
 });
