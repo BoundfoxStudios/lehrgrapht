@@ -6,9 +6,11 @@ import {
 } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { FormField } from '@angular/forms/signals';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { PlotEditorStore } from '../../plot-editor.store';
 import { ButtonDirective } from '../../../../ui/button/button.directive';
+import { TooltipDirective } from '../../../../ui/tooltip/tooltip.directive';
 import { Input } from '../../../../ui/input/input';
 import { SectionHint } from '../../../section-hint/section-hint';
 import { Dropdown } from '../../../dropdown/dropdown';
@@ -27,7 +29,9 @@ import {
   imports: [
     DecimalPipe,
     FormField,
+    FaIconComponent,
     ButtonDirective,
+    TooltipDirective,
     Input,
     SectionHint,
     Dropdown,

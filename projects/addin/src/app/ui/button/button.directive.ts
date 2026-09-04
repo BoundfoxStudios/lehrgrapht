@@ -23,7 +23,7 @@ const VARIANT_CLASSES: Record<ButtonVariant, string> = {
   ghost:
     'rounded-full h-8 w-8 bg-white/15 text-white hover:bg-white/25 focus:ring-white/30 disabled:hover:bg-white/15',
   'ghost-light':
-    'rounded-base text-body-subtle hover:bg-neutral-secondary hover:text-body focus:ring-gray-200',
+    'rounded-base text-body-subtle hover:bg-neutral-secondary hover:text-body focus:ring-brand',
   'ghost-danger':
     'rounded-base text-body-subtle hover:bg-rose-50 hover:text-rose-600 focus:ring-rose-200',
   danger:

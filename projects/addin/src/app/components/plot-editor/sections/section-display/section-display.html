@@ -1,6 +1,22 @@
 @let form = store.editorForm;
 @let plotSizeMm = store.plotSizeMm();
 
+<ng-template #axisSnappingHint>
+  <p>
+    Die Achsengrenzen rasten auf die Gitterlinien ein, damit an den Rändern
+    keine angeschnittenen Kästchen entstehen.
+  </p>
+  <p class="mt-2">
+    <strong>Erweitern</strong> verschiebt sie nach außen, der Bereich wird also
+    größer oder bleibt gleich. <strong>Kürzen</strong> verschiebt sie nach
+    innen.
+  </p>
+  <p class="mt-2">
+    Beispiel: −8 bis 10 bei 1,5 Einheiten pro Kästchen und einer Gitterlinie an
+    jedem Kästchen ergibt mit Erweitern −9 bis 10,5 und mit Kürzen −7,5 bis 9.
+  </p>
+</ng-template>
+
 <div class="flex flex-col gap-2.5 p-2">
   <section
     class="border-default-medium flex flex-col gap-2 rounded-lg border bg-white p-2.5"
@@ -36,31 +52,40 @@
         />
       </div>
     </div>
-    <div class="flex items-start gap-3">
-      <div class="flex-1">
-        <label
-          class="text-body-subtle text-2xs mb-1 block font-semibold"
-          for="units-per-square-x"
-          >Einheiten pro Kästchen</label
+    <div class="grid grid-cols-[1fr_auto] items-center gap-x-3 gap-y-1">
+      <label
+        class="text-body-subtle text-2xs font-semibold"
+        for="units-per-square-x"
+        >Einheiten pro Kästchen</label
+      >
+      <span
+        class="text-body-subtle text-2xs flex items-center gap-1 font-semibold"
+      >
+        Bereich
+        <button
+          [lgTooltip]="axisSnappingHint"
+          lgButton
+          iconOnly
+          size="small"
+          variant="ghost-light"
+          type="button"
+          aria-label="Erklärung zum Bereich der X-Achse anzeigen"
         >
-        <lg-input
-          id="units-per-square-x"
-          [field]="form.unitsPerSquare.x"
-          type="number"
-          step="0.5"
-        />
-      </div>
-      <div class="shrink-0">
-        <span class="text-body-subtle text-2xs mb-1 block font-semibold"
-          >Bereich</span
-        >
-        <lg-pill-switch
-          [options]="axisSnappingOptions"
-          [formField]="form.axisSnapping.x"
-          aria-label="Bereich der X-Achse am Gitter ausrichten"
-          shape="square"
-        />
-      </div>
+          <fa-icon [icon]="faInfoCircle" />
+        </button>
+      </span>
+      <lg-input
+        id="units-per-square-x"
+        [field]="form.unitsPerSquare.x"
+        type="number"
+        step="0.5"
+      />
+      <lg-pill-switch
+        [options]="axisSnappingOptions"
+        [formField]="form.axisSnapping.x"
+        aria-label="Bereich der X-Achse am Gitter ausrichten"
+        shape="square"
+      />
     </div>
   </section>
 
@@ -98,31 +123,40 @@
         />
       </div>
     </div>
-    <div class="flex items-start gap-3">
-      <div class="flex-1">
-        <label
-          class="text-body-subtle text-2xs mb-1 block font-semibold"
-          for="units-per-square-y"
-          >Einheiten pro Kästchen</label
+    <div class="grid grid-cols-[1fr_auto] items-center gap-x-3 gap-y-1">
+      <label
+        class="text-body-subtle text-2xs font-semibold"
+        for="units-per-square-y"
+        >Einheiten pro Kästchen</label
+      >
+      <span
+        class="text-body-subtle text-2xs flex items-center gap-1 font-semibold"
+      >
+        Bereich
+        <button
+          [lgTooltip]="axisSnappingHint"
+          lgButton
+          iconOnly
+          size="small"
+          variant="ghost-light"
+          type="button"
+          aria-label="Erklärung zum Bereich der Y-Achse anzeigen"
         >
-        <lg-input
-          id="units-per-square-y"
-          [field]="form.unitsPerSquare.y"
-          type="number"
-          step="0.5"
-        />
-      </div>
-      <div class="shrink-0">
-        <span class="text-body-subtle text-2xs mb-1 block font-semibold"
-          >Bereich</span
-        >
-        <lg-pill-switch
-          [options]="axisSnappingOptions"
-          [formField]="form.axisSnapping.y"
-          aria-label="Bereich der Y-Achse am Gitter ausrichten"
-          shape="square"
-        />
-      </div>
+          <fa-icon [icon]="faInfoCircle" />
+        </button>
+      </span>
+      <lg-input
+        id="units-per-square-y"
+        [field]="form.unitsPerSquare.y"
+        type="number"
+        step="0.5"
+      />
+      <lg-pill-switch
+        [options]="axisSnappingOptions"
+        [formField]="form.axisSnapping.y"
+        aria-label="Bereich der Y-Achse am Gitter ausrichten"
+        shape="square"
+      />
     </div>
   </section>
 
