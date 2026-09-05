@@ -5,6 +5,7 @@ import type {
   UnitsPerSquare,
 } from '../../models/plot';
 import {
+  axisOrigin,
   AxisRange,
   buildAxisTicks,
   drawnAxisRange,
@@ -269,6 +270,32 @@ describe('renderScale', () => {
       x: 1,
       y: 1,
     });
+  });
+});
+
+describe('axisOrigin', () => {
+  it('should stay at zero when both ranges contain it', () => {
+    expect(
+      axisOrigin({ x: { min: -3, max: 3 }, y: { min: -200, max: 200 } }),
+    ).toEqual({ x: 0, y: 0 });
+  });
+
+  it('should move to the minimum of a range above zero', () => {
+    expect(
+      axisOrigin({ x: { min: 9, max: 20 }, y: { min: 2, max: 8 } }),
+    ).toEqual({ x: 9, y: 2 });
+  });
+
+  it('should move to the maximum of a range below zero', () => {
+    expect(
+      axisOrigin({ x: { min: -20, max: -9 }, y: { min: -8, max: -2 } }),
+    ).toEqual({ x: -9, y: -2 });
+  });
+
+  it('should stay at zero when a bound sits exactly on it', () => {
+    expect(
+      axisOrigin({ x: { min: 0, max: 10 }, y: { min: -10, max: 0 } }),
+    ).toEqual({ x: 0, y: 0 });
   });
 });
 

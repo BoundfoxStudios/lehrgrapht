@@ -158,6 +158,20 @@ export const renderScale = (plot: Plot): RenderScale => {
   };
 };
 
+export interface AxisOrigin {
+  x: number;
+  y: number;
+}
+
+const originOn = ({ min, max }: AxisRange): number =>
+  min > 0 ? min : max < 0 ? max : 0;
+
+// Plotly hangs the axis line at zero, so a range without zero needs the crossing moved to its nearest edge
+export const axisOrigin = ({ x, y }: AxisRanges): AxisOrigin => ({
+  x: originOn(x),
+  y: originOn(y),
+});
+
 export const gridMultipliers = (
   min: number,
   max: number,
