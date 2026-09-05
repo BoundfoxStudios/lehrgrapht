@@ -18,10 +18,12 @@ import { PlotAnnotationsService } from './plot-annotations.service';
 import { PlotDataService } from './plot-data.service';
 import { PlotLabelsService } from './plot-labels.service';
 import {
+  axisOrigin,
   buildAxisTicks,
   effectiveUnitsPerSquare,
   renderScale,
 } from './plot-geometry';
+import { buildAxisLines } from './axis-lines';
 import { PlotTrace, toRenderAnnotations, toRenderTraces } from './render-space';
 
 const devicePixelRatio = window.devicePixelRatio || 1;
@@ -251,6 +253,7 @@ export class PlotService {
     const { mmToInches, ppiBase } = PLOT_CONSTANTS;
     const { plotSizePx, plotSizePoints, axisRange } = sizeCalc;
     const scale = renderScale(plot);
+    const origin = axisOrigin(axisRange);
     const unitsPerSquare = effectiveUnitsPerSquare(plot.unitsPerSquare);
     const gridStep = Number(plot.gridStep);
     const xTicks = buildAxisTicks(
@@ -286,6 +289,9 @@ export class PlotService {
           images: functionLabelImages.length ? functionLabelImages : undefined,
           annotations: plot.showAxis
             ? toRenderAnnotations(axisAnnotations, scale)
+            : undefined,
+          shapes: plot.showAxis
+            ? buildAxisLines(origin, scale, plotSettings)
             : undefined,
           margin: {
             t: margin.t * mmToInches * ppiBase,
