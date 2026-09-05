@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Annotations } from 'plotly.js-dist-min';
 import { Plot, PlotSettings } from '../../models/plot';
 import {
+  AxisOrigin,
   effectiveUnitsPerSquare,
   formatAxisValue,
   gridMultipliers,
@@ -28,34 +29,46 @@ export class PlotAnnotationsService {
   buildAnnotations(
     plot: Plot,
     plotSettings: PlotSettings,
+    origin: AxisOrigin,
   ): Partial<Annotations>[] {
     const unitsPerSquare = effectiveUnitsPerSquare(plot.unitsPerSquare);
     const xAnnotationRange = gridValues(plot.range.x, 2 * unitsPerSquare.x);
 
     let yAnnotationRange = gridValues(plot.range.y, 2 * unitsPerSquare.y);
 
-    if (xAnnotationRange.includes(0) && yAnnotationRange.includes(0)) {
-      yAnnotationRange = yAnnotationRange.filter(y => y !== 0);
+    if (
+      xAnnotationRange.includes(origin.x) &&
+      yAnnotationRange.includes(origin.y)
+    ) {
+      yAnnotationRange = yAnnotationRange.filter(y => y !== origin.y);
     }
 
     return [
-      ...this.buildXLabels(withoutBounds(xAnnotationRange, plot.range.x)),
+      ...this.buildXLabels(
+        withoutBounds(xAnnotationRange, plot.range.x),
+        origin,
+      ),
       ...this.buildXTickLines(
         withoutMaximum(xAnnotationRange, plot.range.x),
         plotSettings,
+        origin,
       ),
-      ...this.buildYLabels(withoutBounds(yAnnotationRange, plot.range.y)),
+      ...this.buildYLabels(
+        withoutBounds(yAnnotationRange, plot.range.y),
+        origin,
+      ),
       ...this.buildYTickLines(
         withoutMaximum(yAnnotationRange, plot.range.y),
         plotSettings,
+        origin,
       ),
     ];
   }
 
-  buildXLabels(xRange: number[]): Partial<Annotations>[] {
+  buildXLabels(xRange: number[], origin: AxisOrigin): Partial<Annotations>[] {
     return xRange.map(x => ({
       x,
-      y: 0,
+      y: origin.y,
       text: formatAxisValue(x),
       xref: 'x',
       yref: 'y',
@@ -63,7 +76,7 @@ export class PlotAnnotationsService {
       xanchor: 'center',
       yanchor: 'top',
       yshift: -2,
-      xshift: x === 0 ? 6 : undefined,
+      xshift: x === origin.x ? 6 : undefined,
       font: { size: 10 },
     }));
   }
@@ -71,12 +84,13 @@ export class PlotAnnotationsService {
   buildXTickLines(
     xRange: number[],
     plotSettings: PlotSettings,
+    origin: AxisOrigin,
   ): Partial<Annotations>[] {
     return xRange
-      .filter(x => x !== 0)
+      .filter(x => x !== origin.x)
       .map(x => ({
         x,
-        y: 0,
+        y: origin.y,
         xref: 'x',
         yref: 'y',
         showarrow: true,
@@ -90,9 +104,9 @@ export class PlotAnnotationsService {
       }));
   }
 
-  buildYLabels(yRange: number[]): Partial<Annotations>[] {
+  buildYLabels(yRange: number[], origin: AxisOrigin): Partial<Annotations>[] {
     return yRange.map(y => ({
-      x: 0,
+      x: origin.x,
       y,
       text: formatAxisValue(y),
       xref: 'x',
@@ -108,11 +122,12 @@ export class PlotAnnotationsService {
   buildYTickLines(
     yRange: number[],
     plotSettings: PlotSettings,
+    origin: AxisOrigin,
   ): Partial<Annotations>[] {
     return yRange
-      .filter(y => y !== 0)
+      .filter(y => y !== origin.y)
       .map(y => ({
-        x: 0,
+        x: origin.x,
         y,
         xref: 'x',
         yref: 'y',
@@ -132,15 +147,16 @@ export class PlotAnnotationsService {
     plotSettings: PlotSettings,
     xValueMax: number,
     yValueMax: number,
+    origin: AxisOrigin,
   ): Partial<Annotations>[] {
     if (!plot.showAxisArrows) {
-      return plot.showAxisLabels ? this.buildAxisLabels(plot) : [];
+      return plot.showAxisLabels ? this.buildAxisLabels(plot, origin) : [];
     }
 
     const arrows: Partial<Annotations>[] = [
       {
         x: xValueMax,
-        y: 0,
+        y: origin.y,
         showarrow: true,
         xref: 'x',
         yref: 'y',
@@ -151,7 +167,7 @@ export class PlotAnnotationsService {
         arrowcolor: plotSettings.zeroLineColor,
       },
       {
-        x: 0,
+        x: origin.x,
         y: yValueMax,
         showarrow: true,
         xref: 'x',
@@ -165,18 +181,21 @@ export class PlotAnnotationsService {
     ];
 
     if (plot.showAxisLabels) {
-      arrows.push(...this.buildAxisLabels(plot));
+      arrows.push(...this.buildAxisLabels(plot, origin));
     }
 
     return arrows;
   }
 
-  private buildAxisLabels(plot: Plot): Partial<Annotations>[] {
+  private buildAxisLabels(
+    plot: Plot,
+    origin: AxisOrigin,
+  ): Partial<Annotations>[] {
     const unitsPerSquare = effectiveUnitsPerSquare(plot.unitsPerSquare);
 
     return [
       {
-        x: 0.2 * unitsPerSquare.x,
+        x: origin.x + 0.2 * unitsPerSquare.x,
         y: 1.01,
         text: plot.axisLabelY || 'y',
         showarrow: false,
@@ -187,7 +206,7 @@ export class PlotAnnotationsService {
       },
       {
         x: 1,
-        y: 1.1 * unitsPerSquare.y,
+        y: origin.y + 1.1 * unitsPerSquare.y,
         text: plot.axisLabelX || 'x',
         showarrow: false,
         yanchor: 'top',

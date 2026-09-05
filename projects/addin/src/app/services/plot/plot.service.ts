@@ -95,9 +95,11 @@ export class PlotService {
       cleanedValues,
       margin,
     );
+    const origin = axisOrigin(sizeCalc.axisRange);
     const annotations = this.plotAnnotationsService.buildAnnotations(
       plot,
       plotSettings,
+      origin,
     );
     const functionLabelImages = this.buildLegendImages(
       plot,
@@ -111,6 +113,7 @@ export class PlotService {
       plotSettings,
       sizeCalc.xValueMax,
       sizeCalc.yValueMax,
+      origin,
     );
     const data = this.plotDataService.buildPlotData(
       plot,
