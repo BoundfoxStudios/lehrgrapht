@@ -1,5 +1,12 @@
 # LehrGrapht
 
+[![Add-In](https://img.shields.io/github/actions/workflow/status/BoundfoxStudios/lehrgrapht/addin.yml?branch=develop&label=Add-In)](https://github.com/BoundfoxStudios/lehrgrapht/actions/workflows/addin.yml)
+[![Website](https://img.shields.io/github/actions/workflow/status/BoundfoxStudios/lehrgrapht/website.yml?branch=main&label=Website)](https://github.com/BoundfoxStudios/lehrgrapht/actions/workflows/website.yml)
+[![CVE Check](https://img.shields.io/github/actions/workflow/status/BoundfoxStudios/lehrgrapht/cve-check.yml?branch=develop&label=CVE%20Check)](https://github.com/BoundfoxStudios/lehrgrapht/actions/workflows/cve-check.yml)
+[![Version](https://img.shields.io/github/v/tag/BoundfoxStudios/lehrgrapht?label=version)](https://github.com/BoundfoxStudios/lehrgrapht/tags)
+[![lehrgrapht.de](https://img.shields.io/website?url=https%3A%2F%2Flehrgrapht.de&label=lehrgrapht.de)](https://lehrgrapht.de)
+[![Sponsor](https://img.shields.io/badge/sponsor-BoundfoxStudios-ea4aaa?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/BoundfoxStudios)
+
 LehrGrapht is a simple math plotter Word add-in targeting teachers using the FunkFix macro, that is not available with macOS anymore.
 
 ## Development - AddIn
