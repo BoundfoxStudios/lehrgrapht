@@ -27,7 +27,6 @@ export type TooltipPosition = 'above' | 'below';
 let tooltipIdCounter = 0;
 
 const VIEWPORT_MARGIN = 8;
-const MAX_PANEL_WIDTH = '18rem';
 
 const ABOVE_POSITION: ConnectedPosition = {
   originX: 'center',
@@ -165,7 +164,6 @@ export class TooltipDirective {
       scrollStrategy: createRepositionScrollStrategy(this.injector, {
         autoClose: true,
       }),
-      maxWidth: MAX_PANEL_WIDTH,
     });
 
     overlayRef.overlayElement.addEventListener('pointerenter', () => {
