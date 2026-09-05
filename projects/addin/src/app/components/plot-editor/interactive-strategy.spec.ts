@@ -14,6 +14,8 @@ const basePlot: Plot = {
   version: '1.0.0',
   name: 'test',
   range: { x: { min: -3, max: 3 }, y: { min: -3, max: 3 } },
+  unitsPerSquare: { x: 0.5, y: 0.5 },
+  axisSnapping: { x: 'extend', y: 'extend' },
   fnx: [],
   markers: [],
   polygons: [],

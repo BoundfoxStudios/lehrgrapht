@@ -1,6 +1,9 @@
 import { Plot, PlotSettings, Polygon, PolygonPoint } from '../../models/plot';
 import { PlotDataService } from './plot-data.service';
+import { RenderScale } from './plot-geometry';
 import { PLOT_CONSTANTS } from './plot.types';
+
+const unscaled: RenderScale = { x: 1, y: 1 };
 
 const plotSettings: PlotSettings = {
   zeroLineWidth: 1,
@@ -16,6 +19,8 @@ const basePlot: Plot = {
   version: '1.0',
   name: 'test',
   range: { x: { min: -5, max: 5 }, y: { min: -5, max: 5 } },
+  unitsPerSquare: { x: 0.5, y: 0.5 },
+  axisSnapping: { x: 'extend', y: 'extend' },
   fnx: [],
   markers: [],
   polygons: [],
@@ -183,7 +188,7 @@ describe('PlotDataService', () => {
       expect(trace.fillcolor).toBe('rgba(255, 0, 0, 0.7)');
       expect(trace.line?.color).toBe('#000000');
       expect(trace.line?.width).toBe(plotSettings.plotLineWidth);
-      const xs = trace.x as number[];
+      const xs = trace.x;
       expect(xs.length).toBe(4);
       expect(xs[0]).toBe(xs[3]);
     });
@@ -211,7 +216,7 @@ describe('PlotDataService', () => {
       const result = service.buildPolygonTraces(plot, plotSettings);
       const trace = result[0];
       expect(trace.fill).toBe('none');
-      const xs = trace.x as number[];
+      const xs = trace.x;
       expect(xs.length).toBe(4);
       expect(xs[0]).toBe(xs[3]);
     });
@@ -248,9 +253,52 @@ describe('PlotDataService', () => {
       const gapPx = parseFloat(match[2]);
       const period = dashPx + gapPx;
 
-      const { dtick, mmPerTick, mmToInches, ppiBase } = PLOT_CONSTANTS;
-      const pxPerUnit = (mmPerTick / dtick) * mmToInches * ppiBase;
-      const perimeterPx = 12 * pxPerUnit;
+      const { renderUnitsPerSquare, mmPerSquare, mmToInches, ppiBase } =
+        PLOT_CONSTANTS;
+      const pxPerRenderUnit =
+        (mmPerSquare / renderUnitsPerSquare) * mmToInches * ppiBase;
+      const perimeterPx = 12 * pxPerRenderUnit;
+      const numPeriods = perimeterPx / period;
+
+      expect(numPeriods).toBeCloseTo(Math.round(numPeriods), 5);
+    });
+
+    it('measures the dashed perimeter in render space when the axes scale differently', () => {
+      const plot: Plot = {
+        ...basePlot,
+        unitsPerSquare: { x: 0.5, y: 0.25 },
+        polygons: [
+          {
+            points: [
+              { x: 0, y: 0, labelPosition: 'auto', labelText: '' },
+              { x: 4, y: 0, labelPosition: 'auto', labelText: '' },
+              { x: 4, y: 3, labelPosition: 'auto', labelText: '' },
+            ],
+            connect: true,
+            lineColor: '#000000',
+            fillColor: null,
+            lineStyle: 'dashed',
+            showPoints: false,
+            fillStyle: 'solid',
+            isSolution: false,
+          },
+        ],
+      };
+      const result = service.buildPolygonTraces(plot, plotSettings);
+      const dash = result[0].line?.dash as string;
+      const match = /^([\d.]+)px,([\d.]+)px$/.exec(dash);
+      if (!match) {
+        throw new Error(`Unexpected dash pattern: ${dash}`);
+      }
+
+      const period = parseFloat(match[1]) + parseFloat(match[2]);
+
+      const { renderUnitsPerSquare, mmPerSquare, mmToInches, ppiBase } =
+        PLOT_CONSTANTS;
+      const pxPerRenderUnit =
+        (mmPerSquare / renderUnitsPerSquare) * mmToInches * ppiBase;
+      // the y axis renders twice as tall, so the 3-4-5 triangle spans 4 + 6 + sqrt(52) render units
+      const perimeterPx = (4 + 6 + Math.sqrt(52)) * pxPerRenderUnit;
       const numPeriods = perimeterPx / period;
 
       expect(numPeriods).toBeCloseTo(Math.round(numPeriods), 5);
@@ -577,14 +625,14 @@ describe('PlotDataService', () => {
 
     it('should return "bottom right" for point to the lower-right of centroid', () => {
       const point = makePoint(2, -1);
-      expect(service.calculateLabelPosition(point, triangle)).toBe(
+      expect(service.calculateLabelPosition(point, triangle, unscaled)).toBe(
         'bottom right',
       );
     });
 
     it('should return "top center" for point above centroid', () => {
       const point = makePoint(0, 2);
-      expect(service.calculateLabelPosition(point, triangle)).toBe(
+      expect(service.calculateLabelPosition(point, triangle, unscaled)).toBe(
         'top center',
       );
     });
@@ -592,23 +640,38 @@ describe('PlotDataService', () => {
     it('should return "middle left" for point to the left of centroid', () => {
       const point = makePoint(-3, 0);
       expect(
-        service.calculateLabelPosition(point, [
-          makePoint(-3, 0),
-          makePoint(3, 0),
-          makePoint(0, 3),
-        ]),
+        service.calculateLabelPosition(
+          point,
+          [makePoint(-3, 0), makePoint(3, 0), makePoint(0, 3)],
+          unscaled,
+        ),
       ).toBe('middle left');
     });
 
     it('should return "bottom center" for point below centroid', () => {
       const point = makePoint(0, -3);
       expect(
-        service.calculateLabelPosition(point, [
-          makePoint(0, -3),
-          makePoint(-2, 2),
-          makePoint(2, 2),
-        ]),
+        service.calculateLabelPosition(
+          point,
+          [makePoint(0, -3), makePoint(-2, 2), makePoint(2, 2)],
+          unscaled,
+        ),
       ).toBe('bottom center');
+    });
+
+    it('should follow the picture when the axes scale differently', () => {
+      expect(
+        service.calculateLabelPosition(makePoint(2, -1), triangle, {
+          x: 0.5,
+          y: 0.025,
+        }),
+      ).toBe('middle right');
+      expect(
+        service.calculateLabelPosition(makePoint(-2, -1), triangle, {
+          x: 0.5,
+          y: 0.025,
+        }),
+      ).toBe('middle left');
     });
 
     it('should handle all 8 directions', () => {
@@ -619,30 +682,30 @@ describe('PlotDataService', () => {
         makePoint(1, -1),
       ];
 
-      expect(service.calculateLabelPosition(makePoint(3, 0), square)).toBe(
-        'middle right',
-      );
-      expect(service.calculateLabelPosition(makePoint(3, 3), square)).toBe(
-        'top right',
-      );
-      expect(service.calculateLabelPosition(makePoint(0, 3), square)).toBe(
-        'top center',
-      );
-      expect(service.calculateLabelPosition(makePoint(-3, 3), square)).toBe(
-        'top left',
-      );
-      expect(service.calculateLabelPosition(makePoint(-3, 0), square)).toBe(
-        'middle left',
-      );
-      expect(service.calculateLabelPosition(makePoint(-3, -3), square)).toBe(
-        'bottom left',
-      );
-      expect(service.calculateLabelPosition(makePoint(0, -3), square)).toBe(
-        'bottom center',
-      );
-      expect(service.calculateLabelPosition(makePoint(3, -3), square)).toBe(
-        'bottom right',
-      );
+      expect(
+        service.calculateLabelPosition(makePoint(3, 0), square, unscaled),
+      ).toBe('middle right');
+      expect(
+        service.calculateLabelPosition(makePoint(3, 3), square, unscaled),
+      ).toBe('top right');
+      expect(
+        service.calculateLabelPosition(makePoint(0, 3), square, unscaled),
+      ).toBe('top center');
+      expect(
+        service.calculateLabelPosition(makePoint(-3, 3), square, unscaled),
+      ).toBe('top left');
+      expect(
+        service.calculateLabelPosition(makePoint(-3, 0), square, unscaled),
+      ).toBe('middle left');
+      expect(
+        service.calculateLabelPosition(makePoint(-3, -3), square, unscaled),
+      ).toBe('bottom left');
+      expect(
+        service.calculateLabelPosition(makePoint(0, -3), square, unscaled),
+      ).toBe('bottom center');
+      expect(
+        service.calculateLabelPosition(makePoint(3, -3), square, unscaled),
+      ).toBe('bottom right');
     });
   });
 

@@ -63,6 +63,7 @@ describe('PlotLabelsService', () => {
       xValueMax: 5,
       yValueMin: -5,
       yValueMax: 5,
+      axisRange: { x: { min: -5, max: 5 }, y: { min: -5, max: 5 } },
       plotSizePx: { width: 200, height: 200 },
       plotSizePoints: { width: 150, height: 150 },
     };

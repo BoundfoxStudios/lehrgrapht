@@ -56,6 +56,10 @@ export interface PlotSizeCalculation {
   xValueMax: number;
   yValueMin: number;
   yValueMax: number;
+  axisRange: {
+    x: { min: number; max: number };
+    y: { min: number; max: number };
+  };
   plotSizePx: { width: number; height: number };
   plotSizePoints: { width: number; height: number };
 }
@@ -76,8 +80,8 @@ export const PLOT_CONSTANTS = {
   mmToInches: 1 / 25.4,
   mmToPoints: 72 / 25.4,
   ppiBase: 96,
-  dtick: 0.5,
-  mmPerTick: 5,
+  renderUnitsPerSquare: 0.5,
+  mmPerSquare: 5,
   mmMargin: { t: 7.5, b: 7.5, l: 7.5, r: 7.5 },
 } as const;
 

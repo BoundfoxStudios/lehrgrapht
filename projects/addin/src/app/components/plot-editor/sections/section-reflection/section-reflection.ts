@@ -20,11 +20,20 @@ import { ButtonDirective } from '../../../../ui/button/button.directive';
 import { Card } from '../../../../ui/card/card';
 import { IdPill } from '../../../id-pill/id-pill';
 import { PillSwitch } from '../../../pill-switch/pill-switch';
+import { SectionHint } from '../../../section-hint/section-hint';
 import { Switch } from '../../../switch/switch';
 
 @Component({
   selector: 'lg-section-reflection',
-  imports: [FaIconComponent, ButtonDirective, Card, IdPill, PillSwitch, Switch],
+  imports: [
+    FaIconComponent,
+    ButtonDirective,
+    Card,
+    IdPill,
+    PillSwitch,
+    SectionHint,
+    Switch,
+  ],
   templateUrl: './section-reflection.html',
   styleUrl: './section-reflection.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -41,6 +50,13 @@ export class SectionReflection {
 
   protected readonly reflection = computed(() => this.store.model().reflection);
   protected readonly kind = computed(() => this.reflection().kind);
+
+  protected readonly axisReflectionBlocked = computed(
+    () => !this.store.isAxisReflectionAllowed(),
+  );
+
+  protected readonly axisReflectionHint =
+    'Eine Spiegelachse ist nur möglich, wenn beide Achsen gleich viele Einheiten pro Kästchen haben. Sonst sieht das gespiegelte Objekt im Schaubild nicht mehr wie eine Spiegelung aus. Stelle beide Werte unter "Grenzen & Darstellung" gleich ein; die Punktspiegelung ist davon nicht betroffen.';
 
   protected readonly axisIsDegenerate = computed(() => {
     const r = this.reflection();

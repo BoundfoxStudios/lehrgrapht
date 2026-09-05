@@ -9,7 +9,7 @@ import {
   withProps,
   withState,
 } from '@ngrx/signals';
-import { form } from '@angular/forms/signals';
+import { form, validate } from '@angular/forms/signals';
 import { ActivatedRoute, Router } from '@angular/router';
 import { map } from 'rxjs';
 import { lehrgraphtVersion } from '../../../version';
@@ -24,9 +24,14 @@ import {
   defaultPlotSettings,
   PlotSettingsService,
 } from '../../services/plot-settings.service';
-import { reflectPoint } from '../../services/plot/reflection';
+import {
+  hasAxisReflectionScaleConflict,
+  isAxisReflectionAllowed,
+  reflectPoint,
+} from '../../services/plot/reflection';
 import { PlotService } from '../../services/plot/plot.service';
 import { plotHasErrorCode, PlotSizeMm } from '../../services/plot/plot.types';
+import { effectiveUnitsPerSquare } from '../../services/plot/plot-geometry';
 import { SolutionViewService } from '../../services/solution-view.service';
 import { WordPlotService } from '../../services/office/plot/word-plot.service';
 import { PlotClickEvent } from '../plot-preview/plot-preview';
@@ -41,6 +46,7 @@ import {
   isPolygonCCW,
   mergeContiguousSubsegments,
 } from '../../utils/polygon-utils';
+import { greaterThanZeroValidator } from '../../utils/greater-than-zero.validator';
 import { lessThanValidator } from '../../utils/less-than.validator';
 import {
   ApplyContext,
@@ -60,6 +66,8 @@ const emptyPlot = (): Plot => ({
     x: { min: -3, max: 3 },
     y: { min: -3, max: 3 },
   },
+  unitsPerSquare: { x: 0.5, y: 0.5 },
+  axisSnapping: { x: 'extend', y: 'extend' },
   fnx: [],
   markers: [],
   polygons: [],
@@ -168,6 +176,33 @@ export const PlotEditorStore = signalStore(
           schema.range.y.max,
           'Y Min muss kleiner sein als Y Max',
         );
+        greaterThanZeroValidator(
+          schema.unitsPerSquare.x,
+          'Einheiten pro Kästchen (X) muss größer als 0 sein',
+        );
+        greaterThanZeroValidator(
+          schema.unitsPerSquare.y,
+          'Einheiten pro Kästchen (Y) muss größer als 0 sein',
+        );
+        // eslint-disable-next-line @typescript-eslint/unbound-method
+        validate(schema.reflection, ({ value, valueOf }) => {
+          // A dev-build plot can lack unitsPerSquare entirely, and valueOf(schema.unitsPerSquare) would throw NG01901 on the unresolvable child path
+          if (
+            !hasAxisReflectionScaleConflict(
+              value(),
+              valueOf(schema).unitsPerSquare,
+            )
+          ) {
+            return null;
+          }
+
+          return {
+            field: schema.reflection,
+            message:
+              'Eine Spiegelachse ist nur möglich, wenn beide Achsen gleich viele Einheiten pro Kästchen haben',
+            kind: 'axisReflectionScale',
+          };
+        });
       },
       {
         submission: {
@@ -242,6 +277,9 @@ export const PlotEditorStore = signalStore(
         }
         return model.polygons.some(polygon => polygon.isSolution);
       }),
+      isAxisReflectionAllowed: computed(() =>
+        isAxisReflectionAllowed(store.model().unitsPerSquare),
+      ),
     };
   }),
   withMethods(store => {
@@ -577,11 +615,19 @@ export const PlotEditorStore = signalStore(
           }
         }
 
+        const unitsPerSquare = effectiveUnitsPerSquare(m.unitsPerSquare);
+
         store.editorForm().controlValue.update(model => ({
           ...model,
           range: {
-            x: { min: minX - 1, max: maxX + 1 },
-            y: { min: minY - 1, max: maxY + 1 },
+            x: {
+              min: minX - 2 * unitsPerSquare.x,
+              max: maxX + 2 * unitsPerSquare.x,
+            },
+            y: {
+              min: minY - 2 * unitsPerSquare.y,
+              max: maxY + 2 * unitsPerSquare.y,
+            },
           },
         }));
       },

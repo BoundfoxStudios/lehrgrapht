@@ -2,6 +2,12 @@ import { Injectable } from '@angular/core';
 import { Plot } from '../../models/plot';
 import { math } from '../../utils/math';
 import {
+  drawnAxisRange,
+  effectiveUnitsPerSquare,
+  snapRangesToGrid,
+  squareCounts,
+} from './plot-geometry';
+import {
   A4_USABLE_HEIGHT_MM,
   A4_USABLE_WIDTH_MM,
   CleanedValues,
@@ -9,7 +15,6 @@ import {
   PlotMarginMm,
   PlotSizeCalculation,
   PlotSizeMm,
-  ValueRanges,
 } from './plot.types';
 
 @Injectable({ providedIn: 'root' })
@@ -17,38 +22,38 @@ export class PlotSizeService {
   calculatePlotSize(
     plot: Plot,
     cleanedValues: CleanedValues,
-    valueRanges: ValueRanges,
     margin: PlotMarginMm,
   ): PlotSizeCalculation {
-    const { dtick, mmPerTick, mmToInches, mmToPoints, ppiBase } =
-      PLOT_CONSTANTS;
+    const { mmPerSquare, mmToInches, mmToPoints, ppiBase } = PLOT_CONSTANTS;
+    const unitsPerSquare = effectiveUnitsPerSquare(plot.unitsPerSquare);
 
-    const xValueFlat = plot.automaticallyAdjustLimitsToValueRange
-      ? cleanedValues.cleanXValues
-      : valueRanges.xNumbers;
-    const xValueMin = math.min(xValueFlat);
-    const xValueMax = math.max(xValueFlat);
-    const xValueRange = xValueMax - xValueMin;
+    const { min: xValueMin, max: xValueMax } =
+      plot.automaticallyAdjustLimitsToValueRange
+        ? this.boundsOf(cleanedValues.cleanXValues)
+        : plot.range.x;
 
-    const yValueFlat = plot.automaticallyAdjustLimitsToValueRange
-      ? cleanedValues.cleanYValues.flatMap(y => y)
-      : valueRanges.yNumbers;
-    const yValueMin = math.min(yValueFlat);
-    const yValueMax = math.max(yValueFlat);
-    const yValueRange = yValueMax - yValueMin;
+    const { min: yValueMin, max: yValueMax } =
+      plot.automaticallyAdjustLimitsToValueRange
+        ? this.boundsOf(cleanedValues.cleanYValues.flatMap(values => values))
+        : plot.range.y;
 
-    const tickSquares = {
-      x: plot.squarePlots
-        ? Math.max(xValueRange, yValueRange) / dtick
-        : xValueRange / dtick,
-      y: plot.squarePlots
-        ? Math.max(xValueRange, yValueRange) / dtick
-        : yValueRange / dtick,
-    };
+    const snapped = snapRangesToGrid({
+      x: { min: xValueMin, max: xValueMax },
+      y: { min: yValueMin, max: yValueMax },
+      unitsPerSquare: plot.unitsPerSquare,
+      gridStep: plot.gridStep,
+      axisSnapping: plot.axisSnapping,
+    });
+
+    const squares = squareCounts({
+      ...snapped,
+      unitsPerSquare: plot.unitsPerSquare,
+      squarePlots: plot.squarePlots,
+    });
 
     const plotSizeMm = {
-      width: tickSquares.x * mmPerTick + margin.l + margin.r,
-      height: tickSquares.y * mmPerTick + margin.t + margin.b,
+      width: squares.x * mmPerSquare + margin.l + margin.r,
+      height: squares.y * mmPerSquare + margin.t + margin.b,
     };
 
     return {
@@ -56,6 +61,10 @@ export class PlotSizeService {
       xValueMax,
       yValueMin,
       yValueMax,
+      axisRange: {
+        x: drawnAxisRange(snapped.x.min, squares.x, unitsPerSquare.x),
+        y: drawnAxisRange(snapped.y.min, squares.y, unitsPerSquare.y),
+      },
       plotSizePx: {
         width: plotSizeMm.width * mmToInches * ppiBase,
         height: plotSizeMm.height * mmToInches * ppiBase,
@@ -65,6 +74,10 @@ export class PlotSizeService {
         height: plotSizeMm.height * mmToPoints,
       },
     };
+  }
+
+  private boundsOf(values: number[]): { min: number; max: number } {
+    return { min: math.min(values), max: math.max(values) };
   }
 
   calculateEffectiveMargin(
@@ -129,20 +142,21 @@ export class PlotSizeService {
   }
 
   calculatePlotSizeMm(plot: Plot): PlotSizeMm {
-    const { dtick, mmPerTick } = PLOT_CONSTANTS;
     const margin = this.calculateEffectiveMargin(plot);
-    const xRange = plot.range.x.max - plot.range.x.min;
-    const yRange = plot.range.y.max - plot.range.y.min;
+    const squares = squareCounts({
+      ...snapRangesToGrid({
+        x: plot.range.x,
+        y: plot.range.y,
+        unitsPerSquare: plot.unitsPerSquare,
+        gridStep: plot.gridStep,
+        axisSnapping: plot.axisSnapping,
+      }),
+      unitsPerSquare: plot.unitsPerSquare,
+      squarePlots: plot.squarePlots,
+    });
 
-    const tickSquaresX = plot.squarePlots
-      ? Math.max(xRange, yRange) / dtick
-      : xRange / dtick;
-    const tickSquaresY = plot.squarePlots
-      ? Math.max(xRange, yRange) / dtick
-      : yRange / dtick;
-
-    const width = tickSquaresX * mmPerTick + margin.l + margin.r;
-    const height = tickSquaresY * mmPerTick + margin.t + margin.b;
+    const width = squares.x * PLOT_CONSTANTS.mmPerSquare + margin.l + margin.r;
+    const height = squares.y * PLOT_CONSTANTS.mmPerSquare + margin.t + margin.b;
 
     const exceedsWidth = width > A4_USABLE_WIDTH_MM;
     const exceedsHeight = height > A4_USABLE_HEIGHT_MM;

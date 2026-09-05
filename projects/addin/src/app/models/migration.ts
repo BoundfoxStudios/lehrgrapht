@@ -3,6 +3,7 @@ import { Plot } from './plot';
 import { lehrgraphtVersion } from '../../version';
 import { migrateTo141 } from './migrations/migrate-to-1.4.1';
 import { migrateTo160 } from './migrations/migrate-to-1.6.0';
+import { migrateToLatest } from './migrations/migrate-to-latest';
 
 export type MigrationFn = (
   plot: Record<string, unknown>,
@@ -21,7 +22,7 @@ const DEV_VERSION = '0.0.0';
  * All registered migrations, ordered by version.
  * Migrations with version "latest" are applied last.
  */
-const migrations: Migration[] = [migrateTo141, migrateTo160];
+const migrations: Migration[] = [migrateTo141, migrateTo160, migrateToLatest];
 
 export interface MigrationResult {
   plot: Plot;

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Dash, PlotData } from 'plotly.js-dist-min';
+import { Dash } from 'plotly.js-dist-min';
 import {
   LabelPosition,
   Plot,
@@ -13,6 +13,8 @@ import {
   reflectPolygonPoints,
 } from './reflection';
 import { FunctionSeries, hexToRgba, PLOT_CONSTANTS } from './plot.types';
+import { RenderScale, renderScale } from './plot-geometry';
+import { PlotTrace } from './render-space';
 
 const DASH_TARGET_PERIOD_UNITS = 0.5;
 const DASH_RATIO = 0.6;
@@ -32,7 +34,7 @@ export class PlotDataService {
     plotSettings: PlotSettings,
     series: FunctionSeries[],
     options: PolygonRenderOptions = {},
-  ): Partial<PlotData>[] {
+  ): PlotTrace[] {
     return [
       ...this.buildFunctionTraces(plot, plotSettings, series),
       ...this.buildMarkerTraces(plot, { showSolution: options.showSolution }),
@@ -45,7 +47,7 @@ export class PlotDataService {
     plot: Plot,
     plotSettings: PlotSettings,
     series: FunctionSeries[],
-  ): Partial<PlotData>[] {
+  ): PlotTrace[] {
     return series.map((functionSeries, index) => ({
       type: 'scatter',
       x: functionSeries.x,
@@ -62,8 +64,8 @@ export class PlotDataService {
   buildMarkerTraces(
     plot: Plot,
     options: { showSolution?: boolean } = {},
-  ): Partial<PlotData>[] {
-    const traces: Partial<PlotData>[] = [];
+  ): PlotTrace[] {
+    const traces: PlotTrace[] = [];
 
     if (plot.markers.length) {
       traces.push({
@@ -118,18 +120,19 @@ export class PlotDataService {
     plot: Plot,
     plotSettings: PlotSettings,
     options: PolygonRenderOptions = {},
-  ): Partial<PlotData>[] {
+  ): PlotTrace[] {
     if (!plot.polygons.length) {
       return [];
     }
 
     const highlightedIndex = options.highlightedPolygonIndex ?? null;
+    const scale = renderScale(plot);
 
     const isVisible = (polygon: Polygon): boolean =>
       !polygon.isSolution || options.showSolution === true;
 
-    const haloTraces: Partial<PlotData>[] = [];
-    const polygonTraces: Partial<PlotData>[] = [];
+    const haloTraces: PlotTrace[] = [];
+    const polygonTraces: PlotTrace[] = [];
     plot.polygons.forEach((polygon, i) => {
       if (!isVisible(polygon)) {
         return;
@@ -191,13 +194,13 @@ export class PlotDataService {
           width: lineWidth,
           dash:
             polygon.lineStyle === 'dashed'
-              ? this.calculatePolygonDashPattern(polygon.points, closed)
+              ? this.calculatePolygonDashPattern(polygon.points, closed, scale)
               : 'solid',
         },
       });
     });
 
-    const mirroredTraces: Partial<PlotData>[] = [];
+    const mirroredTraces: PlotTrace[] = [];
     if (
       plot.reflection.kind !== 'none' &&
       (!plot.reflection.isSolution || options.showSolution === true)
@@ -245,7 +248,11 @@ export class PlotDataService {
             width: plotSettings.plotLineWidth,
             dash:
               polygon.lineStyle === 'dashed'
-                ? this.calculatePolygonDashPattern(mirroredPoints, closed)
+                ? this.calculatePolygonDashPattern(
+                    mirroredPoints,
+                    closed,
+                    scale,
+                  )
                 : 'solid',
           },
         });
@@ -256,14 +263,11 @@ export class PlotDataService {
       ...haloTraces,
       ...polygonTraces,
       ...mirroredTraces,
-      ...this.buildPolygonPointMarkerTraces(plot, options),
+      ...this.buildPolygonPointMarkerTraces(plot, scale, options),
     ];
   }
 
-  buildReflectionTraces(
-    plot: Plot,
-    plotSettings: PlotSettings,
-  ): Partial<PlotData>[] {
+  buildReflectionTraces(plot: Plot, plotSettings: PlotSettings): PlotTrace[] {
     if (plot.reflection.kind === 'none') {
       return [];
     }
@@ -328,17 +332,21 @@ export class PlotDataService {
   private calculatePolygonDashPattern(
     points: readonly PolygonPoint[],
     closed: boolean,
+    scale: RenderScale,
   ): Dash {
+    const edgeLength = (from: PolygonPoint, to: PolygonPoint): number => {
+      const dx = (to.x - from.x) * scale.x;
+      const dy = (to.y - from.y) * scale.y;
+
+      return Math.sqrt(dx * dx + dy * dy);
+    };
+
     let perimeter = 0;
-    for (let i = 0; i < points.length - 1; i++) {
-      const dx = points[i + 1].x - points[i].x;
-      const dy = points[i + 1].y - points[i].y;
-      perimeter += Math.sqrt(dx * dx + dy * dy);
+    for (let index = 0; index < points.length - 1; index++) {
+      perimeter += edgeLength(points[index], points[index + 1]);
     }
     if (closed && points.length > 0) {
-      const dx = points[0].x - points[points.length - 1].x;
-      const dy = points[0].y - points[points.length - 1].y;
-      perimeter += Math.sqrt(dx * dx + dy * dy);
+      perimeter += edgeLength(points[points.length - 1], points[0]);
     }
 
     if (perimeter === 0) {
@@ -351,18 +359,21 @@ export class PlotDataService {
     );
     const periodUnits = perimeter / numPeriods;
 
-    const { dtick, mmPerTick, mmToInches, ppiBase } = PLOT_CONSTANTS;
-    const pxPerUnit = (mmPerTick / dtick) * mmToInches * ppiBase;
-    const dashPx = periodUnits * DASH_RATIO * pxPerUnit;
-    const gapPx = periodUnits * (1 - DASH_RATIO) * pxPerUnit;
+    const { renderUnitsPerSquare, mmPerSquare, mmToInches, ppiBase } =
+      PLOT_CONSTANTS;
+    const pxPerRenderUnit =
+      (mmPerSquare / renderUnitsPerSquare) * mmToInches * ppiBase;
+    const dashPx = periodUnits * DASH_RATIO * pxPerRenderUnit;
+    const gapPx = periodUnits * (1 - DASH_RATIO) * pxPerRenderUnit;
 
     return `${dashPx}px,${gapPx}px` as Dash;
   }
 
   private buildPolygonPointMarkerTraces(
     plot: Plot,
+    scale: RenderScale,
     options: PolygonRenderOptions = {},
-  ): Partial<PlotData>[] {
+  ): PlotTrace[] {
     const polygonPointMarkers: {
       x: number;
       y: number;
@@ -382,7 +393,7 @@ export class PlotDataService {
         const position =
           point.labelPosition !== 'auto'
             ? point.labelPosition
-            : this.calculateLabelPosition(point, polygon.points);
+            : this.calculateLabelPosition(point, polygon.points, scale);
         polygonPointMarkers.push({
           x: point.x,
           y: point.y,
@@ -410,7 +421,7 @@ export class PlotDataService {
       }
     }
 
-    const traces: Partial<PlotData>[] = [];
+    const traces: PlotTrace[] = [];
 
     for (const [position, markers] of groupedByPosition) {
       traces.push({
@@ -437,14 +448,15 @@ export class PlotDataService {
   calculateLabelPosition(
     point: PolygonPoint,
     polygonPoints: PolygonPoint[],
+    scale: RenderScale,
   ): Exclude<LabelPosition, 'auto'> {
     const centroid = {
       x: polygonPoints.reduce((sum, p) => sum + p.x, 0) / polygonPoints.length,
       y: polygonPoints.reduce((sum, p) => sum + p.y, 0) / polygonPoints.length,
     };
 
-    const dx = point.x - centroid.x;
-    const dy = point.y - centroid.y;
+    const dx = (point.x - centroid.x) * scale.x;
+    const dy = (point.y - centroid.y) * scale.y;
     const angle = Math.atan2(dy, dx) * (180 / Math.PI);
 
     if (angle >= -22.5 && angle < 22.5) {

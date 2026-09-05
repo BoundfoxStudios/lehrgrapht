@@ -1,5 +1,11 @@
-import { PolygonPoint, Reflection, ReflectionAxis } from '../../models/plot';
+import {
+  PolygonPoint,
+  Reflection,
+  ReflectionAxis,
+  UnitsPerSquare,
+} from '../../models/plot';
 import { PlotRange } from '../../models/plot-range';
+import { effectiveUnitsPerSquare } from './plot-geometry';
 
 export interface Vec2 {
   x: number;
@@ -97,3 +103,16 @@ export function computeAxisLineEndpoints(
   candidates.sort((a, b) => a.t - b.t);
   return [candidates[0].point, candidates[candidates.length - 1].point];
 }
+
+export const isAxisReflectionAllowed = (
+  unitsPerSquare: Partial<UnitsPerSquare> | undefined,
+): boolean => {
+  const { x, y } = effectiveUnitsPerSquare(unitsPerSquare);
+  return x === y;
+};
+
+export const hasAxisReflectionScaleConflict = (
+  reflection: Reflection,
+  unitsPerSquare: Partial<UnitsPerSquare> | undefined,
+): boolean =>
+  reflection.kind === 'axis' && !isAxisReflectionAllowed(unitsPerSquare);

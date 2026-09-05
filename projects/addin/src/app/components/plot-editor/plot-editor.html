@@ -9,6 +9,7 @@
 <form
   class="flex flex-1 flex-col"
   [formRoot]="store.editorForm"
+  novalidate
 >
   @if (store.isLoading()) {
     <div

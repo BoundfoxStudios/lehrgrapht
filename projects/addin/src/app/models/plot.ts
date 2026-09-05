@@ -79,10 +79,24 @@ export type Reflection =
       extendBeyondPoints: boolean;
     };
 
+export interface UnitsPerSquare {
+  x: number;
+  y: number;
+}
+
+export type AxisSnapping = 'extend' | 'shrink';
+
+export interface AxisSnappingPerAxis {
+  x: AxisSnapping;
+  y: AxisSnapping;
+}
+
 export interface Plot {
   version: string;
   name: string;
   range: PlotRange;
+  unitsPerSquare: UnitsPerSquare;
+  axisSnapping: AxisSnappingPerAxis;
   fnx: MathFunction[];
   markers: {
     x: number;

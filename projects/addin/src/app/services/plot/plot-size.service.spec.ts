@@ -1,5 +1,5 @@
 import { Plot } from '../../models/plot';
-import { CleanedValues, PLOT_CONSTANTS, ValueRanges } from './plot.types';
+import { CleanedValues, PLOT_CONSTANTS } from './plot.types';
 import { PlotSizeService } from './plot-size.service';
 import { math } from '../../utils/math';
 
@@ -7,6 +7,8 @@ const basePlot: Plot = {
   version: '1.0',
   name: 'test',
   range: { x: { min: -5, max: 5 }, y: { min: -5, max: 5 } },
+  unitsPerSquare: { x: 0.5, y: 0.5 },
+  axisSnapping: { x: 'extend', y: 'extend' },
   fnx: [],
   markers: [],
   polygons: [],
@@ -206,20 +208,8 @@ describe('PlotSizeService', () => {
         cleanYValues: [yNumbers],
       };
 
-      const valueRanges: ValueRanges = {
-        xNumbers,
-        yNumbers,
-        yMin: -5,
-        yMax: 5,
-      };
-
       const margin = { t: 7.5, b: 7.5, l: 7.5, r: 7.5 };
-      const result = service.calculatePlotSize(
-        basePlot,
-        cleanedValues,
-        valueRanges,
-        margin,
-      );
+      const result = service.calculatePlotSize(basePlot, cleanedValues, margin);
 
       expect(result.xValueMin).toBeCloseTo(-5);
       expect(result.xValueMax).toBeCloseTo(5);
@@ -244,21 +234,137 @@ describe('PlotSizeService', () => {
         cleanXValues: xNumbers,
         cleanYValues: [yNumbers],
       };
-      const valueRanges: ValueRanges = {
-        xNumbers,
-        yNumbers,
-        yMin: -5,
-        yMax: 5,
-      };
       const margin = { t: 7.5, b: 7.5, l: 7.5, r: 7.5 };
-      const result = service.calculatePlotSize(
-        plot,
-        cleanedValues,
-        valueRanges,
-        margin,
-      );
+      const result = service.calculatePlotSize(plot, cleanedValues, margin);
 
       expect(result.plotSizePx.width).toBeCloseTo(result.plotSizePx.height, 5);
+    });
+
+    it('should keep the axis range at the value bounds for non-square plots', () => {
+      const xNumbers = math.range(-5, 5, 0.1, true).toArray() as number[];
+      const yNumbers = math.range(-1, 1, 0.1, true).toArray() as number[];
+
+      const result = service.calculatePlotSize(
+        {
+          ...basePlot,
+          range: { x: { min: -5, max: 5 }, y: { min: -1, max: 1 } },
+        },
+        { cleanXValues: xNumbers, cleanYValues: [yNumbers] },
+        { t: 7.5, b: 7.5, l: 7.5, r: 7.5 },
+      );
+
+      expect(result.axisRange.x).toEqual({ min: -5, max: 5 });
+      expect(result.axisRange.y).toEqual({ min: -1, max: 1 });
+    });
+
+    it('should extend the shorter axis at its maximum for square plots', () => {
+      const xNumbers = math.range(-3, 3, 0.1, true).toArray() as number[];
+      const yNumbers = math.range(-1, 1, 0.1, true).toArray() as number[];
+
+      const result = service.calculatePlotSize(
+        {
+          ...basePlot,
+          squarePlots: true,
+          range: { x: { min: -3, max: 3 }, y: { min: -1, max: 1 } },
+        },
+        { cleanXValues: xNumbers, cleanYValues: [yNumbers] },
+        { t: 7.5, b: 7.5, l: 7.5, r: 7.5 },
+      );
+
+      expect(result.axisRange.x).toEqual({ min: -3, max: 3 });
+      expect(result.axisRange.y).toEqual({ min: -1, max: 5 });
+      expect(result.yValueMin).toBe(-1);
+      expect(result.yValueMax).toBe(1);
+    });
+
+    it('should raise the maximum of an axis that extends to a whole square', () => {
+      const result = service.calculatePlotSize(
+        {
+          ...basePlot,
+          range: { x: { min: -3, max: 3 }, y: { min: 0, max: 150 } },
+          unitsPerSquare: { x: 0.5, y: 20 },
+          gridStep: '0.5',
+        },
+        { cleanXValues: [], cleanYValues: [[]] },
+        { t: 7.5, b: 7.5, l: 7.5, r: 7.5 },
+      );
+
+      expect(result.axisRange.y).toEqual({ min: 0, max: 160 });
+      expect(result.yValueMax).toBe(150);
+    });
+
+    it('should lower the maximum of an axis that shrinks to a whole square', () => {
+      const result = service.calculatePlotSize(
+        {
+          ...basePlot,
+          range: { x: { min: -3, max: 3 }, y: { min: 0, max: 150 } },
+          unitsPerSquare: { x: 0.5, y: 20 },
+          axisSnapping: { x: 'extend', y: 'shrink' },
+          gridStep: '0.5',
+        },
+        { cleanXValues: [], cleanYValues: [[]] },
+        { t: 7.5, b: 7.5, l: 7.5, r: 7.5 },
+      );
+
+      expect(result.axisRange.y).toEqual({ min: 0, max: 140 });
+      expect(result.yValueMax).toBe(150);
+    });
+
+    it('should keep the axis range in data units when the axis scales differ', () => {
+      const result = service.calculatePlotSize(
+        {
+          ...basePlot,
+          range: { x: { min: 9, max: 20 }, y: { min: 0, max: 200 } },
+          unitsPerSquare: { x: 1, y: 20 },
+          gridStep: '0.5',
+        },
+        { cleanXValues: [], cleanYValues: [[]] },
+        { t: 7.5, b: 7.5, l: 7.5, r: 7.5 },
+      );
+
+      expect(result.axisRange.x).toEqual({ min: 9, max: 20 });
+      expect(result.axisRange.y).toEqual({ min: 0, max: 200 });
+    });
+
+    it('should draw both bounds of a scaled axis on a grid line', () => {
+      const plot: Plot = {
+        ...basePlot,
+        range: { x: { min: -8, max: 10 }, y: { min: -5, max: 5 } },
+        unitsPerSquare: { x: 1.5, y: 0.5 },
+        gridStep: '0.5',
+      };
+      const cleanedValues: CleanedValues = {
+        cleanXValues: [],
+        cleanYValues: [[]],
+      };
+      const margin = { t: 7.5, b: 7.5, l: 7.5, r: 7.5 };
+
+      expect(
+        service.calculatePlotSize(plot, cleanedValues, margin).axisRange.x,
+      ).toEqual({ min: -9, max: 10.5 });
+      expect(
+        service.calculatePlotSize(
+          { ...plot, axisSnapping: { x: 'shrink', y: 'extend' } },
+          cleanedValues,
+          margin,
+        ).axisRange.x,
+      ).toEqual({ min: -7.5, max: 9 });
+    });
+
+    it('should snap to every second square when a grid line is drawn only there', () => {
+      const result = service.calculatePlotSize(
+        {
+          ...basePlot,
+          range: { x: { min: 9, max: 20 }, y: { min: 0, max: 200 } },
+          unitsPerSquare: { x: 1, y: 20 },
+          gridStep: '1',
+        },
+        { cleanXValues: [], cleanYValues: [[]] },
+        { t: 7.5, b: 7.5, l: 7.5, r: 7.5 },
+      );
+
+      expect(result.axisRange.x).toEqual({ min: 8, max: 20 });
+      expect(result.axisRange.y).toEqual({ min: 0, max: 200 });
     });
   });
 
@@ -295,6 +401,64 @@ describe('PlotSizeService', () => {
       const result = service.calculatePlotSizeMm(plot);
       expect(result.exceedsWidth).toBe(true);
       expect(result.exceedsHeight).toBe(false);
+    });
+
+    it('should size each axis from its own units per square', () => {
+      const plot: Plot = {
+        ...basePlot,
+        range: { x: { min: 9, max: 20 }, y: { min: 0, max: 200 } },
+        unitsPerSquare: { x: 1, y: 20 },
+        gridStep: '0.5',
+      };
+      const result = service.calculatePlotSizeMm(plot);
+
+      expect(result.width).toBeCloseTo(11 * 5 + 15, 5);
+      expect(result.height).toBeCloseTo(10 * 5 + 15, 5);
+    });
+
+    it('should size an axis whose bounds snap outwards from the entered range', () => {
+      const plot: Plot = {
+        ...basePlot,
+        range: { x: { min: -8, max: 10 }, y: { min: -5, max: 5 } },
+        unitsPerSquare: { x: 1.5, y: 0.5 },
+        gridStep: '0.5',
+      };
+      const result = service.calculatePlotSizeMm(plot);
+
+      expect(result.width).toBeCloseTo(13 * 5 + 15, 5);
+    });
+
+    it('should produce equal dimensions for square plots whose axis scales differ', () => {
+      const plot: Plot = {
+        ...basePlot,
+        squarePlots: true,
+        range: { x: { min: 9, max: 20 }, y: { min: 0, max: 200 } },
+        unitsPerSquare: { x: 1, y: 20 },
+        gridStep: '0.5',
+      };
+      const result = service.calculatePlotSizeMm(plot);
+
+      expect(result.width).toBeCloseTo(result.height, 5);
+      expect(result.width).toBeCloseTo(11 * 5 + 15, 5);
+    });
+
+    it('should size a partial square according to the snapping mode', () => {
+      const extended = service.calculatePlotSizeMm({
+        ...basePlot,
+        range: { x: { min: -3, max: 3 }, y: { min: 0, max: 150 } },
+        unitsPerSquare: { x: 0.5, y: 20 },
+        gridStep: '0.5',
+      });
+      const shrunk = service.calculatePlotSizeMm({
+        ...basePlot,
+        range: { x: { min: -3, max: 3 }, y: { min: 0, max: 150 } },
+        unitsPerSquare: { x: 0.5, y: 20 },
+        axisSnapping: { x: 'extend', y: 'shrink' },
+        gridStep: '0.5',
+      });
+
+      expect(extended.height).toBeCloseTo(8 * 5 + 15, 5);
+      expect(shrunk.height).toBeCloseTo(7 * 5 + 15, 5);
     });
 
     it('should produce equal dimensions for square plots with equal ranges', () => {

@@ -2,6 +2,7 @@ import type { EvalFunction } from 'mathjs';
 import { Injectable } from '@angular/core';
 import { MathFunction, Plot } from '../../models/plot';
 import { math } from '../../utils/math';
+import { effectiveUnitsPerSquare } from './plot-geometry';
 import {
   CleanedValues,
   FunctionSeries,
@@ -9,6 +10,8 @@ import {
   PlotGenerateErrorCode,
   ValueRanges,
 } from './plot.types';
+
+const samplesPerSquare = 5;
 
 @Injectable({ providedIn: 'root' })
 export class PlotMathService {
@@ -44,11 +47,22 @@ export class PlotMathService {
   }
 
   createRanges(plot: Plot): ValueRanges {
+    const unitsPerSquare = effectiveUnitsPerSquare(plot.unitsPerSquare);
     const xNumbers = math
-      .range(plot.range.x.min, plot.range.x.max, 0.1, true)
+      .range(
+        plot.range.x.min,
+        plot.range.x.max,
+        unitsPerSquare.x / samplesPerSquare,
+        true,
+      )
       .toArray() as number[];
     const yNumbers = math
-      .range(plot.range.y.min, plot.range.y.max, 0.1, true)
+      .range(
+        plot.range.y.min,
+        plot.range.y.max,
+        unitsPerSquare.y / samplesPerSquare,
+        true,
+      )
       .toArray() as number[];
 
     return {

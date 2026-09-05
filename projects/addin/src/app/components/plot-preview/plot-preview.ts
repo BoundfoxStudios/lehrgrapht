@@ -12,6 +12,13 @@ import {
   PlotGenerateErrorCode,
   plotHasErrorCode,
 } from '../../services/plot/plot.types';
+import {
+  drawnAxisRange,
+  effectiveUnitsPerSquare,
+  snapRangesToGrid,
+  snapToSquare,
+  squareCounts,
+} from '../../services/plot/plot-geometry';
 import { switchMap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { Plot, PlotSettings } from '../../models/plot';
@@ -77,24 +84,32 @@ export class PlotPreview {
     const imageHeight = rect.height;
 
     const plot = this.plot();
-    const range = plot.range;
+    const unitsPerSquare = effectiveUnitsPerSquare(plot.unitsPerSquare);
 
-    const xRange = range.x.max - range.x.min;
-    const yRange = range.y.max - range.y.min;
-
-    const mmPerTick = 5;
-    const dtick = 0.5;
+    const mmPerSquare = 5;
     const mmMargin = 7.5;
 
-    const tickSquaresX = plot.squarePlots
-      ? Math.max(xRange, yRange) / dtick
-      : xRange / dtick;
-    const tickSquaresY = plot.squarePlots
-      ? Math.max(xRange, yRange) / dtick
-      : yRange / dtick;
+    const snapped = snapRangesToGrid({
+      x: plot.range.x,
+      y: plot.range.y,
+      unitsPerSquare: plot.unitsPerSquare,
+      gridStep: plot.gridStep,
+      axisSnapping: plot.axisSnapping,
+    });
 
-    const plotWidthMm = tickSquaresX * mmPerTick + mmMargin * 2;
-    const plotHeightMm = tickSquaresY * mmPerTick + mmMargin * 2;
+    const squares = squareCounts({
+      ...snapped,
+      unitsPerSquare: plot.unitsPerSquare,
+      squarePlots: plot.squarePlots,
+    });
+
+    const drawnX = drawnAxisRange(snapped.x.min, squares.x, unitsPerSquare.x);
+    const drawnY = drawnAxisRange(snapped.y.min, squares.y, unitsPerSquare.y);
+    const xRange = drawnX.max - drawnX.min;
+    const yRange = drawnY.max - drawnY.min;
+
+    const plotWidthMm = squares.x * mmPerSquare + mmMargin * 2;
+    const plotHeightMm = squares.y * mmPerSquare + mmMargin * 2;
 
     const marginPercentX = mmMargin / plotWidthMm;
     const marginPercentY = mmMargin / plotHeightMm;
@@ -107,17 +122,17 @@ export class PlotPreview {
     const relativeX = (clickX - marginX) / effectiveWidth;
     const relativeY = 1 - (clickY - marginY) / effectiveHeight;
 
-    let x = range.x.min + relativeX * xRange;
-    let y = range.y.min + relativeY * yRange;
+    let x = drawnX.min + relativeX * xRange;
+    let y = drawnY.min + relativeY * yRange;
 
-    x = Math.round(x * 2) / 2;
-    y = Math.round(y * 2) / 2;
+    x = snapToSquare(x, unitsPerSquare.x);
+    y = snapToSquare(y, unitsPerSquare.y);
 
-    x = Math.max(range.x.min, Math.min(range.x.max, x));
-    y = Math.max(range.y.min, Math.min(range.y.max, y));
+    x = Math.max(drawnX.min, Math.min(drawnX.max, x));
+    y = Math.max(drawnY.min, Math.min(drawnY.max, y));
 
-    const snappedRelativeX = (x - range.x.min) / xRange;
-    const snappedRelativeY = (y - range.y.min) / yRange;
+    const snappedRelativeX = (x - drawnX.min) / xRange;
+    const snappedRelativeY = (y - drawnY.min) / yRange;
     const percentX =
       (marginPercentX + snappedRelativeX * (1 - 2 * marginPercentX)) * 100;
     const percentY =
