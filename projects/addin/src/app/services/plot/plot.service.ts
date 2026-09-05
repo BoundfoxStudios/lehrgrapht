@@ -60,6 +60,7 @@ export class PlotService {
         heightInPx: number;
         widthInPoints: number;
         heightInPoints: number;
+        marginMm: PlotMarginMm;
       }
     | PlotGenerateErrorCode
   > {
@@ -250,6 +251,7 @@ export class PlotService {
         heightInPx: number;
         widthInPoints: number;
         heightInPoints: number;
+        marginMm: PlotMarginMm;
       }
     | PlotGenerateErrorCode
   > {
@@ -357,6 +359,7 @@ export class PlotService {
         heightInPx: plotSizePx.height,
         widthInPoints: plotSizePoints.width,
         heightInPoints: plotSizePoints.height,
+        marginMm: margin,
       };
     } catch {
       Plotly.purge(tempDiv);

@@ -11,15 +11,19 @@ import { PlotService } from '../../services/plot/plot.service';
 import {
   PlotGenerateErrorCode,
   plotHasErrorCode,
+  PlotMarginMm,
 } from '../../services/plot/plot.types';
 import {
   drawnAxisRange,
   effectiveUnitsPerSquare,
   snapRangesToGrid,
-  snapToSquare,
   squareCounts,
 } from '../../services/plot/plot-geometry';
-import { switchMap } from 'rxjs';
+import {
+  PreviewCoordinates,
+  previewPointToPlotCoordinates,
+} from '../../services/plot/preview-coordinates';
+import { switchMap, tap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { Plot, PlotSettings } from '../../models/plot';
 import { ContentContainer } from '../content-container/content-container';
@@ -45,12 +49,9 @@ export class PlotPreview {
   readonly showSolution = input(true);
   readonly plotClick = output<PlotClickEvent>();
 
-  protected readonly hoverPosition = signal<{
-    x: number;
-    y: number;
-    percentX: number;
-    percentY: number;
-  } | null>(null);
+  protected readonly hoverPosition = signal<PreviewCoordinates | null>(null);
+
+  private readonly renderedMargin = signal<PlotMarginMm | null>(null);
 
   private readonly model = computed(() => ({
     plot: this.plot(),
@@ -67,27 +68,26 @@ export class PlotPreview {
         showSolution,
       }),
     ),
+    tap(preview => {
+      this.renderedMargin.set(
+        plotHasErrorCode(preview) ? null : preview.marginMm,
+      );
+    }),
   );
   protected readonly plotHasErrorCode = plotHasErrorCode;
   protected readonly PlotGenerateErrorCode = PlotGenerateErrorCode;
 
   private calculatePlotCoordinates(
     event: MouseEvent,
-  ): { x: number; y: number; percentX: number; percentY: number } | null {
-    const target = event.target as HTMLImageElement;
-    const rect = target.getBoundingClientRect();
+  ): PreviewCoordinates | null {
+    const margin = this.renderedMargin();
+    if (!margin) {
+      return null;
+    }
 
-    const clickX = event.clientX - rect.left;
-    const clickY = event.clientY - rect.top;
-
-    const imageWidth = rect.width;
-    const imageHeight = rect.height;
-
+    const rect = (event.target as HTMLImageElement).getBoundingClientRect();
     const plot = this.plot();
     const unitsPerSquare = effectiveUnitsPerSquare(plot.unitsPerSquare);
-
-    const mmPerSquare = 5;
-    const mmMargin = 7.5;
 
     const snapped = snapRangesToGrid({
       x: plot.range.x,
@@ -103,43 +103,23 @@ export class PlotPreview {
       squarePlots: plot.squarePlots,
     });
 
-    const drawnX = drawnAxisRange(snapped.x.min, squares.x, unitsPerSquare.x);
-    const drawnY = drawnAxisRange(snapped.y.min, squares.y, unitsPerSquare.y);
-    const xRange = drawnX.max - drawnX.min;
-    const yRange = drawnY.max - drawnY.min;
-
-    const plotWidthMm = squares.x * mmPerSquare + mmMargin * 2;
-    const plotHeightMm = squares.y * mmPerSquare + mmMargin * 2;
-
-    const marginPercentX = mmMargin / plotWidthMm;
-    const marginPercentY = mmMargin / plotHeightMm;
-
-    const effectiveWidth = imageWidth * (1 - 2 * marginPercentX);
-    const effectiveHeight = imageHeight * (1 - 2 * marginPercentY);
-    const marginX = imageWidth * marginPercentX;
-    const marginY = imageHeight * marginPercentY;
-
-    const relativeX = (clickX - marginX) / effectiveWidth;
-    const relativeY = 1 - (clickY - marginY) / effectiveHeight;
-
-    let x = drawnX.min + relativeX * xRange;
-    let y = drawnY.min + relativeY * yRange;
-
-    x = snapToSquare(x, unitsPerSquare.x);
-    y = snapToSquare(y, unitsPerSquare.y);
-
-    x = Math.max(drawnX.min, Math.min(drawnX.max, x));
-    y = Math.max(drawnY.min, Math.min(drawnY.max, y));
-
-    const snappedRelativeX = (x - drawnX.min) / xRange;
-    const snappedRelativeY = (y - drawnY.min) / yRange;
-    const percentX =
-      (marginPercentX + snappedRelativeX * (1 - 2 * marginPercentX)) * 100;
-    const percentY =
-      (marginPercentY + (1 - snappedRelativeY) * (1 - 2 * marginPercentY)) *
-      100;
-
-    return { x, y, percentX, percentY };
+    return previewPointToPlotCoordinates(
+      {
+        squares,
+        drawnRange: {
+          x: drawnAxisRange(snapped.x.min, squares.x, unitsPerSquare.x),
+          y: drawnAxisRange(snapped.y.min, squares.y, unitsPerSquare.y),
+        },
+        unitsPerSquare,
+        margin,
+      },
+      {
+        x: event.clientX - rect.left,
+        y: event.clientY - rect.top,
+        imageWidth: rect.width,
+        imageHeight: rect.height,
+      },
+    );
   }
 
   protected onImageClick(event: MouseEvent): void {
