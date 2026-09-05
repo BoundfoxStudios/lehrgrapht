@@ -2,6 +2,7 @@
   "name": "@boundfoxstudios/lehrgrapht",
   "version": "1.8.0",
   "repository": "github:boundfoxstudios/lehrgrapht",
+  "license": "AGPL-3.0-only",
   "scripts": {
     "ng": "ng",
     "start": "dotenvx run --ignore=MISSING_ENV_FILE -f .env.local -f .env -- npm run start:addin",
