@@ -294,7 +294,7 @@ export class PlotService {
             ? toRenderAnnotations(axisAnnotations, scale)
             : undefined,
           shapes: plot.showAxis
-            ? buildAxisLines(origin, scale, plotSettings)
+            ? buildAxisLines(origin, axisRange, scale, plotSettings)
             : undefined,
           margin: {
             t: margin.t * mmToInches * ppiBase,
