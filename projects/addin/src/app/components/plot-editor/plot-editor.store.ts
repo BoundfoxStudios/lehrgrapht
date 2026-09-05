@@ -107,6 +107,11 @@ export function isPolygonClosingClick(
   );
 }
 
+export const withoutFunctionLegends = (plot: Plot): Plot => ({
+  ...plot,
+  fnx: plot.fnx.map(fn => ({ ...fn, legendPosition: 'none' as const })),
+});
+
 export type CardSectionKey = 'fnx' | 'markers' | 'polygons';
 
 export interface ExpandedItems {
@@ -261,13 +266,11 @@ export const PlotEditorStore = signalStore(
         if (mode === InteractiveMode.Off) {
           return model;
         }
-        return INTERACTIVE_STRATEGIES[mode].apply(
-          model,
-          store.interactivePoints(),
-          {
+        return withoutFunctionLegends(
+          INTERACTIVE_STRATEGIES[mode].apply(model, store.interactivePoints(), {
             scheme: store.plotSettings().markerNamingScheme,
             markerNamingService,
-          },
+          }),
         );
       }),
       hasAnySolution: computed(() => {
