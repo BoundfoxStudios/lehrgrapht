@@ -7,11 +7,12 @@ export type ButtonVariant =
   | 'ghost'
   | 'ghost-light'
   | 'ghost-danger'
-  | 'danger';
+  | 'danger'
+  | 'bare';
 export type ButtonSize = 'default' | 'small' | 'cta';
 
 const BASE_CLASSES =
-  'box-border inline-flex cursor-pointer items-center justify-center gap-1.5 border border-transparent text-center leading-5 transition-all duration-200 ease-in-out focus:ring-4 focus:outline-none active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100';
+  'box-border inline-flex cursor-pointer items-center justify-center gap-1.5 border-transparent text-center leading-5 transition-all duration-200 ease-in-out focus:ring-4 focus:outline-none active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100';
 
 const VARIANT_CLASSES: Record<ButtonVariant, string> = {
   primary:
@@ -28,6 +29,7 @@ const VARIANT_CLASSES: Record<ButtonVariant, string> = {
     'rounded-base text-body-subtle hover:bg-rose-50 hover:text-rose-600 focus:ring-rose-200',
   danger:
     'rounded-base bg-rose-600 hover:bg-rose-700 focus:ring-rose-200 text-white shadow-sm disabled:hover:bg-rose-600',
+  bare: 'rounded-full text-body-subtle hover:text-body focus:ring-brand',
 };
 
 @Directive({
@@ -45,21 +47,26 @@ export class ButtonDirective {
     const size = this.size();
     const variant = this.variant();
 
-    const padding = this.iconOnly()
-      ? size === 'small'
-        ? 'p-2'
-        : 'p-2.5'
-      : size === 'small'
-        ? 'px-2.5 py-1.5'
-        : size === 'cta'
-          ? 'px-2.5 py-2.5'
-          : 'px-4 py-2.5';
+    const padding =
+      variant === 'bare'
+        ? 'p-0'
+        : this.iconOnly()
+          ? size === 'small'
+            ? 'p-2'
+            : 'p-2.5'
+          : size === 'small'
+            ? 'px-2.5 py-1.5'
+            : size === 'cta'
+              ? 'px-2.5 py-2.5'
+              : 'px-4 py-2.5';
+
+    const border = variant === 'bare' ? 'border-0' : 'border';
 
     const text = size === 'default' ? 'text-sm' : 'text-xs';
 
     const fontWeight =
       size === 'cta' && variant === 'primary' ? 'font-semibold' : 'font-medium';
 
-    return `${BASE_CLASSES} ${VARIANT_CLASSES[variant]} ${padding} ${text} ${fontWeight}`;
+    return `${BASE_CLASSES} ${VARIANT_CLASSES[variant]} ${border} ${padding} ${text} ${fontWeight}`;
   });
 }
