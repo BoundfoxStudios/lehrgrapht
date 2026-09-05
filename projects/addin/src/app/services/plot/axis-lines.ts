@@ -16,7 +16,8 @@ export const buildAxisLines = (
   if (origin.x !== 0) {
     shapes.push({
       type: 'line',
-      layer: 'below',
+      // A paper-referenced end forces the shape into the lower layer on any setting but 'above', where the grid and the plot frame would draw over the axis
+      layer: 'above',
       xref: 'x',
       x0: origin.x * scale.x,
       x1: origin.x * scale.x,
@@ -30,7 +31,7 @@ export const buildAxisLines = (
   if (origin.y !== 0) {
     shapes.push({
       type: 'line',
-      layer: 'below',
+      layer: 'above',
       xref: 'paper',
       x0: 0,
       x1: 1,

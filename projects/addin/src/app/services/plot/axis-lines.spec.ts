@@ -28,7 +28,7 @@ describe('buildAxisLines', () => {
     expect(vertical).toEqual(
       expect.objectContaining({
         type: 'line',
-        layer: 'below',
+        layer: 'above',
         xref: 'x',
         x0: 4.5,
         x1: 4.5,
@@ -49,7 +49,7 @@ describe('buildAxisLines', () => {
     expect(horizontal).toEqual(
       expect.objectContaining({
         type: 'line',
-        layer: 'below',
+        layer: 'above',
         xref: 'paper',
         x0: 0,
         x1: 1,
