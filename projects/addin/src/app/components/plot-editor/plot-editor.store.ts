@@ -9,7 +9,7 @@ import {
   withProps,
   withState,
 } from '@ngrx/signals';
-import { form } from '@angular/forms/signals';
+import { form, validate } from '@angular/forms/signals';
 import { ActivatedRoute, Router } from '@angular/router';
 import { map } from 'rxjs';
 import { lehrgraphtVersion } from '../../../version';
@@ -24,7 +24,11 @@ import {
   defaultPlotSettings,
   PlotSettingsService,
 } from '../../services/plot-settings.service';
-import { reflectPoint } from '../../services/plot/reflection';
+import {
+  hasAxisReflectionScaleConflict,
+  isAxisReflectionAllowed,
+  reflectPoint,
+} from '../../services/plot/reflection';
 import { PlotService } from '../../services/plot/plot.service';
 import { plotHasErrorCode, PlotSizeMm } from '../../services/plot/plot.types';
 import { effectiveUnitsPerSquare } from '../../services/plot/plot-geometry';
@@ -180,6 +184,25 @@ export const PlotEditorStore = signalStore(
           schema.unitsPerSquare.y,
           'Einheiten pro Kästchen (Y) muss größer als 0 sein',
         );
+        // eslint-disable-next-line @typescript-eslint/unbound-method
+        validate(schema.reflection, ({ value, valueOf }) => {
+          // A dev-build plot can lack unitsPerSquare entirely, and valueOf(schema.unitsPerSquare) would throw NG01901 on the unresolvable child path
+          if (
+            !hasAxisReflectionScaleConflict(
+              value(),
+              valueOf(schema).unitsPerSquare,
+            )
+          ) {
+            return null;
+          }
+
+          return {
+            field: schema.reflection,
+            message:
+              'Eine Spiegelachse ist nur möglich, wenn beide Achsen gleich viele Einheiten pro Kästchen haben',
+            kind: 'axisReflectionScale',
+          };
+        });
       },
       {
         submission: {
@@ -254,6 +277,9 @@ export const PlotEditorStore = signalStore(
         }
         return model.polygons.some(polygon => polygon.isSolution);
       }),
+      isAxisReflectionAllowed: computed(() =>
+        isAxisReflectionAllowed(store.model().unitsPerSquare),
+      ),
     };
   }),
   withMethods(store => {

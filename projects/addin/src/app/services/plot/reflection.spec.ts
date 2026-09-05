@@ -2,6 +2,8 @@ import { Reflection } from '../../models/plot';
 import { PlotRange } from '../../models/plot-range';
 import {
   computeAxisLineEndpoints,
+  hasAxisReflectionScaleConflict,
+  isAxisReflectionAllowed,
   reflectPoint,
   reflectPolygonPoints,
 } from './reflection';
@@ -212,5 +214,71 @@ describe('computeAxisLineEndpoints', () => {
         range,
       ),
     ).toBeNull();
+  });
+});
+
+describe('isAxisReflectionAllowed', () => {
+  it('returns true when both axes use the same units per square', () => {
+    expect(isAxisReflectionAllowed({ x: 0.5, y: 0.5 })).toBe(true);
+    expect(isAxisReflectionAllowed({ x: 20, y: 20 })).toBe(true);
+  });
+
+  it('returns false when the axes use different units per square', () => {
+    expect(isAxisReflectionAllowed({ x: 1, y: 20 })).toBe(false);
+  });
+
+  it('returns true when the units per square are missing entirely', () => {
+    expect(isAxisReflectionAllowed(undefined)).toBe(true);
+  });
+
+  it('returns true when one axis carries an unusable value that falls back to the default', () => {
+    expect(isAxisReflectionAllowed({ x: 0, y: 0.5 })).toBe(true);
+  });
+});
+
+describe('hasAxisReflectionScaleConflict', () => {
+  const axisReflection: Reflection = {
+    kind: 'axis',
+    axis: { p1: { x: 0, y: 0 }, p2: { x: 1, y: 0 } },
+    isSolution: false,
+    color: '#ff0000',
+    lineStyle: 'solid',
+    extendBeyondPoints: false,
+  };
+
+  it('reports a conflict for an axis reflection with different units per square', () => {
+    expect(
+      hasAxisReflectionScaleConflict(axisReflection, { x: 1, y: 20 }),
+    ).toBe(true);
+  });
+
+  it('reports no conflict for an axis reflection with equal units per square', () => {
+    expect(
+      hasAxisReflectionScaleConflict(axisReflection, { x: 20, y: 20 }),
+    ).toBe(false);
+  });
+
+  it('reports no conflict for an axis reflection without units per square', () => {
+    expect(hasAxisReflectionScaleConflict(axisReflection, undefined)).toBe(
+      false,
+    );
+  });
+
+  it('reports no conflict for a point reflection with different units per square', () => {
+    const pointReflection: Reflection = {
+      kind: 'point',
+      point: { x: 0, y: 0 },
+      isSolution: false,
+    };
+
+    expect(
+      hasAxisReflectionScaleConflict(pointReflection, { x: 1, y: 20 }),
+    ).toBe(false);
+  });
+
+  it('reports no conflict without a reflection', () => {
+    expect(
+      hasAxisReflectionScaleConflict({ kind: 'none' }, { x: 1, y: 20 }),
+    ).toBe(false);
   });
 });
