@@ -16,6 +16,11 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 
 - All mathjs usage goes through the shared instance in `projects/addin/src/app/utils/math.ts` (own `create(all)` instance that adds `ln` and `lg`). Never call functions or use classes from the `mathjs` package directly in app code: node classes are instance-specific, so `instanceof` against `mathjs` exports is false for nodes parsed by our instance. Type-only imports from `mathjs` are fine. ESLint enforces this via `no-restricted-imports`.
 
+## Plot Rendering
+
+- `@types/plotly.js` is a major version behind the runtime (`plotly.js-dist-min` 4.0.0), so the runtime accepts attribute values the types reject. `layout.shapes[].layer` is one: Plotly 4 also takes `'between'`, drawn between the grid and the traces where the zero line sits, while the typings only know `'below' | 'above'`.
+- A shape with a paper-referenced end (`xref: 'paper'` or `yref: 'paper'`) lands in the lower shape layer for every `layer` value except `'above'`, below the grid lines and the plot frame, which then draw over it. `'between'` does not help either, because the paper check runs first. Axis lines therefore use `'above'` (`services/plot/axis-lines.ts`).
+
 ## Accessibility Requirements
 
 - It MUST pass all AXE checks.
