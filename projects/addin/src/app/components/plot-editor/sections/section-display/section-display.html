@@ -175,6 +175,23 @@
     <lg-section-hint [icon]="faInfoCircle">{{ hint }}</lg-section-hint>
   }
 
+  @if (axisReflectionConflict()) {
+    <div
+      class="rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-800"
+      role="alert"
+    >
+      <div class="font-medium">
+        Unterschiedliche Maßstäbe sind mit einer Spiegelachse nicht möglich
+      </div>
+      <div class="mt-1 text-xs">
+        Der Plot enthält eine Spiegelachse. Sie ergibt nur dann ein richtiges
+        Bild, wenn X und Y gleich viele Einheiten pro Kästchen haben, deshalb
+        lässt sich der Plot so nicht speichern. Setze beide Werte gleich oder
+        entferne die Spiegelachse unter "Spiegelung".
+      </div>
+    </div>
+  }
+
   @if (plotSizeMm.exceedsA4) {
     <div
       class="rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-800"

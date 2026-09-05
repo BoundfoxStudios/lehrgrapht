@@ -23,6 +23,7 @@ import {
   snapRangesToGrid,
   squareCounts,
 } from '../../../../services/plot/plot-geometry';
+import { hasAxisReflectionScaleConflict } from '../../../../services/plot/reflection';
 
 @Component({
   selector: 'lg-section-display',
@@ -57,6 +58,15 @@ export class SectionDisplay {
     { value: 'extend', label: 'Erweitern' },
     { value: 'shrink', label: 'Kürzen' },
   ];
+
+  protected readonly axisReflectionConflict = computed(() => {
+    const model = this.store.model();
+
+    return hasAxisReflectionScaleConflict(
+      model.reflection,
+      model.unitsPerSquare,
+    );
+  });
 
   private readonly drawnRange = computed(() => {
     const model = this.store.model();
