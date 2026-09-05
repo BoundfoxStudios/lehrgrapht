@@ -1,4 +1,8 @@
-import { isPolygonClosingClick, karopapierPlot } from './plot-editor.store';
+import {
+  isPolygonClosingClick,
+  karopapierPlot,
+  withoutFunctionLegends,
+} from './plot-editor.store';
 import { InteractiveMode } from './interactive-mode';
 import { dedupePolygonPoints } from './interactive-strategy';
 
@@ -211,5 +215,49 @@ describe('dedupePolygonPoints', () => {
 
   it('returns an empty array for empty input', () => {
     expect(dedupePolygonPoints([])).toEqual([]);
+  });
+});
+
+describe('withoutFunctionLegends', () => {
+  it('sets legendPosition to none on every function', () => {
+    const result = withoutFunctionLegends({
+      ...karopapierPlot(),
+      fnx: [
+        {
+          fnx: 'x^2',
+          color: '#ff0000',
+          legendPosition: 'start',
+          lineStyle: 'solid',
+        },
+        {
+          fnx: '2*x',
+          color: '#00ff00',
+          legendPosition: 'end',
+          lineStyle: 'dashed',
+        },
+      ],
+    });
+
+    expect(result.fnx.map(fn => fn.legendPosition)).toEqual(['none', 'none']);
+  });
+
+  it('leaves everything but the legend position untouched', () => {
+    const result = withoutFunctionLegends({
+      ...karopapierPlot(),
+      name: 'Parabel',
+      fnx: [
+        {
+          fnx: 'x^2',
+          color: '#ff0000',
+          legendPosition: 'start',
+          lineStyle: 'solid',
+        },
+      ],
+    });
+
+    expect(result.name).toBe('Parabel');
+    expect(result.fnx[0].fnx).toBe('x^2');
+    expect(result.fnx[0].color).toBe('#ff0000');
+    expect(result.fnx[0].lineStyle).toBe('solid');
   });
 });
