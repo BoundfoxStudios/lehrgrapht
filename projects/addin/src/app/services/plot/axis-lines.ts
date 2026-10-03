@@ -15,12 +15,12 @@ export const buildAxisLines = (
   axisRange: AxisRanges,
   scale: RenderScale,
   plotSettings: PlotSettings,
-): Partial<Shape>[] => {
+): Shape[] => {
   const line = {
     color: plotSettings.zeroLineColor,
     width: plotSettings.zeroLineWidth,
   };
-  const shapes: Partial<Shape>[] = [];
+  const shapes: Shape[] = [];
 
   // Plotly omits the zero line when zero is outside the range and cuts it off where it falls on the plot edge
   if (isAtEdge(origin.x, axisRange.x)) {
