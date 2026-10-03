@@ -1,7 +1,7 @@
-import { migrateToLatest } from './migrate-to-latest';
+import { migrateTo190 } from './migrate-to-1.9.0';
 
-describe('migrate-to-latest', () => {
-  const migrate = migrateToLatest.migrate;
+describe('migrate-to-1.9.0', () => {
+  const migrate = migrateTo190.migrate;
 
   it('should backfill unitsPerSquare with half a unit per axis', () => {
     const result = migrate({});

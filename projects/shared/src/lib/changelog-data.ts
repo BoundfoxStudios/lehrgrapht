@@ -6,6 +6,19 @@ export interface ChangelogEntry {
 
 export const changelogData: ChangelogEntry[] = [
   {
+    version: '1.9.0',
+    changes: [
+      'Einstellbarer Maßstab: Einheiten pro Kästchen getrennt für X- und Y-Achse.',
+      'Achsengrenzen rasten wahlweise nach außen (Erweitern) oder innen (Kürzen) auf die Gitterlinien ein, damit an den Rändern keine angeschnittenen Kästchen entstehen.',
+      'Liegt der Nullpunkt außerhalb des Bereichs, wird die Achse am Rand des Schaubilds gezeichnet.',
+      'Die Tiefe von Schrägbildern wird in Kästchen angegeben.',
+      'Eine Spiegelachse erfordert gleiche Maßstäbe auf beiden Achsen; der Editor weist auf Abweichungen hin.',
+      'Beim Setzen von Punkten werden die Funktionslegenden ausgeblendet.',
+      'Fehler behoben, bei dem gesetzte Punkte mit Funktionslegende versetzt platziert wurden.',
+    ],
+    date: '2026-10-03',
+  },
+  {
     version: '1.8.0',
     changes: [
       'Unterstützung der Logarithmen ln und lg in Funktionstermen.',
