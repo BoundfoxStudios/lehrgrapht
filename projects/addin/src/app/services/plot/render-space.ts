@@ -1,9 +1,14 @@
-import type { Annotations, PlotData } from 'plotly.js-dist-min';
+import type { Annotation, ScatterData } from 'plotly.js-dist-min';
 import type { RenderScale } from './plot-geometry';
 
-export interface PlotTrace extends Partial<PlotData> {
+export interface PlotTrace extends ScatterData {
   x: number[];
   y: (number | null)[];
+}
+
+export interface PlotAnnotation extends Omit<Annotation, 'x' | 'y'> {
+  x?: number | string;
+  y?: number | string;
 }
 
 export const toRenderTraces = (
@@ -17,9 +22,9 @@ export const toRenderTraces = (
   }));
 
 export const toRenderAnnotations = (
-  annotations: Partial<Annotations>[],
+  annotations: PlotAnnotation[],
   scale: RenderScale,
-): Partial<Annotations>[] =>
+): PlotAnnotation[] =>
   annotations.map(annotation => ({
     ...annotation,
     x:

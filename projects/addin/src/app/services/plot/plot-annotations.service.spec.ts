@@ -1,4 +1,4 @@
-import { Annotations } from 'plotly.js-dist-min';
+import { PlotAnnotation } from './render-space';
 import { Plot, PlotSettings } from '../../models/plot';
 import { PlotAnnotationsService } from './plot-annotations.service';
 import { AxisOrigin } from './plot-geometry';
@@ -42,30 +42,22 @@ const basePlot: Plot = {
 describe('PlotAnnotationsService', () => {
   const service = new PlotAnnotationsService();
 
-  const xLabelValues = (
-    annotations: Partial<Annotations>[],
-  ): AnnotationValues =>
+  const xLabelValues = (annotations: PlotAnnotation[]): AnnotationValues =>
     annotations
       .filter(a => a.showarrow === false && a.xanchor === 'center')
       .map(a => a.x);
 
-  const yLabelValues = (
-    annotations: Partial<Annotations>[],
-  ): AnnotationValues =>
+  const yLabelValues = (annotations: PlotAnnotation[]): AnnotationValues =>
     annotations
       .filter(a => a.showarrow === false && a.xanchor === 'right')
       .map(a => a.y);
 
-  const xTickLineValues = (
-    annotations: Partial<Annotations>[],
-  ): AnnotationValues =>
+  const xTickLineValues = (annotations: PlotAnnotation[]): AnnotationValues =>
     annotations
       .filter(a => a.showarrow === true && a.xanchor === 'center')
       .map(a => a.x);
 
-  const yTickLineValues = (
-    annotations: Partial<Annotations>[],
-  ): AnnotationValues =>
+  const yTickLineValues = (annotations: PlotAnnotation[]): AnnotationValues =>
     annotations
       .filter(a => a.showarrow === true && a.xanchor === 'left')
       .map(a => a.y);

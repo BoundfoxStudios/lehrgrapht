@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import Plotly, { Annotations } from 'plotly.js-dist-min';
+import Plotly, { LayoutImage } from 'plotly.js-dist-min';
 import { LegendLabelFormat, Plot, PlotSettings } from '../../models/plot';
 import { math } from '../../utils/math';
 import { modelIdPrefix } from '../office/plot/word-plot.service';
@@ -24,7 +24,12 @@ import {
   renderScale,
 } from './plot-geometry';
 import { buildAxisLines } from './axis-lines';
-import { PlotTrace, toRenderAnnotations, toRenderTraces } from './render-space';
+import {
+  PlotAnnotation,
+  PlotTrace,
+  toRenderAnnotations,
+  toRenderTraces,
+} from './render-space';
 
 const devicePixelRatio = window.devicePixelRatio || 1;
 const effectiveDpi = 254 * devicePixelRatio;
@@ -185,8 +190,8 @@ export class PlotService {
     series: readonly FunctionSeries[],
     sizeCalc: PlotSizeCalculation,
     margin: PlotMarginMm,
-  ): Partial<Plotly.Image>[] {
-    const images: Partial<Plotly.Image>[] = [];
+  ): LayoutImage[] {
+    const images: LayoutImage[] = [];
 
     for (const label of renderedLabels) {
       const fn = plot.fnx[label.index];
@@ -239,10 +244,10 @@ export class PlotService {
     plotSettings: PlotSettings,
     sizeCalc: PlotSizeCalculation,
     margin: PlotMarginMm,
-    annotations: Partial<Annotations>[],
-    arrows: Partial<Annotations>[],
+    annotations: PlotAnnotation[],
+    arrows: PlotAnnotation[],
     data: PlotTrace[],
-    functionLabelImages: Partial<Plotly.Image>[],
+    functionLabelImages: LayoutImage[],
     applyScaleFactor: boolean,
   ): Promise<
     | {

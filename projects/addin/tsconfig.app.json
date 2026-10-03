@@ -4,7 +4,7 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "../../out-tsc/app",
-    "types": ["office-js", "plotly.js-dist-min"]
+    "types": ["office-js"]
   },
   "include": ["src/**/*.ts", "src/mathjax.d.ts"],
   "exclude": ["src/**/*.spec.ts"]

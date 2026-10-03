@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Annotations } from 'plotly.js-dist-min';
+import { PlotAnnotation } from './render-space';
 import { Plot, PlotSettings } from '../../models/plot';
 import {
   AxisOrigin,
@@ -30,7 +30,7 @@ export class PlotAnnotationsService {
     plot: Plot,
     plotSettings: PlotSettings,
     origin: AxisOrigin,
-  ): Partial<Annotations>[] {
+  ): PlotAnnotation[] {
     const unitsPerSquare = effectiveUnitsPerSquare(plot.unitsPerSquare);
     const xAnnotationRange = gridValues(plot.range.x, 2 * unitsPerSquare.x);
 
@@ -65,7 +65,7 @@ export class PlotAnnotationsService {
     ];
   }
 
-  buildXLabels(xRange: number[], origin: AxisOrigin): Partial<Annotations>[] {
+  buildXLabels(xRange: number[], origin: AxisOrigin): PlotAnnotation[] {
     return xRange.map(x => ({
       x,
       y: origin.y,
@@ -85,7 +85,7 @@ export class PlotAnnotationsService {
     xRange: number[],
     plotSettings: PlotSettings,
     origin: AxisOrigin,
-  ): Partial<Annotations>[] {
+  ): PlotAnnotation[] {
     return xRange
       .filter(x => x !== origin.x)
       .map(x => ({
@@ -104,7 +104,7 @@ export class PlotAnnotationsService {
       }));
   }
 
-  buildYLabels(yRange: number[], origin: AxisOrigin): Partial<Annotations>[] {
+  buildYLabels(yRange: number[], origin: AxisOrigin): PlotAnnotation[] {
     return yRange.map(y => ({
       x: origin.x,
       y,
@@ -123,7 +123,7 @@ export class PlotAnnotationsService {
     yRange: number[],
     plotSettings: PlotSettings,
     origin: AxisOrigin,
-  ): Partial<Annotations>[] {
+  ): PlotAnnotation[] {
     return yRange
       .filter(y => y !== origin.y)
       .map(y => ({
@@ -148,12 +148,12 @@ export class PlotAnnotationsService {
     xValueMax: number,
     yValueMax: number,
     origin: AxisOrigin,
-  ): Partial<Annotations>[] {
+  ): PlotAnnotation[] {
     if (!plot.showAxisArrows) {
       return plot.showAxisLabels ? this.buildAxisLabels(plot, origin) : [];
     }
 
-    const arrows: Partial<Annotations>[] = [
+    const arrows: PlotAnnotation[] = [
       {
         x: xValueMax,
         y: origin.y,
@@ -187,10 +187,7 @@ export class PlotAnnotationsService {
     return arrows;
   }
 
-  private buildAxisLabels(
-    plot: Plot,
-    origin: AxisOrigin,
-  ): Partial<Annotations>[] {
+  private buildAxisLabels(plot: Plot, origin: AxisOrigin): PlotAnnotation[] {
     const unitsPerSquare = effectiveUnitsPerSquare(plot.unitsPerSquare);
 
     return [
