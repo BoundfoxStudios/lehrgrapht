@@ -1,10 +1,22 @@
+import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { FieldTree } from '@angular/forms/signals';
 import {
   isPolygonClosingClick,
   karopapierPlot,
+  PlotEditorStore,
   withoutFunctionLegends,
 } from './plot-editor.store';
 import { InteractiveMode } from './interactive-mode';
 import { dedupePolygonPoints } from './interactive-strategy';
+import { PlotSettings } from '../../models/plot';
+import { PlotRange } from '../../models/plot-range';
+import { WordPlotService } from '../../services/office/plot/word-plot.service';
+import { NoOpWordPlotService } from '../../services/office/plot/no-op-word-plot.service';
+import {
+  defaultPlotSettings,
+  PlotSettingsService,
+} from '../../services/plot-settings.service';
 
 describe('karopapierPlot', () => {
   it('switches every Darstellung toggle off', () => {
@@ -259,5 +271,94 @@ describe('withoutFunctionLegends', () => {
     expect(result.fnx[0].fnx).toBe('x^2');
     expect(result.fnx[0].color).toBe('#ff0000');
     expect(result.fnx[0].lineStyle).toBe('solid');
+  });
+});
+
+describe('PlotEditorStore', () => {
+  // A cleared <input type="number"> makes Signal Forms write null into the number model
+  const emptiedNumberInput = null as unknown as number;
+
+  let store: InstanceType<typeof PlotEditorStore>;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [
+        PlotEditorStore,
+        provideRouter([]),
+        { provide: WordPlotService, useClass: NoOpWordPlotService },
+        {
+          provide: PlotSettingsService,
+          useValue: { get: (): PlotSettings => defaultPlotSettings },
+        },
+      ],
+    });
+    store = TestBed.inject(PlotEditorStore);
+  });
+
+  it.each([
+    {
+      label: 'X Min',
+      bound: (range: FieldTree<PlotRange>): FieldTree<number> => range.x.min,
+      message: 'X Min darf nicht leer sein',
+    },
+    {
+      label: 'X Max',
+      bound: (range: FieldTree<PlotRange>): FieldTree<number> => range.x.max,
+      message: 'X Max darf nicht leer sein',
+    },
+    {
+      label: 'Y Min',
+      bound: (range: FieldTree<PlotRange>): FieldTree<number> => range.y.min,
+      message: 'Y Min darf nicht leer sein',
+    },
+    {
+      label: 'Y Max',
+      bound: (range: FieldTree<PlotRange>): FieldTree<number> => range.y.max,
+      message: 'Y Max darf nicht leer sein',
+    },
+  ])(
+    'reports only the required error and invalidates the form when $label is cleared',
+    ({ bound, message }): void => {
+      const field = bound(store.editorForm.range);
+
+      field().controlValue.set(emptiedNumberInput);
+
+      expect(
+        field()
+          .errors()
+          .map(error => error.message),
+      ).toEqual([message]);
+      expect(store.editorForm().invalid()).toBe(true);
+    },
+  );
+
+  it('reports the lessThan error when X Min is not smaller than X Max', () => {
+    store.editorForm.range.x.min().controlValue.set(5);
+
+    expect(
+      store.editorForm.range.x
+        .min()
+        .errors()
+        .map(error => error.message),
+    ).toEqual(['X Min muss kleiner sein als X Max']);
+  });
+
+  it('reports no lessThan error on X Min when X Max is cleared and X Min is positive', () => {
+    store.editorForm.range.x.min().controlValue.set(1);
+    store.editorForm.range.x.max().controlValue.set(emptiedNumberInput);
+
+    expect(store.editorForm.range.x.min().errors()).toEqual([]);
+  });
+
+  it('reports no lessThan error on a cleared X Min when X Max is negative', () => {
+    store.editorForm.range.x.max().controlValue.set(-1);
+    store.editorForm.range.x.min().controlValue.set(emptiedNumberInput);
+
+    expect(
+      store.editorForm.range.x
+        .min()
+        .errors()
+        .map(error => error.kind),
+    ).toEqual(['required']);
   });
 });

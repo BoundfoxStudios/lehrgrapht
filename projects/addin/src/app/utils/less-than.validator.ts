@@ -10,7 +10,11 @@ export const lessThanValidator = (
     const fieldAValue = value();
     const fieldBValue = valueOf(fieldB);
 
-    if (fieldAValue >= fieldBValue) {
+    if (
+      Number.isFinite(fieldAValue) &&
+      Number.isFinite(fieldBValue) &&
+      fieldAValue >= fieldBValue
+    ) {
       return {
         field: fieldA,
         message,

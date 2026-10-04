@@ -9,7 +9,7 @@ import {
   withProps,
   withState,
 } from '@ngrx/signals';
-import { form, validate } from '@angular/forms/signals';
+import { form, required, validate } from '@angular/forms/signals';
 import { ActivatedRoute, Router } from '@angular/router';
 import { map } from 'rxjs';
 import { lehrgraphtVersion } from '../../../version';
@@ -171,6 +171,10 @@ export const PlotEditorStore = signalStore(
     const editorForm = form(
       model,
       schema => {
+        required(schema.range.x.min, { message: 'X Min darf nicht leer sein' });
+        required(schema.range.x.max, { message: 'X Max darf nicht leer sein' });
+        required(schema.range.y.min, { message: 'Y Min darf nicht leer sein' });
+        required(schema.range.y.max, { message: 'Y Max darf nicht leer sein' });
         lessThanValidator(
           schema.range.x.min,
           schema.range.x.max,
