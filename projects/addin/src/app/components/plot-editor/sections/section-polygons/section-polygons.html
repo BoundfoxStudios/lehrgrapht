@@ -264,6 +264,7 @@
     <div class="flex gap-1.5">
       <button
         class="flex-[1.4]"
+        [disabled]="store.hasErrors()"
         (click)="store.startInteractive(InteractiveMode.Polygon)"
         lgButton
         size="cta"

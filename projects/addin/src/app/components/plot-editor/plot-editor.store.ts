@@ -642,6 +642,9 @@ export const PlotEditorStore = signalStore(
       startInteractive(
         mode: Exclude<InteractiveMode, InteractiveMode.Off>,
       ): void {
+        if (store.hasErrors()) {
+          return;
+        }
         patchState(store, { interactiveMode: mode, interactivePoints: [] });
       },
 
@@ -684,7 +687,7 @@ export const PlotEditorStore = signalStore(
 
       onPlotClick(event: PlotClickEvent): void {
         const mode = store.interactiveMode();
-        if (mode === InteractiveMode.Off) {
+        if (mode === InteractiveMode.Off || store.hasErrors()) {
           return;
         }
 

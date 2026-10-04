@@ -361,4 +361,27 @@ describe('PlotEditorStore', () => {
         .map(error => error.kind),
     ).toEqual(['required']);
   });
+
+  it('does not start an interactive mode while the form has errors', () => {
+    store.editorForm.range.x.min().controlValue.set(emptiedNumberInput);
+
+    store.startInteractive(InteractiveMode.Marker);
+
+    expect(store.interactiveMode()).toBe(InteractiveMode.Off);
+  });
+
+  it('starts an interactive mode while the form has no errors', () => {
+    store.startInteractive(InteractiveMode.Marker);
+
+    expect(store.interactiveMode()).toBe(InteractiveMode.Marker);
+  });
+
+  it('ignores preview clicks once the form has errors during an interactive mode', () => {
+    store.startInteractive(InteractiveMode.Polygon);
+    store.editorForm.range.x.min().controlValue.set(emptiedNumberInput);
+
+    store.onPlotClick({ x: 1, y: 1 });
+
+    expect(store.interactivePoints()).toEqual([]);
+  });
 });
