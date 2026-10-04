@@ -30,7 +30,8 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 ## Accessibility Requirements
 
 - It MUST pass all AXE checks.
-- It MUST follow all WCAG AA minimums, including focus management, color contrast, and ARIA attributes.
+- It MUST follow the visual WCAG AA minimums, including focus management and color contrast.
+- Screen readers are not a target for LehrGrapht: do not add `aria-invalid`, `aria-describedby`, live regions or other markup that only serves screen readers.
 
 ## Git
 
