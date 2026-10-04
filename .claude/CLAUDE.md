@@ -24,8 +24,15 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 
 ## Reflection
 
-- An axis reflection is only a reflection when both axes use the same units per square, so it is locked whenever they differ. The rule lives in `services/plot/reflection.ts` (`isAxisReflectionAllowed`, and `hasAxisReflectionScaleConflict` for the combination); a form validator in `plot-editor.store.ts` blocks saving and the reflection and display sections explain it. Point reflection is unaffected. Do not "fix" this by reflecting in render space: that changes the numbers, which was rejected in issue #57.
+- An axis reflection is only a reflection when both axes use the same units per square, so it is locked whenever they differ. The rule lives in `services/plot/reflection.ts` (`isAxisReflectionAllowed`, and `hasAxisReflectionScaleConflict` for the combination); a form validator in `plot-editor.store.ts` blocks saving and, like every form error, freezes the editor preview (see Axis Limits); the reflection and display sections explain it. Point reflection is unaffected. Do not "fix" this by reflecting in render space: that changes the numbers, which was rejected in issue #57.
 - The reflection validator reads `valueOf(schema)` and drills into the result instead of `valueOf(schema.unitsPerSquare)`: a dev-build plot (version 0.0.0) skips every migration, so the key can be missing and Signal Forms throws NG01901 on the unresolvable child path.
+
+## Axis Limits
+
+- An emptied `<input type="number">` makes Signal Forms write `null` into the model, although `PlotRange` types the limits as `number`. A lone `-` or `1e` is a parse error (`kind: 'parse'`, no message) that leaves the model unchanged; `lg-input` then shows only its own text, because the other errors of that field refer to the stale model value. Match on `error.kind`: `FormField` spreads parse errors into plain objects, so `instanceof NativeInputParseError` is always false.
+- `PlotService.generate` cannot draw every model the form can hold: a `null` limit makes `math.range` throw, and an inverted y range throws in `math.min([])` (issue #16). The form validators keep such models away from it: `required()` on all four limits, and `lessThanValidator` only compares finite numbers, so an emptied limit reports `required` alone. A new state `generate` cannot draw gets a validator, not a guard in `generate`. Very large finite ranges are not limited yet.
+- The editor preview follows the model only while `hasErrors` is false (parse errors included). Otherwise `previewModel` keeps the last error-free preview by reference, so nothing regenerates, and the section dock overlays a hint; the hub keeps its error dock. `previewModel` is keyed on `activeId` so a frozen preview never carries over to another plot, and the dock drops the polygon highlight while frozen, because the hovered index refers to the current polygon list. Interactive mode cannot start and ignores clicks while the form has errors.
+- `PlotPreview` and `PlotMiniPreview` catch a failing `generate` per emission inside the `switchMap` and report it to `ErrorHandler`: one rejection used to end the stream and freeze the preview for good. This is a backstop, not the validation.
 
 ## Accessibility Requirements
 
