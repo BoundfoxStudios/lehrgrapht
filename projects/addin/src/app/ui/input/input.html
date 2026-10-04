@@ -11,10 +11,10 @@
   [attr.spellcheck]="spellcheck()"
   [lgAutofocus]="autofocus()"
 />
-@if (errors().length > 0) {
+@if (errorMessages().length > 0) {
   <ul class="mt-2 text-xs text-red-600">
-    @for (error of errors(); track error) {
-      <li>{{ error.message }}</li>
+    @for (message of errorMessages(); track $index) {
+      <li>{{ message }}</li>
     }
   </ul>
 }

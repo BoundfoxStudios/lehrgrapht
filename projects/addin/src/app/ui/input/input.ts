@@ -33,5 +33,10 @@ export class Input {
   >('on');
   readonly spellcheck = input(true, { transform: booleanAttribute });
 
-  protected readonly errors = computed(() => this.field()().errors());
+  protected readonly errorMessages = computed(() => {
+    const errors = this.field()().errors();
+    return errors.some(error => error.kind === 'parse')
+      ? ['Bitte gib eine gültige Zahl ein']
+      : errors.map(error => error.message);
+  });
 }
