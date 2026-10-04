@@ -2,15 +2,19 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  ErrorHandler,
   inject,
   input,
 } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { AsyncPipe } from '@angular/common';
-import { switchMap } from 'rxjs';
+import { catchError, defer, of, switchMap } from 'rxjs';
 import { Plot } from '../../models/plot';
 import { PlotService } from '../../services/plot/plot.service';
-import { plotHasErrorCode } from '../../services/plot/plot.types';
+import {
+  PlotGenerateErrorCode,
+  plotHasErrorCode,
+} from '../../services/plot/plot.types';
 import { PlotSettingsService } from '../../services/plot-settings.service';
 import { SolutionViewService } from '../../services/solution-view.service';
 
@@ -27,6 +31,7 @@ export class PlotMiniPreview {
   private readonly plotService = inject(PlotService);
   private readonly plotSettingsService = inject(PlotSettingsService);
   private readonly solutionViewService = inject(SolutionViewService);
+  private readonly errorHandler = inject(ErrorHandler);
 
   readonly plot = input.required<Plot>();
 
@@ -38,10 +43,17 @@ export class PlotMiniPreview {
 
   readonly preview$ = toObservable(this.model).pipe(
     switchMap(({ plot, plotSettings, showSolution }) =>
-      this.plotService.generate(plot, plotSettings, {
-        applyScaleFactor: false,
-        showSolution,
-      }),
+      defer(() =>
+        this.plotService.generate(plot, plotSettings, {
+          applyScaleFactor: false,
+          showSolution,
+        }),
+      ).pipe(
+        catchError((error: unknown) => {
+          this.errorHandler.handleError(error);
+          return of(PlotGenerateErrorCode.plot);
+        }),
+      ),
     ),
   );
 

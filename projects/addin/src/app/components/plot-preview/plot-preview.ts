@@ -1,6 +1,7 @@
 import {
   Component,
   computed,
+  ErrorHandler,
   inject,
   input,
   output,
@@ -23,7 +24,7 @@ import {
   PreviewCoordinates,
   previewPointToPlotCoordinates,
 } from '../../services/plot/preview-coordinates';
-import { switchMap, tap } from 'rxjs';
+import { catchError, defer, of, switchMap, tap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { Plot, PlotSettings } from '../../models/plot';
 import { ContentContainer } from '../content-container/content-container';
@@ -41,6 +42,7 @@ export interface PlotClickEvent {
 })
 export class PlotPreview {
   private readonly plotService = inject(PlotService);
+  private readonly errorHandler = inject(ErrorHandler);
 
   readonly plot = input.required<Plot>();
   readonly plotSettings = input.required<PlotSettings>();
@@ -62,11 +64,18 @@ export class PlotPreview {
 
   preview$ = toObservable(this.model).pipe(
     switchMap(({ plot, plotSettings, highlightedPolygonIndex, showSolution }) =>
-      this.plotService.generate(plot, plotSettings, {
-        applyScaleFactor: true,
-        highlightedPolygonIndex,
-        showSolution,
-      }),
+      defer(() =>
+        this.plotService.generate(plot, plotSettings, {
+          applyScaleFactor: true,
+          highlightedPolygonIndex,
+          showSolution,
+        }),
+      ).pipe(
+        catchError((error: unknown) => {
+          this.errorHandler.handleError(error);
+          return of(PlotGenerateErrorCode.plot);
+        }),
+      ),
     ),
     tap(preview => {
       this.renderedMargin.set(
