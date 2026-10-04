@@ -1,4 +1,4 @@
-import { computed, effect, inject, signal } from '@angular/core';
+import { computed, effect, inject, linkedSignal, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import {
   patchState,
@@ -111,6 +111,25 @@ export const withoutFunctionLegends = (plot: Plot): Plot => ({
   ...plot,
   fnx: plot.fnx.map(fn => ({ ...fn, legendPosition: 'none' as const })),
 });
+
+interface PreviewSource {
+  plot: Plot;
+  hasErrors: boolean;
+  plotId: string | null;
+}
+
+const lastValidPreview = (
+  source: PreviewSource,
+  previous?: { source: PreviewSource; value: Plot | null },
+): Plot | null => {
+  if (!source.hasErrors) {
+    return source.plot;
+  }
+  if (previous?.source.plotId !== source.plotId) {
+    return null;
+  }
+  return previous.value;
+};
 
 export type CardSectionKey = 'fnx' | 'markers' | 'polygons';
 
@@ -252,6 +271,23 @@ export const PlotEditorStore = signalStore(
     const plotService = inject(PlotService);
     const markerNamingService = inject(MarkerNamingService);
 
+    const hasErrors = computed(
+      () => store.editorForm().errorSummary().length > 0,
+    );
+    const currentPreviewModel = computed<Plot>(() => {
+      const model = store.model();
+      const mode = store.interactiveMode();
+      if (mode === InteractiveMode.Off) {
+        return model;
+      }
+      return withoutFunctionLegends(
+        INTERACTIVE_STRATEGIES[mode].apply(model, store.interactivePoints(), {
+          scheme: store.plotSettings().markerNamingScheme,
+          markerNamingService,
+        }),
+      );
+    });
+
     return {
       plotSizeMm: computed<PlotSizeMm>(() =>
         plotService.calculatePlotSizeMm(store.model()),
@@ -262,21 +298,16 @@ export const PlotEditorStore = signalStore(
       isEditMode: computed(() => store.activeId() !== null),
       routeId: computed(() => store.activeId() ?? store.unsavedRouteId()),
       isDirty: computed(() => store.editorForm().dirty()),
-      hasErrors: computed(() => store.editorForm().errorSummary().length > 0),
+      hasErrors,
       errorCount: computed(() => store.editorForm().errorSummary().length),
-      previewModel: computed<Plot>(() => {
-        const model = store.model();
-        const mode = store.interactiveMode();
-        if (mode === InteractiveMode.Off) {
-          return model;
-        }
-        return withoutFunctionLegends(
-          INTERACTIVE_STRATEGIES[mode].apply(model, store.interactivePoints(), {
-            scheme: store.plotSettings().markerNamingScheme,
-            markerNamingService,
-          }),
-        );
-      }),
+      previewModel: linkedSignal<PreviewSource, Plot | null>({
+        source: () => ({
+          plot: currentPreviewModel(),
+          hasErrors: hasErrors(),
+          plotId: store.activeId(),
+        }),
+        computation: lastValidPreview,
+      }).asReadonly(),
       hasAnySolution: computed(() => {
         const model = store.model();
         if (model.reflection.kind !== 'none' && model.reflection.isSolution) {

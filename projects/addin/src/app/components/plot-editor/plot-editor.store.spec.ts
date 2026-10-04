@@ -384,4 +384,34 @@ describe('PlotEditorStore', () => {
 
     expect(store.interactivePoints()).toEqual([]);
   });
+
+  it('keeps the last valid preview model while the form has errors', () => {
+    const lastValidModel = store.previewModel();
+
+    store.editorForm.range.x.min().controlValue.set(emptiedNumberInput);
+
+    expect(store.previewModel()).toBe(lastValidModel);
+  });
+
+  it('follows the model again once the form has no errors', () => {
+    store.previewModel();
+    store.editorForm.range.x.min().controlValue.set(emptiedNumberInput);
+    store.previewModel();
+
+    store.editorForm.range.x.min().controlValue.set(-5);
+
+    expect(store.previewModel()?.range.x.min).toBe(-5);
+  });
+
+  it('has no preview model when a loaded plot has errors', () => {
+    store.previewModel();
+
+    store.activeId.set('loaded-plot');
+    store.editorForm().reset({
+      ...karopapierPlot(),
+      range: { x: { min: 3, max: -3 }, y: { min: -3, max: 3 } },
+    });
+
+    expect(store.previewModel()).toBeNull();
+  });
 });
